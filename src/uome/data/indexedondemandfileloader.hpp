@@ -1,9 +1,8 @@
 #ifndef UOME_DATA_INDEXEDONDEMANDFILELOADER_HPP
 #define UOME_DATA_INDEXEDONDEMANDFILELOADER_HPP
 
-#include "fullfileloader.hpp"
+#include "indexloader.hpp"
 #include "ondemandfileloader.hpp"
-#include "indexblock.hpp"
 
 namespace uome {
 namespace data {
@@ -19,17 +18,12 @@ public:
     }
 
     boost::shared_ptr<ValueType> get(unsigned int index) {
-        // if someone tries to load an unknown id, just return the first entry
-        if (index >= indexLoader_.size()) {
-            index = 0;
-        }
-
         const IndexBlock* indexBlock = indexLoader_.get(index);
         return dataLoader_.get(index, indexBlock->offset_, indexBlock->length_);
     }
 
 private:
-    FullFileLoader<IndexBlock> indexLoader_;
+    IndexLoader indexLoader_;
     OnDemandFileLoader<ValueType> dataLoader_;
 
 };

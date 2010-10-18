@@ -10,11 +10,11 @@ set (DATA_HPP
     )
 
 set (DATA_CPP
+    fullfileloader.cpp
     manager.cpp
     )
 
 set(DATA_STRUCTURES_HPP
-    indexblock.hpp
     mapblock.hpp
     tiledata.hpp
     )
@@ -24,10 +24,12 @@ set(DATA_STRUCTURES_CPP
     )
     
 set(DATA_LOADERS_HPP
+    indexloader.hpp
     artloader.hpp
     )
     
 set(DATA_LOADERS_CPP
+    indexloader.cpp
     artloader.cpp
     )
 

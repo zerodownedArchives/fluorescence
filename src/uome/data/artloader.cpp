@@ -58,6 +58,7 @@ void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, 
         for (unsigned int i = 0; i < 22; ++i) {
             --curX;
             lineWidth += 2;
+            LOGARG_DEBUG(LOGTYPE_DATA, "zeile y=%u x=%u width=%u", curY, curX, lineWidth);
             for (unsigned int i = 0; i < lineWidth; i++) {
                 uint32_t pixel = Util::getColorRGBA(*inputPtr);
                 ++inputPtr;
@@ -69,13 +70,14 @@ void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, 
         //LOGARG_DEBUG(LOGTYPE_DATA, "mitte y=%u x=%u width=%u", curY, curX, lineWidth);
 
         for (unsigned int i = 0; i < 22; ++i) {
-            ++curX;
+            LOGARG_DEBUG(LOGTYPE_DATA, "zeile y=%u x=%u width=%u", curY, curX, lineWidth);
             for (unsigned int i = 0; i < lineWidth; i++) {
                 uint32_t pixel = Util::getColorRGBA(*inputPtr);
                 ++inputPtr;
                 pixBufPtr[(curY * 44) + curX + i] = pixel;
             }
             ++curY;
+            ++curX;
             lineWidth -= 2;
         }
 
