@@ -7,12 +7,14 @@
 #include <ClanLib/gl.h>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/program_options.hpp>
 
 namespace uome {
 namespace ui {
 
 class Manager {
 public:
+    static bool create(const boost::program_options::variables_map& config);
     static Manager* getSingleton();
 
     CL_DisplayWindow* getWindow();
@@ -26,7 +28,7 @@ public:
 private:
     static Manager* singleton_;
 
-    Manager();
+    Manager(const boost::program_options::variables_map& config);
     ~Manager();
     Manager(const Manager& copy) { }
     void operator=(const Manager& copy) { }

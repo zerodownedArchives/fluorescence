@@ -29,9 +29,6 @@ private:
 
     bool visible_;
 
-    // these 2 variables indicate wheter or not the sector has been fully read from the map and statics mul file
-    bool mapLoaded_;
-    bool staticsLoaded_;
 };
 
 }

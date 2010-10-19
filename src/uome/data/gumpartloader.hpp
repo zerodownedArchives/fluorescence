@@ -1,5 +1,5 @@
-#ifndef UOME_DATA_ARTLOADER_HPP
-#define UOME_DATA_ARTLOADER_HPP
+#ifndef UOME_DATA_GUMPARTLOADER_HPP
+#define UOME_DATA_GUMPARTLOADER_HPP
 
 #include "weakptrcache.hpp"
 #include "indexedondemandfileloader.hpp"
@@ -14,14 +14,11 @@ namespace ui {
 
 namespace data {
 
-class ArtLoader {
+class GumpArtLoader {
 public:
-    ArtLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath);
+    GumpArtLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath);
 
-
-    boost::shared_ptr<ui::Texture> getMapTexture(unsigned int id);
-
-    boost::shared_ptr<ui::Texture> getItemTexture(unsigned int id);
+    boost::shared_ptr<ui::Texture> getTexture(unsigned int id);
 
     void readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture>, unsigned int extra);
 

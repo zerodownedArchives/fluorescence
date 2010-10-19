@@ -6,10 +6,12 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <data/ondemandreadable.hpp>
+
 namespace uome {
 namespace ui {
 
-class Texture {
+class Texture : public uome::data::OnDemandReadable {
 public:
     Texture();
 
@@ -18,12 +20,8 @@ public:
 
     boost::shared_ptr<CL_PixelBuffer> getPixelBuffer() { return pixelBuffer_; }
 
-    void setReadComplete() { readComplete_ = true; }
-    bool isReadComplete() { return readComplete_; }
-
 private:
     boost::shared_ptr<CL_PixelBuffer> pixelBuffer_;
-    bool readComplete_;
 };
 }
 }

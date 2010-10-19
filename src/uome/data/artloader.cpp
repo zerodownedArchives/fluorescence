@@ -9,7 +9,7 @@ namespace uome {
 namespace data {
 
 ArtLoader::ArtLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath) :
-        loader_(idxPath, mulPath, boost::bind(&ArtLoader::readCallback, this, _1, _2, _3, _4)) {
+        loader_(idxPath, mulPath, boost::bind(&ArtLoader::readCallback, this, _1, _2, _3, _4, _5)) {
     cache_.init(&loader_);
 }
 
@@ -27,7 +27,7 @@ boost::shared_ptr<ui::Texture> ArtLoader::getItemTexture(unsigned int id) {
     return cache_.get(id);
 }
 
-void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture> tex) {
+void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture> tex, unsigned int extra) {
     unsigned short height = 44;
     unsigned short width = 44;
 
@@ -44,9 +44,7 @@ void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, 
     }
 
     tex->initPixelBuffer(width, height, cl_rgba8);
-
     uint32_t* pixBufPtr = reinterpret_cast<uint32_t*>(tex->getPixelBufferData());
-
     memset(pixBufPtr, 0, width * height * sizeof(uint32_t));
 
     unsigned int curX = 22;
@@ -58,7 +56,7 @@ void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, 
         for (unsigned int i = 0; i < 22; ++i) {
             --curX;
             lineWidth += 2;
-            LOGARG_DEBUG(LOGTYPE_DATA, "zeile y=%u x=%u width=%u", curY, curX, lineWidth);
+            //LOGARG_DEBUG(LOGTYPE_DATA, "zeile y=%u x=%u width=%u", curY, curX, lineWidth);
             for (unsigned int i = 0; i < lineWidth; i++) {
                 uint32_t pixel = Util::getColorRGBA(*inputPtr);
                 ++inputPtr;
@@ -67,10 +65,8 @@ void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, 
             ++curY;
         }
 
-        //LOGARG_DEBUG(LOGTYPE_DATA, "mitte y=%u x=%u width=%u", curY, curX, lineWidth);
-
         for (unsigned int i = 0; i < 22; ++i) {
-            LOGARG_DEBUG(LOGTYPE_DATA, "zeile y=%u x=%u width=%u", curY, curX, lineWidth);
+            //LOGARG_DEBUG(LOGTYPE_DATA, "zeile y=%u x=%u width=%u", curY, curX, lineWidth);
             for (unsigned int i = 0; i < lineWidth; i++) {
                 uint32_t pixel = Util::getColorRGBA(*inputPtr);
                 ++inputPtr;
@@ -82,9 +78,6 @@ void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, 
         }
 
     } else {
-        //u32 tdflags = cData::getSingleton()->getTileDataLoader()->getStaticFlags(_texture->getId());
-        //bool partialHue = tdflags & TDF_PARTIALHUE ? true : false;
-
         uint16_t* lookupList = inputPtr;
         inputPtr += height;
         uint16_t* datastart = inputPtr;
@@ -111,14 +104,6 @@ void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, 
             }
         }
     }
-
-    // LOG_INFO("end decode loop", etc::LOGTYPE_DATA);
-
-    //setBitMask(_texture, _data);
-    // LOG_INFO("load texture", etc::LOGTYPE_DATA);
-    //_texture->load();
-
-    tex->setReadComplete();
 }
 
 }

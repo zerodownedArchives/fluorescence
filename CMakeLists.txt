@@ -10,7 +10,7 @@ ENDIF (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 
 
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost 1.40.0 REQUIRED COMPONENTS filesystem thread)
+find_package(Boost 1.40.0 REQUIRED COMPONENTS filesystem thread program_options)
 
 set(ClanLib_VERSION_LIBNAME "22")
 set(ClanList_VERSION_DIRNAME "2.2")

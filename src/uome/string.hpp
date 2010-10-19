@@ -1,13 +1,14 @@
 #ifndef UOME_STRING_HPP
 #define UOME_STRING_HPP
 
-//#include "logger.hpp"
 #include "exception.hpp"
 
 #include <unicode/unistr.h>
 extern "C" {
 #include <unicode/ustdio.h>
 }
+
+#include "logger.hpp"
 
 namespace uome {
 
@@ -20,7 +21,7 @@ public:
         String ret(buffer, bufferSize, getUtf8Converter(), error);
         if (U_FAILURE(error)) {
             ret = String("");
-            //LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert from utf-8 string");
+            LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert from utf-8 string");
         }
         return ret;
     }
@@ -30,7 +31,7 @@ public:
         String ret(buffer, bufferSize, getUnicodeConverter(), error);
         if (U_FAILURE(error)) {
             ret = String("");
-            //LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert from utf-16be string");
+            LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert from utf-16be string");
         }
         return ret;
     }
@@ -39,7 +40,7 @@ public:
         UErrorCode error = U_ZERO_ERROR;
         int ret = str.extract(buffer, bufferSize, getUtf8Converter(), error);
         if (U_FAILURE(error)) {
-            //LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert to utf-8 string");
+            LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert to utf-8 string");
             return -1;
         }
 
@@ -60,7 +61,7 @@ public:
         UErrorCode error = U_ZERO_ERROR;
         int ret = str.extract(buffer, bufferSize, getUnicodeConverter(), error);
         if (U_FAILURE(error)) {
-            //LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert to utf-16be string");
+            LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert to utf-16be string");
             return -1;
         }
 

@@ -76,7 +76,7 @@ enum LOGTYPE {
     LOGTYPE_NETWORK     = 1 << 3,
     LOGTYPE_RENDERER    = 1 << 4,
     LOGTYPE_DATA        = 1 << 5,
-    LOGTYPE_GUI         = 1 << 6,
+    LOGTYPE_UI          = 1 << 6,
     LOGTYPE_SOUND       = 1 << 7,
     LOGTYPE_WORLD       = 1 << 8,
 
@@ -172,7 +172,7 @@ private:
     void printTime() {
         timeval t = getCurrentRelativeTime();
         char timeBuf[20];
-        sprintf(timeBuf, "%05li.%04li ", (long int)t.tv_sec, (long int)t.tv_usec);
+        sprintf(timeBuf, "%05li.%06li ", (long int)t.tv_sec, (long int)t.tv_usec);
 
         u_fprintf(cout_, "%s", timeBuf);
         u_fprintf(logFile_, "%s", timeBuf);
@@ -196,8 +196,8 @@ private:
             return "RNDR: ";
         case LOGTYPE_DATA:
             return "DATA: ";
-        case LOGTYPE_GUI:
-            return "GUI: ";
+        case LOGTYPE_UI:
+            return "UI: ";
         case LOGTYPE_SOUND:
             return "SOUND: ";
         case LOGTYPE_WORLD:
@@ -210,7 +210,7 @@ private:
             return "PY: ";
         case LOGTYPE_UNKNOWN:
         default:
-            return "???: ";
+            return "UOME: ";
         }
     }
 

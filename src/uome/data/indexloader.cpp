@@ -9,9 +9,16 @@
 namespace uome {
 namespace data {
 
-IndexLoader::IndexLoader(const boost::filesystem::path& path) throw(Exception) {
+IndexLoader::IndexLoader(const boost::filesystem::path& path) throw(Exception) : indexBlocks_(NULL) {
     FullFileLoader ldr(path);
     ldr.read(boost::bind(&IndexLoader::read, this, _1, _2));
+}
+
+IndexLoader::~IndexLoader() {
+    if (indexBlocks_) {
+        delete [] indexBlocks_;
+        indexBlocks_ = NULL;
+    }
 }
 
 void IndexLoader::read(int8_t* buf, unsigned int len) throw(Exception) {
@@ -34,7 +41,7 @@ void IndexLoader::read(int8_t* buf, unsigned int len) throw(Exception) {
     }
 }
 
-IndexBlock* IndexLoader::get(unsigned int id) {
+const IndexBlock* IndexLoader::get(unsigned int id) const {
     // if someone tries to load an unknown id, just return the first entry
     if (id > size_) {
         LOGARG_WARN(LOGTYPE_DATA, "Trying to access out of bounds index %u", id);

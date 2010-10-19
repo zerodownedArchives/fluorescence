@@ -9,16 +9,17 @@ namespace uome {
 namespace data {
 
 struct IndexBlock {
-    int32_t offset_;
-    int32_t length_;
-    int32_t extra_;
+    uint32_t offset_;
+    uint32_t length_;
+    uint32_t extra_;
 };
 
 class IndexLoader {
 public:
     IndexLoader(const boost::filesystem::path& path) throw(Exception);
+    ~IndexLoader();
 
-    IndexBlock* get(unsigned int id);
+    const IndexBlock* get(unsigned int id) const;
 
     void read(int8_t* buf, unsigned int len) throw(Exception);
 

@@ -3,8 +3,6 @@
 
 #include <exception.hpp>
 
-// use boost filesystem v3
-#define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 

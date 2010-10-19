@@ -59,16 +59,16 @@ public:
             // was loaded at some point - is it still valid?
             boost::shared_ptr<ValueType> smPtr = iter->second.lock();
             if (smPtr.get() != NULL) {
-                printf("in cache %u\n", id);
+                //printf("in cache %u\n", id);
                 return smPtr;
             } else {
                 // we need to reload it
-                printf("need to reload %u\n", id);
+                //printf("need to reload %u\n", id);
                 return this->load(id);
             }
         } else {
             // we need to load it for the first time
-            printf("need to load first time %u\n", id);
+            //printf("need to load first time %u\n", id);
             return this->load(id);
         }
     }

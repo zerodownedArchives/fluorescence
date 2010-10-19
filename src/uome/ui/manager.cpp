@@ -1,6 +1,7 @@
 
 #include "manager.hpp"
 
+#include <logger.hpp>
 #include <exception.hpp>
 
 namespace uome {
@@ -8,15 +9,28 @@ namespace ui {
 
 Manager* Manager::singleton_ = NULL;
 
+bool Manager::create(const boost::program_options::variables_map& config) {
+    if (!singleton_) {
+        try {
+            singleton_ = new Manager(config);
+        } catch (const std::exception& ex) {
+            LOGARG_CRITICAL(LOGTYPE_UI, "Error initializing data::Manager: %s", ex.what());
+            return false;
+        }
+    }
+
+    return true;
+}
+
 Manager* Manager::getSingleton() {
     if (!singleton_) {
-        singleton_ = new Manager();
+        throw Exception("uome::ui::Manager called before being created");
     }
 
     return singleton_;
 }
 
-Manager::Manager() :
+Manager::Manager(const boost::program_options::variables_map& config) :
         window_(NULL) {
 }
 

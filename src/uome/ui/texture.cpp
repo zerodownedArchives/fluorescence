@@ -4,7 +4,7 @@
 namespace uome {
 namespace ui {
 
-Texture::Texture() : readComplete_(false) {
+Texture::Texture() {
 }
 
 void Texture::initPixelBuffer(unsigned int width, unsigned int height, CL_TextureFormat format) {

@@ -1,6 +1,9 @@
 #ifndef UOME_DATA_ONDEMANDFILELOADER_HPP
 #define UOME_DATA_ONDEMANDFILELOADER_HPP
 
+#include "indexloader.hpp"
+
+#include <logger.hpp>
 #include <exception.hpp>
 
 #include <queue>
@@ -8,7 +11,6 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
 
-#define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 
@@ -28,7 +30,7 @@ typename ValueType
 class OnDemandFileLoader {
 public:
 
-    typedef boost::function<void (unsigned int, int8_t*, unsigned int, boost::shared_ptr<ValueType>)> ReadCallback;
+    typedef boost::function<void (unsigned int, int8_t*, unsigned int, boost::shared_ptr<ValueType>, unsigned int)> ReadCallback;
 
     OnDemandFileLoader(const boost::filesystem::path& path, ReadCallback readCallback) throw(Exception) : readCallback_(readCallback) {
         if (!boost::filesystem::exists(path) || !boost::filesystem::is_regular_file(path)) {
@@ -59,11 +61,11 @@ public:
         }
     }
 
-    boost::shared_ptr<ValueType> get(unsigned int index, unsigned int fileOffset, unsigned int readLen) {
+    boost::shared_ptr<ValueType> get(unsigned int index, const IndexBlock* indexBlock) {
         // return dummy object, enqueue for decoding
         boost::shared_ptr<ValueType> obj(new ValueType);
 
-        ReadInformation inf(index, fileOffset, readLen, obj);
+        ReadInformation inf(index, indexBlock, obj);
         boost::mutex::scoped_lock lock(mutex_);
         queue_.push(inf);
         signal_.notify_all();
@@ -81,13 +83,14 @@ private:
         unsigned int index_;
         unsigned int offset_;
         unsigned int readLen_;
+        unsigned int extra_;
         boost::shared_ptr<ValueType> item_;
 
         ReadInformation() {
         }
 
-        ReadInformation(unsigned int index, unsigned int offset, unsigned int readLen, boost::shared_ptr<ValueType> item) :
-                index_(index), offset_(offset), readLen_(readLen), item_(item) {
+        ReadInformation(unsigned int index, const IndexBlock* indexBlock, boost::shared_ptr<ValueType> item) :
+                index_(index), offset_(indexBlock->offset_), readLen_(indexBlock->length_), extra_(indexBlock->extra_), item_(item) {
         }
     };
 
@@ -95,7 +98,6 @@ private:
         unsigned int curBufferSize = 2048;
         int8_t* buf = reinterpret_cast<int8_t*>(malloc(curBufferSize));
         while (running_) {
-            printf("DecodeThread while\n");
             ReadInformation next;
             {
                 boost::mutex::scoped_lock lock(mutex_);
@@ -110,7 +112,7 @@ private:
 
             // trying to read out of file bounds
             if (next.offset_ > fileSize_ || (next.offset_ + next.readLen_) > fileSize_) {
-                printf("trying to read out of file bounds\n");
+                LOG_WARN(LOGTYPE_DATA, "Trying to read out of file bounds\n");
                 continue;
             }
 
@@ -119,14 +121,15 @@ private:
             }
 
             if (next.readLen_ > curBufferSize) {
-                printf("Resizing buffer to %u\n", next.readLen_ * 2);
+                //printf("Resizing buffer to %u\n", next.readLen_ * 2);
                 buf = reinterpret_cast<int8_t*>(realloc(buf, next.readLen_ * 2));
                 curBufferSize = next.readLen_;
             }
 
-            printf("decode thread read %u bytes from %u\n", next.readLen_, next.offset_);
+            //printf("decode thread read %u bytes from %u\n", next.readLen_, next.offset_);
             stream_.read(reinterpret_cast<char*>(buf), next.readLen_);
-            readCallback_(next.index_, buf, next.readLen_, next.item_);
+            readCallback_(next.index_, buf, next.readLen_, next.item_, next.extra_);
+            next.item_->setReadComplete();
         }
     }
 
