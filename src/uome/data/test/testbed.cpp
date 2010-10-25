@@ -1,12 +1,13 @@
 
 
-#include <data/tiledataloader.hpp>
+#include <data/artloader.hpp>
+
+#include <ui/texture.hpp>
 
 int main(int argc, char** argv) {
-    uome::data::TileDataLoader ldr("/data/games/uo2d/tiledata.mul");
+    uome::data::ArtLoader ldr("/data/games/uo2d/artidx.mul", "/data/games/uo2d/art.mul");
 
-    const uome::data::LandTileInfo* inf = ldr.getLandTileInfo(13);
-    inf->background();
+    boost::shared_ptr<uome::ui::Texture> tex = ldr.getMapTexture(4);
 
     return 0;
 }

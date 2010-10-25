@@ -1,12 +1,11 @@
 
 set (WORLD_HPP
-    maptile.hpp
-    uiexception.hpp
+    map.hpp
+    ingameobject.hpp
     )
 
 set (WORLD_CPP
-    manager.cpp
-    uiexception.cpp
+    ingameobject.cpp
     )
 
 add_library(uomeworld STATIC ${WORLD_HPP} ${WORLD_CPP})

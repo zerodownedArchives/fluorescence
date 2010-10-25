@@ -4,16 +4,17 @@
 #include <exception.hpp>
 
 #include <boost/program_options.hpp>
-
-#include "tiledataloader.hpp"
-#include "artloader.hpp"
-#include "huesloader.hpp"
-#include "gumpartloader.hpp"
-
+#include <boost/filesystem.hpp>
 
 
 namespace uome {
 namespace data {
+
+class TileDataLoader;
+class ArtLoader;
+class HuesLoader;
+class GumpArtLoader;
+class MapLoader;
 
 class Manager {
 public:
@@ -26,11 +27,13 @@ public:
     static TileDataLoader* getTileDataLoader() { return getSingleton()->tileDataLoader_.get(); }
     static HuesLoader* getHuesLoader() { return getSingleton()->huesLoader_.get(); }
     static GumpArtLoader* getGumpArtLoader() { return getSingleton()->gumpArtLoader_.get(); }
+    static MapLoader* getMapLoader() { return getSingleton()->map0Loader_.get(); }
 
 private:
     static Manager* singleton_;
 
-    Manager(const boost::program_options::variables_map& config) throw(Exception);
+    Manager();
+    void init(const boost::program_options::variables_map& config);
     Manager(const Manager& copy) { }
     Manager& operator=(const Manager& copy) { return *this; }
 
@@ -40,6 +43,8 @@ private:
     boost::shared_ptr<TileDataLoader> tileDataLoader_;
     boost::shared_ptr<HuesLoader> huesLoader_;
     boost::shared_ptr<GumpArtLoader> gumpArtLoader_;
+
+    boost::shared_ptr<MapLoader> map0Loader_;
 };
 
 }

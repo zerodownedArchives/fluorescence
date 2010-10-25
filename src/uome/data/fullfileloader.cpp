@@ -4,13 +4,13 @@
 namespace uome {
 namespace data {
 
-FullFileLoader::FullFileLoader(const boost::filesystem::path& path) throw(Exception) : path_(path) {
+FullFileLoader::FullFileLoader(const boost::filesystem::path& path) : path_(path) {
     if (!boost::filesystem::exists(path) || !boost::filesystem::is_regular_file(path)) {
         throw Exception("File not found");
     }
 }
 
-void FullFileLoader::read(ReadCallback readCallback) throw(Exception) {
+void FullFileLoader::read(ReadCallback readCallback) {
     // calc how many bytes we want to read
     unsigned int filesize = boost::filesystem::file_size(path_);
 

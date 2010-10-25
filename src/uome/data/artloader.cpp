@@ -8,14 +8,16 @@
 namespace uome {
 namespace data {
 
-ArtLoader::ArtLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath) :
-        loader_(idxPath, mulPath, boost::bind(&ArtLoader::readCallback, this, _1, _2, _3, _4, _5)) {
-    cache_.init(&loader_);
+ArtLoader::ArtLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath) {
+
+    boost::shared_ptr<IndexedOnDemandFileLoader<ui::Texture> > loader(new IndexedOnDemandFileLoader<ui::Texture>(idxPath, mulPath,
+                boost::bind(&ArtLoader::readCallback, this, _1, _2, _3, _4, _5)));
+    cache_.init(loader);
 }
 
 boost::shared_ptr<ui::Texture> ArtLoader::getMapTexture(unsigned int id) {
     if (id > 0x4000) {
-        LOGARG_WARN(LOGTYPE_DATA, "Trying to load map tile %u", id);
+        LOGARG_WARN(LOGTYPE_DATA, "Trying to load too high map tile texture %u", id);
         id = 0;
     }
 

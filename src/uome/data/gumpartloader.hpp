@@ -23,7 +23,6 @@ public:
     void readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture>, unsigned int extra);
 
 private:
-    IndexedOnDemandFileLoader<ui::Texture> loader_;
     WeakPtrCache<ui::Texture, IndexedOnDemandFileLoader> cache_;
 };
 

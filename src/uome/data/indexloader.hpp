@@ -16,12 +16,12 @@ struct IndexBlock {
 
 class IndexLoader {
 public:
-    IndexLoader(const boost::filesystem::path& path) throw(Exception);
+    IndexLoader(const boost::filesystem::path& path);
     ~IndexLoader();
 
-    const IndexBlock* get(unsigned int id) const;
+    const IndexBlock& get(unsigned int id) const;
 
-    void read(int8_t* buf, unsigned int len) throw(Exception);
+    void read(int8_t* buf, unsigned int len);
 
 private:
     unsigned int size_;

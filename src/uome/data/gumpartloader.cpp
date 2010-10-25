@@ -8,9 +8,11 @@
 namespace uome {
 namespace data {
 
-GumpArtLoader::GumpArtLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath) :
-        loader_(idxPath, mulPath, boost::bind(&GumpArtLoader::readCallback, this, _1, _2, _3, _4, _5)) {
-    cache_.init(&loader_);
+GumpArtLoader::GumpArtLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath) {
+
+    boost::shared_ptr<IndexedOnDemandFileLoader<ui::Texture> > loader(new IndexedOnDemandFileLoader<ui::Texture>(idxPath, mulPath,
+                boost::bind(&GumpArtLoader::readCallback, this, _1, _2, _3, _4, _5)));
+    cache_.init(loader);
 }
 
 boost::shared_ptr<ui::Texture> GumpArtLoader::getTexture(unsigned int id) {

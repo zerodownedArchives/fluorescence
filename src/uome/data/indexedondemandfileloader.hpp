@@ -13,19 +13,19 @@ typename ValueType
 class IndexedOnDemandFileLoader {
 
 public:
-    IndexedOnDemandFileLoader(const boost::filesystem::path& indexPath, const boost::filesystem::path& dataPath, typename OnDemandFileLoader<ValueType>::ReadCallback readCallback) throw(Exception) :
+    IndexedOnDemandFileLoader(const boost::filesystem::path& indexPath, const boost::filesystem::path& dataPath, typename OnDemandFileLoader<ValueType>::ReadCallback readCallback) :
             indexLoader_(indexPath), dataLoader_(dataPath, readCallback) {
     }
 
     boost::shared_ptr<ValueType> get(unsigned int index) {
-        const IndexBlock* indexBlock = indexLoader_.get(index);
+        const IndexBlock indexBlock = indexLoader_.get(index);
 
-        if (indexBlock->offset_ == 0xFFFFFFFFu) {
+        if (indexBlock.offset_ == 0xFFFFFFFFu) {
             LOGARG_WARN(LOGTYPE_DATA, "Trying to read nonexistant entry %u", index);
-            indexBlock = indexLoader_.get(0);
+            return dataLoader_.get(0, indexLoader_.get(0));
+         } else {
+             return dataLoader_.get(index, indexBlock);
         }
-
-        return dataLoader_.get(index, indexBlock);
     }
 
 private:

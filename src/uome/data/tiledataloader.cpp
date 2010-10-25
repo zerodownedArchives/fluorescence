@@ -8,7 +8,7 @@
 namespace uome {
 namespace data {
 
-TileDataLoader::TileDataLoader(const boost::filesystem::path& path) throw(Exception) {
+TileDataLoader::TileDataLoader(const boost::filesystem::path& path) {
     FullFileLoader ldr(path);
     ldr.read(boost::bind(&TileDataLoader::read, this, _1, _2));
 }
@@ -25,22 +25,22 @@ TileDataLoader::~TileDataLoader() {
     }
 }
 
-const LandTileInfo* TileDataLoader::getLandTileInfo(unsigned int id) {
+const LandTileInfo& TileDataLoader::getLandTileInfo(unsigned int id) {
     if (id > landTileCount_) {
         LOGARG_WARN(LOGTYPE_DATA, "Trying to access out of range land tile data index %u", id);
         id = 0;
     }
 
-    return &landTileInfos_[id];
+    return landTileInfos_[id];
 }
 
-const StaticTileInfo* TileDataLoader::getStaticTileInfo(unsigned int id) {
+const StaticTileInfo& TileDataLoader::getStaticTileInfo(unsigned int id) {
     if (id > staticTileCount_) {
         LOGARG_WARN(LOGTYPE_DATA, "Trying to access out of range static tile data index %u", id);
         id = 0;
     }
 
-    return &staticTileInfos_[id];
+    return staticTileInfos_[id];
 }
 
 void TileDataLoader::read(int8_t* buf, unsigned int len) {

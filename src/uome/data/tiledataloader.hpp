@@ -111,12 +111,12 @@ class TileDataLoader {
 public:
     enum { LAND_TILE_COUNT = 0x4000 };
 
-    TileDataLoader(const boost::filesystem::path& path) throw(Exception);
+    TileDataLoader(const boost::filesystem::path& path);
     ~TileDataLoader();
 
-    const LandTileInfo* getLandTileInfo(unsigned int id);
+    const LandTileInfo& getLandTileInfo(unsigned int id);
 
-    const StaticTileInfo* getStaticTileInfo(unsigned int id);
+    const StaticTileInfo& getStaticTileInfo(unsigned int id);
 
     void read(int8_t* buf, unsigned int len);
 

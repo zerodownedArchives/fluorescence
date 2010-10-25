@@ -44,6 +44,12 @@ public:
         ("files.gumpart-mul", po::value<std::string>()->default_value("gumpart.mul"), "Location of gumpart.mul")
         ("files.hues-mul", po::value<std::string>()->default_value("hues.mul"), "Location of hues.mul")
         ("files.tiledata-mul", po::value<std::string>()->default_value("tiledata.mul"), "Location of tiledata.mul")
+
+        ("files.map0-mul", po::value<std::string>()->default_value("map0.mul"), "Location of map0.mul")
+        ("files.mapdif0-idx", po::value<std::string>()->default_value("mapdifl0.mul"), "Location of mapdifl0.mul")
+        ("files.mapdif0-mul", po::value<std::string>()->default_value("mapdif0.mul"), "Location of mapdif0.mul")
+        ("files.map0-size-x", po::value<unsigned int>()->default_value(768), "Horizontal block count for map0")
+        ("files.map0-size-y", po::value<unsigned int>()->default_value(512), "Vertical block count for map0")
         ;
 
         desc.add(filesDesc);

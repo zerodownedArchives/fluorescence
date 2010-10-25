@@ -3,10 +3,12 @@
 
 #include <ClanLib/Display/Image/pixel_buffer.h>
 #include <ClanLib/Display/Image/texture_format.h>
+#include <ClanLib/Display/Render/texture.h>
 
 #include <boost/shared_ptr.hpp>
 
 #include <data/ondemandreadable.hpp>
+#include "manager.hpp"
 
 namespace uome {
 namespace ui {
@@ -20,8 +22,11 @@ public:
 
     boost::shared_ptr<CL_PixelBuffer> getPixelBuffer() { return pixelBuffer_; }
 
+    boost::shared_ptr<CL_Texture> getTexture();
+
 private:
     boost::shared_ptr<CL_PixelBuffer> pixelBuffer_;
+    boost::shared_ptr<CL_Texture> texture_;
 };
 }
 }

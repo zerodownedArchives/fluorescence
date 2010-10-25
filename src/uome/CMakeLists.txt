@@ -1,6 +1,7 @@
 
 add_subdirectory(data)
 add_subdirectory(ui)
+add_subdirectory(world)
 
 set(CLIENT_HPP
     client.hpp

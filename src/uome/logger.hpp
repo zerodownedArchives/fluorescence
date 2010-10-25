@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <sys/time.h>
 
+#include <boost/thread/mutex.hpp>
+
 #include <unicode/unistr.h>
 extern "C" {
 #include <unicode/ustdio.h>
@@ -91,12 +93,14 @@ enum LOGTYPE {
 class Logger {
 public:
     virtual ~Logger() {
+        boost::mutex::scoped_lock myLock(mutex_);
         u_fclose(logFile_);
         u_fclose(cout_);
     }
 
     //dont use this functions. use the macros instead
     void init(unsigned int type, char* filename = DEFAULT_LOGFILE) {
+        boost::mutex::scoped_lock myLock(mutex_);
         type_ = type;
         u_fclose(logFile_);
         logFile_ = u_finit(fopen(filename, "w"), NULL, NULL);
@@ -121,6 +125,8 @@ public:
             return;
         }
 
+        boost::mutex::scoped_lock myLock(mutex_);
+
         printTime();
         printType(type);
 
@@ -133,6 +139,8 @@ public:
     void logArgMessage(unsigned int type, const char* message...) {
         if ((type & type_) == 0)
             return;
+
+        boost::mutex::scoped_lock myLock(mutex_);
 
         printTime();
         printType(type);
@@ -158,6 +166,8 @@ private:
     UFILE* logFile_;
 
     timeval startTime_;
+
+    boost::mutex mutex_;
 
     Logger(unsigned int type, const char* filename) : type_(type) {
         gettimeofday(&startTime_, NULL);

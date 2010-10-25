@@ -22,10 +22,10 @@ public:
     /**
      * \throw DataException when file is nonexistant or directory
      */
-    FullFileLoader(const boost::filesystem::path& path) throw(Exception);
+    FullFileLoader(const boost::filesystem::path& path);
 
     /// brief Read full file to memory and call callback
-    void read(ReadCallback readCallback) throw(Exception);
+    void read(ReadCallback readCallback);
 
 private:
     boost::filesystem::path path_;

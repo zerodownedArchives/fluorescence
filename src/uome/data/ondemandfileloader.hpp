@@ -32,7 +32,7 @@ public:
 
     typedef boost::function<void (unsigned int, int8_t*, unsigned int, boost::shared_ptr<ValueType>, unsigned int)> ReadCallback;
 
-    OnDemandFileLoader(const boost::filesystem::path& path, ReadCallback readCallback) throw(Exception) : readCallback_(readCallback) {
+    OnDemandFileLoader(const boost::filesystem::path& path, ReadCallback readCallback) : readCallback_(readCallback) {
         if (!boost::filesystem::exists(path) || !boost::filesystem::is_regular_file(path)) {
             throw Exception("File not found");
         }
@@ -61,11 +61,23 @@ public:
         }
     }
 
-    boost::shared_ptr<ValueType> get(unsigned int index, const IndexBlock* indexBlock) {
+    boost::shared_ptr<ValueType> get(unsigned int index, const IndexBlock& indexBlock) {
         // return dummy object, enqueue for decoding
         boost::shared_ptr<ValueType> obj(new ValueType);
 
         ReadInformation inf(index, indexBlock, obj);
+        boost::mutex::scoped_lock lock(mutex_);
+        queue_.push(inf);
+        signal_.notify_all();
+
+        return obj;
+    }
+
+    boost::shared_ptr<ValueType> get(unsigned int index, unsigned int offset, unsigned int len) {
+        // return dummy object, enqueue for decoding
+        boost::shared_ptr<ValueType> obj(new ValueType);
+
+        ReadInformation inf(index, offset, len, obj);
         boost::mutex::scoped_lock lock(mutex_);
         queue_.push(inf);
         signal_.notify_all();
@@ -89,8 +101,12 @@ private:
         ReadInformation() {
         }
 
-        ReadInformation(unsigned int index, const IndexBlock* indexBlock, boost::shared_ptr<ValueType> item) :
-                index_(index), offset_(indexBlock->offset_), readLen_(indexBlock->length_), extra_(indexBlock->extra_), item_(item) {
+        ReadInformation(unsigned int index, const IndexBlock& indexBlock, boost::shared_ptr<ValueType> item) :
+                index_(index), offset_(indexBlock.offset_), readLen_(indexBlock.length_), extra_(indexBlock.extra_), item_(item) {
+        }
+
+        ReadInformation(unsigned int index, unsigned int offset, unsigned int readLen, boost::shared_ptr<ValueType> item) :
+            index_(index), offset_(offset), readLen_(readLen), extra_(0), item_(item) {
         }
     };
 

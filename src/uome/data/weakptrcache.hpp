@@ -8,6 +8,8 @@
 #include <list>
 #include <stdio.h>
 
+#include <logger.hpp>
+
 namespace uome {
 namespace data {
 
@@ -27,7 +29,7 @@ public:
     WeakPtrCache() {
     }
 
-    void init(FileLoader<ValueType>* loader) {
+    void init(boost::shared_ptr<FileLoader<ValueType> > loader) {
         loader_ = loader;
     }
 
@@ -77,7 +79,7 @@ private:
     MapType cache_;
     FixedListType fixedList_; ///< Keeps shared_ptr to fixed items. May contain duplicates
 
-    FileLoader<ValueType>* loader_;
+    boost::shared_ptr<FileLoader<ValueType> > loader_;
 
     boost::shared_ptr<ValueType> load(unsigned int id) {
         boost::shared_ptr<ValueType> smPtr = loader_->get(id);
