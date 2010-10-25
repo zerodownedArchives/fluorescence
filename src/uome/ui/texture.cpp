@@ -17,7 +17,7 @@ void* Texture::getPixelBufferData() {
 
 boost::shared_ptr<CL_Texture> Texture::getTexture() {
     if (!texture_.get()) {
-        texture_ = boost::shared_ptr<CL_Texture>(new CL_Texture(ui::Manager::getSingleton()->getGC(), pixelBuffer_->get_width(), pixelBuffer_->get_height()));
+        texture_ = boost::shared_ptr<CL_Texture>(ui::Manager::getSingleton()->provideTexture(pixelBuffer_->get_width(), pixelBuffer_->get_height()));
         texture_->set_image(*(pixelBuffer_));
     }
 

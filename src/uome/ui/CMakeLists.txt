@@ -11,4 +11,3 @@ set (UI_CPP
 
 add_library(uomeui STATIC ${UI_HPP} ${UI_CPP})
 
-add_subdirectory(test)
