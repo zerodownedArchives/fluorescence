@@ -4,8 +4,7 @@
 #include "ingameobject.hpp"
 
 #include <data/ondemandreadable.hpp>
-#include <data/manager.hpp>
-#include <data/artloader.hpp>
+#include <data/tiledataloader.hpp>
 
 namespace uome {
 
@@ -20,23 +19,19 @@ class MapTile : public IngameObject {
 friend class data::MapLoader;
 
 public:
-    MapTile() { }
-
-    virtual boost::shared_ptr<ui::Texture> getIngameTexture() const {
-        return texture_;
-    }
+    virtual boost::shared_ptr<ui::Texture> getIngameTexture() const;
 
 private:
     unsigned int artId_;
 
+    const data::LandTileInfo* tileDataInfo_;
+
     boost::shared_ptr<ui::Texture> texture_;
 
-    void set(int locX, int locY, int locZ, unsigned int artId) {
-        artId_ = artId;
-        texture_ = data::Manager::getArtLoader()->getMapTexture(artId_);
+    void set(int locX, int locY, int locZ, unsigned int artId);
 
-        setLocation(locX, locY, locZ);
-    }
+    virtual void updateVertexCoordinates();
+    virtual void updateRenderPriority();
 };
 
 class MapBlock : public data::OnDemandReadable {
@@ -44,21 +39,11 @@ class MapBlock : public data::OnDemandReadable {
 friend class data::MapLoader;
 
 public:
-    const MapTile& get(unsigned int x, unsigned int y) {
-        if (x > 7) {
-            x = 0;
-        }
-
-        if (y > 7) {
-            y = 0;
-        }
-
-        return tiles_[(y*8) + x];
-    }
+    MapTile* get(unsigned int x, unsigned int y);
 
 private:
-    unsigned int blockIndexX;
-    unsigned int blockIndexY;
+    unsigned int blockIndexX_;
+    unsigned int blockIndexY_;
 
     MapTile tiles_[64];
 };

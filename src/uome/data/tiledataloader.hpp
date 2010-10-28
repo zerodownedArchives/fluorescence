@@ -114,9 +114,9 @@ public:
     TileDataLoader(const boost::filesystem::path& path);
     ~TileDataLoader();
 
-    const LandTileInfo& getLandTileInfo(unsigned int id);
+    const LandTileInfo* getLandTileInfo(unsigned int id);
 
-    const StaticTileInfo& getStaticTileInfo(unsigned int id);
+    const StaticTileInfo* getStaticTileInfo(unsigned int id);
 
     void read(int8_t* buf, unsigned int len);
 

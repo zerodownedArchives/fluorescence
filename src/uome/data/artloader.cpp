@@ -11,7 +11,7 @@ namespace data {
 ArtLoader::ArtLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath) {
 
     boost::shared_ptr<IndexedOnDemandFileLoader<ui::Texture> > loader(new IndexedOnDemandFileLoader<ui::Texture>(idxPath, mulPath,
-                boost::bind(&ArtLoader::readCallback, this, _1, _2, _3, _4, _5)));
+                boost::bind(&ArtLoader::readCallback, this, _1, _2, _3, _4, _5, _6)));
     cache_.init(loader);
 }
 
@@ -29,7 +29,7 @@ boost::shared_ptr<ui::Texture> ArtLoader::getItemTexture(unsigned int id) {
     return cache_.get(id);
 }
 
-void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture> tex, unsigned int extra) {
+void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture> tex, unsigned int extra, unsigned int userData) {
     unsigned short height = 44;
     unsigned short width = 44;
 

@@ -30,7 +30,7 @@ typename ValueType
 class OnDemandFileLoader {
 public:
 
-    typedef boost::function<void (unsigned int, int8_t*, unsigned int, boost::shared_ptr<ValueType>, unsigned int)> ReadCallback;
+    typedef boost::function<void (unsigned int, int8_t*, unsigned int, boost::shared_ptr<ValueType>, unsigned int, unsigned int)> ReadCallback;
 
     OnDemandFileLoader(const boost::filesystem::path& path, ReadCallback readCallback) : readCallback_(readCallback) {
         if (!boost::filesystem::exists(path) || !boost::filesystem::is_regular_file(path)) {
@@ -61,11 +61,11 @@ public:
         }
     }
 
-    boost::shared_ptr<ValueType> get(unsigned int index, const IndexBlock& indexBlock) {
+    boost::shared_ptr<ValueType> get(unsigned int index, const IndexBlock& indexBlock, unsigned int userData) {
         // return dummy object, enqueue for decoding
         boost::shared_ptr<ValueType> obj(new ValueType);
 
-        ReadInformation inf(index, indexBlock, obj);
+        ReadInformation inf(index, indexBlock, obj, userData);
         boost::mutex::scoped_lock lock(mutex_);
         queue_.push(inf);
         signal_.notify_all();
@@ -73,11 +73,11 @@ public:
         return obj;
     }
 
-    boost::shared_ptr<ValueType> get(unsigned int index, unsigned int offset, unsigned int len) {
+    boost::shared_ptr<ValueType> get(unsigned int index, unsigned int offset, unsigned int len, unsigned int userData) {
         // return dummy object, enqueue for decoding
         boost::shared_ptr<ValueType> obj(new ValueType);
 
-        ReadInformation inf(index, offset, len, obj);
+        ReadInformation inf(index, offset, len, obj, userData);
         boost::mutex::scoped_lock lock(mutex_);
         queue_.push(inf);
         signal_.notify_all();
@@ -97,16 +97,17 @@ private:
         unsigned int readLen_;
         unsigned int extra_;
         boost::shared_ptr<ValueType> item_;
+        unsigned int userData_;
 
         ReadInformation() {
         }
 
-        ReadInformation(unsigned int index, const IndexBlock& indexBlock, boost::shared_ptr<ValueType> item) :
-                index_(index), offset_(indexBlock.offset_), readLen_(indexBlock.length_), extra_(indexBlock.extra_), item_(item) {
+        ReadInformation(unsigned int index, const IndexBlock& indexBlock, boost::shared_ptr<ValueType> item, unsigned int userData) :
+                index_(index), offset_(indexBlock.offset_), readLen_(indexBlock.length_), extra_(indexBlock.extra_), item_(item), userData_(userData) {
         }
 
-        ReadInformation(unsigned int index, unsigned int offset, unsigned int readLen, boost::shared_ptr<ValueType> item) :
-            index_(index), offset_(offset), readLen_(readLen), extra_(0), item_(item) {
+        ReadInformation(unsigned int index, unsigned int offset, unsigned int readLen, boost::shared_ptr<ValueType> item, unsigned int userData) :
+            index_(index), offset_(offset), readLen_(readLen), extra_(0), item_(item), userData_(userData) {
         }
     };
 
@@ -144,7 +145,7 @@ private:
 
             //printf("decode thread read %u bytes from %u\n", next.readLen_, next.offset_);
             stream_.read(reinterpret_cast<char*>(buf), next.readLen_);
-            readCallback_(next.index_, buf, next.readLen_, next.item_, next.extra_);
+            readCallback_(next.index_, buf, next.readLen_, next.item_, next.extra_, next.userData_);
             next.item_->setReadComplete();
         }
     }

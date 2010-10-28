@@ -14,12 +14,14 @@ namespace data {
 
 class MapLoader {
 public:
-    MapLoader(const boost::filesystem::path& mulPath, const boost::filesystem::path& difIndexPath, const boost::filesystem::path& difPath,
-            unsigned int blockCountX, unsigned int blockCountY);
+    MapLoader(const boost::filesystem::path& mulPath, const boost::filesystem::path& difOffsetsPath, const boost::filesystem::path& difPath,
+              unsigned int blockCountX, unsigned int blockCountY);
 
-    void readCallbackMul(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<world::MapBlock> block, unsigned int extra);
+    MapLoader(const boost::filesystem::path& mulPath, unsigned int blockCountX, unsigned int blockCountY);
 
-    void readCallbackDifIdx(int8_t* buf, unsigned int len);
+    void readCallbackMul(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<world::MapBlock> block, unsigned int extra, unsigned int userData);
+
+    void readCallbackDifOffsets(int8_t* buf, unsigned int len);
 
     boost::shared_ptr<world::MapBlock> get(unsigned int x, unsigned int y);
 
@@ -33,6 +35,8 @@ private:
 
     unsigned int blockCountX_;
     unsigned int blockCountY_;
+
+    bool difEnabled_;
 };
 
 }

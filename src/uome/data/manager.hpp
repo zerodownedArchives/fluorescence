@@ -5,7 +5,7 @@
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
-
+#include <boost/shared_ptr.hpp>
 
 namespace uome {
 namespace data {
@@ -15,6 +15,7 @@ class ArtLoader;
 class HuesLoader;
 class GumpArtLoader;
 class MapLoader;
+class StaticsLoader;
 
 class Manager {
 public:
@@ -27,7 +28,8 @@ public:
     static TileDataLoader* getTileDataLoader() { return getSingleton()->tileDataLoader_.get(); }
     static HuesLoader* getHuesLoader() { return getSingleton()->huesLoader_.get(); }
     static GumpArtLoader* getGumpArtLoader() { return getSingleton()->gumpArtLoader_.get(); }
-    static MapLoader* getMapLoader() { return getSingleton()->map0Loader_.get(); }
+    static MapLoader* getMapLoader(unsigned int index);
+    static StaticsLoader* getStaticsLoader(unsigned int index);
 
 private:
     static Manager* singleton_;
@@ -44,7 +46,11 @@ private:
     boost::shared_ptr<HuesLoader> huesLoader_;
     boost::shared_ptr<GumpArtLoader> gumpArtLoader_;
 
-    boost::shared_ptr<MapLoader> map0Loader_;
+    boost::shared_ptr<MapLoader> mapLoader_[5];
+    boost::shared_ptr<MapLoader> fallbackMapLoader_;
+
+    boost::shared_ptr<StaticsLoader> staticsLoader_[5];
+    boost::shared_ptr<StaticsLoader> fallbackStaticsLoader_;
 };
 
 }

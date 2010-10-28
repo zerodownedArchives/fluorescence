@@ -1,6 +1,11 @@
 #ifndef UOME_WORLD_SECTOR_HPP
 #define UOME_WORLD_SECTOR_HPP
 
+#include "map.hpp"
+#include "statics.hpp"
+
+#include <boost/shared_ptr.hpp>
+
 namespace uome {
 
 namespace data {
@@ -9,23 +14,26 @@ namespace data {
 
 namespace world {
 
+// TODO: Handle map
 class Sector {
 
-friend class data::SectorReader;
-
 public:
-    Sector(int locX, int locY);
+    Sector(unsigned int id, unsigned int locX, unsigned int locY);
 
-    int getLocX() { return location_[0]; }
-    int getLocY() { return location_[1]; }
+    int getLocX() { return location_[0u]; }
+    int getLocY() { return location_[1u]; }
 
     bool isVisible() { return visible_; }
+
+    boost::shared_ptr<MapBlock> getMapBlock() const { return mapBlock_; }
+    boost::shared_ptr<StaticBlock> getStaticBlock() const { return staticBlock_; }
 
 private:
     unsigned int id_;
     CL_Vec2<int> location_;
 
-    MapTile mapTiles_[64];
+    boost::shared_ptr<MapBlock> mapBlock_;
+    boost::shared_ptr<StaticBlock> staticBlock_;
 
     bool visible_;
 
@@ -33,3 +41,5 @@ private:
 
 }
 }
+
+#endif

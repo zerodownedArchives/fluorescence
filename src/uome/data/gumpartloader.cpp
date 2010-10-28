@@ -11,7 +11,7 @@ namespace data {
 GumpArtLoader::GumpArtLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath) {
 
     boost::shared_ptr<IndexedOnDemandFileLoader<ui::Texture> > loader(new IndexedOnDemandFileLoader<ui::Texture>(idxPath, mulPath,
-                boost::bind(&GumpArtLoader::readCallback, this, _1, _2, _3, _4, _5)));
+                boost::bind(&GumpArtLoader::readCallback, this, _1, _2, _3, _4, _5, _6)));
     cache_.init(loader);
 }
 
@@ -19,11 +19,9 @@ boost::shared_ptr<ui::Texture> GumpArtLoader::getTexture(unsigned int id) {
     return cache_.get(id);
 }
 
-void GumpArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture> tex, unsigned int extra) {
+void GumpArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture> tex, unsigned int extra, unsigned int userData) {
     unsigned int width = (extra >> 16) & 0xFFFF;
     unsigned int height = extra & 0xFFFF;
-
-    LOGARG_DEBUG(LOGTYPE_DATA, "Texture width=%u height=%u", width, height);
 
     tex->initPixelBuffer(width, height, cl_rgba8);
     uint32_t* pixBufPtr = reinterpret_cast<uint32_t*>(tex->getPixelBufferData());

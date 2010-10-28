@@ -44,7 +44,7 @@ Manager::~Manager() {
 CL_DisplayWindow* Manager::getWindow() {
     if (!window_) {
         CL_OpenGLWindowDescription description;
-        description.set_size(CL_Size(640,480), true);
+        description.set_size(CL_Size(800, 600), true);
         description.set_title("UO:ME");
 
         window_ = new CL_DisplayWindow(description);

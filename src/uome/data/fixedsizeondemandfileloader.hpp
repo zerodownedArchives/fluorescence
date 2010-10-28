@@ -16,9 +16,9 @@ public:
             OnDemandFileLoader<ValueType>(path, readCallback), size_(size) {
     }
 
-    boost::shared_ptr<ValueType> get(unsigned int index) {
+    boost::shared_ptr<ValueType> get(unsigned int index, unsigned int userData) {
         unsigned int startOffset = index * size_;
-        return this->OnDemandFileLoader<ValueType>::get(index, startOffset, size_);
+        return this->OnDemandFileLoader<ValueType>::get(index, startOffset, size_, userData);
     }
 
 private:

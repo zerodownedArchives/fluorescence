@@ -23,7 +23,7 @@ public:
 
     boost::shared_ptr<ui::Texture> getItemTexture(unsigned int id);
 
-    void readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture>, unsigned int extra);
+    void readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture>, unsigned int extra, unsigned int userData);
 
 private:
     WeakPtrCache<ui::Texture, IndexedOnDemandFileLoader> cache_;

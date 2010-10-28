@@ -55,7 +55,18 @@ public:
         fixedList_.remove(item);
     }
 
-    boost::shared_ptr<ValueType> get(unsigned int id) {
+    boost::shared_ptr<ValueType> getNoCreate(unsigned int id) {
+        typename MapType::iterator iter = this->cache_.find(id);
+        if (iter != this->cache_.end()) {
+            // was loaded at some point
+            return iter->second.lock();
+        } else {
+            return boost::shared_ptr<ValueType>();
+        }
+    }
+
+
+    boost::shared_ptr<ValueType> get(unsigned int id, unsigned int userData = 0) {
         typename MapType::iterator iter = this->cache_.find(id);
         if (iter != this->cache_.end()) {
             // was loaded at some point - is it still valid?
@@ -66,23 +77,23 @@ public:
             } else {
                 // we need to reload it
                 //printf("need to reload %u\n", id);
-                return this->load(id);
+                return this->load(id, userData);
             }
         } else {
             // we need to load it for the first time
             //printf("need to load first time %u\n", id);
-            return this->load(id);
+            return this->load(id, userData);
         }
     }
 
 private:
     MapType cache_;
-    FixedListType fixedList_; ///< Keeps shared_ptr to fixed items. May contain duplicates
+    FixedListType fixedList_; ///< Keeps a shared_ptr to fixed items. May contain duplicates
 
     boost::shared_ptr<FileLoader<ValueType> > loader_;
 
-    boost::shared_ptr<ValueType> load(unsigned int id) {
-        boost::shared_ptr<ValueType> smPtr = loader_->get(id);
+    boost::shared_ptr<ValueType> load(unsigned int id, unsigned int userData) {
+        boost::shared_ptr<ValueType> smPtr = loader_->get(id, userData);
         cache_[id] = boost::weak_ptr<ValueType>(smPtr);
         return smPtr;
     }

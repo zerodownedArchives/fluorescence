@@ -22,6 +22,7 @@ set(DATA_LOADERS_HPP
     huesloader.hpp
     gumpartloader.hpp
     maploader.hpp
+    staticsloader.hpp
     )
 
 set(DATA_LOADERS_CPP
@@ -31,6 +32,7 @@ set(DATA_LOADERS_CPP
     huesloader.cpp
     gumpartloader.cpp
     maploader.cpp
+    staticsloader.cpp
     )
 
 add_library(uomedata STATIC

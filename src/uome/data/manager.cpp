@@ -6,6 +6,7 @@
 #include "huesloader.hpp"
 #include "gumpartloader.hpp"
 #include "maploader.hpp"
+#include "staticsloader.hpp"
 
 namespace uome {
 namespace data {
@@ -45,11 +46,9 @@ void Manager::init(const boost::program_options::variables_map& config) {
 
     boost::filesystem::path idxPath;
     boost::filesystem::path path;
+    boost::filesystem::path difOffsetsPath;
     boost::filesystem::path difIdxPath;
     boost::filesystem::path difPath;
-
-    unsigned int blockCountX;
-    unsigned int blockCountY;
 
     path = getPathFor(config, "files.tiledata-mul");
     LOGARG_INFO(LOGTYPE_DATA, "Opening tiledata from %s", path.string().c_str());
@@ -69,13 +68,98 @@ void Manager::init(const boost::program_options::variables_map& config) {
     LOGARG_INFO(LOGTYPE_DATA, "Opening gump art from idx=%s mul=%s", idxPath.string().c_str(), path.string().c_str());
     gumpArtLoader_.reset(new GumpArtLoader(idxPath, path));
 
-    path = getPathFor(config, "files.map0-mul");
-    difIdxPath = getPathFor(config, "files.mapdif0-idx");
-    difPath = getPathFor(config, "files.mapdif0-mul");
-    blockCountX = config["files.map0-size-x"].as<unsigned int>();
-    blockCountY = config["files.map0-size-y"].as<unsigned int>();
-    LOGARG_INFO(LOGTYPE_DATA, "Opening map0 from mul=%s, dif-idx=%s, dif=%s blockCountX=%u blockCountY=%u", path.string().c_str(), difIdxPath.string().c_str(), difPath.string().c_str(), blockCountX, blockCountY);
-    map0Loader_.reset(new MapLoader(path, difIdxPath, difPath, blockCountX, blockCountY));
+
+    char* mapConfigEnabled = strdup("files.map0-enabled");
+    char* mapConfigMulPath = strdup("files.map0-mul");
+    char* mapConfigSizeX = strdup("files.map0-size-x");
+    char* mapConfigSizeY = strdup("files.map0-size-y");
+    char* mapConfigDifEnabled = strdup("files.map0-dif-enabled");
+    char* mapConfigDifOffsetsPath = strdup("files.map0-dif-offsets");
+    char* mapConfigDifMulPath = strdup("files.map0-dif-mul");
+
+    char* staticsConfigIdxPath = strdup("files.statics0-idx");
+    char* staticsConfigMulPath = strdup("files.statics0-mul");
+    char* staticsConfigDifEnabled = strdup("files.statics0-dif-enabled");
+    char* staticsConfigDifOffsetsPath = strdup("files.statics0-dif-offsets");
+    char* staticsConfigDifIdxPath = strdup("files.statics0-dif-idx");
+    char* staticsConfigDifMulPath = strdup("files.statics0-dif-mul");
+
+    unsigned int blockCountX;
+    unsigned int blockCountY;
+
+    char indexChar = '0';
+    for (unsigned int index = 0; index < 5; ++index, ++indexChar) {
+        if (!config[mapConfigEnabled].as<bool>()) {
+            continue;
+        }
+
+        mapConfigEnabled[9] = indexChar;
+        mapConfigMulPath[9] = indexChar;
+        mapConfigSizeX[9] = indexChar;
+        mapConfigSizeY[9] = indexChar;
+        mapConfigDifEnabled[9] = indexChar;
+        mapConfigDifOffsetsPath[9] = indexChar;
+        mapConfigDifMulPath[9] = indexChar;
+
+        staticsConfigIdxPath[13] = indexChar;
+        staticsConfigMulPath[13] = indexChar;
+        staticsConfigDifEnabled[13] = indexChar;
+        staticsConfigDifOffsetsPath[13] = indexChar;
+        staticsConfigDifIdxPath[13] = indexChar;
+        staticsConfigDifMulPath[13] = indexChar;
+
+        path = getPathFor(config, mapConfigMulPath);
+        blockCountX = config[mapConfigSizeX].as<unsigned int>();
+        blockCountY = config[mapConfigSizeY].as<unsigned int>();
+        if (config[mapConfigDifEnabled].as<bool>()) {
+            difOffsetsPath = getPathFor(config, mapConfigDifOffsetsPath);
+            difPath = getPathFor(config, mapConfigDifMulPath);
+            LOGARG_INFO(LOGTYPE_DATA, "Opening map%c from mul=%s, dif-offsets=%s, dif=%s, blockCountX=%u, blockCountY=%u", indexChar, path.string().c_str(), difOffsetsPath.string().c_str(), difPath.string().c_str(), blockCountX, blockCountY);
+            mapLoader_[index].reset(new MapLoader(path, difOffsetsPath, difPath, blockCountX, blockCountY));
+        } else {
+            LOGARG_INFO(LOGTYPE_DATA, "Opening map%c from mul=%s, difs disabled, blockCountX=%u, blockCountY=%u", indexChar, path.string().c_str(), blockCountX, blockCountY);
+            mapLoader_[index].reset(new MapLoader(path, blockCountX, blockCountY));
+        }
+
+        if (!fallbackMapLoader_.get()) {
+            fallbackMapLoader_ = mapLoader_[index];
+        }
+
+        idxPath = getPathFor(config, staticsConfigIdxPath);
+        path = getPathFor(config, staticsConfigMulPath);
+        if (config[staticsConfigDifEnabled].as<bool>()) {
+            difOffsetsPath = getPathFor(config, staticsConfigDifOffsetsPath);
+            difIdxPath = getPathFor(config, staticsConfigDifIdxPath);
+            difPath = getPathFor(config, staticsConfigDifMulPath);
+            LOGARG_INFO(LOGTYPE_DATA, "Opening statics%c from idx=%s, mul=%s, dif-offsets=%s, dif-idx=%s, dif=%s",
+                    indexChar, idxPath.string().c_str(), path.string().c_str(),
+                    difOffsetsPath.string().c_str(), difIdxPath.string().c_str(), difPath.string().c_str());
+            staticsLoader_[index].reset(new StaticsLoader(idxPath, path, difOffsetsPath, difIdxPath, difPath, blockCountX, blockCountY));
+        } else {
+            LOGARG_INFO(LOGTYPE_DATA, "Opening statics%c from idx=%s, mul=%s, difs disabled,", indexChar, idxPath.string().c_str(), path.string().c_str());
+            staticsLoader_[index].reset(new StaticsLoader(idxPath, path, blockCountX, blockCountY));
+        }
+
+        if (!fallbackStaticsLoader_.get()) {
+            fallbackStaticsLoader_ = staticsLoader_[index];
+        }
+    }
+
+    free(mapConfigEnabled);
+    free(mapConfigMulPath);
+    free(mapConfigSizeX);
+    free(mapConfigSizeY);
+    free(mapConfigDifEnabled);
+    free(mapConfigDifOffsetsPath);
+    free(mapConfigDifMulPath);
+    free(staticsConfigIdxPath);
+    free(staticsConfigMulPath);
+    free(staticsConfigDifEnabled);
+    free(staticsConfigDifOffsetsPath);
+    free(staticsConfigDifIdxPath);
+    free(staticsConfigDifMulPath);
+
+
 }
 
 Manager::~Manager() {
@@ -95,6 +179,39 @@ boost::filesystem::path Manager::getPathFor(const boost::program_options::variab
     return path;
 }
 
+MapLoader* Manager::getMapLoader(unsigned int index) {
+    if (index > 4) {
+        LOGARG_WARN(LOGTYPE_DATA, "Trying to access map loader for map index %u", index);
+        index = 0;
+    }
+
+    Manager* sing = getSingleton();
+
+    MapLoader* ret = sing->mapLoader_[index].get();
+    if (sing->mapLoader_[index].get()) {
+        return ret;
+    } else {
+        LOGARG_WARN(LOGTYPE_DATA, "Trying to access uninitialized map index %u", index);
+        return sing->fallbackMapLoader_.get();
+    }
+}
+
+StaticsLoader* Manager::getStaticsLoader(unsigned int index) {
+    if (index > 4) {
+        LOGARG_WARN(LOGTYPE_DATA, "Trying to access statics loader for map index %u", index);
+        index = 0;
+    }
+
+    Manager* sing = getSingleton();
+
+    StaticsLoader* ret = sing->staticsLoader_[index].get();
+    if (sing->staticsLoader_[index].get()) {
+        return ret;
+    } else {
+        LOGARG_WARN(LOGTYPE_DATA, "Trying to access uninitialized statics index %u", index);
+        return sing->fallbackStaticsLoader_.get();
+    }
+}
 
 
 }

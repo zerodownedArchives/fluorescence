@@ -24,5 +24,25 @@ boost::shared_ptr<CL_Texture> Texture::getTexture() {
     return texture_;
 }
 
+unsigned int Texture::getWidth() {
+    if (texture_) {
+        return texture_->get_width();
+    } else if (pixelBuffer_) {
+        return pixelBuffer_->get_width();
+    } else {
+        return 0;
+    }
+}
+
+unsigned int Texture::getHeight() {
+    if (texture_) {
+        return texture_->get_height();
+    } else if (pixelBuffer_) {
+        return pixelBuffer_->get_height();
+    } else {
+        return 0;
+    }
+}
+
 }
 }
