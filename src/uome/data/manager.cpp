@@ -7,6 +7,7 @@
 #include "gumpartloader.hpp"
 #include "maploader.hpp"
 #include "staticsloader.hpp"
+#include "maptexloader.hpp"
 
 namespace uome {
 namespace data {
@@ -54,14 +55,19 @@ void Manager::init(const boost::program_options::variables_map& config) {
     LOGARG_INFO(LOGTYPE_DATA, "Opening tiledata from %s", path.string().c_str());
     tileDataLoader_.reset(new TileDataLoader(path));
 
+    path = getPathFor(config, "files.hues-mul");
+    LOGARG_INFO(LOGTYPE_DATA, "Opening hues from %s", path.string().c_str());
+    huesLoader_.reset(new HuesLoader(path));
+
+    idxPath = getPathFor(config, "files.maptex-idx");
+    path = getPathFor(config, "files.maptex-mul");
+    LOGARG_INFO(LOGTYPE_DATA, "Opening maptex from idx=%s mul=%s", idxPath.string().c_str(), path.string().c_str());
+    mapTexLoader_.reset(new MapTexLoader(idxPath, path));
+
     idxPath = getPathFor(config, "files.art-idx");
     path = getPathFor(config, "files.art-mul");
     LOGARG_INFO(LOGTYPE_DATA, "Opening art from idx=%s mul=%s", idxPath.string().c_str(), path.string().c_str());
     artLoader_.reset(new ArtLoader(idxPath, path));
-
-    path = getPathFor(config, "files.hues-mul");
-    LOGARG_INFO(LOGTYPE_DATA, "Opening hues from %s", path.string().c_str());
-    huesLoader_.reset(new HuesLoader(path));
 
     idxPath = getPathFor(config, "files.gumpart-idx");
     path = getPathFor(config, "files.gumpart-mul");

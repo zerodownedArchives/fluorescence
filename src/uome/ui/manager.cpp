@@ -73,5 +73,9 @@ boost::shared_ptr<CL_Texture> Manager::provideTexture(unsigned int width, unsign
     return boost::shared_ptr<CL_Texture>(new CL_Texture(getGC(), width, height, cl_rgb8));
 }
 
+RenderQueue* Manager::getRenderQueue() {
+    return &renderQueue_;
+}
+
 }
 }

@@ -1,6 +1,8 @@
 
 #include "ingameobject.hpp"
 
+#include <ui/manager.hpp>
+
 namespace uome {
 namespace world {
 
@@ -8,6 +10,11 @@ IngameObject::IngameObject() : visible_(false), renderDataValid_(false) {
     for (unsigned int i = 0; i < 6; ++i) {
         renderPriority_[i] = 0;
     }
+}
+
+IngameObject::~IngameObject() {
+    // remove from render queue is first action in dtor
+    ui::Manager::getSingleton()->getRenderQueue()->remove(this);
 }
 
 void IngameObject::setLocation(int locX, int locY, int locZ) {
@@ -43,6 +50,13 @@ void IngameObject::updateRenderData() {
     updateRenderPriority();
 
     renderDataValid_ = true;
+
+    // the rendering order might have been changed
+    ui::Manager::getSingleton()->getRenderQueue()->requireSort();
+}
+
+void IngameObject::addToRenderQueue() {
+    ui::Manager::getSingleton()->getRenderQueue()->add(this);
 }
 
 }

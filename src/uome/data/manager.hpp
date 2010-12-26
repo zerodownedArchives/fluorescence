@@ -16,6 +16,7 @@ class HuesLoader;
 class GumpArtLoader;
 class MapLoader;
 class StaticsLoader;
+class MapTexLoader;
 
 class Manager {
 public:
@@ -30,6 +31,7 @@ public:
     static GumpArtLoader* getGumpArtLoader() { return getSingleton()->gumpArtLoader_.get(); }
     static MapLoader* getMapLoader(unsigned int index);
     static StaticsLoader* getStaticsLoader(unsigned int index);
+    static MapTexLoader* getMapTexLoader() { return getSingleton()->mapTexLoader_.get(); }
 
 private:
     static Manager* singleton_;
@@ -45,6 +47,7 @@ private:
     boost::shared_ptr<TileDataLoader> tileDataLoader_;
     boost::shared_ptr<HuesLoader> huesLoader_;
     boost::shared_ptr<GumpArtLoader> gumpArtLoader_;
+    boost::shared_ptr<MapTexLoader> mapTexLoader_;
 
     boost::shared_ptr<MapLoader> mapLoader_[5];
     boost::shared_ptr<MapLoader> fallbackMapLoader_;

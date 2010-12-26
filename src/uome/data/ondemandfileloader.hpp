@@ -32,7 +32,7 @@ public:
 
     typedef boost::function<void (unsigned int, int8_t*, unsigned int, boost::shared_ptr<ValueType>, unsigned int, unsigned int)> ReadCallback;
 
-    OnDemandFileLoader(const boost::filesystem::path& path, ReadCallback readCallback) : readCallback_(readCallback) {
+    OnDemandFileLoader(const boost::filesystem::path& path, ReadCallback readCallback) : path_(path), readCallback_(readCallback) {
         if (!boost::filesystem::exists(path) || !boost::filesystem::is_regular_file(path)) {
             throw Exception("File not found");
         }
@@ -127,9 +127,14 @@ private:
                 }
             }
 
+            if (next.offset_ == 0xFFFFFFFFu) {
+                // skip this. could be e.g. a static block with no data
+                continue;
+            }
+
             // trying to read out of file bounds
             if (next.offset_ > fileSize_ || (next.offset_ + next.readLen_) > fileSize_) {
-                LOG_WARN(LOGTYPE_DATA, "Trying to read out of file bounds\n");
+                LOGARG_WARN(LOGTYPE_DATA, "Trying to read out of file bounds in file %s, size=%u start=%u len=%u\n", path_.file_string().c_str(), fileSize_, next.offset_, next.readLen_);
                 continue;
             }
 
@@ -149,6 +154,8 @@ private:
             next.item_->setReadComplete();
         }
     }
+
+    boost::filesystem::path path_;
 
     boost::thread* ioThread_;
     bool running_;

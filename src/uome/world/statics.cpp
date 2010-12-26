@@ -22,6 +22,8 @@ void StaticItem::set(int locX, int locY, int locZ, unsigned int artId, unsigned 
     texture_ = data::Manager::getArtLoader()->getItemTexture(artId_);
 
     setLocation(locX, locY, locZ);
+
+    addToRenderQueue();
 }
 
 void StaticItem::updateVertexCoordinates() {

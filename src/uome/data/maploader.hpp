@@ -24,6 +24,7 @@ public:
     void readCallbackDifOffsets(int8_t* buf, unsigned int len);
 
     boost::shared_ptr<world::MapBlock> get(unsigned int x, unsigned int y);
+    boost::shared_ptr<world::MapBlock> getNoCreate(unsigned int x, unsigned int y);
 
 
 private:
@@ -37,6 +38,8 @@ private:
     unsigned int blockCountY_;
 
     bool difEnabled_;
+
+    void setSurroundingZ(boost::shared_ptr<world::MapBlock> item, int8_t zValues[][11]);
 };
 
 }

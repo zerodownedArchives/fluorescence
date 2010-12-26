@@ -14,6 +14,7 @@ class Sector;
 class IngameObject {
 public:
     IngameObject();
+    ~IngameObject();
 
     int getLocX() const { return location_[0u]; }
     int getLocY() const { return location_[1u]; }
@@ -45,6 +46,8 @@ protected:
     bool renderDataValid_; ///< wheter or not the vertex positions and render priorities are correct
     CL_Vec2f vertexCoordinates_[6];
     int renderPriority_[6];
+
+    void addToRenderQueue();
 };
 
 }

@@ -16,10 +16,10 @@ ArtLoader::ArtLoader(const boost::filesystem::path& idxPath, const boost::filesy
 }
 
 boost::shared_ptr<ui::Texture> ArtLoader::getMapTexture(unsigned int id) {
-    if (id > 0x4000) {
-        LOGARG_WARN(LOGTYPE_DATA, "Trying to load too high map tile texture %u", id);
-        id = 0;
-    }
+    //if (id > 0x4000) {
+        //LOGARG_WARN(LOGTYPE_DATA, "Trying to load too high map tile texture %u", id);
+        //id = 0;
+    //}
 
     return cache_.get(id);
 }

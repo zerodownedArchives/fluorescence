@@ -58,9 +58,9 @@ void TileDataLoader::read(int8_t* buf, unsigned int len) {
 
         landTileInfos_[i].flags_ = *(reinterpret_cast<uint32_t*>(ptr));
         ptr += 4;
-        landTileInfos_[i].textureId_ = *(reinterpret_cast<uint16_t*>(buf + 4));
+        landTileInfos_[i].textureId_ = *(reinterpret_cast<uint16_t*>(ptr));
         ptr += 2;
-        landTileInfos_[i].name_ = StringConverter::fromUtf8(reinterpret_cast<char*>(buf + 6), 20);
+        landTileInfos_[i].name_ = StringConverter::fromUtf8(reinterpret_cast<char*>(ptr), 20);
         ptr += 20;
     }
 

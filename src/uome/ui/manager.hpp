@@ -9,6 +9,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options.hpp>
 
+#include "renderqueue.hpp"
+
 namespace uome {
 namespace ui {
 
@@ -25,6 +27,8 @@ public:
 
     boost::shared_ptr<CL_Texture> provideTexture(unsigned int width, unsigned int height);
 
+    RenderQueue* getRenderQueue();
+
 private:
     static Manager* singleton_;
 
@@ -38,6 +42,8 @@ private:
     CL_SetupGL clSetupGL_;
 
     CL_DisplayWindow* window_;
+
+    RenderQueue renderQueue_;
 };
 
 }

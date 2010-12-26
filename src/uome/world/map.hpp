@@ -19,6 +19,7 @@ class MapTile : public IngameObject {
 friend class data::MapLoader;
 
 public:
+    MapTile();
     virtual boost::shared_ptr<ui::Texture> getIngameTexture() const;
 
 private:
@@ -30,8 +31,16 @@ private:
 
     void set(int locX, int locY, int locZ, unsigned int artId);
 
+    int zLeft_;
+    int zRight_;
+    int zBottom_;
+    void setRightZ(int right);
+    void setSurroundingZ(int left, int right, int bottom);
+
     virtual void updateVertexCoordinates();
     virtual void updateRenderPriority();
+
+    void setTexture();
 };
 
 class MapBlock : public data::OnDemandReadable {

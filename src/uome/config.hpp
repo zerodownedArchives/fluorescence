@@ -44,6 +44,8 @@ public:
         ("files.gumpart-mul", po::value<std::string>()->default_value("gumpart.mul"), "Location of gumpart.mul")
         ("files.hues-mul", po::value<std::string>()->default_value("hues.mul"), "Location of hues.mul")
         ("files.tiledata-mul", po::value<std::string>()->default_value("tiledata.mul"), "Location of tiledata.mul")
+        ("files.maptex-idx", po::value<std::string>()->default_value("texidx.mul"), "Location of texidx.mul")
+        ("files.maptex-mul", po::value<std::string>()->default_value("texmaps.mul"), "Location of texmaps.mul")
 
         ("files.map0-enabled", po::value<bool>()->default_value(true), "Wheter or not map0 is enabled")
         ("files.map0-mul", po::value<std::string>()->default_value("map0.mul"), "Location of map0.mul")
