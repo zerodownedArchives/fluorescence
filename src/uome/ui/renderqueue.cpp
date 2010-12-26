@@ -1,30 +1,28 @@
 
 #include "renderqueue.hpp"
 
+#include <logger.hpp>
 #include <world/ingameobject.hpp>
 
 namespace uome {
 namespace ui {
 
-class IngameComparator {
-public:
-// returns true, if a should be painted before b
-bool operator ()(const world::IngameObject* a, const world::IngameObject* b) {
+bool RenderQueue::renderPriorityComparator(const world::IngameObject* a, const world::IngameObject* b) {
     if (a->getRenderPriority(0) < b->getRenderPriority(0)) {
         return true;
     }
 
     for (int i=1; i < 6; ++i) {
-        if ( a->getRenderPriority(i-1) == b->getRenderPriority(i-1) ) {
-            if ( a->getRenderPriority(i) < b->getRenderPriority(i) )
+        if (a->getRenderPriority(i-1) == b->getRenderPriority(i-1)) {
+            if (a->getRenderPriority(i) < b->getRenderPriority(i)) {
                 return true;
+            }
         } else {
             return false;
         }
     }
     return false;
 }
-};
 
 RenderQueue::RenderQueue() : sorted_(true) {
 }
@@ -33,8 +31,8 @@ RenderQueue::~RenderQueue() {
 }
 
 void RenderQueue::add(world::IngameObject* obj) {
-    ingameList_.push_back(obj);
-    requireSort();
+    boost::mutex::scoped_lock myLock(ingameAddListMutex_);
+    ingameAddList_.push_back(obj);
 }
 
 void RenderQueue::remove(world::IngameObject* obj) {
@@ -45,9 +43,18 @@ void RenderQueue::requireSort() {
     sorted_ = false;
 }
 
-void RenderQueue::sort() {
+void RenderQueue::prepareRender() {
+    {
+        boost::mutex::scoped_lock myLock(ingameAddListMutex_);
+        if (!ingameAddList_.empty()) {
+            ingameList_.insert(ingameList_.end(), ingameAddList_.begin(), ingameAddList_.end());
+            ingameAddList_.clear();
+            sorted_ = false;
+        }
+    }
+
     if (!sorted_) {
-        ingameList_.sort(IngameComparator());
+        ingameList_.sort(renderPriorityComparator);
         sorted_ = true;
     }
 }

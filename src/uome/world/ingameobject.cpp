@@ -6,7 +6,7 @@
 namespace uome {
 namespace world {
 
-IngameObject::IngameObject() : visible_(false), renderDataValid_(false) {
+IngameObject::IngameObject() : visible_(true), renderDataValid_(false) {
     for (unsigned int i = 0; i < 6; ++i) {
         renderPriority_[i] = 0;
     }
@@ -57,6 +57,68 @@ void IngameObject::updateRenderData() {
 
 void IngameObject::addToRenderQueue() {
     ui::Manager::getSingleton()->getRenderQueue()->add(this);
+}
+
+bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {
+    // this code is not pretty. but as this function is called _very_ often, it is optimized a little
+    bool leftOk = false;
+    bool rightOk = false;
+    bool topOk = false;
+    bool bottomOk = false;
+
+    for (unsigned int i = 0; i < 6; ++i) {
+        if (vertexCoordinates_[i].x >= leftPixelCoord) {
+            leftOk = true;
+            break;
+        }
+    }
+
+    if (!leftOk) {
+        return false;
+    }
+
+    for (unsigned int i = 0; i < 6; ++i) {
+        if (vertexCoordinates_[i].x <= rightPixelCoord) {
+            rightOk = true;
+            break;
+        }
+    }
+
+    if (!rightOk) {
+        return false;
+    }
+
+    for (unsigned int i = 0; i < 6; ++i) {
+        if (vertexCoordinates_[i].y >= topPixelCoord) {
+            topOk = true;
+            break;
+        }
+    }
+
+    if (!topOk) {
+        return false;
+    }
+
+    for (unsigned int i = 0; i < 6; ++i) {
+        if (vertexCoordinates_[i].y <= bottomPixelCoord) {
+            bottomOk = true;
+            break;
+        }
+    }
+
+    return bottomOk;
+
+    // unoptimized code:
+
+    //for (unsigned int i = 0; i <6; ++i) {
+        //leftOk = leftOk || vertexCoordinates_[i].x >= leftPixelCoord;
+        //rightOk = rightOk || vertexCoordinates_[i].x <= rightPixelCoord;
+
+        //topOk = topOk || vertexCoordinates_[i].y >= topPixelCoord;
+        //bottomOk = bottomOk || vertexCoordinates_[i].y <= bottomPixelCoord;
+    //}
+
+    //return leftOk && rightOk && topOk && bottomOk;
 }
 
 }

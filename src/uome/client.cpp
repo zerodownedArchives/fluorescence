@@ -17,6 +17,9 @@
 #include <world/map.hpp>
 #include <world/statics.hpp>
 
+#include <iostream>
+#include <iomanip>
+
 namespace uome {
 
 Client::Client() {
@@ -75,8 +78,8 @@ int Client::main(const std::vector<CL_String8>& args) {
     timeval lastTime;
     gettimeofday(&lastTime, NULL);
 
-    float posOffsetX = 5000;
-    float posOffsetY = -66500;
+    int pixelOffsetX = -5000;
+    int pixelOffsetY = 66500;
 
     for (unsigned int i = 1; !ic.get_keyboard().get_keycode(CL_KEY_ESCAPE); ++i) {
         if (i % 50 == 0) {
@@ -89,24 +92,33 @@ int Client::main(const std::vector<CL_String8>& args) {
             float fps = diff / 50.0f;
             fps = 1/fps;
 
+            std::ostringstream titleHelper;
+            titleHelper << "UO:ME -- fps: " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << fps;
+            wnd->set_title(titleHelper.str());
             LOGARG_DEBUG(LOGTYPE_MAIN, "fps: %.1f", fps);
             lastTime = curTime;
         }
 
         if (ic.get_keyboard().get_keycode(CL_KEY_DOWN)) {
-            posOffsetY -= 50;
+            pixelOffsetY += 20;
         } else if (ic.get_keyboard().get_keycode(CL_KEY_UP)) {
-            posOffsetY += 50;
+            pixelOffsetY -= 20;
         }
 
         if (ic.get_keyboard().get_keycode(CL_KEY_LEFT)) {
-            posOffsetX += 50;
+            pixelOffsetX -= 20;
         } else if (ic.get_keyboard().get_keycode(CL_KEY_RIGHT)) {
-            posOffsetX -= 50;
+            pixelOffsetX += 20;
         }
 
-        gc.clear(CL_Colorf(0.0f, 0.0f, 0.0f));
+        int leftPixelCoord = pixelOffsetX;
+        int rightPixelCoord = pixelOffsetX + wnd->get_viewport().get_width();
+        int topPixelCoord = pixelOffsetY;
+        int bottomPixelCoord = pixelOffsetY + wnd->get_viewport().get_height();
+        CL_Vec2f pixelOffsetVec(pixelOffsetX, pixelOffsetY);
 
+
+        gc.clear(CL_Colorf(0.0f, 0.0f, 0.0f));
 
         gc.set_program_object(program, cl_program_matrix_modelview_projection);
 
@@ -122,97 +134,43 @@ int Client::main(const std::vector<CL_String8>& args) {
         };
 
         ui::RenderQueue* renderQueue = ui::Manager::getSingleton()->getRenderQueue();
-        renderQueue->sort();
+        renderQueue->prepareRender();
 
         std::list<world::IngameObject*>::iterator igIter = renderQueue->beginIngame();
         std::list<world::IngameObject*>::iterator igEnd = renderQueue->endIngame();
 
         for (; igIter != igEnd; ++igIter) {
             world::IngameObject* curObj = *igIter;
-            boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
-            if (tex->isReadComplete()) {
-                if (!curObj->isRenderDataValid()) {
-                    curObj->updateRenderData();
-                }
 
-                CL_PrimitivesArray primarray(gc);
-                primarray.set_attributes(0, curObj->getVertexCoordinates());
-                primarray.set_attributes(1, tex1_coords);
-                CL_Vec2f posOffset(posOffsetX, posOffsetY);
-                primarray.set_attribute(2, posOffset);
-
-                gc.set_texture(0, *(tex->getTexture()));
-                gc.draw_primitives(cl_triangles, 6, primarray);
-                //gc.reset_texture(0);
+            // object has invisible property set
+            if (!curObj->isVisible()) {
+                continue;
             }
+
+            // check if texture is ready to be drawn
+            boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
+            if (!tex->isReadComplete()) {
+                continue;
+            }
+
+            if (!curObj->isRenderDataValid()) {
+                curObj->updateRenderData();
+            }
+
+            // check if current object is in the area visible to the player
+            if (!curObj->isInDrawArea(leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord)) {
+                continue;
+            }
+
+            CL_PrimitivesArray primarray(gc);
+            primarray.set_attributes(0, curObj->getVertexCoordinates());
+            primarray.set_attributes(1, tex1_coords);
+            primarray.set_attribute(2, pixelOffsetVec);
+
+            gc.set_texture(0, *(tex->getTexture()));
+            gc.draw_primitives(cl_triangles, 6, primarray);
+            gc.reset_texture(0);
         }
-
-        //std::list<boost::shared_ptr<uome::world::Sector> >::iterator iter, end;
-        //iter = sectorList.begin();
-        //end = sectorList.end();
-        //for (iter = sectorList.begin(); iter != end; ++iter) {
-            //boost::shared_ptr<uome::world::Sector> sector = *iter;
-            //boost::shared_ptr<uome::world::MapBlock> mapBlock = sector->getMapBlock();
-            //boost::shared_ptr<uome::world::StaticBlock> staticBlock = sector->getStaticBlock();
-
-            //if (mapBlock->isReadComplete()) {
-                //for (unsigned int x = 0; x < 8; ++x) {
-                    //for (unsigned int y = 0; y < 8; ++y) {
-                        //world::MapTile* tile = mapBlock->get(x, y);
-                        //boost::shared_ptr<ui::Texture> tex = tile->getIngameTexture();
-                        //if (tex->isReadComplete()) {
-                            //if (!tile->isRenderDataValid()) {
-                                //tile->updateRenderData();
-                            //}
-
-                            //CL_PrimitivesArray primarray(gc);
-                            //primarray.set_attributes(0, tile->getVertexCoordinates());
-                            //primarray.set_attributes(1, tex1_coords);
-                            //CL_Vec2f posOffset(posOffsetX, posOffsetY);
-                            //primarray.set_attribute(2, posOffset);
-
-                            //gc.set_texture(0, *(tex->getTexture()));
-                            //gc.draw_primitives(cl_triangles, 6, primarray);
-                            ////gc.reset_texture(0);
-
-                            ////gc.draw_pixels(pxX, pxY, *(tex->getPixelBuffer()), CL_Rect(0, 0, 44, 44));
-                        //}
-                    //}
-                //}
-            //}
-
-
-            //if (staticBlock->isReadComplete()) {
-                //std::list<boost::shared_ptr<world::StaticItem> > lst = staticBlock->getItemList();
-                ////LOGARG_DEBUG(LOGTYPE_MAIN, "Item count in static list: %u", lst.size());
-
-                //std::list<boost::shared_ptr<world::StaticItem> >::iterator iter = lst.begin();
-                //std::list<boost::shared_ptr<world::StaticItem> >::iterator end = lst.end();
-                //for (; iter != end; ++iter) {
-                    //boost::shared_ptr<world::StaticItem> itm = *iter;
-                    //boost::shared_ptr<ui::Texture> tex = itm->getIngameTexture();
-
-                    //if (tex->isReadComplete()) {
-                        //if (!itm->isRenderDataValid()) {
-                            //itm->updateRenderData();
-                        //}
-
-                        //CL_PrimitivesArray primarray(gc);
-                        //primarray.set_attributes(0, itm->getVertexCoordinates());
-                        //primarray.set_attributes(1, tex1_coords);
-                        //CL_Vec2f posOffset(posOffsetX, posOffsetY);
-                        //primarray.set_attribute(2, posOffset);
-
-                        //gc.set_texture(0, *(tex->getTexture()));
-                        //gc.draw_primitives(cl_triangles, 6, primarray);
-                        ////gc.reset_texture(0);
-
-                        ////gc.draw_pixels(pxX, pxY, *(tex->getPixelBuffer()), CL_Rectf(pxX, pxY, tex->getWidth(), tex->getHeight()));
-                        ////CL_Draw::texture(gc, *(tex->getTexture()), CL_Rectf(0, 0, tex->getWidth(), tex->getHeight()));
-                    //}
-                //}
-            //}
-        //}
 
         gc.reset_program_object();
 

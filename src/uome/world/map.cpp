@@ -41,6 +41,11 @@ void MapTile::updateVertexCoordinates() {
         vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
         vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
         vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+
+        //LOG_DEBUG(LOGTYPE_UI, "Pixel coords:");
+        //for (unsigned int i = 0; i < 6; ++i) {
+            //LOGARG_DEBUG(LOGTYPE_UI, "%u [ %.0f %.0f ]", i, vertexCoordinates_[i].x, vertexCoordinates_[i].y);
+        //}
     } else {
         // stretched texture
         vertexCoordinates_[0] = CL_Vec2f(px + 22,   py - getLocZ() * 4);
@@ -54,7 +59,9 @@ void MapTile::updateVertexCoordinates() {
 
 void MapTile::updateRenderPriority() {
     renderPriority_[0] = getLocX() + getLocY();
-    renderPriority_[1] = getLocZ();
+
+    // TODO: is this a good idea? could be a problem with static items below the map...
+    //renderPriority_[1] = getLocZ();
 }
 
 void MapTile::setRightZ(int right) {
@@ -65,10 +72,6 @@ void MapTile::setSurroundingZ(int left, int right, int bottom) {
     zLeft_ = left;
     zRight_ = right;
     zBottom_ = bottom;
-
-    if (artId_ == 0xFFFFFFFFu || artId_ == 0xAAAAAAAAu) {
-        LOGARG_INFO(LOGTYPE_DATA, "Strange map art id=%x, tex=%i", artId_, tileDataInfo_->textureId_);
-    }
 
     bool textureWasNull = (texture_.get() == NULL);
 

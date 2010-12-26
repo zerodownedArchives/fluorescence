@@ -36,6 +36,9 @@ public:
     int getRenderPriority(unsigned int lvl) const;
     virtual void updateRenderPriority() = 0;
 
+    /// returns wheter or not this item is currently in the drawing area of the game window
+    bool isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const;
+
 protected:
     CL_Vec3<int> location_;
 

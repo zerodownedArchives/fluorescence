@@ -8,8 +8,8 @@ uniform mat4 cl_ModelViewProjectionMatrix;
 varying vec2 TexCoord;
 
 void main(void) {
-	Position.x += PositionOffset.x;
-	Position.y += PositionOffset.y;
+	Position.x -= PositionOffset.x;
+	Position.y -= PositionOffset.y;
 	
 	gl_Position = cl_ModelViewProjectionMatrix * Position;
 	
