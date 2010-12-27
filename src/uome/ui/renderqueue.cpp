@@ -24,7 +24,8 @@ bool RenderQueue::renderPriorityComparator(const world::IngameObject* a, const w
     return false;
 }
 
-RenderQueue::RenderQueue() : sorted_(true) {
+RenderQueue::RenderQueue() :
+    sorted_(true) {
 }
 
 RenderQueue::~RenderQueue() {
@@ -37,6 +38,8 @@ void RenderQueue::add(world::IngameObject* obj) {
 
 void RenderQueue::remove(world::IngameObject* obj) {
     ingameList_.remove(obj);
+    boost::mutex::scoped_lock myLock(ingameAddListMutex_);
+    ingameAddList_.remove(obj);
 }
 
 void RenderQueue::requireSort() {

@@ -20,7 +20,7 @@ void MapTile::set(int locX, int locY, int locZ, unsigned int artId) {
     artId_ = artId;
     tileDataInfo_ = data::Manager::getTileDataLoader()->getLandTileInfo(artId_);
 
-    // texture is not set here, but after setting the surrounding z values
+    // texture is not set here, but in updateTexture
 
     setLocation(locX, locY, locZ);
 }
@@ -60,8 +60,15 @@ void MapTile::updateVertexCoordinates() {
 void MapTile::updateRenderPriority() {
     renderPriority_[0] = getLocX() + getLocY();
 
-    // TODO: is this a good idea? could be a problem with static items below the map...
-    //renderPriority_[1] = getLocZ();
+    renderPriority_[1] = getLocZ();
+}
+
+void MapTile::updateTextureProvider() {
+    if ((zLeft_ == zRight_ && zLeft_ == zBottom_ && zLeft_ == getLocZ()) || tileDataInfo_->textureId_ < 0) {
+        texture_ = data::Manager::getArtLoader()->getMapTexture(artId_);
+    } else {
+        texture_ = data::Manager::getMapTexLoader()->get(tileDataInfo_->textureId_);
+    }
 }
 
 void MapTile::setRightZ(int right) {
@@ -73,18 +80,10 @@ void MapTile::setSurroundingZ(int left, int right, int bottom) {
     zRight_ = right;
     zBottom_ = bottom;
 
-    bool textureWasNull = (texture_.get() == NULL);
-
-    if ((zLeft_ == zRight_ && zLeft_ == zBottom_ && zLeft_ == getLocZ()) || tileDataInfo_->textureId_ < 0) {
-        texture_ = data::Manager::getArtLoader()->getMapTexture(artId_);
-    } else {
-        texture_ = data::Manager::getMapTexLoader()->get(tileDataInfo_->textureId_);
-    }
-
     invalidateRenderData();
 
     // if the tile got a texture for the first time, we can finally add it to the render queue
-    if (textureWasNull) {
+    if (texture_.get() == NULL) {
         addToRenderQueue();
     }
 }

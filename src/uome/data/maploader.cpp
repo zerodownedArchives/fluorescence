@@ -96,7 +96,7 @@ void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item, int8_t 
             }
 
             blocks[i+1][j+1] = getNoCreate(idxX, idxY);
-            blocksLoaded[i+1][j+1] = blocks[i+1][j+1].get() != NULL;
+            blocksLoaded[i+1][j+1] = blocks[i+1][j+1].get() != NULL && blocks[i+1][j+1]->isReadComplete();
         }
     }
 

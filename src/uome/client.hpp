@@ -9,6 +9,10 @@
 
 namespace uome {
 
+namespace world {
+    class Sector;
+}
+
 class Client {
 public:
     Client();
@@ -18,6 +22,8 @@ public:
 
 private:
     boost::program_options::variables_map config_;
+
+    static bool checkSectorRemove(const boost::shared_ptr<world::Sector>& ptr);
 };
 
 }

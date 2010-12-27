@@ -19,9 +19,10 @@ void StaticItem::set(int locX, int locY, int locZ, unsigned int artId, unsigned 
     artId_ = artId;
     hue_ = hue;
     tileDataInfo_ = data::Manager::getTileDataLoader()->getStaticTileInfo(artId_);
-    texture_ = data::Manager::getArtLoader()->getItemTexture(artId_);
 
     setLocation(locX, locY, locZ);
+
+    texture_ = data::Manager::getArtLoader()->getItemTexture(artId_);
 
     addToRenderQueue();
 }
@@ -69,6 +70,10 @@ void StaticItem::updateRenderPriority() {
 
     // level 4 index in statics file
     renderPriority_[4] = indexInBlock_;
+}
+
+void StaticItem::updateTextureProvider() {
+    texture_ = data::Manager::getArtLoader()->getItemTexture(artId_);
 }
 
 std::list<boost::shared_ptr<StaticItem> >& StaticBlock::getItemList() {

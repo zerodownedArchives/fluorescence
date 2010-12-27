@@ -31,6 +31,7 @@ public:
 
     void updateVertexCoordinates();
     void updateRenderPriority();
+    void updateTextureProvider();
 
 private:
     unsigned int artId_;

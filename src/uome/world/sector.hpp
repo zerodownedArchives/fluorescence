@@ -19,6 +19,7 @@ class Sector {
 
 public:
     Sector(unsigned int id, unsigned int locX, unsigned int locY);
+    ~Sector();
 
     int getLocX() { return location_[0u]; }
     int getLocY() { return location_[1u]; }

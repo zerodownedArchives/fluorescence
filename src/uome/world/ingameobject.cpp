@@ -2,6 +2,8 @@
 #include "ingameobject.hpp"
 
 #include <ui/manager.hpp>
+#include <ui/renderer.hpp>
+#include <ui/renderqueue.hpp>
 
 namespace uome {
 namespace world {
@@ -14,7 +16,7 @@ IngameObject::IngameObject() : visible_(true), renderDataValid_(false) {
 
 IngameObject::~IngameObject() {
     // remove from render queue is first action in dtor
-    ui::Manager::getSingleton()->getRenderQueue()->remove(this);
+    removeFromRenderQueue();
 }
 
 void IngameObject::setLocation(int locX, int locY, int locZ) {
@@ -46,17 +48,22 @@ int IngameObject::getRenderPriority(unsigned int lvl) const {
 }
 
 void IngameObject::updateRenderData() {
+    updateTextureProvider();
     updateVertexCoordinates();
     updateRenderPriority();
 
     renderDataValid_ = true;
 
     // the rendering order might have been changed
-    ui::Manager::getSingleton()->getRenderQueue()->requireSort();
+    ui::Manager::getSingleton()->getRenderer()->getRenderQueue()->requireSort();
 }
 
 void IngameObject::addToRenderQueue() {
-    ui::Manager::getSingleton()->getRenderQueue()->add(this);
+    ui::Manager::getSingleton()->getRenderer()->getRenderQueue()->add(this);
+}
+
+void IngameObject::removeFromRenderQueue() {
+    ui::Manager::getSingleton()->getRenderer()->getRenderQueue()->remove(this);
 }
 
 bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {

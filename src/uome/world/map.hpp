@@ -39,6 +39,7 @@ private:
 
     virtual void updateVertexCoordinates();
     virtual void updateRenderPriority();
+    virtual void updateTextureProvider();
 
     void setTexture();
 };

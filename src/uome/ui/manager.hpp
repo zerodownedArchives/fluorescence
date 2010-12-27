@@ -9,7 +9,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options.hpp>
 
-#include "renderqueue.hpp"
+#include "renderer.hpp"
 
 namespace uome {
 namespace ui {
@@ -19,7 +19,7 @@ public:
     static bool create(const boost::program_options::variables_map& config);
     static Manager* getSingleton();
 
-    CL_DisplayWindow* getWindow();
+    boost::shared_ptr<CL_DisplayWindow> getWindow();
 
     CL_GraphicContext& getGC();
 
@@ -27,7 +27,7 @@ public:
 
     boost::shared_ptr<CL_Texture> provideTexture(unsigned int width, unsigned int height);
 
-    RenderQueue* getRenderQueue();
+    boost::shared_ptr<Renderer> getRenderer();
 
 private:
     static Manager* singleton_;
@@ -37,13 +37,9 @@ private:
     Manager(const Manager& copy) { }
     void operator=(const Manager& copy) { }
 
-    CL_SetupCore clSetupCore_;
-    CL_SetupDisplay clSetupDisplay_;
-    CL_SetupGL clSetupGL_;
+    boost::shared_ptr<CL_DisplayWindow> window_;
 
-    CL_DisplayWindow* window_;
-
-    RenderQueue renderQueue_;
+    boost::shared_ptr<Renderer> renderer_;
 };
 
 }

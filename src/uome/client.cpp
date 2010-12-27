@@ -4,7 +4,6 @@
 #include "config.hpp"
 
 #include <ui/manager.hpp>
-#include <ui/texture.hpp>
 
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
@@ -30,8 +29,8 @@ int Client::sMain(const std::vector<CL_String8>& args) {
     return instance.main(args);
 }
 
-void printUint(unsigned int i) {
-    printf("printUint: %u\n", i);
+bool Client::checkSectorRemove(const boost::shared_ptr<uome::world::Sector>& ptr) {
+    return false;//(ptr->getLocX() + ptr->getLocY()) % 3 == 0;
 }
 
 int Client::main(const std::vector<CL_String8>& args) {
@@ -54,25 +53,14 @@ int Client::main(const std::vector<CL_String8>& args) {
     }
 
 
-    CL_DisplayWindow* wnd = uome::ui::Manager::getSingleton()->getWindow();
+    boost::shared_ptr<CL_DisplayWindow> wnd = uome::ui::Manager::getSingleton()->getWindow();
 
 
     std::list<boost::shared_ptr<uome::world::Sector> > sectorList;
-    for (unsigned int j = 200; j < 210; ++j) {
-        for (unsigned int i = 170; i < 180; ++i) {
-            sectorList.push_back(boost::shared_ptr<uome::world::Sector>(new uome::world::Sector(i * 512 + j, i, j)));
-        }
-    }
 
-    CL_GraphicContext gc = uome::ui::Manager::getSingleton()->getGC();
+
+
     CL_InputContext ic = uome::ui::Manager::getSingleton()->getIC();
-
-
-    CL_ProgramObject program = CL_ProgramObject::load(gc, "../shader/vertex.glsl", "../shader/fragment.glsl");
-    program.bind_attribute_location(0, "Position");
-    program.bind_attribute_location(1, "TexCoord0");
-    if (!program.link())
-        throw CL_Exception("Unable to link program");
 
 
     timeval lastTime;
@@ -82,6 +70,33 @@ int Client::main(const std::vector<CL_String8>& args) {
     int pixelOffsetY = 66500;
 
     for (unsigned int i = 1; !ic.get_keyboard().get_keycode(CL_KEY_ESCAPE); ++i) {
+        if (i == 1) {
+            for (unsigned int l = 200; l < 204; ++l) {
+                for (unsigned int m = 170; m < 180; ++m) {
+                    boost::shared_ptr<uome::world::Sector> newSec(new uome::world::Sector(m * 512 + l, m, l));
+                    sectorList.push_back(newSec);
+                }
+            }
+        }
+
+        if (i == 1000) { // ~ 7 sec
+            for (unsigned int l = 204; l < 207; ++l) {
+                for (unsigned int m = 173; m < 177; ++m) {
+                    boost::shared_ptr<uome::world::Sector> newSec(new uome::world::Sector(m * 512 + l, m, l));
+                    sectorList.push_back(newSec);
+                }
+            }
+        }
+
+        if (i == 1500) { // ~ 7 sec
+            for (unsigned int l = 207; l < 210; ++l) {
+                for (unsigned int m = 170; m < 180; ++m) {
+                    boost::shared_ptr<uome::world::Sector> newSec(new uome::world::Sector(m * 512 + l, m, l));
+                    sectorList.push_back(newSec);
+                }
+            }
+        }
+
         if (i % 50 == 0) {
             timeval curTime;
             gettimeofday(&curTime, NULL);
@@ -96,7 +111,7 @@ int Client::main(const std::vector<CL_String8>& args) {
             titleHelper << "UO:ME -- fps: " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << fps;
             wnd->set_title(titleHelper.str());
             LOGARG_DEBUG(LOGTYPE_MAIN, "fps: %.1f", fps);
-            lastTime = curTime;
+             lastTime = curTime;
         }
 
         if (ic.get_keyboard().get_keycode(CL_KEY_DOWN)) {
@@ -115,66 +130,24 @@ int Client::main(const std::vector<CL_String8>& args) {
         int rightPixelCoord = pixelOffsetX + wnd->get_viewport().get_width();
         int topPixelCoord = pixelOffsetY;
         int bottomPixelCoord = pixelOffsetY + wnd->get_viewport().get_height();
-        CL_Vec2f pixelOffsetVec(pixelOffsetX, pixelOffsetY);
 
+        int sectorOffsetY = -(pixelOffsetX - pixelOffsetY)/44;
+        int sectorOffsetX = pixelOffsetX/22 + sectorOffsetY;
 
-        gc.clear(CL_Colorf(0.0f, 0.0f, 0.0f));
+        sectorOffsetY /= 8;
+        sectorOffsetX /= 8;
 
-        gc.set_program_object(program, cl_program_matrix_modelview_projection);
-
-        CL_Rectf texture_unit1_coords(0.0f, 0.0f, 1.0f, 1.0f);
-
-        CL_Vec2f tex1_coords[6] = {
-            CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.top),
-            CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-            CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-            CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-            CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-            CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom)
-        };
-
-        ui::RenderQueue* renderQueue = ui::Manager::getSingleton()->getRenderQueue();
-        renderQueue->prepareRender();
-
-        std::list<world::IngameObject*>::iterator igIter = renderQueue->beginIngame();
-        std::list<world::IngameObject*>::iterator igEnd = renderQueue->endIngame();
-
-        for (; igIter != igEnd; ++igIter) {
-            world::IngameObject* curObj = *igIter;
-
-            // object has invisible property set
-            if (!curObj->isVisible()) {
-                continue;
-            }
-
-            // check if texture is ready to be drawn
-            boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
-            if (!tex->isReadComplete()) {
-                continue;
-            }
-
-            if (!curObj->isRenderDataValid()) {
-                curObj->updateRenderData();
-            }
-
-            // check if current object is in the area visible to the player
-            if (!curObj->isInDrawArea(leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord)) {
-                continue;
-            }
-
-            CL_PrimitivesArray primarray(gc);
-            primarray.set_attributes(0, curObj->getVertexCoordinates());
-            primarray.set_attributes(1, tex1_coords);
-            primarray.set_attribute(2, pixelOffsetVec);
-
-            gc.set_texture(0, *(tex->getTexture()));
-            gc.draw_primitives(cl_triangles, 6, primarray);
-            gc.reset_texture(0);
+        // remove sectors no longer used
+        if (i == 2000) {
+            sectorList.remove_if(checkSectorRemove);
         }
 
-        gc.reset_program_object();
-
+        // call renderer
+        boost::shared_ptr<ui::Renderer> renderer = ui::Manager::getSingleton()->getRenderer();
+        renderer->setIngameClipping(leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord);
+        renderer->renderOneFrame();
         wnd->flip();
+
         CL_KeepAlive::process();
         //CL_System::sleep(10);
     }

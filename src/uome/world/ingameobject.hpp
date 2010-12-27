@@ -28,7 +28,9 @@ public:
 
     bool isRenderDataValid() const;
     void invalidateRenderData();
-    void updateRenderData(); ///< calls updateVertexCoordinates and updateRenderPriority
+    void updateRenderData(); ///< calls updateVertexCoordinates, updateRenderPriority and updateTexture
+
+    virtual void updateTextureProvider() = 0;
 
     const CL_Vec2f* getVertexCoordinates() const;
     virtual void updateVertexCoordinates() = 0;
@@ -51,6 +53,7 @@ protected:
     int renderPriority_[6];
 
     void addToRenderQueue();
+    void removeFromRenderQueue();
 };
 
 }

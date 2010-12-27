@@ -30,51 +30,40 @@ Manager* Manager::getSingleton() {
     return singleton_;
 }
 
-Manager::Manager(const boost::program_options::variables_map& config) :
-        window_(NULL) {
+Manager::Manager(const boost::program_options::variables_map& config) {
+    CL_SetupCore clSetupCore_;
+    CL_SetupDisplay clSetupDisplay_;
+    CL_SetupGL clSetupGL_;
+
+    CL_OpenGLWindowDescription description;
+    description.set_size(CL_Size(800, 600), true);
+    description.set_title("UO:ME");
+
+    window_ = boost::shared_ptr<CL_DisplayWindow>(new CL_DisplayWindow(description));
+    renderer_ = boost::shared_ptr<Renderer>(new Renderer(getGC()));
 }
 
 Manager::~Manager() {
-    if (window_) {
-        delete window_;
-        window_ = NULL;
-    }
 }
 
-CL_DisplayWindow* Manager::getWindow() {
-    if (!window_) {
-        CL_OpenGLWindowDescription description;
-        description.set_size(CL_Size(800, 600), true);
-        description.set_title("UO:ME");
-
-        window_ = new CL_DisplayWindow(description);
-    }
-
+boost::shared_ptr<CL_DisplayWindow> Manager::getWindow() {
     return window_;
 }
 
 CL_GraphicContext& Manager::getGC() {
-    if (window_) {
-        return window_->get_gc();
-    }
-
-    throw Exception("Trying to retrieve GraphicContext before window is initialized");
+    return window_->get_gc();
 }
 
 CL_InputContext& Manager::getIC() {
-    if (window_) {
-        return window_->get_ic();
-    }
-
-    throw Exception("Trying to retrieve InputContext before window is initialized");
+    return window_->get_ic();
 }
 
 boost::shared_ptr<CL_Texture> Manager::provideTexture(unsigned int width, unsigned int height) {
     return boost::shared_ptr<CL_Texture>(new CL_Texture(getGC(), width, height, cl_rgb8));
 }
 
-RenderQueue* Manager::getRenderQueue() {
-    return &renderQueue_;
+boost::shared_ptr<Renderer> Manager::getRenderer() {
+    return renderer_;
 }
 
 }
