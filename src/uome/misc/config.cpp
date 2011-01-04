@@ -116,6 +116,8 @@ bool Config::getVariablesMap(const std::vector<CL_String8>& args, boost::program
 
 
     ("world.sector-check-frequency", po::value<unsigned int>()->default_value(30), "After X frames, sectors will be checked for load/delete")
+    ("world.sector-add-distance", po::value<unsigned int>()->default_value(5), "Sectors closer than this are added")
+    ("world.sector-remove-distance", po::value<unsigned int>()->default_value(6), "Sectors farther away than this are removed. Should be > world.sector-add-distance")
     ;
 
     desc.add(filesDesc);
