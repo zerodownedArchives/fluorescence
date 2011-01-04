@@ -1,6 +1,9 @@
 
 #include "manager.hpp"
 
+#include "ingamewindow.hpp"
+#include "renderqueue.hpp"
+
 #include <logger.hpp>
 #include <exception.hpp>
 
@@ -37,10 +40,11 @@ Manager::Manager(const boost::program_options::variables_map& config) {
 
     CL_OpenGLWindowDescription description;
     description.set_size(CL_Size(800, 600), true);
-    description.set_title("UO:ME");
+    description.set_title("UO:ME -- 0 fps");
 
-    window_ = boost::shared_ptr<CL_DisplayWindow>(new CL_DisplayWindow(description));
-    renderer_ = boost::shared_ptr<Renderer>(new Renderer(getGC()));
+    window_.reset(new CL_DisplayWindow(description));
+
+    renderQueue_.reset(new RenderQueue());
 }
 
 Manager::~Manager() {
@@ -62,8 +66,16 @@ boost::shared_ptr<CL_Texture> Manager::provideTexture(unsigned int width, unsign
     return boost::shared_ptr<CL_Texture>(new CL_Texture(getGC(), width, height, cl_rgb8));
 }
 
-boost::shared_ptr<Renderer> Manager::getRenderer() {
-    return renderer_;
+boost::shared_ptr<IngameWindow> Manager::getIngameWindow() {
+    if (ingameWindow_.get() == NULL) {
+        ingameWindow_.reset(new IngameWindow(800, 600));
+    }
+
+    return ingameWindow_;
+}
+
+boost::shared_ptr<RenderQueue> Manager::getRenderQueue() {
+    return renderQueue_;
 }
 
 }

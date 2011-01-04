@@ -4,6 +4,7 @@
 #include "config.hpp"
 
 #include <ui/manager.hpp>
+#include <ui/ingamewindow.hpp>
 
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
@@ -54,20 +55,16 @@ int Client::main(const std::vector<CL_String8>& args) {
 
 
     boost::shared_ptr<CL_DisplayWindow> wnd = uome::ui::Manager::getSingleton()->getWindow();
-
+    CL_InputContext ic = uome::ui::Manager::getSingleton()->getIC();
+    boost::shared_ptr<ui::IngameWindow> ingameWindow = uome::ui::Manager::getSingleton()->getIngameWindow();
+    ingameWindow->setCenterTiles(172 * 8, 202 * 8);
 
     std::list<boost::shared_ptr<uome::world::Sector> > sectorList;
-
-
-
-    CL_InputContext ic = uome::ui::Manager::getSingleton()->getIC();
 
 
     timeval lastTime;
     gettimeofday(&lastTime, NULL);
 
-    int pixelOffsetX = -5000;
-    int pixelOffsetY = 66500;
 
     for (unsigned int i = 1; !ic.get_keyboard().get_keycode(CL_KEY_ESCAPE); ++i) {
         if (i == 1) {
@@ -115,27 +112,17 @@ int Client::main(const std::vector<CL_String8>& args) {
         }
 
         if (ic.get_keyboard().get_keycode(CL_KEY_DOWN)) {
-            pixelOffsetY += 20;
+            ingameWindow->setCenterTiles(ingameWindow->getCenterTileX(), ingameWindow->getCenterTileY() + 1);
         } else if (ic.get_keyboard().get_keycode(CL_KEY_UP)) {
-            pixelOffsetY -= 20;
+            ingameWindow->setCenterTiles(ingameWindow->getCenterTileX(), ingameWindow->getCenterTileY() - 1);
         }
 
         if (ic.get_keyboard().get_keycode(CL_KEY_LEFT)) {
-            pixelOffsetX -= 20;
+            ingameWindow->setCenterTiles(ingameWindow->getCenterTileX() - 1, ingameWindow->getCenterTileY());
         } else if (ic.get_keyboard().get_keycode(CL_KEY_RIGHT)) {
-            pixelOffsetX += 20;
+            ingameWindow->setCenterTiles(ingameWindow->getCenterTileX() + 1, ingameWindow->getCenterTileY());
         }
 
-        int leftPixelCoord = pixelOffsetX;
-        int rightPixelCoord = pixelOffsetX + wnd->get_viewport().get_width();
-        int topPixelCoord = pixelOffsetY;
-        int bottomPixelCoord = pixelOffsetY + wnd->get_viewport().get_height();
-
-        int sectorOffsetY = -(pixelOffsetX - pixelOffsetY)/44;
-        int sectorOffsetX = pixelOffsetX/22 + sectorOffsetY;
-
-        sectorOffsetY /= 8;
-        sectorOffsetX /= 8;
 
         // remove sectors no longer used
         if (i == 2000) {
@@ -143,9 +130,7 @@ int Client::main(const std::vector<CL_String8>& args) {
         }
 
         // call renderer
-        boost::shared_ptr<ui::Renderer> renderer = ui::Manager::getSingleton()->getRenderer();
-        renderer->setIngameClipping(leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord);
-        renderer->renderOneFrame();
+        ingameWindow->renderOneFrame();
         wnd->flip();
 
         CL_KeepAlive::process();

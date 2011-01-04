@@ -9,10 +9,11 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options.hpp>
 
-#include "renderer.hpp"
-
 namespace uome {
 namespace ui {
+
+class IngameWindow;
+class RenderQueue;
 
 class Manager {
 public:
@@ -27,7 +28,8 @@ public:
 
     boost::shared_ptr<CL_Texture> provideTexture(unsigned int width, unsigned int height);
 
-    boost::shared_ptr<Renderer> getRenderer();
+    boost::shared_ptr<IngameWindow> getIngameWindow();
+    boost::shared_ptr<RenderQueue> getRenderQueue();
 
 private:
     static Manager* singleton_;
@@ -39,7 +41,8 @@ private:
 
     boost::shared_ptr<CL_DisplayWindow> window_;
 
-    boost::shared_ptr<Renderer> renderer_;
+    boost::shared_ptr<RenderQueue> renderQueue_;
+    boost::shared_ptr<IngameWindow> ingameWindow_;
 };
 
 }

@@ -2,7 +2,6 @@
 #include "ingameobject.hpp"
 
 #include <ui/manager.hpp>
-#include <ui/renderer.hpp>
 #include <ui/renderqueue.hpp>
 
 namespace uome {
@@ -63,7 +62,7 @@ void IngameObject::updateRenderData() {
     renderDataValid_ = true;
 
     // the rendering order might have been changed
-    ui::Manager::getSingleton()->getRenderer()->getRenderQueue()->requireSort();
+    ui::Manager::getSingleton()->getRenderQueue()->requireSort();
 }
 
 void IngameObject::requestUpdateTextureProvider() {
@@ -71,11 +70,11 @@ void IngameObject::requestUpdateTextureProvider() {
 }
 
 void IngameObject::addToRenderQueue() {
-    ui::Manager::getSingleton()->getRenderer()->getRenderQueue()->add(this);
+    ui::Manager::getSingleton()->getRenderQueue()->add(this);
 }
 
 void IngameObject::removeFromRenderQueue() {
-    ui::Manager::getSingleton()->getRenderer()->getRenderQueue()->remove(this);
+    ui::Manager::getSingleton()->getRenderQueue()->remove(this);
 }
 
 bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {

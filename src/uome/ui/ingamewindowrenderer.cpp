@@ -1,26 +1,22 @@
 
-#include "renderer.hpp"
+#include "ingamewindowrenderer.hpp"
 
 #include "manager.hpp"
 #include "renderqueue.hpp"
+#include "texture.hpp"
+#include "ingamewindow.hpp"
 
 #include <logger.hpp>
-
-#include <ui/texture.hpp>
 
 #include <world/ingameobject.hpp>
 
 namespace uome {
 namespace ui {
 
-Renderer::Renderer(CL_GraphicContext& gc) :
-        initialized_(false),
-        ingameClippingLeftPixelCoord_(0),
-        ingameClippingRightPixelCoord_(0),
-        ingameClippingTopPixelCoord_(0),
-        ingameClippingBottomPixelCoord_(0) {
+IngameWindowRenderer::IngameWindowRenderer(IngameWindow* ingameWindow) :
+        ingameWindow_(ingameWindow) {
 
-    renderQueue_.reset(new RenderQueue());
+    CL_GraphicContext gc = uome::ui::Manager::getSingleton()->getGC();
 
     shaderProgram_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "../shader/vertex.glsl", "../shader/fragment.glsl")));
     shaderProgram_->bind_attribute_location(0, "Position");
@@ -29,28 +25,12 @@ Renderer::Renderer(CL_GraphicContext& gc) :
         throw CL_Exception("Unable to link program");
 }
 
-Renderer::~Renderer() {
+IngameWindowRenderer::~IngameWindowRenderer() {
 }
 
-void Renderer::initialize() {
-    initialized_ = true;
-}
-
-void Renderer::setIngameClipping(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) {
-    ingameClippingLeftPixelCoord_ = leftPixelCoord;
-    ingameClippingRightPixelCoord_ = rightPixelCoord;
-    ingameClippingTopPixelCoord_ = topPixelCoord;
-    ingameClippingBottomPixelCoord_ = bottomPixelCoord;
-}
-
-void Renderer::renderOneFrame() {
-    if (!initialized_) {
-        initialize();
-    }
-
+void IngameWindowRenderer::renderOneFrame() {
     CL_GraphicContext gc = uome::ui::Manager::getSingleton()->getGC();
-
-    CL_Vec2f pixelOffsetVec(ingameClippingLeftPixelCoord_, ingameClippingTopPixelCoord_);
+    boost::shared_ptr<RenderQueue> renderQueue = uome::ui::Manager::getSingleton()->getRenderQueue();
 
 
     gc.clear(CL_Colorf(0.0f, 0.0f, 0.0f));
@@ -68,11 +48,19 @@ void Renderer::renderOneFrame() {
         CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom)
     };
 
-    renderQueue_->prepareRender();
+    renderQueue->prepareRender();
+
+    int clippingLeftPixelCoord = ingameWindow_->getCenterPixelX() - ingameWindow_->getWidth()/2;
+    int clippingRightPixelCoord = ingameWindow_->getCenterPixelX() + ingameWindow_->getWidth()/2;
+    int clippingTopPixelCoord = ingameWindow_->getCenterPixelY() - ingameWindow_->getHeight()/2;
+    int clippingBottomPixelCoord = ingameWindow_->getCenterPixelY() + ingameWindow_->getHeight()/2;
 
 
-    std::list<world::IngameObject*>::iterator igIter = renderQueue_->beginIngame();
-    std::list<world::IngameObject*>::iterator igEnd = renderQueue_->endIngame();
+    CL_Vec2f pixelOffsetVec(clippingLeftPixelCoord, clippingTopPixelCoord);
+
+
+    std::list<world::IngameObject*>::iterator igIter = renderQueue->beginIngame();
+    std::list<world::IngameObject*>::iterator igEnd = renderQueue->endIngame();
 
     for (; igIter != igEnd; ++igIter) {
         world::IngameObject* curObj = *igIter;
@@ -94,7 +82,7 @@ void Renderer::renderOneFrame() {
         }
 
         // check if current object is in the area visible to the player
-        if (!curObj->isInDrawArea(ingameClippingLeftPixelCoord_, ingameClippingRightPixelCoord_, ingameClippingTopPixelCoord_, ingameClippingBottomPixelCoord_)) {
+        if (!curObj->isInDrawArea(clippingLeftPixelCoord, clippingRightPixelCoord, clippingTopPixelCoord, clippingBottomPixelCoord)) {
             continue;
         }
 
@@ -109,10 +97,6 @@ void Renderer::renderOneFrame() {
     }
 
     gc.reset_program_object();
-}
-
-boost::shared_ptr<RenderQueue> Renderer::getRenderQueue() {
-    return renderQueue_;
 }
 
 }
