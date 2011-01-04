@@ -22,8 +22,6 @@ void StaticItem::set(int locX, int locY, int locZ, unsigned int artId, unsigned 
 
     setLocation(locX, locY, locZ);
 
-    texture_ = data::Manager::getArtLoader()->getItemTexture(artId_);
-
     addToRenderQueue();
 }
 

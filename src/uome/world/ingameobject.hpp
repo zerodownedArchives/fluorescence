@@ -30,30 +30,35 @@ public:
     void invalidateRenderData();
     void updateRenderData(); ///< calls updateVertexCoordinates, updateRenderPriority and updateTexture
 
-    virtual void updateTextureProvider() = 0;
-
     const CL_Vec2f* getVertexCoordinates() const;
-    virtual void updateVertexCoordinates() = 0;
 
     int getRenderPriority(unsigned int lvl) const;
-    virtual void updateRenderPriority() = 0;
 
     /// returns wheter or not this item is currently in the drawing area of the game window
     bool isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const;
 
 protected:
-    CL_Vec3<int> location_;
-
-    bool visible_;
-
-    boost::shared_ptr<Sector> sector_;
-
-    bool renderDataValid_; ///< wheter or not the vertex positions and render priorities are correct
     CL_Vec2f vertexCoordinates_[6];
     int renderPriority_[6];
 
     void addToRenderQueue();
     void removeFromRenderQueue();
+
+    void requestUpdateTextureProvider();
+    virtual void updateTextureProvider() = 0;
+
+    virtual void updateVertexCoordinates() = 0;
+
+    virtual void updateRenderPriority() = 0;
+
+private:
+    bool visible_;
+
+    bool renderDataValid_; ///< wheter or not the vertex positions and render priorities are correct
+
+    boost::shared_ptr<Sector> sector_;
+    CL_Vec3<int> location_;
+    bool textureProviderUpdateRequired_;
 };
 
 }

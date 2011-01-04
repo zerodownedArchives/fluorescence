@@ -77,7 +77,7 @@ void Renderer::renderOneFrame() {
     for (; igIter != igEnd; ++igIter) {
         world::IngameObject* curObj = *igIter;
 
-        // object has invisible property set
+        // object is invisible
         if (!curObj->isVisible()) {
             continue;
         }

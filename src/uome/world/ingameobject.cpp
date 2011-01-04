@@ -8,7 +8,7 @@
 namespace uome {
 namespace world {
 
-IngameObject::IngameObject() : visible_(true), renderDataValid_(false) {
+IngameObject::IngameObject() : visible_(true), renderDataValid_(false), textureProviderUpdateRequired_(true) {
     for (unsigned int i = 0; i < 6; ++i) {
         renderPriority_[i] = 0;
     }
@@ -48,7 +48,15 @@ int IngameObject::getRenderPriority(unsigned int lvl) const {
 }
 
 void IngameObject::updateRenderData() {
-    updateTextureProvider();
+    if (textureProviderUpdateRequired_) {
+        updateTextureProvider();
+        textureProviderUpdateRequired_ = false;
+    }
+
+    if (!getIngameTexture()->isReadComplete()) {
+        return;
+    }
+
     updateVertexCoordinates();
     updateRenderPriority();
 
@@ -56,6 +64,10 @@ void IngameObject::updateRenderData() {
 
     // the rendering order might have been changed
     ui::Manager::getSingleton()->getRenderer()->getRenderQueue()->requireSort();
+}
+
+void IngameObject::requestUpdateTextureProvider() {
+    textureProviderUpdateRequired_ = true;
 }
 
 void IngameObject::addToRenderQueue() {
