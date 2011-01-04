@@ -30,8 +30,12 @@ bool IngameObject::isRenderDataValid() const {
     return renderDataValid_;
 }
 
-void IngameObject::invalidateRenderData() {
+void IngameObject::invalidateRenderData(bool updateTextureProvider) {
     renderDataValid_ = false;
+
+    if (updateTextureProvider) {
+        requestUpdateTextureProvider();
+    }
 }
 
 const CL_Vec2f* IngameObject::getVertexCoordinates() const {

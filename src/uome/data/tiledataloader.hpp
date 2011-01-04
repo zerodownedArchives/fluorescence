@@ -1,8 +1,8 @@
 #ifndef UOME_DATA_TILEDATALOADER_HPP
 #define UOME_DATA_TILEDATALOADER_HPP
 
-#include <string.hpp>
-#include <exception.hpp>
+#include <misc/string.hpp>
+#include <misc/exception.hpp>
 
 #include <boost/filesystem.hpp>
 

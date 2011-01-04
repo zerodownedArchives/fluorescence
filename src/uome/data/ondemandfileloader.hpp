@@ -3,8 +3,8 @@
 
 #include "indexloader.hpp"
 
-#include <logger.hpp>
-#include <exception.hpp>
+#include <misc/logger.hpp>
+#include <misc/exception.hpp>
 
 #include <queue>
 

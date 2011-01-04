@@ -1,7 +1,7 @@
 
 #include "renderqueue.hpp"
 
-#include <logger.hpp>
+#include <misc/logger.hpp>
 #include <world/ingameobject.hpp>
 
 namespace uome {

@@ -3,7 +3,8 @@
 #include "util.hpp"
 
 #include <ui/texture.hpp>
-#include <logger.hpp>
+
+#include <misc/logger.hpp>
 
 namespace uome {
 namespace data {

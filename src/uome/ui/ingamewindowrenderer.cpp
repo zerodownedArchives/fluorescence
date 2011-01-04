@@ -6,7 +6,7 @@
 #include "texture.hpp"
 #include "ingamewindow.hpp"
 
-#include <logger.hpp>
+#include <misc/logger.hpp>
 
 #include <world/ingameobject.hpp>
 

@@ -3,7 +3,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include <exception.hpp>
+#include <misc/exception.hpp>
 
 namespace uome {
 namespace data {

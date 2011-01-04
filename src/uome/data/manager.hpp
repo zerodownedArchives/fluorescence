@@ -1,7 +1,7 @@
 #ifndef UOME_DATA_MANAGER_HPP
 #define UOME_DATA_MANAGER_HPP
 
-#include <exception.hpp>
+#include <misc/exception.hpp>
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>

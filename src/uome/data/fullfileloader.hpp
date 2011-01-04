@@ -1,7 +1,7 @@
 #ifndef UOME_DATA_FULLFILELOADER_HPP
 #define UOME_DATA_FULLFILELOADER_HPP
 
-#include <exception.hpp>
+#include <misc/exception.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>

@@ -80,7 +80,7 @@ void MapTile::setSurroundingZ(int left, int right, int bottom) {
     zRight_ = right;
     zBottom_ = bottom;
 
-    invalidateRenderData();
+    invalidateRenderData(true);
 
     // if the tile got a texture for the first time, we can finally add it to the render queue
     if (texture_.get() == NULL) {

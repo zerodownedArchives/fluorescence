@@ -1,7 +1,7 @@
 #ifndef UOME_DATA_HUESLOADER_HPP
 #define UOME_DATA_HUESLOADER_HPP
 
-#include <string.hpp>
+#include <misc/string.hpp>
 
 #include "fullfileloader.hpp"
 

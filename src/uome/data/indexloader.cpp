@@ -2,7 +2,7 @@
 #include "indexloader.hpp"
 #include "fullfileloader.hpp"
 
-#include <logger.hpp>
+#include <misc/logger.hpp>
 
 #include <boost/bind.hpp>
 

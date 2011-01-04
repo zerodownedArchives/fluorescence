@@ -4,8 +4,8 @@
 #include "ingamewindow.hpp"
 #include "renderqueue.hpp"
 
-#include <logger.hpp>
-#include <exception.hpp>
+#include <misc/logger.hpp>
+#include <misc/exception.hpp>
 
 namespace uome {
 namespace ui {
@@ -17,7 +17,7 @@ bool Manager::create(const boost::program_options::variables_map& config) {
         try {
             singleton_ = new Manager(config);
         } catch (const std::exception& ex) {
-            LOGARG_CRITICAL(LOGTYPE_UI, "Error initializing data::Manager: %s", ex.what());
+            LOGARG_CRITICAL(LOGTYPE_UI, "Error initializing ui::Manager: %s", ex.what());
             return false;
         }
     }

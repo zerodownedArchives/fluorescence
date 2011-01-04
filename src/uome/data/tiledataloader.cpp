@@ -3,6 +3,8 @@
 
 #include "fullfileloader.hpp"
 
+#include <misc/logger.hpp>
+
 #include <boost/bind.hpp>
 
 namespace uome {

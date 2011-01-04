@@ -27,7 +27,7 @@ public:
     void setLocation(int locX, int locY, int locZ);
 
     bool isRenderDataValid() const;
-    void invalidateRenderData();
+    void invalidateRenderData(bool updateTextureProvider = false);
     void updateRenderData(); ///< calls updateVertexCoordinates, updateRenderPriority and updateTexture
 
     const CL_Vec2f* getVertexCoordinates() const;
