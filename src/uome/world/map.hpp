@@ -20,7 +20,7 @@ friend class data::MapLoader;
 
 public:
     MapTile();
-    virtual ui::Texture* getIngameTexture() const;
+    virtual boost::shared_ptr<ui::Texture> getIngameTexture() const;
 
 private:
     unsigned int artId_;
@@ -49,13 +49,14 @@ class MapBlock : public data::OnDemandReadable {
 friend class data::MapLoader;
 
 public:
-    MapTile* get(unsigned int x, unsigned int y);
+    MapBlock();
+    boost::shared_ptr<MapTile> get(unsigned int x, unsigned int y);
 
 private:
     unsigned int blockIndexX_;
     unsigned int blockIndexY_;
 
-    MapTile tiles_[64];
+    boost::shared_ptr<MapTile> tiles_[64];
 };
 
 

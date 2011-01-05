@@ -4,26 +4,35 @@
 #include <boost/bind.hpp>
 
 #include <misc/logger.hpp>
+
 #include <world/ingameobject.hpp>
+#include <world/sector.hpp>
 
 namespace uome {
 namespace ui {
 
 bool RenderQueue::renderPriorityComparator(const world::IngameObject* a, const world::IngameObject* b) {
-    if (a->getRenderPriority(0) < b->getRenderPriority(0)) {
+    const int* aPrio = a->getRenderPriorities();
+    const int* bPrio = b->getRenderPriorities();
+
+    if (aPrio[0] < bPrio[0]) {
         return true;
     }
 
     for (int i=1; i < 6; ++i) {
-        if (a->getRenderPriority(i-1) == b->getRenderPriority(i-1)) {
-            if (a->getRenderPriority(i) < b->getRenderPriority(i)) {
+        if (aPrio[i-1] == bPrio[i-1]) {
+            if (aPrio[i] < bPrio[i]) {
                 return true;
             }
         } else {
             return false;
         }
     }
-    return false;
+
+    /* None of the priorities differs. To make sure this function sorts the list exactly the same, no matter how the
+     * list elements were in the list before, we use the memory address of the objects as a last resort
+     */
+    return (unsigned int)a < (unsigned int)b;
 }
 
 RenderQueue::RenderQueue() :
@@ -79,6 +88,58 @@ world::IngameObject* RenderQueue::getByIndex(unsigned int idx) {
     return *iter;
 }
 
+void RenderQueue::removeSector(world::Sector* sector) {
+    std::list<world::IngameObject*> allSectorObjects;
+
+    std::list<boost::shared_ptr<world::StaticItem> > staticList = sector->getStaticBlock()->getItemList();
+    std::list<boost::shared_ptr<world::StaticItem> >::const_iterator it = staticList.begin();
+    std::list<boost::shared_ptr<world::StaticItem> >::const_iterator end = staticList.end();
+
+    for (; it != end; ++it) {
+        allSectorObjects.push_back((*it).get());
+    }
+
+    for (unsigned int x = 0; x < 8; ++x) {
+        for (unsigned int y = 0; y < 8; ++y) {
+            allSectorObjects.push_back(sector->getMapBlock()->get(x, y).get());
+        }
+    }
+
+    allSectorObjects.sort(boost::bind(&RenderQueue::renderPriorityComparator, this, _1, _2));
+
+
+    // the allSectorObjects list is now in the same order as ingameList_
+    // thus, we just need to iterate the list one time to remove all objects
+
+    std::list<world::IngameObject*>::const_iterator deleteIter = allSectorObjects.begin();
+    std::list<world::IngameObject*>::const_iterator deleteEnd = allSectorObjects.end();
+    std::list<world::IngameObject*>::iterator ingameIter = ingameList_.begin();
+    std::list<world::IngameObject*>::iterator ingameEnd = ingameList_.end();
+    std::list<world::IngameObject*>::iterator deleteHelper;
+
+    while(ingameIter != ingameEnd) {
+        if (*ingameIter == *deleteIter) {
+            // mark item as deleted
+            (*deleteIter)->addedToRenderQueue_ = false;
+
+            deleteHelper = ingameIter;
+            ++ingameIter;
+            ingameList_.erase(deleteHelper);
+
+            ++deleteIter;
+            if (deleteIter == deleteEnd) {
+                //LOG_DEBUG(LOGTYPE_UI, "RenderQueue::removeSector - sector list end reached");
+                break;
+            }
+        } else {
+            ++ingameIter;
+        }
+    }
+
+    if (deleteIter != deleteEnd) {
+        LOG_ERROR(LOGTYPE_UI, "RenderQueue::removeSector - sector list end not reached");
+    }
+}
 
 void RenderQueue::remove(world::IngameObject* obj) {
     //printf("rq count before: %u\n", ingameList_.size());
@@ -153,50 +214,18 @@ void RenderQueue::prepareRender() {
         }
     }
 
-    sort();
+    std::list<world::IngameObject*>::iterator igIter = ingameList_.begin();
+    std::list<world::IngameObject*>::iterator igEnd = ingameList_.end();
 
-    {
-        //boost::mutex::scoped_lock myLock(ingameDeleteListMutex_);
-        //for (std::list<world::IngameObject*>::iterator deleteIter = ingameDeleteList_.begin(); deleteIter != ingameDeleteList_.end(); ++deleteIter) {
-            //printf("rq count before: %u\n", ingameList_.size());
-            //printf("counted: %u\n", std::count(ingameList_.begin(), ingameList_.end(), obj));
-            //std::pair<
-            //std::list<world::IngameObject*>::iterator,
-            //std::list<world::IngameObject*>::iterator
-            //> eq = std::equal_range(ingameList_.begin(), ingameList_.end(), obj, boost::bind(&RenderQueue::renderPriorityComparator, this, _1, _2));
-
-            //if (!std::binary_search(ingameList_.begin(), ingameList_.end(), *deleteIter, boost::bind(&RenderQueue::renderPriorityComparator, this, _1, _2))) {
-                //printf("item not even in the list\n");
-                //if (realCheckInList(*deleteIter)) {
-                    //printf("but real check says it is\n");
-                //} else {
-                    //printf("really not\n");
-                //}
-
-                //if (realCheckSorted()) {
-                    //printf("list is sorted\n");
-                //} else {
-                    //printf("list is not sorted! wtf?\n");
-                //}
-
-                //int i = 0;
-                //(void)i;
-                //continue;
-            //}
-
-            //std::list<world::IngameObject*>::iterator listItm =
-                //std::lower_bound(ingameList_.begin(), ingameList_.end(), *deleteIter, boost::bind(&RenderQueue::renderPriorityComparator, this, _1, _2));
-            ////ingameList_.remove(*deleteIter);
-
-            //if (listItm != ingameList_.end()) {
-                //ingameList_.erase(listItm);
-            //} else {
-                //printf("listItm iterator == NULL!!!!!\n");
-            //}
-        //}
-
-        //ingameDeleteList_.clear();
+    for (; igIter != igEnd; ++igIter) {
+        world::IngameObject* curObj = *igIter;
+        // update rendering data (priority, vertex coordinates, texture, ...)
+        if (!curObj->isRenderDataValid()) {
+            curObj->updateRenderData();
+        }
     }
+
+    sort();
 }
 
 void RenderQueue::sort() {
@@ -206,11 +235,11 @@ void RenderQueue::sort() {
     }
 }
 
-std::list<world::IngameObject*>::iterator RenderQueue::beginIngame() {
+std::list<world::IngameObject*>::const_iterator RenderQueue::beginIngame() {
     return ingameList_.begin();
 }
 
-std::list<world::IngameObject*>::iterator RenderQueue::endIngame() {
+std::list<world::IngameObject*>::const_iterator RenderQueue::endIngame() {
     return ingameList_.end();
 }
 

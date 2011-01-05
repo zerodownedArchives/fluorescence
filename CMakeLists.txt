@@ -24,10 +24,10 @@ EXEC_PROGRAM(icu-config
 #message(STATUS "cl libs: ${ClanLib_LIBRARIES}")
 #message(STATUS "icu libs: ${ICU_LIBRARIES}")
 
-set(UOME_LIBRARIES uomedata uomeui uomeworld uomemisc ${ClanLib_LIBRARIES} ${Boost_LIBRARIES} ${ICU_LIBRARIES})
+set(UOME_LIBRARIES uomeui uomeworld uomedata uomemisc ${ClanLib_LIBRARIES} ${Boost_LIBRARIES} ${ICU_LIBRARIES})
 
 set(CMAKE_CXX_FLAGS "-Wall -Werror ${CMAKE_CXX_FLAGS} -msse2 -D_REENTRANT")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -DDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "-pg -DDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin/")

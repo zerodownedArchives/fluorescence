@@ -26,8 +26,8 @@ public:
 
     bool isVisible() { return visible_; }
 
-    MapBlock* getMapBlock() const { return mapBlock_.get(); }
-    StaticBlock* getStaticBlock() const { return staticBlock_.get(); }
+    boost::shared_ptr<MapBlock> getMapBlock() const { return mapBlock_; }
+    boost::shared_ptr<StaticBlock> getStaticBlock() const { return staticBlock_; }
 
 private:
     unsigned int id_;

@@ -57,8 +57,8 @@ void IngameWindowRenderer::renderOneFrame() {
     CL_Vec2f pixelOffsetVec(clippingLeftPixelCoord, clippingTopPixelCoord);
 
 
-    std::list<world::IngameObject*>::iterator igIter = renderQueue->beginIngame();
-    std::list<world::IngameObject*>::iterator igEnd = renderQueue->endIngame();
+    std::list<world::IngameObject*>::const_iterator igIter = renderQueue->beginIngame();
+    std::list<world::IngameObject*>::const_iterator igEnd = renderQueue->endIngame();
 
     for (; igIter != igEnd; ++igIter) {
         world::IngameObject* curObj = *igIter;
@@ -68,14 +68,9 @@ void IngameWindowRenderer::renderOneFrame() {
             continue;
         }
 
-        // update rendering data (priority, vertex coordinates, texture, ...)
-        if (!curObj->isRenderDataValid()) {
-            curObj->updateRenderData();
-        }
-
         // check if texture is ready to be drawn
-        ui::Texture* tex = curObj->getIngameTexture();
-        if (!tex || !tex->isReadComplete()) {
+        boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
+        if (!tex->isReadComplete()) {
             continue;
         }
 

@@ -5,11 +5,13 @@
 #include <data/artloader.hpp>
 #include <data/tiledataloader.hpp>
 
+#include <ui/texture.hpp>
+
 namespace uome {
 namespace world {
 
-ui::Texture* StaticItem::getIngameTexture() const {
-    return texture_.get();
+boost::shared_ptr<ui::Texture> StaticItem::getIngameTexture() const {
+    return texture_;
 }
 
 unsigned int StaticItem::getArtId() {

@@ -1,15 +1,24 @@
 #ifndef UOME_WORLD_INGAMEOBJECT_HPP
 #define UOME_WORLD_INGAMEOBJECT_HPP
 
-#include <ui/texture.hpp>
-
 #include <ClanLib/Core/Math/vec2.h>
 #include <ClanLib/Core/Math/vec3.h>
 
+#include <boost/shared_ptr.hpp>
+
 namespace uome {
+
+namespace ui {
+    class Texture;
+    class RenderQueue;
+}
+
 namespace world {
 
 class IngameObject {
+
+friend class ui::RenderQueue;
+
 public:
     IngameObject();
     virtual ~IngameObject();
@@ -20,7 +29,7 @@ public:
 
     bool isVisible() const { return visible_; }
 
-    virtual ui::Texture* getIngameTexture() const = 0;
+    virtual boost::shared_ptr<ui::Texture> getIngameTexture() const = 0;
 
     void setLocation(int locX, int locY, int locZ);
 
@@ -31,6 +40,7 @@ public:
     const CL_Vec2f* getVertexCoordinates() const;
 
     int getRenderPriority(unsigned int lvl) const;
+    const int* getRenderPriorities() const;
 
     /// returns wheter or not this item is currently in the drawing area of the game window
     bool isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const;

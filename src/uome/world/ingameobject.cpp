@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 
+#include <ui/texture.hpp>
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
 
@@ -52,14 +53,18 @@ int IngameObject::getRenderPriority(unsigned int lvl) const {
     return renderPriority_[lvl];
 }
 
+const int* IngameObject::getRenderPriorities() const {
+    return renderPriority_;
+}
+
 void IngameObject::updateRenderData() {
     if (textureProviderUpdateRequired_) {
         updateTextureProvider();
         textureProviderUpdateRequired_ = false;
     }
 
-    ui::Texture* tex = getIngameTexture();
-    if (!tex || !tex->isReadComplete()) {
+    boost::shared_ptr<ui::Texture> tex = getIngameTexture();
+    if (!tex->isReadComplete()) {
         return;
     }
 

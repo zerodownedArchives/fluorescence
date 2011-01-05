@@ -6,14 +6,16 @@
 #include <data/maptexloader.hpp>
 #include <data/tiledataloader.hpp>
 
+#include <ui/texture.hpp>
+
 namespace uome {
 namespace world {
 
 MapTile::MapTile() : artId_(0) {
 }
 
-ui::Texture* MapTile::getIngameTexture() const {
-    return texture_.get();
+boost::shared_ptr<ui::Texture> MapTile::getIngameTexture() const {
+    return texture_;
 }
 
 void MapTile::set(int locX, int locY, int locZ, unsigned int artId) {
@@ -87,7 +89,13 @@ void MapTile::setSurroundingZ(int left, int right, int bottom) {
     addToRenderQueue();
 }
 
-MapTile* MapBlock::get(unsigned int x, unsigned int y) {
+MapBlock::MapBlock() {
+    for (unsigned int i = 0; i < 64; ++i) {
+        tiles_[i].reset(new MapTile());
+    }
+}
+
+boost::shared_ptr<MapTile> MapBlock::get(unsigned int x, unsigned int y) {
     if (x > 7) {
         x = 0;
     }
@@ -96,7 +104,7 @@ MapTile* MapBlock::get(unsigned int x, unsigned int y) {
         y = 0;
     }
 
-    return &tiles_[(y*8) + x];
+    return tiles_[(y*8) + x];
 }
 
 }

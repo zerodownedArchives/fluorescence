@@ -75,7 +75,7 @@ int Client::main(const std::vector<CL_String8>& args) {
             std::ostringstream titleHelper;
             titleHelper << "UO:ME -- fps: " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << fps;
             wnd->set_title(titleHelper.str());
-            //LOGARG_DEBUG(LOGTYPE_MAIN, "fps: %.1f", fps);
+            LOGARG_DEBUG(LOGTYPE_MAIN, "fps: %.1f", fps);
             lastTime = curTime;
         }
 
