@@ -18,18 +18,19 @@ class RenderQueue;
 class Manager {
 public:
     static bool create(const boost::program_options::variables_map& config);
+    static void destroy();
     static Manager* getSingleton();
 
-    boost::shared_ptr<CL_DisplayWindow> getWindow();
+    CL_DisplayWindow* getWindow();
 
     CL_GraphicContext& getGC();
 
     CL_InputContext& getIC();
 
-    boost::shared_ptr<CL_Texture> provideTexture(unsigned int width, unsigned int height);
+    CL_Texture* provideTexture(unsigned int width, unsigned int height);
 
-    boost::shared_ptr<IngameWindow> getIngameWindow();
-    boost::shared_ptr<RenderQueue> getRenderQueue();
+    IngameWindow* getIngameWindow();
+    RenderQueue* getRenderQueue();
 
 private:
     static Manager* singleton_;

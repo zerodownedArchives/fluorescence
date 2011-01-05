@@ -110,6 +110,8 @@ private:
     boost::mutex mutex_;
 
     Logger(unsigned int type, const char* filename);
+    Logger(const Logger& copy) {}
+    void operator=(const Logger& copy) {}
 
     void printTime();
     void printType(unsigned int type);

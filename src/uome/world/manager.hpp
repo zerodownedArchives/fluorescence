@@ -10,10 +10,12 @@ class SectorManager;
 
 class Manager {
 public:
+    ~Manager();
     static bool create(const boost::program_options::variables_map& config);
+    static void destroy();
     static Manager* getSingleton();
 
-    boost::shared_ptr<SectorManager> getSectorManager();
+    SectorManager* getSectorManager();
 
 private:
     static Manager* singleton_;

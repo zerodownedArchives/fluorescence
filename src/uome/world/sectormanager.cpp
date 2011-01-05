@@ -8,6 +8,7 @@
 #include <misc/logger.hpp>
 
 #include <ui/manager.hpp>
+#include <ui/renderqueue.hpp>
 #include <ui/ingamewindow.hpp>
 
 namespace uome {
@@ -19,27 +20,27 @@ SectorManager::SectorManager(const boost::program_options::variables_map& config
     sectorRemoveDistance_ = config["world.sector-remove-distance"].as<unsigned int>();
 }
 
-void SectorManager::update(bool force) {
-    updateCounter_++;
-    bool check = force || (updateCounter_ % updateFrequency_ == 0);
+SectorManager::~SectorManager() {
+}
 
-    if (!check) {
+void SectorManager::addNewSectors(bool force) {
+    // the player does not move overly fast, so it is enough to check for new sectors every x frames
+    bool doAddSector = (updateCounter_ % updateFrequency_ == 0);
+    updateCounter_++;
+
+    if (!doAddSector) {
         return;
     }
-
-    //LOG_DEBUG(LOGTYPE_WORLD, "Sector manager update");
-
-    //updateCounter_ = 0;
 
     unsigned int centerSectorX = ui::Manager::getSingleton()->getIngameWindow()->getCenterTileX() / 8;
     unsigned int centerSectorY = ui::Manager::getSingleton()->getIngameWindow()->getCenterTileY() / 8;
 
     // sectors between these bounds should be loaded
     unsigned int xStart = std::max(0, (int)centerSectorX - (int)sectorAddDistance_);
-    unsigned int xEnd = centerSectorX + sectorAddDistance_;
+    unsigned int xEnd = centerSectorX + sectorAddDistance_ + 1;
 
     unsigned int yStart = std::max(0, (int)centerSectorY - (int)sectorAddDistance_);
-    unsigned int yEnd = centerSectorY + sectorAddDistance_;
+    unsigned int yEnd = centerSectorY + sectorAddDistance_ + 1;
 
     // check all sectors if they are loaded, and load if they are not
     std::map<unsigned int, boost::shared_ptr<Sector> >::const_iterator notFound = sectorMap_.end();
@@ -52,41 +53,38 @@ void SectorManager::update(bool force) {
             }
         }
     }
+}
 
-    //if (updateCounter_ == 1) {
-        //for (unsigned int l = 200; l < 204; ++l) {
-            //for (unsigned int m = 170; m < 180; ++m) {
-                //boost::shared_ptr<uome::world::Sector> newSec(new uome::world::Sector(m * 512 + l, m, l));
-                //sectorList_.push_back(newSec);
-            //}
-        //}
-    //}
+void SectorManager::deleteSectors() {
+    unsigned int centerSectorX = ui::Manager::getSingleton()->getIngameWindow()->getCenterTileX() / 8;
+    unsigned int centerSectorY = ui::Manager::getSingleton()->getIngameWindow()->getCenterTileY() / 8;
 
-    //if (updateCounter_ == 1000) { // ~ 7 sec
-        //for (unsigned int l = 204; l < 207; ++l) {
-            //for (unsigned int m = 173; m < 177; ++m) {
-                //boost::shared_ptr<uome::world::Sector> newSec(new uome::world::Sector(m * 512 + l, m, l));
-                //sectorList_.push_back(newSec);
-            //}
-        //}
-    //}
+    // sectors not between these bounds should be deleted
+    unsigned int xStart = std::max(0, (int)centerSectorX - (int)sectorRemoveDistance_);
+    unsigned int xEnd = centerSectorX + sectorRemoveDistance_ + 1;
 
-    //if (updateCounter_ == 1500) { // ~ 7 sec
-        //for (unsigned int l = 207; l < 210; ++l) {
-            //for (unsigned int m = 170; m < 180; ++m) {
-                //boost::shared_ptr<uome::world::Sector> newSec(new uome::world::Sector(m * 512 + l, m, l));
-                //sectorList_.push_back(newSec);
-            //}
-        //}
-    //}
+    unsigned int yStart = std::max(0, (int)centerSectorY - (int)sectorRemoveDistance_);
+    unsigned int yEnd = centerSectorY + sectorRemoveDistance_ + 1;
 
-    if (updateCounter_ == 2000) {
-        //sectorList_.remove_if(boost::bind(&SectorManager::checkSectorRemove, this, _1));
+    std::map<unsigned int, boost::shared_ptr<Sector> >::iterator deleteIter = sectorMap_.begin();
+    std::map<unsigned int, boost::shared_ptr<Sector> >::iterator deleteEnd = sectorMap_.end();
+
+    while (deleteIter != deleteEnd) {
+        if (deleteIter->second->getLocX() < xStart ||
+                deleteIter->second->getLocX() > xEnd ||
+                deleteIter->second->getLocY() < yStart ||
+                deleteIter->second->getLocY() > yEnd) {
+            sectorMap_.erase(deleteIter);
+            break;
+        }
+
+        ++deleteIter;
     }
 }
 
-bool SectorManager::checkSectorRemove(const boost::shared_ptr<uome::world::Sector>& ptr) {
-    return (ptr->getLocX() + ptr->getLocY()) % 3 == 0;
+
+void SectorManager::clear() {
+    sectorMap_.clear();
 }
 
 }

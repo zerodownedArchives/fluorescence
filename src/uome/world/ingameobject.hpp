@@ -9,12 +9,10 @@
 namespace uome {
 namespace world {
 
-class Sector;
-
 class IngameObject {
 public:
     IngameObject();
-    ~IngameObject();
+    virtual ~IngameObject();
 
     int getLocX() const { return location_[0u]; }
     int getLocY() const { return location_[1u]; }
@@ -22,7 +20,7 @@ public:
 
     bool isVisible() const { return visible_; }
 
-    virtual boost::shared_ptr<ui::Texture> getIngameTexture() const = 0;
+    virtual ui::Texture* getIngameTexture() const = 0;
 
     void setLocation(int locX, int locY, int locZ);
 
@@ -56,9 +54,10 @@ private:
 
     bool renderDataValid_; ///< wheter or not the vertex positions and render priorities are correct
 
-    boost::shared_ptr<Sector> sector_;
     CL_Vec3<int> location_;
     bool textureProviderUpdateRequired_;
+
+    bool addedToRenderQueue_;
 };
 
 }

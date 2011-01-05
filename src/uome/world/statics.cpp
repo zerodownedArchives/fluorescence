@@ -7,8 +7,9 @@
 
 namespace uome {
 namespace world {
-boost::shared_ptr<ui::Texture> StaticItem::getIngameTexture() const {
-    return texture_;
+
+ui::Texture* StaticItem::getIngameTexture() const {
+    return texture_.get();
 }
 
 unsigned int StaticItem::getArtId() {

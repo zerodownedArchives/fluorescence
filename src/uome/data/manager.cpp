@@ -28,6 +28,13 @@ bool Manager::create(const boost::program_options::variables_map& config) {
     return true;
 }
 
+void Manager::destroy() {
+    if (singleton_) {
+        delete singleton_;
+        singleton_ = NULL;
+    }
+}
+
 Manager* Manager::getSingleton() {
     if (!singleton_) {
         throw Exception("uome::data::Manager Singleton not created yet");

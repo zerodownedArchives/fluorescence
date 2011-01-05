@@ -20,7 +20,7 @@ friend class data::MapLoader;
 
 public:
     MapTile();
-    virtual boost::shared_ptr<ui::Texture> getIngameTexture() const;
+    virtual ui::Texture* getIngameTexture() const;
 
 private:
     unsigned int artId_;

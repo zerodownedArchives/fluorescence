@@ -20,9 +20,9 @@ public:
     void initPixelBuffer(unsigned int width, unsigned int height, CL_TextureFormat format);
     void* getPixelBufferData();
 
-    boost::shared_ptr<CL_PixelBuffer> getPixelBuffer() { return pixelBuffer_; }
+    CL_PixelBuffer* getPixelBuffer();
 
-    boost::shared_ptr<CL_Texture> getTexture();
+    CL_Texture* getTexture();
 
     unsigned int getWidth();
     unsigned int getHeight();

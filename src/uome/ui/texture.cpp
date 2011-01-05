@@ -15,13 +15,17 @@ void* Texture::getPixelBufferData() {
     return pixelBuffer_->get_data();
 }
 
-boost::shared_ptr<CL_Texture> Texture::getTexture() {
+CL_PixelBuffer* Texture::getPixelBuffer() {
+    return pixelBuffer_.get();
+}
+
+CL_Texture* Texture::getTexture() {
     if (!texture_.get()) {
-        texture_ = boost::shared_ptr<CL_Texture>(ui::Manager::getSingleton()->provideTexture(pixelBuffer_->get_width(), pixelBuffer_->get_height()));
+        texture_ .reset(ui::Manager::getSingleton()->provideTexture(pixelBuffer_->get_width(), pixelBuffer_->get_height()));
         texture_->set_image(*(pixelBuffer_));
     }
 
-    return texture_;
+    return texture_.get();
 }
 
 unsigned int Texture::getWidth() {

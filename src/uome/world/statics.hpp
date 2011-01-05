@@ -25,7 +25,7 @@ class StaticItem : public IngameObject {
 friend class data::StaticsLoader;
 
 public:
-    virtual boost::shared_ptr<ui::Texture> getIngameTexture() const;
+    virtual ui::Texture* getIngameTexture() const;
 
     unsigned int getArtId();
 

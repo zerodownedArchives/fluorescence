@@ -21,17 +21,17 @@ public:
     Sector(unsigned int id, unsigned int locX, unsigned int locY);
     ~Sector();
 
-    int getLocX() { return location_[0u]; }
-    int getLocY() { return location_[1u]; }
+    unsigned int getLocX() { return location_[0u]; }
+    unsigned int getLocY() { return location_[1u]; }
 
     bool isVisible() { return visible_; }
 
-    boost::shared_ptr<MapBlock> getMapBlock() const { return mapBlock_; }
-    boost::shared_ptr<StaticBlock> getStaticBlock() const { return staticBlock_; }
+    MapBlock* getMapBlock() const { return mapBlock_.get(); }
+    StaticBlock* getStaticBlock() const { return staticBlock_.get(); }
 
 private:
     unsigned int id_;
-    CL_Vec2<int> location_;
+    CL_Vec2<unsigned int> location_;
 
     boost::shared_ptr<MapBlock> mapBlock_;
     boost::shared_ptr<StaticBlock> staticBlock_;

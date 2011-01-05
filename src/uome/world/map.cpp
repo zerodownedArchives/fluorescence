@@ -12,8 +12,8 @@ namespace world {
 MapTile::MapTile() : artId_(0) {
 }
 
-boost::shared_ptr<ui::Texture> MapTile::getIngameTexture() const {
-    return texture_;
+ui::Texture* MapTile::getIngameTexture() const {
+    return texture_.get();
 }
 
 void MapTile::set(int locX, int locY, int locZ, unsigned int artId) {
@@ -83,9 +83,8 @@ void MapTile::setSurroundingZ(int left, int right, int bottom) {
     invalidateRenderData(true);
 
     // if the tile got a texture for the first time, we can finally add it to the render queue
-    if (texture_.get() == NULL) {
-        addToRenderQueue();
-    }
+    // double adding checks are done in the function
+    addToRenderQueue();
 }
 
 MapTile* MapBlock::get(unsigned int x, unsigned int y) {

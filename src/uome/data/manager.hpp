@@ -21,6 +21,7 @@ class MapTexLoader;
 class Manager {
 public:
     static bool create(const boost::program_options::variables_map& config);
+    static void destroy();
     static Manager* getSingleton();
     ~Manager();
 

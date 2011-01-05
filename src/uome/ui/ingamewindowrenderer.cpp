@@ -30,7 +30,7 @@ IngameWindowRenderer::~IngameWindowRenderer() {
 
 void IngameWindowRenderer::renderOneFrame() {
     CL_GraphicContext gc = uome::ui::Manager::getSingleton()->getGC();
-    boost::shared_ptr<RenderQueue> renderQueue = uome::ui::Manager::getSingleton()->getRenderQueue();
+    RenderQueue* renderQueue = uome::ui::Manager::getSingleton()->getRenderQueue();
 
 
     gc.clear(CL_Colorf(0.0f, 0.0f, 0.0f));
@@ -47,8 +47,6 @@ void IngameWindowRenderer::renderOneFrame() {
         CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
         CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom)
     };
-
-    renderQueue->prepareRender();
 
     int clippingLeftPixelCoord = ingameWindow_->getCenterPixelX() - ingameWindow_->getWidth()/2;
     int clippingRightPixelCoord = ingameWindow_->getCenterPixelX() + ingameWindow_->getWidth()/2;
@@ -76,8 +74,8 @@ void IngameWindowRenderer::renderOneFrame() {
         }
 
         // check if texture is ready to be drawn
-        boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
-        if (!tex->isReadComplete()) {
+        ui::Texture* tex = curObj->getIngameTexture();
+        if (!tex || !tex->isReadComplete()) {
             continue;
         }
 
@@ -91,7 +89,7 @@ void IngameWindowRenderer::renderOneFrame() {
         primarray.set_attributes(1, tex1_coords);
         primarray.set_attribute(2, pixelOffsetVec);
 
-        gc.set_texture(0, *(tex->getTexture()));
+        gc.set_texture(0, *tex->getTexture());
         gc.draw_primitives(cl_triangles, 6, primarray);
         gc.reset_texture(0);
     }

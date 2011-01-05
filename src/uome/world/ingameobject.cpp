@@ -1,13 +1,15 @@
 
 #include "ingameobject.hpp"
 
+#include <stdio.h>
+
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
 
 namespace uome {
 namespace world {
 
-IngameObject::IngameObject() : visible_(true), renderDataValid_(false), textureProviderUpdateRequired_(true) {
+IngameObject::IngameObject() : visible_(true), renderDataValid_(false), textureProviderUpdateRequired_(true), addedToRenderQueue_(false) {
     for (unsigned int i = 0; i < 6; ++i) {
         renderPriority_[i] = 0;
     }
@@ -56,7 +58,8 @@ void IngameObject::updateRenderData() {
         textureProviderUpdateRequired_ = false;
     }
 
-    if (!getIngameTexture()->isReadComplete()) {
+    ui::Texture* tex = getIngameTexture();
+    if (!tex || !tex->isReadComplete()) {
         return;
     }
 
@@ -74,11 +77,17 @@ void IngameObject::requestUpdateTextureProvider() {
 }
 
 void IngameObject::addToRenderQueue() {
-    ui::Manager::getSingleton()->getRenderQueue()->add(this);
+    if (!addedToRenderQueue_) {
+        ui::Manager::getSingleton()->getRenderQueue()->add(this);
+        addedToRenderQueue_ = true;
+    }
 }
 
 void IngameObject::removeFromRenderQueue() {
-    ui::Manager::getSingleton()->getRenderQueue()->remove(this);
+    if (addedToRenderQueue_) {
+        ui::Manager::getSingleton()->getRenderQueue()->remove(this);
+        addedToRenderQueue_ = false;
+    }
 }
 
 bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {

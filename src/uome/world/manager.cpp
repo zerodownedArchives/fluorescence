@@ -11,6 +11,9 @@ namespace world {
 Manager* Manager::singleton_ = NULL;
 
 Manager* Manager::getSingleton() {
+    if (!singleton_) {
+        throw Exception("uome::world::Manager Singleton not created yet");
+    }
     return singleton_;
 }
 
@@ -27,12 +30,22 @@ bool Manager::create(const boost::program_options::variables_map& config) {
     return true;
 }
 
+void Manager::destroy() {
+    if (singleton_) {
+        delete singleton_;
+        singleton_ = NULL;
+    }
+}
+
 Manager::Manager(const boost::program_options::variables_map& config) {
     sectorManager_.reset(new SectorManager(config));
 }
 
-boost::shared_ptr<SectorManager> Manager::getSectorManager() {
-    return sectorManager_;
+Manager::~Manager() {
+}
+
+SectorManager* Manager::getSectorManager() {
+    return sectorManager_.get();
 }
 
 }

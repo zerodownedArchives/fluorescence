@@ -25,9 +25,17 @@ bool Manager::create(const boost::program_options::variables_map& config) {
     return true;
 }
 
+
+void Manager::destroy() {
+    if (singleton_) {
+        delete singleton_;
+        singleton_ = NULL;
+    }
+}
+
 Manager* Manager::getSingleton() {
     if (!singleton_) {
-        throw Exception("uome::ui::Manager called before being created");
+        throw Exception("uome::ui::Manager Singleton called before being created");
     }
 
     return singleton_;
@@ -50,8 +58,8 @@ Manager::Manager(const boost::program_options::variables_map& config) {
 Manager::~Manager() {
 }
 
-boost::shared_ptr<CL_DisplayWindow> Manager::getWindow() {
-    return window_;
+CL_DisplayWindow* Manager::getWindow() {
+    return window_.get();
 }
 
 CL_GraphicContext& Manager::getGC() {
@@ -62,20 +70,20 @@ CL_InputContext& Manager::getIC() {
     return window_->get_ic();
 }
 
-boost::shared_ptr<CL_Texture> Manager::provideTexture(unsigned int width, unsigned int height) {
-    return boost::shared_ptr<CL_Texture>(new CL_Texture(getGC(), width, height, cl_rgb8));
+CL_Texture* Manager::provideTexture(unsigned int width, unsigned int height) {
+    return new CL_Texture(getGC(), width, height, cl_rgb8);
 }
 
-boost::shared_ptr<IngameWindow> Manager::getIngameWindow() {
+IngameWindow* Manager::getIngameWindow() {
     if (ingameWindow_.get() == NULL) {
         ingameWindow_.reset(new IngameWindow(800, 600));
     }
 
-    return ingameWindow_;
+    return ingameWindow_.get();
 }
 
-boost::shared_ptr<RenderQueue> Manager::getRenderQueue() {
-    return renderQueue_;
+RenderQueue* Manager::getRenderQueue() {
+    return renderQueue_.get();
 }
 
 }

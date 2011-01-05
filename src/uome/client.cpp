@@ -5,6 +5,7 @@
 #include <misc/logger.hpp>
 
 #include <ui/manager.hpp>
+#include <ui/renderqueue.hpp>
 #include <ui/ingamewindow.hpp>
 
 #include <data/manager.hpp>
@@ -51,9 +52,9 @@ int Client::main(const std::vector<CL_String8>& args) {
     }
 
 
-    boost::shared_ptr<CL_DisplayWindow> wnd = uome::ui::Manager::getSingleton()->getWindow();
+    CL_DisplayWindow* wnd = uome::ui::Manager::getSingleton()->getWindow();
     CL_InputContext ic = uome::ui::Manager::getSingleton()->getIC();
-    boost::shared_ptr<ui::IngameWindow> ingameWindow = uome::ui::Manager::getSingleton()->getIngameWindow();
+    ui::IngameWindow* ingameWindow = uome::ui::Manager::getSingleton()->getIngameWindow();
     ingameWindow->setCenterTiles(172 * 8, 202 * 8);
 
     timeval lastTime;
@@ -74,9 +75,11 @@ int Client::main(const std::vector<CL_String8>& args) {
             std::ostringstream titleHelper;
             titleHelper << "UO:ME -- fps: " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << fps;
             wnd->set_title(titleHelper.str());
-            LOGARG_DEBUG(LOGTYPE_MAIN, "fps: %.1f", fps);
-             lastTime = curTime;
+            //LOGARG_DEBUG(LOGTYPE_MAIN, "fps: %.1f", fps);
+            lastTime = curTime;
         }
+
+        if (i % 1 == 0) {
 
         if (ic.get_keyboard().get_keycode(CL_KEY_DOWN)) {
             ingameWindow->setCenterTiles(ingameWindow->getCenterTileX(), ingameWindow->getCenterTileY() + 1);
@@ -90,7 +93,15 @@ int Client::main(const std::vector<CL_String8>& args) {
             ingameWindow->setCenterTiles(ingameWindow->getCenterTileX() + 1, ingameWindow->getCenterTileY());
         }
 
-        world::Manager::getSingleton()->getSectorManager()->update(true);
+        }
+
+        // adding sectors has to be done before sorting
+        world::Manager::getSingleton()->getSectorManager()->addNewSectors();
+
+        uome::ui::Manager::getSingleton()->getRenderQueue()->prepareRender();
+
+        // deleting sectors has to be done after sorting (speed)
+        world::Manager::getSingleton()->getSectorManager()->deleteSectors();
 
         // call renderer
         ingameWindow->renderOneFrame();
@@ -99,6 +110,13 @@ int Client::main(const std::vector<CL_String8>& args) {
         CL_KeepAlive::process();
         //CL_System::sleep(10);
     }
+
+    // clean up
+    world::Manager::destroy();
+    ui::Manager::destroy();
+    data::Manager::destroy();
+
+    printf("end of main\n");
 
     return 0;
 }

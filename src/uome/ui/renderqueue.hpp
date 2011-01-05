@@ -28,15 +28,26 @@ public:
     std::list<world::IngameObject*>::iterator endIngame();
 
     /// used to sort the objects according to their render priority. returns true, if a should be painted before b
-    static bool renderPriorityComparator(const world::IngameObject* a, const world::IngameObject* b);
+    bool renderPriorityComparator(const world::IngameObject* a, const world::IngameObject* b);
+
+    unsigned int size() { return ingameList_.size(); }
 
 private:
-    bool sorted_;
     std::list<world::IngameObject*> ingameList_;
 
-    // ingameobjects might be added to the render queue asynchronously. thus, we keep an extra list for newly added items
+    bool sorted_;
+    void sort();
+
+    bool realCheckSorted();
+    bool realCheckInList(world::IngameObject* obj);
+    world::IngameObject* getByIndex(unsigned int idx);
+
+    // ingameobjects might be added to or deleted from the render queue asynchronously. thus, we keep an extra list for added/deleted items
     std::list<world::IngameObject*> ingameAddList_;
     boost::mutex ingameAddListMutex_;
+
+    std::list<world::IngameObject*> ingameDeleteList_;
+    boost::mutex ingameDeleteListMutex_;
 };
 
 }
