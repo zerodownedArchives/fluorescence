@@ -102,11 +102,12 @@ void Manager::init(const boost::program_options::variables_map& config) {
 
     char indexChar = '0';
     for (unsigned int index = 0; index < 5; ++index, ++indexChar) {
+        mapConfigEnabled[9] = indexChar;
+
         if (!config[mapConfigEnabled].as<bool>()) {
             continue;
         }
 
-        mapConfigEnabled[9] = indexChar;
         mapConfigMulPath[9] = indexChar;
         mapConfigSizeX[9] = indexChar;
         mapConfigSizeY[9] = indexChar;

@@ -14,22 +14,24 @@ namespace data {
 
 namespace world {
 
-// TODO: Handle map
 class Sector {
 
 public:
-    Sector(unsigned int id, unsigned int locX, unsigned int locY);
+    Sector(unsigned int mapId, unsigned int id, unsigned int locX, unsigned int locY);
     ~Sector();
 
-    unsigned int getLocX() { return location_[0u]; }
-    unsigned int getLocY() { return location_[1u]; }
+    unsigned int getMapId() const;
 
-    bool isVisible() { return visible_; }
+    unsigned int getLocX() const;
+    unsigned int getLocY() const;
 
-    boost::shared_ptr<MapBlock> getMapBlock() const { return mapBlock_; }
-    boost::shared_ptr<StaticBlock> getStaticBlock() const { return staticBlock_; }
+    bool isVisible() const;
+
+    boost::shared_ptr<MapBlock> getMapBlock() const;
+    boost::shared_ptr<StaticBlock> getStaticBlock() const;
 
 private:
+    unsigned int mapId_;
     unsigned int id_;
     CL_Vec2<unsigned int> location_;
 

@@ -17,6 +17,9 @@ public:
 
     SectorManager* getSectorManager();
 
+    unsigned int getCurrentMapId();
+    void setCurrentMapId(unsigned int id);
+
 private:
     static Manager* singleton_;
     Manager(const boost::program_options::variables_map& config);
@@ -24,6 +27,8 @@ private:
     void operator=(const Manager& copy) {}
 
     boost::shared_ptr<SectorManager> sectorManager_;
+
+    unsigned int currentMapId_;
 };
 
 }

@@ -55,7 +55,7 @@ int Client::main(const std::vector<CL_String8>& args) {
     CL_DisplayWindow* wnd = uome::ui::Manager::getSingleton()->getWindow();
     CL_InputContext ic = uome::ui::Manager::getSingleton()->getIC();
     ui::IngameWindow* ingameWindow = uome::ui::Manager::getSingleton()->getIngameWindow();
-    ingameWindow->setCenterTiles(172 * 8, 202 * 8);
+    ingameWindow->setCenterTiles(10 * 8, 10 * 8);
 
     timeval lastTime;
     gettimeofday(&lastTime, NULL);
@@ -79,8 +79,6 @@ int Client::main(const std::vector<CL_String8>& args) {
             lastTime = curTime;
         }
 
-        if (i % 1 == 0) {
-
         if (ic.get_keyboard().get_keycode(CL_KEY_DOWN)) {
             ingameWindow->setCenterTiles(ingameWindow->getCenterTileX(), ingameWindow->getCenterTileY() + 1);
         } else if (ic.get_keyboard().get_keycode(CL_KEY_UP)) {
@@ -93,6 +91,11 @@ int Client::main(const std::vector<CL_String8>& args) {
             ingameWindow->setCenterTiles(ingameWindow->getCenterTileX() + 1, ingameWindow->getCenterTileY());
         }
 
+        if (i % 200 == 0 && ic.get_keyboard().get_keycode(CL_KEY_M)) {
+            unsigned int curMapId = world::Manager::getSingleton()->getCurrentMapId();
+            curMapId += 1;
+            curMapId %= 5;
+            world::Manager::getSingleton()->setCurrentMapId(curMapId);
         }
 
         // adding sectors has to be done before sorting

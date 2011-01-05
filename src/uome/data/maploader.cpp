@@ -31,8 +31,8 @@ MapLoader::MapLoader(const boost::filesystem::path& mulPath, unsigned int blockC
 }
 
 void MapLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<world::MapBlock> item, unsigned int extra, unsigned int userData) {
-    unsigned int blockX = userData / 512;
-    unsigned int blockY = userData % 512;
+    unsigned int blockX = userData / blockCountY_;
+    unsigned int blockY = userData % blockCountY_;
 
     item->blockIndexX_ = blockX;
     item->blockIndexY_ = blockY;
@@ -190,6 +190,14 @@ boost::shared_ptr<world::MapBlock> MapLoader::getNoCreate(unsigned int x, unsign
     } else {
         return mulCache_.getNoCreate(idx);
     }
+}
+
+unsigned int MapLoader::getBlockCountX() {
+    return blockCountX_;
+}
+
+unsigned int MapLoader::getBlockCountY() {
+    return blockCountY_;
 }
 
 

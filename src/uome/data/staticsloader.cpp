@@ -33,8 +33,8 @@ StaticsLoader::StaticsLoader(const boost::filesystem::path& idxPath, const boost
 }
 
 void StaticsLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<world::StaticBlock> item, unsigned int extra, unsigned int userData) {
-    unsigned int blockX = userData / 512;
-    unsigned int blockY = userData % 512;
+    unsigned int blockX = userData / blockCountY_;
+    unsigned int blockY = userData % blockCountY_;
 
     item->blockIndexX_ = blockX;
     item->blockIndexY_ = blockY;

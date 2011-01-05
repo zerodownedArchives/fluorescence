@@ -26,6 +26,8 @@ public:
     boost::shared_ptr<world::MapBlock> get(unsigned int x, unsigned int y);
     boost::shared_ptr<world::MapBlock> getNoCreate(unsigned int x, unsigned int y);
 
+    unsigned int getBlockCountX();
+    unsigned int getBlockCountY();
 
 private:
     WeakPtrCache<world::MapBlock, FixedSizeOnDemandFileLoader> mulCache_;

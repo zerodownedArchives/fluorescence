@@ -42,7 +42,7 @@ public:
     int getRenderPriority(unsigned int lvl) const;
     const int* getRenderPriorities() const;
 
-    /// returns wheter or not this item is currently in the drawing area of the game window
+    /// returns whether or not this item is currently in the drawing area of the game window
     bool isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const;
 
 protected:
@@ -62,7 +62,7 @@ protected:
 private:
     bool visible_;
 
-    bool renderDataValid_; ///< wheter or not the vertex positions and render priorities are correct
+    bool renderDataValid_; ///< whether or not the vertex positions and render priorities are correct
 
     CL_Vec3<int> location_;
     bool textureProviderUpdateRequired_;

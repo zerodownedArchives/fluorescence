@@ -34,6 +34,10 @@ private:
 
     unsigned int sectorAddDistance_; ///< Sectors closer than this are added
     unsigned int sectorRemoveDistance_; ///< Sectors farther away than this are removed. Should be > sectorAddDistance_
+
+    unsigned int lastMapId_; ///< to detect map changes
+
+    unsigned int calcSectorIndex(unsigned int x, unsigned int y);
 };
 
 }

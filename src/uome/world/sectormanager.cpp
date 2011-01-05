@@ -3,6 +3,7 @@
 
 #include <boost/bind.hpp>
 
+#include "manager.hpp"
 #include "sector.hpp"
 
 #include <misc/logger.hpp>
@@ -10,6 +11,9 @@
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
 #include <ui/ingamewindow.hpp>
+
+#include <data/maploader.hpp>
+#include <data/manager.hpp>
 
 namespace uome {
 namespace world {
@@ -32,6 +36,13 @@ void SectorManager::addNewSectors(bool force) {
         return;
     }
 
+    unsigned int mapId = world::Manager::getSingleton()->getCurrentMapId();
+    if (mapId != lastMapId_) {
+        LOG_INFO(LOGTYPE_WORLD, "Map change detected, clearing sectors");
+        clear();
+        lastMapId_ = mapId;
+    }
+
     unsigned int centerSectorX = ui::Manager::getSingleton()->getIngameWindow()->getCenterTileX() / 8;
     unsigned int centerSectorY = ui::Manager::getSingleton()->getIngameWindow()->getCenterTileY() / 8;
 
@@ -46,9 +57,10 @@ void SectorManager::addNewSectors(bool force) {
     std::map<unsigned int, boost::shared_ptr<Sector> >::const_iterator notFound = sectorMap_.end();
     for (unsigned int xIdx = xStart; xIdx < xEnd; ++xIdx) {
         for (unsigned int yIdx = yStart; yIdx < yEnd; ++yIdx) {
-            unsigned int curIdx = xIdx * 512 + yIdx;
+            unsigned int curIdx = calcSectorIndex(xIdx, yIdx);
+
             if (sectorMap_.find(curIdx) == notFound) {
-                boost::shared_ptr<Sector> newSec(new Sector(curIdx, xIdx, yIdx));
+                boost::shared_ptr<Sector> newSec(new Sector(mapId, curIdx, xIdx, yIdx));
                 sectorMap_[curIdx] = newSec;
             }
         }
@@ -56,6 +68,15 @@ void SectorManager::addNewSectors(bool force) {
 }
 
 void SectorManager::deleteSectors() {
+    unsigned int mapId = world::Manager::getSingleton()->getCurrentMapId();
+
+    if (mapId != lastMapId_) {
+        LOG_INFO(LOGTYPE_WORLD, "Map change detected, clearing sectors");
+        clear();
+        lastMapId_ = mapId;
+        return;
+    }
+
     unsigned int centerSectorX = ui::Manager::getSingleton()->getIngameWindow()->getCenterTileX() / 8;
     unsigned int centerSectorY = ui::Manager::getSingleton()->getIngameWindow()->getCenterTileY() / 8;
 
@@ -70,7 +91,8 @@ void SectorManager::deleteSectors() {
     std::map<unsigned int, boost::shared_ptr<Sector> >::iterator deleteEnd = sectorMap_.end();
 
     while (deleteIter != deleteEnd) {
-        if (deleteIter->second->getLocX() < xStart ||
+        if (deleteIter->second->getMapId() != mapId ||
+                deleteIter->second->getLocX() < xStart ||
                 deleteIter->second->getLocX() > xEnd ||
                 deleteIter->second->getLocY() < yStart ||
                 deleteIter->second->getLocY() > yEnd) {
@@ -85,6 +107,11 @@ void SectorManager::deleteSectors() {
 
 void SectorManager::clear() {
     sectorMap_.clear();
+}
+
+unsigned int SectorManager::calcSectorIndex(unsigned int x, unsigned int y) {
+    unsigned int mapHeight = data::Manager::getMapLoader(lastMapId_)->getBlockCountY();
+    return x * mapHeight + y;
 }
 
 }

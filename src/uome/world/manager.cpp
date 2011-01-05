@@ -37,7 +37,7 @@ void Manager::destroy() {
     }
 }
 
-Manager::Manager(const boost::program_options::variables_map& config) {
+Manager::Manager(const boost::program_options::variables_map& config) : currentMapId_(2) {
     sectorManager_.reset(new SectorManager(config));
 }
 
@@ -46,6 +46,14 @@ Manager::~Manager() {
 
 SectorManager* Manager::getSectorManager() {
     return sectorManager_.get();
+}
+
+unsigned int Manager::getCurrentMapId() {
+    return currentMapId_;
+}
+
+void Manager::setCurrentMapId(unsigned int id) {
+    currentMapId_ = id;
 }
 
 }

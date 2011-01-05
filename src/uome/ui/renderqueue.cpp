@@ -55,7 +55,7 @@ bool RenderQueue::realCheckSorted() {
 
     for (unsigned int idx = 0; iter != end; ++iter, ++last, ++idx) {
         if (!renderPriorityComparator(*last, *iter)) {
-            printf("unsorted list elements at %u\n", idx);
+            LOGARG_ERROR(LOGTYPE_UI, "unsorted list elements at %u", idx);
             return false;
         }
     }
@@ -70,7 +70,7 @@ bool RenderQueue::realCheckInList(world::IngameObject* obj) {
 
     for (; iter != end; ++iter) {
         if (*iter == obj) {
-            printf("index in list: %i of %u\n", idx, ingameList_.size());
+            LOGARG_ERROR(LOGTYPE_UI, "index in list: %i of %u", idx, ingameList_.size());
             return true;
         }
         ++idx;
@@ -142,32 +142,6 @@ void RenderQueue::removeSector(world::Sector* sector) {
 }
 
 void RenderQueue::remove(world::IngameObject* obj) {
-    //printf("rq count before: %u\n", ingameList_.size());
-    //printf("counted: %u\n", std::count(ingameList_.begin(), ingameList_.end(), obj));
-
-    //if (!std::binary_search(ingameList_.begin(), ingameList_.end(), obj, boost::bind(&RenderQueue::renderPriorityComparator, this, _1, _2))) {
-        //printf("item not even in the list\n");
-        //if (realCheckInList(obj)) {
-            //printf("but real check says it is\n");
-        //} else {
-            //printf("really not\n");
-        //}
-
-        //if (realCheckSorted()) {
-            //printf("list is sorted\n");
-        //} else {
-            //printf("list is not sorted! wtf?\n");
-        //}
-
-        //int i = 0;
-        //(void)i;
-    //}
-
-    //ingameList_.remove(*deleteIter);
-
-    //std::list<world::IngameObject*>::iterator listItm =
-        //std::lower_bound(ingameList_.begin(), ingameList_.end(), obj, boost::bind(&RenderQueue::renderPriorityComparator, this, _1, _2));
-
     std::pair<
         std::list<world::IngameObject*>::iterator,
         std::list<world::IngameObject*>::iterator
@@ -183,21 +157,6 @@ void RenderQueue::remove(world::IngameObject* obj) {
             break;
         }
     }
-    //if (!erased) {
-        //int i = 0;
-        //(void)i;
-    //}
-
-    //printf ("Item successfully erased: %i\n", erased);
-
-    //if (*listItm == obj) {
-        //ingameList_.erase(listItm);
-    //} else {
-        //printf("listItm iterator != obj\n");
-    //}
-
-    //boost::mutex::scoped_lock myLock(ingameDeleteListMutex_);
-    //ingameDeleteList_.push_back(obj);
 }
 
 void RenderQueue::requireSort() {

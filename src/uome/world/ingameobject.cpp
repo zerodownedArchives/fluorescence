@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 
+#include <misc/logger.hpp>
+
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
@@ -25,6 +27,8 @@ void IngameObject::setLocation(int locX, int locY, int locZ) {
     CL_Vec3<int> oldLocation = location_;
 
     location_ = CL_Vec3<int>(locX, locY, locZ);
+
+    //LOGARG_DEBUG(LOGTYPE_WORLD, "Object location: %i %i %i", locX, locY, locZ);
 
     invalidateRenderData();
 }
@@ -96,6 +100,8 @@ void IngameObject::removeFromRenderQueue() {
 }
 
 bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {
+    //LOGARG_DEBUG(LOGTYPE_WORLD, "isInDrawArea (%u %u %u %u) => x=%u y=%u\n", leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord, vertexCoordinates_[0u].x, vertexCoordinates_[0u].y);
+
     // this code is not pretty. but as this function is called _very_ often, it is optimized a little
     bool leftOk = false;
     bool rightOk = false;
