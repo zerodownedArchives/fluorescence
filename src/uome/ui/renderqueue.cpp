@@ -36,7 +36,7 @@ bool RenderQueue::renderPriorityComparator(const world::IngameObject* a, const w
 }
 
 RenderQueue::RenderQueue() :
-        sorted_(true) {
+        ingameIsSorted_(true) {
 }
 
 RenderQueue::~RenderQueue() {
@@ -47,7 +47,7 @@ void RenderQueue::add(world::IngameObject* obj) {
     ingameAddList_.push_back(obj);
 }
 
-bool RenderQueue::realCheckSorted() {
+bool RenderQueue::debugIngameCheckSorted() {
     std::list<world::IngameObject*>::const_iterator iter = ingameList_.begin();
     std::list<world::IngameObject*>::const_iterator last = iter;
     ++iter;
@@ -63,7 +63,7 @@ bool RenderQueue::realCheckSorted() {
     return true;
 }
 
-bool RenderQueue::realCheckInList(world::IngameObject* obj) {
+bool RenderQueue::debugIngameCheckInList(world::IngameObject* obj) {
     int idx = 0;
     std::list<world::IngameObject*>::const_iterator iter = ingameList_.begin();
     std::list<world::IngameObject*>::const_iterator end = ingameList_.end();
@@ -79,7 +79,7 @@ bool RenderQueue::realCheckInList(world::IngameObject* obj) {
     return false;
 }
 
-world::IngameObject* RenderQueue::getByIndex(unsigned int idx) {
+world::IngameObject* RenderQueue::debugIngameGetByIndex(unsigned int idx) {
     std::list<world::IngameObject*>::const_iterator iter = ingameList_.begin();
     std::list<world::IngameObject*>::const_iterator end = ingameList_.end();
 
@@ -159,8 +159,8 @@ void RenderQueue::remove(world::IngameObject* obj) {
     }
 }
 
-void RenderQueue::requireSort() {
-    sorted_ = false;
+void RenderQueue::requireIngameSort() {
+    ingameIsSorted_ = false;
 }
 
 void RenderQueue::prepareRender() {
@@ -169,7 +169,7 @@ void RenderQueue::prepareRender() {
         if (!ingameAddList_.empty()) {
             ingameList_.insert(ingameList_.end(), ingameAddList_.begin(), ingameAddList_.end());
             ingameAddList_.clear();
-            sorted_ = false;
+            ingameIsSorted_ = false;
         }
     }
 
@@ -184,13 +184,13 @@ void RenderQueue::prepareRender() {
         }
     }
 
-    sort();
+    sortIngame();
 }
 
-void RenderQueue::sort() {
-    if (!sorted_) {
+void RenderQueue::sortIngame() {
+    if (!ingameIsSorted_) {
         ingameList_.sort(boost::bind(&RenderQueue::renderPriorityComparator, this, _1, _2));
-        sorted_ = true;
+        ingameIsSorted_ = true;
     }
 }
 

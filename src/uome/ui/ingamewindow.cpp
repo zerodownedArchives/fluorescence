@@ -6,10 +6,13 @@
 namespace uome {
 namespace ui {
 
-IngameWindow::IngameWindow(unsigned int width, unsigned int height) :
-        centerTileX_(0), centerTileY_(0),
-        width_(width), height_(height) {
+IngameWindow::IngameWindow(CL_GUIManager* manager) : UiObject(manager),
+        centerTileX_(0), centerTileY_(0) {
     renderer_.reset(new IngameWindowRenderer(this));
+
+    set_constant_repaint(true);
+
+    func_render().set(this, &IngameWindow::renderOneFrame);
 }
 
 unsigned int IngameWindow::getCenterTileX() {
@@ -34,23 +37,15 @@ int IngameWindow::getCenterPixelY() {
 }
 
 unsigned int IngameWindow::getWidth() {
-    return width_;
+    return get_width();
 }
 
 unsigned int IngameWindow::getHeight() {
-    return height_;
+    return get_height();
 }
 
-void IngameWindow::setWidth(unsigned int width) {
-    width_ = width;
-}
-
-void IngameWindow::setHeight(unsigned int height) {
-    height_ = height;
-}
-
-void IngameWindow::renderOneFrame() {
-    renderer_->renderOneFrame();
+void IngameWindow::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
+    renderer_->renderOneFrame(gc, clipRect);
 }
 
 }

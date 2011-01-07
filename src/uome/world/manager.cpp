@@ -37,7 +37,7 @@ void Manager::destroy() {
     }
 }
 
-Manager::Manager(const boost::program_options::variables_map& config) : currentMapId_(2) {
+Manager::Manager(const boost::program_options::variables_map& config) : currentMapId_(0) {
     sectorManager_.reset(new SectorManager(config));
 }
 

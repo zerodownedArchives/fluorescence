@@ -16,7 +16,7 @@ namespace ui {
 IngameWindowRenderer::IngameWindowRenderer(IngameWindow* ingameWindow) :
         ingameWindow_(ingameWindow) {
 
-    CL_GraphicContext gc = uome::ui::Manager::getSingleton()->getGC();
+    CL_GraphicContext gc = uome::ui::Manager::getSingleton()->getGraphicsContext();
 
     shaderProgram_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "../shader/vertex.glsl", "../shader/fragment.glsl")));
     shaderProgram_->bind_attribute_location(0, "Position");
@@ -28,11 +28,13 @@ IngameWindowRenderer::IngameWindowRenderer(IngameWindow* ingameWindow) :
 IngameWindowRenderer::~IngameWindowRenderer() {
 }
 
-void IngameWindowRenderer::renderOneFrame() {
-    CL_GraphicContext gc = uome::ui::Manager::getSingleton()->getGC();
+void IngameWindowRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     RenderQueue* renderQueue = uome::ui::Manager::getSingleton()->getRenderQueue();
 
+    // clip ingame window size
+    gc.push_cliprect(clipRect);
 
+    // TODO: move this somewhere else?
     gc.clear(CL_Colorf(0.0f, 0.0f, 0.0f));
 
     gc.set_program_object(*shaderProgram_, cl_program_matrix_modelview_projection);
@@ -88,6 +90,8 @@ void IngameWindowRenderer::renderOneFrame() {
         gc.draw_primitives(cl_triangles, 6, primarray);
         gc.reset_texture(0);
     }
+
+    gc.pop_cliprect();
 
     gc.reset_program_object();
 }

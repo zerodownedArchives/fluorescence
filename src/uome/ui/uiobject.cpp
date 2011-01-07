@@ -4,21 +4,10 @@
 namespace uome {
 namespace ui {
 
-UiObject::UiObject(int locX, int locY) {
-    setLocation(locX, locY);
+UiObject::UiObject(CL_GUIManager* manager) : CL_GUIComponent(manager, CL_GUITopLevelDescription()) {
 }
 
-int UiObject::getLocX() {
-    return locX_;
-}
-
-int UiObject::getLocY() {
-    return locY_;
-}
-
-void UiObject::setLocation(int locX, int locY) {
-    locX_ = locX;
-    locY_ = locY;
+UiObject::UiObject(CL_GUIComponent* parent) : CL_GUIComponent(parent) {
 }
 
 bool UiObject::isMovable() {

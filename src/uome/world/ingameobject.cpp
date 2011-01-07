@@ -78,7 +78,7 @@ void IngameObject::updateRenderData() {
     renderDataValid_ = true;
 
     // the rendering order might have been changed
-    ui::Manager::getSingleton()->getRenderQueue()->requireSort();
+    ui::Manager::getSingleton()->getRenderQueue()->requireIngameSort();
 }
 
 void IngameObject::requestUpdateTextureProvider() {

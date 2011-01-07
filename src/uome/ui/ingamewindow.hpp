@@ -1,17 +1,18 @@
 #ifndef UOME_UI_INGAMEWINDOW_HPP
 #define UOME_UI_INGAMEWINDOW_HPP
 
-
 #include <boost/shared_ptr.hpp>
+
+#include "uiobject.hpp"
 
 namespace uome {
 namespace ui {
 
 class IngameWindowRenderer;
 
-class IngameWindow {
+class IngameWindow : public UiObject {
 public:
-    IngameWindow(unsigned int width, unsigned int height);
+    IngameWindow(CL_GUIManager* manager);
 
     unsigned int getCenterTileX();
     unsigned int getCenterTileY();
@@ -24,17 +25,11 @@ public:
     unsigned int getWidth();
     unsigned int getHeight();
 
-    void setWidth(unsigned int width);
-    void setHeight(unsigned int height);
-
-    void renderOneFrame();
+    void renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect);
 
 private:
     unsigned int centerTileX_;
     unsigned int centerTileY_;
-
-    unsigned int width_;
-    unsigned int height_;
 
     boost::shared_ptr<IngameWindowRenderer> renderer_;
 };

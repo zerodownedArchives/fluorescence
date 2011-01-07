@@ -13,6 +13,8 @@ namespace world {
 
 namespace ui {
 
+class UiObject;
+
 class RenderQueue {
 public:
     RenderQueue();
@@ -25,7 +27,7 @@ public:
     void removeSector(world::Sector* sector);
 
     /// Calling this function will make the client re-sort the queue at the next rendering
-    void requireSort();
+    void requireIngameSort();
     void prepareRender();
 
     std::list<world::IngameObject*>::const_iterator beginIngame();
@@ -44,19 +46,16 @@ private:
      */
     std::list<world::IngameObject*> ingameList_;
 
-    bool sorted_;
-    void sort();
+    bool ingameIsSorted_;
+    void sortIngame();
 
-    bool realCheckSorted();
-    bool realCheckInList(world::IngameObject* obj);
-    world::IngameObject* getByIndex(unsigned int idx);
+    bool debugIngameCheckSorted();
+    bool debugIngameCheckInList(world::IngameObject* obj);
+    world::IngameObject* debugIngameGetByIndex(unsigned int idx);
 
     // ingameobjects might be added to or deleted from the render queue asynchronously. thus, we keep an extra list for added/deleted items
     std::list<world::IngameObject*> ingameAddList_;
     boost::mutex ingameAddListMutex_;
-
-    std::list<world::IngameObject*> ingameDeleteList_;
-    boost::mutex ingameDeleteListMutex_;
 };
 
 }

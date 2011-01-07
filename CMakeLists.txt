@@ -14,7 +14,7 @@ find_package(Boost 1.40.0 REQUIRED COMPONENTS filesystem thread program_options)
 
 set(ClanLib_VERSION_LIBNAME "22")
 set(ClanList_VERSION_DIRNAME "2.2")
-find_package(ClanLib REQUIRED)
+find_package(ClanLib REQUIRED COMPONENTS App Core Display GL GUI)
 
 EXEC_PROGRAM(icu-config
         ARGS "--ldflags" "--ldflags-icuio"

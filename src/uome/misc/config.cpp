@@ -118,6 +118,10 @@ bool Config::getVariablesMap(const std::vector<CL_String8>& args, boost::program
     ("world.sector-check-frequency", po::value<unsigned int>()->default_value(15), "After X frames, sectors will be checked for load/delete")
     ("world.sector-add-distance", po::value<unsigned int>()->default_value(4), "Sectors closer than this are added")
     ("world.sector-remove-distance", po::value<unsigned int>()->default_value(5), "Sectors farther away than this are removed. Should be > world.sector-add-distance")
+
+
+    ("ui.themes-directory", po::value<std::string>()->default_value("themes"), "Directory containing the themes for UO:ME")
+    ("ui.default-theme", po::value<std::string>()->default_value("GUIThemeBasic"), "Default ui theme")
     ;
 
     desc.add(filesDesc);

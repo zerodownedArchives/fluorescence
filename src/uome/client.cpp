@@ -51,17 +51,21 @@ int Client::main(const std::vector<CL_String8>& args) {
         return 1;
     }
 
+    ui::Manager* uiManager = uome::ui::Manager::getSingleton();
 
-    CL_DisplayWindow* wnd = uome::ui::Manager::getSingleton()->getWindow();
-    CL_InputContext ic = uome::ui::Manager::getSingleton()->getIC();
-    ui::IngameWindow* ingameWindow = uome::ui::Manager::getSingleton()->getIngameWindow();
-    ingameWindow->setCenterTiles(10 * 8, 10 * 8);
+
+
+    CL_DisplayWindow* wnd = uiManager->getMainWindow();
+    ui::IngameWindow* ingameWindow = uiManager->getIngameWindow();
+    ingameWindow->setCenterTiles(180 * 8, 200 * 8);
 
     timeval lastTime;
     gettimeofday(&lastTime, NULL);
 
 
-    for (unsigned int i = 1; !ic.get_keyboard().get_keycode(CL_KEY_ESCAPE); ++i) {
+    unsigned int i = 0;
+    while (!uiManager->shouldExit()) {
+        ++i;
         if (i % 50 == 0) {
             timeval curTime;
             gettimeofday(&curTime, NULL);
@@ -79,36 +83,17 @@ int Client::main(const std::vector<CL_String8>& args) {
             lastTime = curTime;
         }
 
-        if (ic.get_keyboard().get_keycode(CL_KEY_DOWN)) {
-            ingameWindow->setCenterTiles(ingameWindow->getCenterTileX(), ingameWindow->getCenterTileY() + 1);
-        } else if (ic.get_keyboard().get_keycode(CL_KEY_UP)) {
-            ingameWindow->setCenterTiles(ingameWindow->getCenterTileX(), ingameWindow->getCenterTileY() - 1);
-        }
-
-        if (ic.get_keyboard().get_keycode(CL_KEY_LEFT)) {
-            ingameWindow->setCenterTiles(ingameWindow->getCenterTileX() - 1, ingameWindow->getCenterTileY());
-        } else if (ic.get_keyboard().get_keycode(CL_KEY_RIGHT)) {
-            ingameWindow->setCenterTiles(ingameWindow->getCenterTileX() + 1, ingameWindow->getCenterTileY());
-        }
-
-        if (i % 200 == 0 && ic.get_keyboard().get_keycode(CL_KEY_M)) {
-            unsigned int curMapId = world::Manager::getSingleton()->getCurrentMapId();
-            curMapId += 1;
-            curMapId %= 5;
-            world::Manager::getSingleton()->setCurrentMapId(curMapId);
-        }
-
         // adding sectors has to be done before sorting
         world::Manager::getSingleton()->getSectorManager()->addNewSectors();
 
-        uome::ui::Manager::getSingleton()->getRenderQueue()->prepareRender();
+        uiManager->getRenderQueue()->prepareRender();
 
-        // deleting sectors has to be done after sorting (speed)
+        // deleting sectors has to be done after RenderQueue::prepareRender()
         world::Manager::getSingleton()->getSectorManager()->deleteSectors();
 
         // call renderer
-        ingameWindow->renderOneFrame();
-        wnd->flip();
+        uiManager->processMessages();
+        uiManager->drawWindow();
 
         CL_KeepAlive::process();
         //CL_System::sleep(10);

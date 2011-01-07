@@ -17,7 +17,7 @@ public:
     IngameWindowRenderer(IngameWindow* ingameWindow);
     ~IngameWindowRenderer();
 
-    void renderOneFrame();
+    void renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect);
 
 private:
     boost::shared_ptr<CL_ProgramObject> shaderProgram_;
