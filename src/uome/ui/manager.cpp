@@ -44,11 +44,6 @@ Manager* Manager::getSingleton() {
 }
 
 Manager::Manager(const boost::program_options::variables_map& config) {
-    CL_SetupCore clSetupCore;
-    CL_SetupDisplay clSetupDisplay;
-    CL_SetupGL clSetupGL;
-    CL_SetupGUI clSetupGUI;
-
     CL_OpenGLWindowDescription description;
     description.set_size(CL_Size(800, 600), true);
     description.set_title("UO:ME -- 0 fps");
@@ -62,6 +57,11 @@ Manager::Manager(const boost::program_options::variables_map& config) {
     guiManager_.reset(new CL_GUIManager(*windowManager_, path.string()));
 
     renderQueue_.reset(new RenderQueue());
+
+    UiObject* container = new UiObject(guiManager_.get());
+    CL_PushButton* button = new CL_PushButton(container);
+    button->set_text("I am a clanlib GUI button");
+    button->set_geometry(CL_Rect(20, 20, CL_Size(180, 30)));
 }
 
 Manager::~Manager() {
@@ -99,7 +99,7 @@ CL_Texture* Manager::provideTexture(unsigned int width, unsigned int height) {
 IngameWindow* Manager::getIngameWindow() {
     if (ingameWindow_.get() == NULL) {
         ingameWindow_.reset(new IngameWindow(guiManager_.get()));
-        ingameWindow_->set_geometry(CL_Rect(150, 150, 700, 550));
+        ingameWindow_->set_geometry(CL_Rect(100, 100, CL_Size(640, 480)));
     }
 
     return ingameWindow_.get();

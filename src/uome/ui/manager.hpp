@@ -47,6 +47,12 @@ private:
 
     boost::shared_ptr<RenderQueue> renderQueue_;
 
+    // clan lib setup stuff
+    CL_SetupCore clSetupCore;
+    CL_SetupDisplay clSetupDisplay;
+    CL_SetupGL clSetupGL;
+    CL_SetupGUI clSetupGUI;
+
     // clan lib gui stuff
     boost::shared_ptr<CL_GUIManager> guiManager_;
     boost::shared_ptr<CL_GUIWindowManagerTexture> windowManager_;
