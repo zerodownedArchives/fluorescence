@@ -1,18 +1,20 @@
-#ifndef UOME_UI_INGAMEWINDOW_HPP
-#define UOME_UI_INGAMEWINDOW_HPP
+#ifndef UOME_UI_INGAMEVIEW_HPP
+#define UOME_UI_INGAMEVIEW_HPP
 
 #include <boost/shared_ptr.hpp>
 
-#include "uiobject.hpp"
+#include <list>
+
+#include "gumpmenu.hpp"
 
 namespace uome {
 namespace ui {
 
-class IngameWindowRenderer;
+class IngameViewRenderer;
 
-class IngameWindow : public UiObject {
+class IngameView : public GumpMenu {
 public:
-    IngameWindow(CL_GUIManager* manager);
+    IngameView(const CL_Rect& bounds);
 
     unsigned int getCenterTileX();
     unsigned int getCenterTileY();
@@ -27,11 +29,14 @@ public:
 
     void renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect);
 
+    /// store all sectors this view needs (including some cache) in the list
+    void getRequiredSectors(std::list<unsigned int>& list, unsigned int mapHeight);
+
 private:
     unsigned int centerTileX_;
     unsigned int centerTileY_;
 
-    boost::shared_ptr<IngameWindowRenderer> renderer_;
+    boost::shared_ptr<IngameViewRenderer> renderer_;
 };
 
 }

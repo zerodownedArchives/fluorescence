@@ -10,7 +10,7 @@
 
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
-#include <ui/ingamewindow.hpp>
+#include <ui/ingameview.hpp>
 
 #include <data/maploader.hpp>
 #include <data/manager.hpp>
@@ -27,6 +27,11 @@ SectorManager::SectorManager(const boost::program_options::variables_map& config
 SectorManager::~SectorManager() {
 }
 
+void SectorManager::registerIngameView(boost::shared_ptr<ui::IngameView> view) {
+    boost::weak_ptr<ui::IngameView> toAdd(view);
+    ingameViews_.push_back(toAdd);
+}
+
 void SectorManager::addNewSectors(bool force) {
     // the player does not move overly fast, so it is enough to check for new sectors every x frames
     bool doAddSector = (updateCounter_ % updateFrequency_ == 0);
@@ -36,6 +41,8 @@ void SectorManager::addNewSectors(bool force) {
         return;
     }
 
+    LOGARG_INFO(LOGTYPE_WORLD, "Sector manager has %u cached", sectorMap_.size());
+
     unsigned int mapId = world::Manager::getSingleton()->getCurrentMapId();
     if (mapId != lastMapId_) {
         LOG_INFO(LOGTYPE_WORLD, "Map change detected, clearing sectors");
@@ -43,26 +50,22 @@ void SectorManager::addNewSectors(bool force) {
         lastMapId_ = mapId;
     }
 
-    unsigned int centerSectorX = ui::Manager::getSingleton()->getIngameWindow()->getCenterTileX() / 8;
-    unsigned int centerSectorY = ui::Manager::getSingleton()->getIngameWindow()->getCenterTileY() / 8;
+    // these are all sectors we require for rendering
+    std::list<unsigned int> sectorRequiredList;
+    buildSectorRequiredList(sectorRequiredList);
 
-    // sectors between these bounds should be loaded
-    unsigned int xStart = std::max(0, (int)centerSectorX - (int)sectorAddDistance_);
-    unsigned int xEnd = centerSectorX + sectorAddDistance_ + 1;
 
-    unsigned int yStart = std::max(0, (int)centerSectorY - (int)sectorAddDistance_);
-    unsigned int yEnd = centerSectorY + sectorAddDistance_ + 1;
+    std::list<unsigned int>::const_iterator requiredIter = sectorRequiredList.begin();
+    std::list<unsigned int>::const_iterator requiredEnd = sectorRequiredList.end();
 
     // check all sectors if they are loaded, and load if they are not
     std::map<unsigned int, boost::shared_ptr<Sector> >::const_iterator notFound = sectorMap_.end();
-    for (unsigned int xIdx = xStart; xIdx < xEnd; ++xIdx) {
-        for (unsigned int yIdx = yStart; yIdx < yEnd; ++yIdx) {
-            unsigned int curIdx = calcSectorIndex(xIdx, yIdx);
 
-            if (sectorMap_.find(curIdx) == notFound) {
-                boost::shared_ptr<Sector> newSec(new Sector(mapId, curIdx, xIdx, yIdx));
-                sectorMap_[curIdx] = newSec;
-            }
+    for (; requiredIter != requiredEnd; ++requiredIter) {
+        unsigned int curIdx = *requiredIter;
+        if (sectorMap_.find(curIdx) == notFound) {
+            boost::shared_ptr<Sector> newSec(new Sector(mapId, curIdx));
+            sectorMap_[curIdx] = newSec;
         }
     }
 }
@@ -77,27 +80,22 @@ void SectorManager::deleteSectors() {
         return;
     }
 
-    unsigned int centerSectorX = ui::Manager::getSingleton()->getIngameWindow()->getCenterTileX() / 8;
-    unsigned int centerSectorY = ui::Manager::getSingleton()->getIngameWindow()->getCenterTileY() / 8;
+    // these are all sectors we require for rendering
+    std::list<unsigned int> sectorRequiredList;
+    buildSectorRequiredList(sectorRequiredList);
 
-    // sectors not between these bounds should be deleted
-    unsigned int xStart = std::max(0, (int)centerSectorX - (int)sectorRemoveDistance_);
-    unsigned int xEnd = centerSectorX + sectorRemoveDistance_ + 1;
 
-    unsigned int yStart = std::max(0, (int)centerSectorY - (int)sectorRemoveDistance_);
-    unsigned int yEnd = centerSectorY + sectorRemoveDistance_ + 1;
-
+    // iterate over all stored sectors and remove them
     std::map<unsigned int, boost::shared_ptr<Sector> >::iterator deleteIter = sectorMap_.begin();
     std::map<unsigned int, boost::shared_ptr<Sector> >::iterator deleteEnd = sectorMap_.end();
 
+    std::list<unsigned int>::const_iterator requiredBegin = sectorRequiredList.begin();
+    std::list<unsigned int>::const_iterator requiredEnd = sectorRequiredList.end();
+
     while (deleteIter != deleteEnd) {
         if (deleteIter->second->getMapId() != mapId ||
-                deleteIter->second->getLocX() < xStart ||
-                deleteIter->second->getLocX() > xEnd ||
-                deleteIter->second->getLocY() < yStart ||
-                deleteIter->second->getLocY() > yEnd) {
+                !std::binary_search(requiredBegin, requiredEnd, deleteIter->second->getSectorId())) {
             sectorMap_.erase(deleteIter);
-            break;
         }
 
         ++deleteIter;
@@ -112,6 +110,48 @@ void SectorManager::clear() {
 unsigned int SectorManager::calcSectorIndex(unsigned int x, unsigned int y) {
     unsigned int mapHeight = data::Manager::getMapLoader(lastMapId_)->getBlockCountY();
     return x * mapHeight + y;
+}
+
+void SectorManager::buildSectorRequiredList(std::list<unsigned int>& list) {
+    // ask all ingame views which sectors they need
+    std::list<boost::weak_ptr<ui::IngameView> >::iterator viewIter = ingameViews_.begin();
+    std::list<boost::weak_ptr<ui::IngameView> >::iterator viewEnd = ingameViews_.end();
+    std::list<boost::weak_ptr<ui::IngameView> >::iterator viewDeleteHelper;
+
+    unsigned int mapHeight = data::Manager::getMapLoader(lastMapId_)->getBlockCountY();
+
+    while (viewIter != viewEnd) {
+        boost::shared_ptr<ui::IngameView> curView = (*viewIter).lock();
+        if (!curView) { // view was removed/closed
+            viewDeleteHelper = viewIter;
+            ++viewIter;
+            ingameViews_.erase(viewDeleteHelper);
+            continue;
+        }
+
+        curView->getRequiredSectors(list, mapHeight);
+        ++viewIter;
+    }
+
+    list.sort();
+
+    // remove duplicates
+    std::list<unsigned int>::iterator newListEnd = std::unique(list.begin(), list.end());
+    std::list<unsigned int>::iterator listEnd = list.end();
+
+    if (newListEnd != listEnd) {
+        // count, how many elements we need to cut off
+        std::list<unsigned int>::iterator countIter = newListEnd;
+
+
+        unsigned int cutOffCount = 0;
+        for(; countIter != listEnd; ++countIter) {
+            ++cutOffCount;
+        }
+
+        unsigned int newListLen = list.size() - cutOffCount;
+        list.resize(newListLen);
+    }
 }
 
 }

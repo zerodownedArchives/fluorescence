@@ -89,6 +89,7 @@ int Client::main(const std::vector<CL_String8>& args) {
         uiManager->getRenderQueue()->prepareRender();
 
         // deleting sectors has to be done after RenderQueue::prepareRender()
+        // TODO: maybe before add?
         world::Manager::getSingleton()->getSectorManager()->deleteSectors();
 
         // call renderer

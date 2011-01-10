@@ -1,10 +1,10 @@
 
-#include "ingamewindowrenderer.hpp"
+#include "ingameviewrenderer.hpp"
 
 #include "manager.hpp"
 #include "renderqueue.hpp"
 #include "texture.hpp"
-#include "ingamewindow.hpp"
+#include "ingameview.hpp"
 
 #include <misc/logger.hpp>
 
@@ -13,8 +13,8 @@
 namespace uome {
 namespace ui {
 
-IngameWindowRenderer::IngameWindowRenderer(IngameWindow* ingameWindow) :
-        ingameWindow_(ingameWindow) {
+IngameViewRenderer::IngameViewRenderer(IngameView* ingameView) :
+        ingameView_(ingameView) {
 
     CL_GraphicContext gc = uome::ui::Manager::getSingleton()->getGraphicsContext();
 
@@ -25,12 +25,10 @@ IngameWindowRenderer::IngameWindowRenderer(IngameWindow* ingameWindow) :
         throw CL_Exception("Unable to link program");
 }
 
-IngameWindowRenderer::~IngameWindowRenderer() {
+IngameViewRenderer::~IngameViewRenderer() {
 }
 
-void IngameWindowRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
-    RenderQueue* renderQueue = uome::ui::Manager::getSingleton()->getRenderQueue();
-
+void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     gc.clear(CL_Colorf(0.0f, 0.0f, 0.0f));
 
     gc.set_program_object(*shaderProgram_, cl_program_matrix_modelview_projection);
@@ -46,15 +44,16 @@ void IngameWindowRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& 
         CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom)
     };
 
-    int clippingLeftPixelCoord = ingameWindow_->getCenterPixelX() - ingameWindow_->getWidth()/2;
-    int clippingRightPixelCoord = ingameWindow_->getCenterPixelX() + ingameWindow_->getWidth()/2;
-    int clippingTopPixelCoord = ingameWindow_->getCenterPixelY() - ingameWindow_->getHeight()/2;
-    int clippingBottomPixelCoord = ingameWindow_->getCenterPixelY() + ingameWindow_->getHeight()/2;
+    int clippingLeftPixelCoord = ingameView_->getCenterPixelX() - ingameView_->getWidth()/2;
+    int clippingRightPixelCoord = ingameView_->getCenterPixelX() + ingameView_->getWidth()/2;
+    int clippingTopPixelCoord = ingameView_->getCenterPixelY() - ingameView_->getHeight()/2;
+    int clippingBottomPixelCoord = ingameView_->getCenterPixelY() + ingameView_->getHeight()/2;
 
 
     CL_Vec2f pixelOffsetVec(clippingLeftPixelCoord, clippingTopPixelCoord);
 
 
+    boost::shared_ptr<RenderQueue> renderQueue = uome::ui::Manager::getSingleton()->getRenderQueue();
     std::list<world::IngameObject*>::const_iterator igIter = renderQueue->beginIngame();
     std::list<world::IngameObject*>::const_iterator igEnd = renderQueue->endIngame();
 
@@ -68,6 +67,11 @@ void IngameWindowRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& 
 
         // check if texture is ready to be drawn
         boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
+        if (!tex) {
+            int i = 0;
+            (void)i;
+        }
+
         if (!tex->isReadComplete()) {
             continue;
         }

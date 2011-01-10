@@ -50,7 +50,7 @@ protected:
     int renderPriority_[6];
 
     void addToRenderQueue();
-    void removeFromRenderQueue();
+    void removeFromRenderQueueImmediately();
 
     void requestUpdateTextureProvider();
     virtual void updateTextureProvider() = 0;

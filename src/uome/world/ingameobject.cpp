@@ -19,8 +19,9 @@ IngameObject::IngameObject() : visible_(true), renderDataValid_(false), textureP
 }
 
 IngameObject::~IngameObject() {
-    // remove from render queue is first action in dtor
-    removeFromRenderQueue();
+    // emergency remove from render queue is first action in dtor
+    // this should never be necessary, but it doesn't hurt to make sure
+    removeFromRenderQueueImmediately();
 }
 
 void IngameObject::setLocation(int locX, int locY, int locZ) {
@@ -76,9 +77,6 @@ void IngameObject::updateRenderData() {
     updateRenderPriority();
 
     renderDataValid_ = true;
-
-    // the rendering order might have been changed
-    ui::Manager::getSingleton()->getRenderQueue()->requireIngameSort();
 }
 
 void IngameObject::requestUpdateTextureProvider() {
@@ -92,9 +90,9 @@ void IngameObject::addToRenderQueue() {
     }
 }
 
-void IngameObject::removeFromRenderQueue() {
+void IngameObject::removeFromRenderQueueImmediately() {
     if (addedToRenderQueue_) {
-        ui::Manager::getSingleton()->getRenderQueue()->remove(this);
+        ui::Manager::getSingleton()->getRenderQueue()->removeImmediately(this);
         addedToRenderQueue_ = false;
     }
 }

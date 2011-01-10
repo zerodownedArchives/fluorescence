@@ -17,9 +17,10 @@ namespace world {
 class Sector {
 
 public:
-    Sector(unsigned int mapId, unsigned int id, unsigned int locX, unsigned int locY);
+    Sector(unsigned int mapId, unsigned int sectorId);
     ~Sector();
 
+    unsigned int getSectorId() const;
     unsigned int getMapId() const;
 
     unsigned int getLocX() const;

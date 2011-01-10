@@ -2,11 +2,17 @@
 #define UOME_DATA_SECTORMANAGER_HPP
 
 #include <map>
+#include <list>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options/variables_map.hpp>
 
 namespace uome {
+
+namespace ui {
+    class IngameView;
+}
+
 namespace world {
 
 class Sector;
@@ -16,6 +22,8 @@ public:
     SectorManager(const boost::program_options::variables_map& config);
 
     ~SectorManager();
+
+    void registerIngameView(boost::shared_ptr<ui::IngameView> view);
 
     /**
      * \param force If true, sector check is forced. If not, sector check only if update frequency kicks in
@@ -38,6 +46,10 @@ private:
     unsigned int lastMapId_; ///< to detect map changes
 
     unsigned int calcSectorIndex(unsigned int x, unsigned int y);
+
+    std::list<boost::weak_ptr<ui::IngameView> > ingameViews_;
+
+    void buildSectorRequiredList(std::list<unsigned int>& list);
 };
 
 }
