@@ -3,25 +3,27 @@ set (UI_HPP
     manager.hpp
     texture.hpp
     renderqueue.hpp
-    ingamewindowrenderer.hpp
-    ingamewindow.hpp
+    ingameviewrenderer.hpp
     )
 
 set (UI_CPP
     manager.cpp
     texture.cpp
     renderqueue.cpp
-    ingamewindowrenderer.cpp
-    ingamewindow.cpp
+    ingameviewrenderer.cpp
     )
 
-set (UIOBJECTS_HPP
-    uiobject.hpp
+set (GUMPMENU_HPP
+    gumpmenu.hpp
+    gumpelement.hpp
+    ingameview.hpp
     )
 
-set (UIOBJECTS_CPP
-    uiobject.cpp
+set (GUMPMENU_CPP
+    gumpmenu.cpp
+    gumpelement.cpp
+    ingameview.cpp
     )
 
-add_library(uomeui STATIC ${UI_HPP} ${UI_CPP} ${UIOBJECTS_HPP} ${UIOBJECTS_CPP})
+add_library(uomeui STATIC ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP})
 

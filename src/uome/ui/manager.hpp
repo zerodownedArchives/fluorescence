@@ -13,7 +13,7 @@
 namespace uome {
 namespace ui {
 
-class IngameWindow;
+class IngameView;
 class RenderQueue;
 
 class Manager {
@@ -28,14 +28,14 @@ public:
     void drawWindow();
 
     CL_GraphicContext& getGraphicsContext();
-    CL_DisplayWindow* getMainWindow();
+    boost::shared_ptr<CL_DisplayWindow> getMainWindow();
 
     CL_Texture* provideTexture(unsigned int width, unsigned int height);
 
-    RenderQueue* getRenderQueue();
+    boost::shared_ptr<RenderQueue> getRenderQueue();
 
-
-    IngameWindow* getIngameWindow();
+    boost::shared_ptr<IngameView> getIngameView();
+    boost::shared_ptr<CL_GUIManager> getGuiManager();
 
 private:
     static Manager* singleton_;
@@ -59,7 +59,7 @@ private:
     boost::shared_ptr<CL_DisplayWindow> mainWindow_;
 
 
-    boost::shared_ptr<IngameWindow> ingameWindow_;
+    boost::shared_ptr<IngameView> ingameView_;
 };
 
 }

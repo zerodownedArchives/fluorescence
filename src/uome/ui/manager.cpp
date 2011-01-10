@@ -3,11 +3,14 @@
 
 #include <boost/filesystem/path.hpp>
 
-#include "ingamewindow.hpp"
+#include "ingameview.hpp"
 #include "renderqueue.hpp"
 
 #include <misc/logger.hpp>
 #include <misc/exception.hpp>
+
+#include <world/manager.hpp>
+#include <world/sectormanager.hpp>
 
 namespace uome {
 namespace ui {
@@ -57,11 +60,6 @@ Manager::Manager(const boost::program_options::variables_map& config) {
     guiManager_.reset(new CL_GUIManager(*windowManager_, path.string()));
 
     renderQueue_.reset(new RenderQueue());
-
-    UiObject* container = new UiObject(guiManager_.get());
-    CL_PushButton* button = new CL_PushButton(container);
-    button->set_text("I am a clanlib GUI button");
-    button->set_geometry(CL_Rect(20, 20, CL_Size(180, 30)));
 }
 
 Manager::~Manager() {
@@ -80,33 +78,33 @@ void Manager::drawWindow() {
     mainWindow_->flip();
 }
 
-CL_DisplayWindow* Manager::getMainWindow() {
-    return mainWindow_.get();
+boost::shared_ptr<CL_DisplayWindow> Manager::getMainWindow() {
+    return mainWindow_;
 }
 
 CL_GraphicContext& Manager::getGraphicsContext() {
     return mainWindow_->get_gc();
 }
 
-//CL_InputContext& Manager::getIC() {
-    //return window_->get_ic();
-//}
-
 CL_Texture* Manager::provideTexture(unsigned int width, unsigned int height) {
     return new CL_Texture(getGraphicsContext(), width, height, cl_rgb8);
 }
 
-IngameWindow* Manager::getIngameWindow() {
-    if (ingameWindow_.get() == NULL) {
-        ingameWindow_.reset(new IngameWindow(guiManager_.get()));
-        ingameWindow_->set_geometry(CL_Rect(100, 100, CL_Size(640, 480)));
+boost::shared_ptr<IngameView> Manager::getIngameView() {
+    if (ingameView_.get() == NULL) {
+        ingameView_.reset(new IngameView(CL_Rect(100, 100, CL_Size(640, 480))));
+        world::Manager::getSingleton()->getSectorManager()->registerIngameView(ingameView_);
     }
 
-    return ingameWindow_.get();
+    return ingameView_;
 }
 
-RenderQueue* Manager::getRenderQueue() {
-    return renderQueue_.get();
+boost::shared_ptr<RenderQueue> Manager::getRenderQueue() {
+    return renderQueue_;
+}
+
+boost::shared_ptr<CL_GUIManager> Manager::getGuiManager() {
+    return guiManager_;
 }
 
 }

@@ -44,8 +44,8 @@ Manager::Manager(const boost::program_options::variables_map& config) : currentM
 Manager::~Manager() {
 }
 
-SectorManager* Manager::getSectorManager() {
-    return sectorManager_.get();
+boost::shared_ptr<SectorManager> Manager::getSectorManager() {
+    return sectorManager_;
 }
 
 unsigned int Manager::getCurrentMapId() {

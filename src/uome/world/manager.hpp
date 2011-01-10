@@ -15,7 +15,7 @@ public:
     static void destroy();
     static Manager* getSingleton();
 
-    SectorManager* getSectorManager();
+    boost::shared_ptr<SectorManager> getSectorManager();
 
     unsigned int getCurrentMapId();
     void setCurrentMapId(unsigned int id);
