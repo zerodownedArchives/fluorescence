@@ -4,12 +4,15 @@
 #include "weakptrcache.hpp"
 #include "fixedsizeondemandfileloader.hpp"
 
-#include <world/map.hpp>
-
 #include <boost/filesystem.hpp>
 
 
 namespace uome {
+
+namespace world {
+    class MapBlock;
+}
+
 namespace data {
 
 class MapLoader {

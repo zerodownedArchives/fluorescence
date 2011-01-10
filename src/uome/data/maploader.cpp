@@ -2,6 +2,8 @@
 #include "maploader.hpp"
 #include "fullfileloader.hpp"
 
+#include <world/map.hpp>
+
 #include <boost/bind.hpp>
 
 namespace uome {

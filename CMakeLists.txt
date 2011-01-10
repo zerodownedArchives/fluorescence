@@ -24,7 +24,7 @@ EXEC_PROGRAM(icu-config
 #message(STATUS "cl libs: ${ClanLib_LIBRARIES}")
 #message(STATUS "icu libs: ${ICU_LIBRARIES}")
 
-set(UOME_LIBRARIES uomeui uomeworld uomedata uomemisc ${ClanLib_LIBRARIES} ${Boost_LIBRARIES} ${ICU_LIBRARIES})
+set(UOME_LIBRARIES uomeui uomedata uomeworld uomemisc ${ClanLib_LIBRARIES} ${Boost_LIBRARIES} ${ICU_LIBRARIES})
 
 set(CMAKE_CXX_FLAGS "-Wall -Werror ${CMAKE_CXX_FLAGS} -msse2 -D_REENTRANT")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -DDEBUG")

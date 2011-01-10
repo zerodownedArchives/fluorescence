@@ -6,7 +6,7 @@
 
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
-#include <ui/ingamewindow.hpp>
+#include <ui/ingameview.hpp>
 
 #include <data/manager.hpp>
 
@@ -55,16 +55,16 @@ int Client::main(const std::vector<CL_String8>& args) {
 
 
 
-    CL_DisplayWindow* wnd = uiManager->getMainWindow();
-    ui::IngameWindow* ingameWindow = uiManager->getIngameWindow();
-    ingameWindow->setCenterTiles(180 * 8, 200 * 8);
+    boost::shared_ptr<CL_DisplayWindow> wnd = uiManager->getMainWindow();
+    ui::IngameView* ingameView = uiManager->getIngameView().get();
+    ingameView->setCenterTiles(180 * 8, 200 * 8);
 
     timeval lastTime;
     gettimeofday(&lastTime, NULL);
 
 
     unsigned int i = 0;
-    while (!uiManager->shouldExit()) {
+    while (!wnd->get_ic().get_keyboard().get_keycode(CL_KEY_ESCAPE)) {
         ++i;
         if (i % 50 == 0) {
             timeval curTime;
