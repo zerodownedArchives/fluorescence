@@ -48,7 +48,7 @@ Manager* Manager::getSingleton() {
 
 Manager::Manager(const boost::program_options::variables_map& config) {
     CL_OpenGLWindowDescription description;
-    description.set_size(CL_Size(800, 600), true);
+    description.set_size(CL_Size(1024, 768), true);
     description.set_title("UO:ME -- 0 fps");
     mainWindow_.reset(new CL_DisplayWindow(description));
 

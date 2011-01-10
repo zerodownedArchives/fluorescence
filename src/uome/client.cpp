@@ -54,14 +54,8 @@ int Client::main(const std::vector<CL_String8>& args) {
     ui::Manager* uiManager = uome::ui::Manager::getSingleton();
     boost::shared_ptr<CL_DisplayWindow> wnd = uiManager->getMainWindow();
 
-    ui::IngameView* ingameView = new ui::IngameView(CL_Rect(350, 350, CL_Size(320, 240)));
+    ui::IngameView* ingameView = new ui::IngameView(CL_Rect(10, 10, CL_Size(800, 600)));
     ingameView->setCenterTiles(180 * 8, 200 * 8);
-
-    ui::IngameView* anotherIngameView = new ui::IngameView(CL_Rect(50, 50, CL_Size(320, 240)));
-    anotherIngameView->setCenterTiles(120*8, 200*8);
-
-    ui::IngameView* anotherIngameView2 = new ui::IngameView(CL_Rect(20, 250, CL_Size(700, 80)));
-    anotherIngameView2->setCenterTiles(175*8, 200*8);
 
     timeval lastTime;
     gettimeofday(&lastTime, NULL);
