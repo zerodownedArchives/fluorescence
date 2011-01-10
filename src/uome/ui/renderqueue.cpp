@@ -216,5 +216,18 @@ std::list<world::IngameObject*>::const_iterator RenderQueue::endIngame() {
     return ingameList_.end();
 }
 
+void RenderQueue::clear() {
+    std::list<world::IngameObject*>::iterator igIter = ingameList_.begin();
+    std::list<world::IngameObject*>::iterator igEnd = ingameList_.end();
+
+    for (; igIter != igEnd; ++igIter) {
+        world::IngameObject* curObj = *igIter;
+        // update rendering data (priority, vertex coordinates, texture, ...)
+        curObj->addedToRenderQueue_ = false;
+    }
+
+    ingameList_.clear();
+}
+
 }
 }

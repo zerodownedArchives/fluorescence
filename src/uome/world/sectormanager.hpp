@@ -23,7 +23,8 @@ public:
 
     ~SectorManager();
 
-    void registerIngameView(boost::shared_ptr<ui::IngameView> view);
+    void registerIngameView(ui::IngameView* view);
+    void unregisterIngameView(ui::IngameView* view);
 
     /**
      * \param force If true, sector check is forced. If not, sector check only if update frequency kicks in
@@ -38,18 +39,18 @@ private:
     std::map<unsigned int, boost::shared_ptr<world::Sector> > sectorMap_;
 
     unsigned int updateCounter_; ///< Sector update is not necessary at every frame. Thus we only call it every updateFrequency_ frame
-    unsigned int updateFrequency_;
+    unsigned int sectorAddFrequency_;
 
-    unsigned int sectorAddDistance_; ///< Sectors closer than this are added
-    unsigned int sectorRemoveDistance_; ///< Sectors farther away than this are removed. Should be > sectorAddDistance_
+    unsigned int sectorAddDistanceCache_; ///< This many sectors further away from what an ingameview really needs are added
+    unsigned int sectorRemoveDistanceCache_; ///< Similar to sectorAddDistanceCache_, but for removal. Should be > sectorAddDistanceCache_
 
     unsigned int lastMapId_; ///< to detect map changes
 
     unsigned int calcSectorIndex(unsigned int x, unsigned int y);
 
-    std::list<boost::weak_ptr<ui::IngameView> > ingameViews_;
+    std::list<ui::IngameView*> ingameViews_;
 
-    void buildSectorRequiredList(std::list<unsigned int>& list);
+    void buildSectorRequiredList(std::list<unsigned int>& list, unsigned int cacheAdd);
 };
 
 }

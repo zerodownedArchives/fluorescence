@@ -34,7 +34,6 @@ public:
 
     boost::shared_ptr<RenderQueue> getRenderQueue();
 
-    boost::shared_ptr<IngameView> getIngameView();
     boost::shared_ptr<CL_GUIManager> getGuiManager();
 
 private:
@@ -57,9 +56,6 @@ private:
     boost::shared_ptr<CL_GUIManager> guiManager_;
     boost::shared_ptr<CL_GUIWindowManagerTexture> windowManager_;
     boost::shared_ptr<CL_DisplayWindow> mainWindow_;
-
-
-    boost::shared_ptr<IngameView> ingameView_;
 };
 
 }

@@ -63,6 +63,7 @@ Manager::Manager(const boost::program_options::variables_map& config) {
 }
 
 Manager::~Manager() {
+    renderQueue_->clear();
 }
 
 bool Manager::shouldExit() {
@@ -88,15 +89,6 @@ CL_GraphicContext& Manager::getGraphicsContext() {
 
 CL_Texture* Manager::provideTexture(unsigned int width, unsigned int height) {
     return new CL_Texture(getGraphicsContext(), width, height, cl_rgb8);
-}
-
-boost::shared_ptr<IngameView> Manager::getIngameView() {
-    if (ingameView_.get() == NULL) {
-        ingameView_.reset(new IngameView(CL_Rect(100, 100, CL_Size(640, 480))));
-        world::Manager::getSingleton()->getSectorManager()->registerIngameView(ingameView_);
-    }
-
-    return ingameView_;
 }
 
 boost::shared_ptr<RenderQueue> Manager::getRenderQueue() {

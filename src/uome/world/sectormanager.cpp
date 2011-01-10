@@ -19,22 +19,25 @@ namespace uome {
 namespace world {
 SectorManager::SectorManager(const boost::program_options::variables_map& config) :
         updateCounter_(0) {
-    updateFrequency_ = config["world.sector-check-frequency"].as<unsigned int>();
-    sectorAddDistance_ = config["world.sector-add-distance"].as<unsigned int>();
-    sectorRemoveDistance_ = config["world.sector-remove-distance"].as<unsigned int>();
+    sectorAddFrequency_ = 60;
+    sectorAddDistanceCache_ = 2;
+    sectorRemoveDistanceCache_ = 3;
 }
 
 SectorManager::~SectorManager() {
 }
 
-void SectorManager::registerIngameView(boost::shared_ptr<ui::IngameView> view) {
-    boost::weak_ptr<ui::IngameView> toAdd(view);
-    ingameViews_.push_back(toAdd);
+void SectorManager::registerIngameView(ui::IngameView* view) {
+    ingameViews_.push_back(view);
+}
+
+void SectorManager::unregisterIngameView(ui::IngameView* view) {
+    ingameViews_.remove(view);
 }
 
 void SectorManager::addNewSectors(bool force) {
     // the player does not move overly fast, so it is enough to check for new sectors every x frames
-    bool doAddSector = (updateCounter_ % updateFrequency_ == 0);
+    bool doAddSector = (updateCounter_ % sectorAddFrequency_ == 0);
     updateCounter_++;
 
     if (!doAddSector) {
@@ -52,7 +55,7 @@ void SectorManager::addNewSectors(bool force) {
 
     // these are all sectors we require for rendering
     std::list<unsigned int> sectorRequiredList;
-    buildSectorRequiredList(sectorRequiredList);
+    buildSectorRequiredList(sectorRequiredList, sectorAddDistanceCache_);
 
 
     std::list<unsigned int>::const_iterator requiredIter = sectorRequiredList.begin();
@@ -82,7 +85,7 @@ void SectorManager::deleteSectors() {
 
     // these are all sectors we require for rendering
     std::list<unsigned int> sectorRequiredList;
-    buildSectorRequiredList(sectorRequiredList);
+    buildSectorRequiredList(sectorRequiredList, sectorRemoveDistanceCache_);
 
 
     // iterate over all stored sectors and remove them
@@ -92,9 +95,12 @@ void SectorManager::deleteSectors() {
     std::list<unsigned int>::const_iterator requiredBegin = sectorRequiredList.begin();
     std::list<unsigned int>::const_iterator requiredEnd = sectorRequiredList.end();
 
+    boost::shared_ptr<ui::RenderQueue> renderQueue = ui::Manager::getSingleton()->getRenderQueue();
+
     while (deleteIter != deleteEnd) {
         if (deleteIter->second->getMapId() != mapId ||
                 !std::binary_search(requiredBegin, requiredEnd, deleteIter->second->getSectorId())) {
+            renderQueue->remove(deleteIter->second);
             sectorMap_.erase(deleteIter);
         }
 
@@ -112,24 +118,16 @@ unsigned int SectorManager::calcSectorIndex(unsigned int x, unsigned int y) {
     return x * mapHeight + y;
 }
 
-void SectorManager::buildSectorRequiredList(std::list<unsigned int>& list) {
+void SectorManager::buildSectorRequiredList(std::list<unsigned int>& list, unsigned int cacheAdd) {
     // ask all ingame views which sectors they need
-    std::list<boost::weak_ptr<ui::IngameView> >::iterator viewIter = ingameViews_.begin();
-    std::list<boost::weak_ptr<ui::IngameView> >::iterator viewEnd = ingameViews_.end();
-    std::list<boost::weak_ptr<ui::IngameView> >::iterator viewDeleteHelper;
+    std::list<ui::IngameView*>::iterator viewIter = ingameViews_.begin();
+    std::list<ui::IngameView*>::iterator viewEnd = ingameViews_.end();
 
     unsigned int mapHeight = data::Manager::getMapLoader(lastMapId_)->getBlockCountY();
 
     while (viewIter != viewEnd) {
-        boost::shared_ptr<ui::IngameView> curView = (*viewIter).lock();
-        if (!curView) { // view was removed/closed
-            viewDeleteHelper = viewIter;
-            ++viewIter;
-            ingameViews_.erase(viewDeleteHelper);
-            continue;
-        }
-
-        curView->getRequiredSectors(list, mapHeight);
+        ui::IngameView* curView = (*viewIter);
+        curView->getRequiredSectors(list, mapHeight, cacheAdd);
         ++viewIter;
     }
 

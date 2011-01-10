@@ -5,6 +5,9 @@
 
 #include <misc/logger.hpp>
 
+#include <world/manager.hpp>
+#include <world/sectormanager.hpp>
+
 namespace uome {
 namespace ui {
 
@@ -12,9 +15,16 @@ IngameView::IngameView(const CL_Rect& bounds) : GumpMenu(bounds),
         centerTileX_(0), centerTileY_(0) {
     renderer_.reset(new IngameViewRenderer(this));
 
+    world::Manager::getSingleton()->getSectorManager()->registerIngameView(this);
+
     set_constant_repaint(true);
 
     func_render().set(this, &IngameView::renderOneFrame);
+}
+
+IngameView::~IngameView() {
+    LOG_DEBUG(LOGTYPE_UI, "IngameView dtor");
+    world::Manager::getSingleton()->getSectorManager()->unregisterIngameView(this);
 }
 
 unsigned int IngameView::getCenterTileX() {
@@ -50,12 +60,9 @@ void IngameView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) 
     renderer_->renderOneFrame(gc, clipRect);
 }
 
-void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int mapHeight) {
+void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int mapHeight, unsigned int cacheAdd) {
     // at least, we need to load as much tiles as the diagonal of the view is long
     // we load this amount of tiles (plus a little cache) in each direction of the center tile
-
-    // a tile's diagonal is sqrt(44*44 + 44*44) pixels long
-    //static double tileDiagonalPixel = 62.22;
 
     double viewDiagonalPixel = sqrt(pow(getWidth(), 2) + pow(getHeight(), 2));
     double viewDiagonalTileCount = viewDiagonalPixel / 44;
@@ -63,7 +70,7 @@ void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int 
     double viewDiagonalSectorCount = viewDiagonalTileCount / 8;
     unsigned int loadInEachDirection = (unsigned int)ceil(viewDiagonalSectorCount / 2);
 
-    loadInEachDirection += 2; // some cache
+    loadInEachDirection += cacheAdd; // some cache
 
     //LOGARG_DEBUG(LOGTYPE_UI, "getRequiredSectors: diagonalPixel=%lf diagonalTile=%lf diagonalSector=%lf inEachDir=%u", viewDiagonalPixel, viewDiagonalTileCount, viewDiagonalSectorCount, loadInEachDirection);
 

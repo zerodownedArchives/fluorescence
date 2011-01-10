@@ -42,6 +42,8 @@ public:
 
     unsigned int size() { return ingameList_.size(); }
 
+    void clear();
+
 private:
     /* I'm aware of the fact that, according to good programming standards, this should be a list of weak_ptr
      * I experimented with that quite a bit, but implementing this list with weak pointers has an incredibly heavy

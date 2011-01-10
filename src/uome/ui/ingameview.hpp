@@ -15,6 +15,7 @@ class IngameViewRenderer;
 class IngameView : public GumpMenu {
 public:
     IngameView(const CL_Rect& bounds);
+    ~IngameView();
 
     unsigned int getCenterTileX();
     unsigned int getCenterTileY();
@@ -30,7 +31,7 @@ public:
     void renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect);
 
     /// store all sectors this view needs (including some cache) in the list
-    void getRequiredSectors(std::list<unsigned int>& list, unsigned int mapHeight);
+    void getRequiredSectors(std::list<unsigned int>& list, unsigned int mapHeight, unsigned int cacheAdd);
 
 private:
     unsigned int centerTileX_;
