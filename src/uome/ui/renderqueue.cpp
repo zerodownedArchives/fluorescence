@@ -146,11 +146,14 @@ void RenderQueue::processRemoveList() {
     }
 
     if (deleteIter != deleteEnd) {
-        LOG_ERROR(LOGTYPE_UI, "RenderQueue::processRemoveList - ingameRemoveList_ end not reached");
-        ingameRemoveList_.erase(ingameRemoveList_.begin(), deleteIter);
-    } else {
-        ingameRemoveList_.clear();
+        LOG_WARN(LOGTYPE_UI, "RenderQueue::processRemoveList - ingameRemoveList_ end not reached");
+
+        for (; deleteIter != deleteEnd; ++deleteIter) {
+            ingameList_.remove((*deleteIter).get());
+        }
     }
+
+    ingameRemoveList_.clear();
 }
 
 void RenderQueue::removeImmediately(world::IngameObject* obj) {
