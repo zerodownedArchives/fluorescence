@@ -38,6 +38,8 @@ private:
     unsigned int centerTileY_;
 
     boost::shared_ptr<IngameViewRenderer> renderer_;
+
+    bool onInputPressed(const CL_InputEvent& e);
 };
 
 }

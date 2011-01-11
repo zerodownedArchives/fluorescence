@@ -8,6 +8,8 @@
 #include <world/manager.hpp>
 #include <world/sectormanager.hpp>
 
+#include <ClanLib/Display/Window/keys.h>
+
 namespace uome {
 namespace ui {
 
@@ -20,6 +22,7 @@ IngameView::IngameView(const CL_Rect& bounds) : GumpMenu(bounds),
     set_constant_repaint(true);
 
     func_render().set(this, &IngameView::renderOneFrame);
+    func_input_pressed().set(this, &IngameView::onInputPressed);
 }
 
 IngameView::~IngameView() {
@@ -68,22 +71,47 @@ void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int 
     double viewDiagonalTileCount = viewDiagonalPixel / 44;
 
     double viewDiagonalSectorCount = viewDiagonalTileCount / 8;
-    unsigned int loadInEachDirection = (unsigned int)ceil(viewDiagonalSectorCount / 2);
+    int loadInEachDirection = (int)ceil(viewDiagonalSectorCount / 2);
 
     loadInEachDirection += cacheAdd; // some cache
 
     //LOGARG_DEBUG(LOGTYPE_UI, "getRequiredSectors: diagonalPixel=%lf diagonalTile=%lf diagonalSector=%lf inEachDir=%u", viewDiagonalPixel, viewDiagonalTileCount, viewDiagonalSectorCount, loadInEachDirection);
 
-    unsigned int centerSectorX = (unsigned int)((getCenterTileX() / 8.0) + 0.5);
-    unsigned int centerSectorY = (unsigned int)((getCenterTileY() / 8.0) + 0.5);
+    int centerSectorX = (int)(getCenterTileX() / 8.0);
+    int centerSectorY = (int)(getCenterTileY() / 8.0);
 
-    // TODO
-    for (unsigned int x = (centerSectorX - loadInEachDirection); x <= (centerSectorX + loadInEachDirection); ++x) {
-        for (unsigned int y = (centerSectorY - loadInEachDirection); y <= (centerSectorY + loadInEachDirection); ++y) {
-            unsigned int secId = x * mapHeight + y;
-            list.push_back(secId);
+    unsigned int sectorX, sectorY, sectorId;
+    int diff;
+    for (int x = -loadInEachDirection; x <= loadInEachDirection; ++x) {
+        diff = loadInEachDirection - abs(x);
+        for (int y = -diff; y <= diff; ++y) {
+            sectorX = std::max(centerSectorX + x, 0);
+            sectorY = std::max(centerSectorY + y, 0);
+            sectorId = sectorX * mapHeight + sectorY;
+            list.push_back(sectorId);
+
         }
     }
+}
+
+bool IngameView::onInputPressed(const CL_InputEvent& e) {
+    bool consumed = false;
+
+    if (e.id == CL_KEY_UP) {
+        centerTileY_ -= 1;
+        consumed = true;
+    } else if (e.id == CL_KEY_DOWN) {
+        centerTileY_ += 1;
+        consumed = true;
+    } else if (e.id == CL_KEY_LEFT) {
+        centerTileX_ -= 1;
+        consumed = true;
+    } else if (e.id == CL_KEY_RIGHT) {
+        centerTileX_ += 1;
+        consumed = true;
+    }
+
+    return consumed;
 }
 
 }
