@@ -157,21 +157,7 @@ void RenderQueue::processRemoveList() {
 }
 
 void RenderQueue::removeImmediately(world::IngameObject* obj) {
-    std::pair<
-        std::list<world::IngameObject*>::iterator,
-        std::list<world::IngameObject*>::iterator
-    > eq = std::equal_range(ingameList_.begin(), ingameList_.end(), obj, boost::bind(&RenderQueue::renderPriorityComparator, this, _1, _2));
-
-    std::list<world::IngameObject*>::iterator listItm = eq.first;
-
-    bool erased = false;
-    for (; listItm != eq.second; ++listItm) {
-        if (*listItm == obj) {
-            ingameList_.erase(listItm);
-            erased = true;
-            break;
-        }
-    }
+    ingameList_.remove(obj);
 }
 
 bool RenderQueue::processAddList() {

@@ -29,7 +29,10 @@ IngameViewRenderer::IngameViewRenderer(IngameView* ingameView) :
         throw CL_Exception("Unable to link program");
     }
 
-    LOGARG_INFO(LOGTYPE_UI, "GLSL linking msg:\n%s", shaderProgram_->get_info_log().c_str());
+    const char* linkerMsg = shaderProgram_->get_info_log().c_str();
+    if (strlen(linkerMsg) > 0) {
+        LOGARG_INFO(LOGTYPE_UI, "GLSL linking msg:\n%s", linkerMsg);
+    }
 }
 
 IngameViewRenderer::~IngameViewRenderer() {
