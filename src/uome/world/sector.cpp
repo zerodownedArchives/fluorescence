@@ -18,14 +18,14 @@ Sector::Sector(unsigned int mapId, unsigned int sectorId) :
     location_[0u] = sectorId / mapHeight;
     location_[1u] = sectorId % mapHeight;
 
-    LOGARG_DEBUG(LOGTYPE_WORLD, "Sector construct, map=%u x=%u y=%u", mapId_, location_[0u], location_[1u]);
+    //LOGARG_DEBUG(LOGTYPE_WORLD, "Sector construct, map=%u x=%u y=%u", mapId_, location_[0u], location_[1u]);
 
     mapBlock_ = data::Manager::getMapLoader(mapId_)->get(location_[0u], location_[1u]);
     staticBlock_ = data::Manager::getStaticsLoader(mapId_)->get(location_[0u], location_[1u]);
 }
 
 Sector::~Sector() {
-    LOGARG_DEBUG(LOGTYPE_WORLD, "Sector destroy, map=%u x=%u y=%u items=%u", mapId_, location_[0u], location_[1u], staticBlock_->getItemList().size() + 64);
+    //LOGARG_DEBUG(LOGTYPE_WORLD, "Sector destroy, map=%u x=%u y=%u items=%u", mapId_, location_[0u], location_[1u], staticBlock_->getItemList().size() + 64);
 }
 
 unsigned int Sector::getLocX() const {

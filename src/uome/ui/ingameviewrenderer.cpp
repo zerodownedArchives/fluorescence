@@ -10,6 +10,9 @@
 
 #include <world/ingameobject.hpp>
 
+#include <data/manager.hpp>
+#include <data/huesloader.hpp>
+
 namespace uome {
 namespace ui {
 
@@ -20,9 +23,13 @@ IngameViewRenderer::IngameViewRenderer(IngameView* ingameView) :
 
     shaderProgram_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "../shader/vertex.glsl", "../shader/fragment.glsl")));
     shaderProgram_->bind_attribute_location(0, "Position");
-    shaderProgram_->bind_attribute_location(1, "TexCoord0");
-    if (!shaderProgram_->link())
+    shaderProgram_->bind_attribute_location(1, "TexCoord");
+    if (!shaderProgram_->link()) {
+        LOGARG_CRITICAL(LOGTYPE_UI, "Error while linking program:\n%s", shaderProgram_->get_info_log().c_str());
         throw CL_Exception("Unable to link program");
+    }
+
+    LOGARG_INFO(LOGTYPE_UI, "GLSL linking msg:\n%s", shaderProgram_->get_info_log().c_str());
 }
 
 IngameViewRenderer::~IngameViewRenderer() {
@@ -51,7 +58,11 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
 
 
     CL_Vec2f pixelOffsetVec(clippingLeftPixelCoord, clippingTopPixelCoord);
+    shaderProgram_->set_uniform2f("PositionOffset", pixelOffsetVec);
 
+    gc.set_texture(0, *(data::Manager::getSingleton()->getHuesLoader()->getHuesTexture()->getTexture()));
+    shaderProgram_->set_uniform1i("HueTexture", 0);
+    shaderProgram_->set_uniform1i("ObjectTexture", 1);
 
     boost::shared_ptr<RenderQueue> renderQueue = uome::ui::Manager::getSingleton()->getRenderQueue();
     std::list<world::IngameObject*>::const_iterator igIter = renderQueue->beginIngame();
@@ -84,13 +95,12 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
         CL_PrimitivesArray primarray(gc);
         primarray.set_attributes(0, curObj->getVertexCoordinates());
         primarray.set_attributes(1, tex1_coords);
-        primarray.set_attribute(2, pixelOffsetVec);
 
-        gc.set_texture(0, *tex->getTexture());
+        gc.set_texture(1, *tex->getTexture());
         gc.draw_primitives(cl_triangles, 6, primarray);
-        gc.reset_texture(0);
     }
 
+    gc.reset_textures();
     gc.reset_program_object();
 }
 

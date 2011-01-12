@@ -44,11 +44,11 @@ void SectorManager::addNewSectors(bool force) {
         return;
     }
 
-    LOGARG_INFO(LOGTYPE_WORLD, "Sector manager has %u cached", sectorMap_.size());
+    //LOGARG_INFO(LOGTYPE_WORLD, "Sector manager has %u cached", sectorMap_.size());
 
     unsigned int mapId = world::Manager::getSingleton()->getCurrentMapId();
     if (mapId != lastMapId_) {
-        LOG_INFO(LOGTYPE_WORLD, "Map change detected, clearing sectors");
+        LOG_INFO(LOGTYPE_WORLD, "SectorManager: map change detected, clearing sectors");
         clear();
         lastMapId_ = mapId;
     }

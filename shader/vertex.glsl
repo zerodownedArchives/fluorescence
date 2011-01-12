@@ -1,18 +1,15 @@
 
-attribute vec4 Position;
-attribute vec2 TexCoord0;
-attribute vec2 PositionOffset;
-
+uniform vec2 PositionOffset;
 uniform mat4 cl_ModelViewProjectionMatrix;
 
-varying vec2 TexCoord;
+attribute vec4 Position;
+attribute vec2 TexCoord0;
 
 void main(void) {
-	Position.x -= PositionOffset.x;
-	Position.y -= PositionOffset.y;
-	
-	gl_Position = cl_ModelViewProjectionMatrix * Position;
-	
-	TexCoord = TexCoord0;
+    vec4 movedPosition = vec4(Position.x - PositionOffset.x, Position.y - PositionOffset.y, Position.z, Position.w);
+
+    gl_Position = cl_ModelViewProjectionMatrix * movedPosition;
+
+    gl_TexCoord[0].xy = TexCoord0;
 }
 

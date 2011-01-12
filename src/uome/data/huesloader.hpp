@@ -1,11 +1,18 @@
 #ifndef UOME_DATA_HUESLOADER_HPP
 #define UOME_DATA_HUESLOADER_HPP
 
+#include <boost/shared_ptr.hpp>
+
 #include <misc/string.hpp>
 
 #include "fullfileloader.hpp"
 
 namespace uome {
+
+namespace ui {
+    class Texture;
+}
+
 namespace data {
 
 struct Hue {
@@ -26,9 +33,13 @@ public:
 
     const uint32_t* getColorTable(unsigned int id) const;
 
+    boost::shared_ptr<ui::Texture> getHuesTexture();
+
 private:
     unsigned int hueCount_;
     Hue* hues_;
+
+    boost::shared_ptr<ui::Texture> huesTexture_;
 };
 
 }

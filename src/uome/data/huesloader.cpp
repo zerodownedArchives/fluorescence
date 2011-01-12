@@ -3,6 +3,7 @@
 
 #include "util.hpp"
 
+#include <ui/texture.hpp>
 #include <misc/logger.hpp>
 
 #include <boost/bind.hpp>
@@ -62,6 +63,25 @@ const uint32_t* HuesLoader::getColorTable(unsigned int id) const {
     }
 
     return hues_[id].colorTable_;
+}
+
+boost::shared_ptr<ui::Texture> HuesLoader::getHuesTexture() {
+    if (!huesTexture_) {
+        huesTexture_.reset(new ui::Texture());
+        huesTexture_->initPixelBuffer(32, hueCount_, cl_rgba8);
+
+        uint32_t* pxBuf = reinterpret_cast<uint32_t*>(huesTexture_->getPixelBufferData());
+
+        for (unsigned int hueIdx = 0; hueIdx < hueCount_; ++hueIdx) {
+            for (unsigned int pxIdx = 0; pxIdx < 32; ++pxIdx) {
+                *pxBuf++ = hues_[hueIdx].colorTable_[pxIdx];
+            }
+        }
+
+        huesTexture_->setReadComplete();
+    }
+
+    return huesTexture_;
 }
 
 }

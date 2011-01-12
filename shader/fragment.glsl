@@ -1,12 +1,17 @@
 
-uniform sampler2D Texture0;
-varying vec2 TexCoord;
+uniform sampler2D HueTexture;
+uniform sampler2D ObjectTexture;
 
-void main(void)
-{
-//    vec4 rgba = vec4(1.0, 1.0, 0.0, 1.0); 
-    vec4 rgba = texture2D(Texture0, TexCoord);
-    //rgba.r *= 2;
-    //rgba.g *= 2;
+void main(void) {
+    // sample actual pixel color
+    vec4 rgba = texture2D(ObjectTexture, gl_TexCoord[0].xy);
+
+    vec2 hueTexCoord;
+    float hueId = 60;
+    hueTexCoord.x = (rgba.r + rgba.g + rgba.b) / 3.0001;
+    hueTexCoord.y = hueId / 3000;
+
+    rgba.rgb = texture2D(HueTexture, hueTexCoord);
+
     gl_FragColor.rgba = rgba;
 }
