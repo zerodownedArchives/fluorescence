@@ -7,6 +7,7 @@
 
 #include <world/manager.hpp>
 #include <world/sectormanager.hpp>
+#include <world/lightmanager.hpp>
 
 #include <ClanLib/Display/Window/keys.h>
 
@@ -68,7 +69,7 @@ void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int 
     // we load this amount of tiles (plus a little cache) in each direction of the center tile
 
     double viewDiagonalPixel = sqrt(pow(getWidth(), 2) + pow(getHeight(), 2));
-    double viewDiagonalTileCount = viewDiagonalPixel / 44;
+    double viewDiagonalTileCount = viewDiagonalPixel / 31;
 
     double viewDiagonalSectorCount = viewDiagonalTileCount / 8;
     int loadInEachDirection = (int)ceil(viewDiagonalSectorCount / 2);
@@ -79,6 +80,10 @@ void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int 
 
     int centerSectorX = (int)(getCenterTileX() / 8.0);
     int centerSectorY = (int)(getCenterTileY() / 8.0);
+
+    list.push_back(centerSectorX * mapHeight + centerSectorY);
+    list.push_back(centerSectorX * mapHeight + centerSectorY + mapHeight);
+    //return;
 
     unsigned int sectorX, sectorY, sectorId;
     int diff;
@@ -95,20 +100,74 @@ void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int 
 }
 
 bool IngameView::onInputPressed(const CL_InputEvent& e) {
-    bool consumed = false;
+    bool consumed = true;
 
-    if (e.id == CL_KEY_UP) {
+    boost::shared_ptr<world::LightManager> lm;
+    CL_Vec3f intensity;
+
+    switch (e.id) {
+    case CL_KEY_UP:
         centerTileY_ -= 1;
-        consumed = true;
-    } else if (e.id == CL_KEY_DOWN) {
+        break;
+    case CL_KEY_DOWN:
         centerTileY_ += 1;
-        consumed = true;
-    } else if (e.id == CL_KEY_LEFT) {
+        break;
+    case CL_KEY_LEFT:
         centerTileX_ -= 1;
-        consumed = true;
-    } else if (e.id == CL_KEY_RIGHT) {
+        break;
+    case CL_KEY_RIGHT:
         centerTileX_ += 1;
-        consumed = true;
+        break;
+    case CL_KEY_R:
+        lm = world::Manager::getSingleton()->getLightManager();
+        intensity = lm->getAmbientIntensity();
+        if (e.ctrl) {
+            intensity.r = std::max(0.0, intensity.r - 0.1);
+        } else {
+            intensity.r += 0.1;
+        }
+        lm->setAmbientIntensity(intensity);
+        break;
+    case CL_KEY_G:
+        lm = world::Manager::getSingleton()->getLightManager();
+        intensity = lm->getAmbientIntensity();
+        if (e.ctrl) {
+            intensity.g = std::max(0.0, intensity.g - 0.1);
+        } else {
+            intensity.g += 0.1;
+        }
+        lm->setAmbientIntensity(intensity);
+        break;
+    case CL_KEY_B:
+        lm = world::Manager::getSingleton()->getLightManager();
+        intensity = lm->getAmbientIntensity();
+        if (e.ctrl) {
+            intensity.b = std::max(0.0, intensity.b - 0.1);
+        } else {
+            intensity.b += 0.1;
+        }
+        lm->setAmbientIntensity(intensity);
+        break;
+    case CL_KEY_ADD:
+        lm = world::Manager::getSingleton()->getLightManager();
+        intensity = lm->getAmbientIntensity();
+        intensity.r += 0.1;
+        intensity.g += 0.1;
+        intensity.b += 0.1;
+        lm->setAmbientIntensity(intensity);
+        break;
+    case CL_KEY_SUBTRACT:
+        lm = world::Manager::getSingleton()->getLightManager();
+        intensity = lm->getAmbientIntensity();
+        intensity.r = std::max(0.0, intensity.r - 0.1);
+        intensity.g = std::max(0.0, intensity.g - 0.1);
+        intensity.b = std::max(0.0, intensity.b - 0.1);
+        lm->setAmbientIntensity(intensity);
+        break;
+
+    default:
+        consumed = false;
+        break;
     }
 
     return consumed;

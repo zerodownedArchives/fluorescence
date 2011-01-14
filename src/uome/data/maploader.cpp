@@ -50,10 +50,6 @@ void MapLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned int le
     // jump header
     buf += 4;
 
-    // used to set the surrounding z values and the normal vectors
-    int8_t zValues[11][11];
-    memset(&zValues, 0, 121);
-
     for (unsigned int cellY = 0; cellY < 8; ++cellY) {
         for (unsigned int cellX = 0; cellX < 8; ++cellX) {
             artId = *(reinterpret_cast<uint16_t*>(buf));
@@ -64,22 +60,18 @@ void MapLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned int le
         }
     }
 
-    setSurroundingZ(item, zValues);
+    setSurroundingZ(item);
 
 }
 
-void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item, int8_t zValues[][11]) {
-    // first off, zValues is a 11x11 matrix, holding this blocks z values from [1][1] to [8][8].
-    // all surrounding z values are in there for normals calculation
-    // we need a 11x11 z matrix to calculate 10x10 normal vectors for the tile edge points
-    // these 10x10 vectors are combined to 9x9 normal vectors holding the average normal vector for each tile
-    // and those 9x9 averaged vectors are used for the normals of our current map block
-    // (strange stuff, really)
+void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item) {
+    int8_t zValues[11][11];
+    memset(&zValues, 0, 121);
 
     boost::shared_ptr<world::MapBlock> blocks[3][3];
     bool blocksLoaded[3][3];
 
-    // the current block. these z values are already in the array
+    // the current block
     blocks[1][1] = item;
     blocksLoaded[1][1] = true;
 
@@ -108,26 +100,27 @@ void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item, int8_t 
         //blocksLoaded[2][0], blocksLoaded[2][1], blocksLoaded[2][2]);
 
     // step 1: fill the z map with the neighboring z values
-    unsigned int blockIndices[] = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2 };
-    unsigned int tileIndices[] = { 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1 };
+    unsigned int blockIndices[] = { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2 };
+    unsigned int tileIndices[] = { 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1 };
+
     for (unsigned int x = 0; x < 11; ++x) {
         for (unsigned int y = 0; y < 11; ++y) {
             if (blocksLoaded[blockIndices[x]][blockIndices[y]]) {
-                (void)blocks[blockIndices[x]];
                 zValues[x][y] = blocks[blockIndices[x]][blockIndices[y]]->get(tileIndices[x], tileIndices[y])->getLocZ();
             }
         }
     }
 
-    // set the surrounding z values for all tiles
-    if (blocksLoaded[0][1]) {
-        for (unsigned int y = 0; y < 8; ++y) {
-            blocks[0][1]->get(7, y)->setRightZ(zValues[1][y + 1]);
-        }
-    }
-
-    for (unsigned int x = 0; x < 10; ++x) {
-        for (unsigned int y = 0; y < 10; ++y) {
+    /*  _____ _____
+     * | cur | rig |
+     * |_____|_____|
+     * | lef | bot |
+     * |_____|_____|
+     *
+     */
+    // set the surrounding z values for tiles with a new important neighboring tile
+    for (unsigned int x = 1; x < 10; ++x) {
+        for (unsigned int y = 1; y < 10; ++y) {
             if (blocksLoaded[blockIndices[x]][blockIndices[y]]) {
                 blocks[blockIndices[x]][blockIndices[y]]->get(tileIndices[x], tileIndices[y])->setSurroundingZ(zValues[x][y + 1], zValues[x+1][y], zValues[x + 1][y+1]);
             }

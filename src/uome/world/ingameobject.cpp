@@ -151,11 +151,11 @@ bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int top
     // unoptimized code:
 
     //for (unsigned int i = 0; i <6; ++i) {
-        //leftOk = leftOk || vertexCoordinates_[i].x >= leftPixelCoord;
-        //rightOk = rightOk || vertexCoordinates_[i].x <= rightPixelCoord;
+    //leftOk = leftOk || vertexCoordinates_[i].x >= leftPixelCoord;
+    //rightOk = rightOk || vertexCoordinates_[i].x <= rightPixelCoord;
 
-        //topOk = topOk || vertexCoordinates_[i].y >= topPixelCoord;
-        //bottomOk = bottomOk || vertexCoordinates_[i].y <= bottomPixelCoord;
+    //topOk = topOk || vertexCoordinates_[i].y >= topPixelCoord;
+    //bottomOk = bottomOk || vertexCoordinates_[i].y <= bottomPixelCoord;
     //}
 
     //return leftOk && rightOk && topOk && bottomOk;

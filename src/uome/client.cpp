@@ -55,7 +55,7 @@ int Client::main(const std::vector<CL_String8>& args) {
     boost::shared_ptr<CL_DisplayWindow> wnd = uiManager->getMainWindow();
 
     ui::IngameView* ingameView = new ui::IngameView(CL_Rect(10, 10, CL_Size(800, 600)));
-    ingameView->setCenterTiles(180 * 8, 200 * 8);
+    ingameView->setCenterTiles(176 * 8, 202 * 8);
 
     timeval lastTime;
     gettimeofday(&lastTime, NULL);

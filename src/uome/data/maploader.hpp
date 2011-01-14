@@ -44,7 +44,7 @@ private:
 
     bool difEnabled_;
 
-    void setSurroundingZ(boost::shared_ptr<world::MapBlock> item, int8_t zValues[][11]);
+    void setSurroundingZ(boost::shared_ptr<world::MapBlock> item);
 };
 
 }

@@ -2,6 +2,7 @@
 #include "manager.hpp"
 
 #include "sectormanager.hpp"
+#include "lightmanager.hpp"
 
 #include <misc/logger.hpp>
 
@@ -39,6 +40,7 @@ void Manager::destroy() {
 
 Manager::Manager(const boost::program_options::variables_map& config) : currentMapId_(0) {
     sectorManager_.reset(new SectorManager(config));
+    lightManager_.reset(new LightManager());
 }
 
 Manager::~Manager() {
@@ -54,6 +56,10 @@ unsigned int Manager::getCurrentMapId() {
 
 void Manager::setCurrentMapId(unsigned int id) {
     currentMapId_ = id;
+}
+
+boost::shared_ptr<LightManager> Manager::getLightManager() {
+    return lightManager_;
 }
 
 }

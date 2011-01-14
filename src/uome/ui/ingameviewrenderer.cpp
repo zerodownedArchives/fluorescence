@@ -9,6 +9,8 @@
 #include <misc/logger.hpp>
 
 #include <world/ingameobject.hpp>
+#include <world/lightmanager.hpp>
+#include <world/manager.hpp>
 
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
@@ -22,8 +24,8 @@ IngameViewRenderer::IngameViewRenderer(IngameView* ingameView) :
     CL_GraphicContext gc = uome::ui::Manager::getSingleton()->getGraphicsContext();
 
     shaderProgram_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "../shader/vertex.glsl", "../shader/fragment.glsl")));
-    shaderProgram_->bind_attribute_location(0, "Position");
-    shaderProgram_->bind_attribute_location(1, "TexCoord");
+    shaderProgram_->bind_attribute_location(0, "gl_Vertex");
+    shaderProgram_->bind_attribute_location(1, "TexCoord0");
     if (!shaderProgram_->link()) {
         LOGARG_CRITICAL(LOGTYPE_UI, "Error while linking program:\n%s", shaderProgram_->get_info_log().c_str());
         throw CL_Exception("Unable to link program");
@@ -67,7 +69,10 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
     shaderProgram_->set_uniform1i("HueTexture", 0);
     shaderProgram_->set_uniform1i("ObjectTexture", 1);
 
-    boost::shared_ptr<RenderQueue> renderQueue = uome::ui::Manager::getSingleton()->getRenderQueue();
+    boost::shared_ptr<world::LightManager> lightManager = world::Manager::getSingleton()->getLightManager();
+    shaderProgram_->set_uniform3f("AmbientLightIntensity", lightManager->getAmbientIntensity());
+
+    boost::shared_ptr<RenderQueue> renderQueue = ui::Manager::getSingleton()->getRenderQueue();
     std::list<world::IngameObject*>::const_iterator igIter = renderQueue->beginIngame();
     std::list<world::IngameObject*>::const_iterator igEnd = renderQueue->endIngame();
 
