@@ -15,6 +15,7 @@ namespace world {
 IngameObject::IngameObject() : visible_(true), renderDataValid_(false), textureProviderUpdateRequired_(true), addedToRenderQueue_(false) {
     for (unsigned int i = 0; i < 6; ++i) {
         renderPriority_[i] = 0;
+        vertexNormals_[i] = CL_Vec3f(0, 0, 1);
     }
 }
 
@@ -132,6 +133,10 @@ bool IngameObject::hasPixel(int pixelX, int pixelY) const {
     } else {
         return false;
     }
+}
+
+const CL_Vec3f* IngameObject::getVertexNormals() const {
+    return vertexNormals_;
 }
 
 }

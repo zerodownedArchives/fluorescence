@@ -5,6 +5,7 @@
 #include "fixedsizeondemandfileloader.hpp"
 
 #include <boost/filesystem.hpp>
+#include <ClanLib/Core/Math/vec3.h>
 
 
 namespace uome {
@@ -45,6 +46,7 @@ private:
     bool difEnabled_;
 
     void setSurroundingZ(boost::shared_ptr<world::MapBlock> item);
+    CL_Vec3f calculateNormal(uint8_t tile, uint8_t top, uint8_t right, uint8_t bottom, uint8_t left);
 };
 
 }

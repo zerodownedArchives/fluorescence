@@ -173,6 +173,17 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         lm->setAmbientIntensity(intensity);
         break;
 
+    case CL_MOUSE_WHEEL_UP:
+        lm = world::Manager::getSingleton()->getLightManager();
+        lm->setGlobalAngle(lm->getGlobalAngle() + 5);
+        LOGARG_DEBUG(LOGTYPE_UI, "mw up %f", lm->getGlobalAngle());
+        break;
+    case CL_MOUSE_WHEEL_DOWN:
+        lm = world::Manager::getSingleton()->getLightManager();
+        lm->setGlobalAngle(lm->getGlobalAngle() - 5);
+        LOGARG_DEBUG(LOGTYPE_UI, "mw down %f", lm->getGlobalAngle());
+        break;
+
     case CL_MOUSE_LEFT:
         clickedItem = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
         if (!clickedItem) {
@@ -188,23 +199,23 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     if (clickedItem) {
         world::MapTile* tile = dynamic_cast<world::MapTile*>(clickedItem.get());
         if (tile) {
-            LOGARG_INFO(LOGTYPE_UI, "Clicked map tile, id=%x loc=(%u/%u/%u) name=%S",
+            LOGARG_INFO(LOGTYPE_UI, "Clicked map, id=%x loc=(%i/%i/%i) name=%S",
                 tile->getArtId(), tile->getLocX(), tile->getLocY(), tile->getLocZ(), const_cast<data::LandTileInfo*>(tile->getTileDataInfo())->name_.getTerminatedBuffer());
         }
 
         world::StaticItem* itm = dynamic_cast<world::StaticItem*>(clickedItem.get());
         if (itm) {
-            LOGARG_INFO(LOGTYPE_UI, "Clicked static item, id=%x loc=(%i/%i/%i) name=%S",
+            LOGARG_INFO(LOGTYPE_UI, "Clicked static, id=%x loc=(%i/%i/%i) name=%S",
                 itm->getArtId(), itm->getLocX(), itm->getLocY(), itm->getLocZ(), const_cast<data::StaticTileInfo*>(itm->getTileDataInfo())->name_.getTerminatedBuffer());
         }
 
-        LOGARG_INFO(LOGTYPE_UI, "Vertex coords: %.0f/%.0f %.0f/%.0f %.0f/%.0f %.0f/%.0f %.0f/%.0f %.0f/%.0f",
-            clickedItem->getVertexCoordinates()[0].x, clickedItem->getVertexCoordinates()[0].y,
-            clickedItem->getVertexCoordinates()[1].x, clickedItem->getVertexCoordinates()[1].y,
-            clickedItem->getVertexCoordinates()[2].x, clickedItem->getVertexCoordinates()[2].y,
-            clickedItem->getVertexCoordinates()[3].x, clickedItem->getVertexCoordinates()[3].y,
-            clickedItem->getVertexCoordinates()[4].x, clickedItem->getVertexCoordinates()[4].y,
-            clickedItem->getVertexCoordinates()[5].x, clickedItem->getVertexCoordinates()[5].y);
+        LOGARG_INFO(LOGTYPE_UI, "Vertex normals: %.2f/%.2f/%2.f %.2f/%.2f/%2.f %.2f/%.2f/%2.f %.2f/%.2f/%2.f %.2f/%.2f/%2.f %.2f/%.2f/%2.f ",
+            clickedItem->getVertexNormals()[0].x, clickedItem->getVertexNormals()[0].y, clickedItem->getVertexNormals()[0].z,
+            clickedItem->getVertexNormals()[1].x, clickedItem->getVertexNormals()[1].y, clickedItem->getVertexNormals()[0].z,
+            clickedItem->getVertexNormals()[2].x, clickedItem->getVertexNormals()[2].y, clickedItem->getVertexNormals()[0].z,
+            clickedItem->getVertexNormals()[3].x, clickedItem->getVertexNormals()[3].y, clickedItem->getVertexNormals()[0].z,
+            clickedItem->getVertexNormals()[4].x, clickedItem->getVertexNormals()[4].y, clickedItem->getVertexNormals()[0].z,
+            clickedItem->getVertexNormals()[5].x, clickedItem->getVertexNormals()[5].y, clickedItem->getVertexNormals()[0].z);
 
 
         if (e.shift) {

@@ -26,6 +26,7 @@ IngameViewRenderer::IngameViewRenderer(IngameView* ingameView) :
     shaderProgram_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "../shader/vertex.glsl", "../shader/fragment.glsl")));
     shaderProgram_->bind_attribute_location(0, "gl_Vertex");
     shaderProgram_->bind_attribute_location(1, "TexCoord0");
+    shaderProgram_->bind_attribute_location(2, "gl_Normal");
     if (!shaderProgram_->link()) {
         LOGARG_CRITICAL(LOGTYPE_UI, "Error while linking program:\n%s", shaderProgram_->get_info_log().c_str());
         throw CL_Exception("Unable to link program");
@@ -71,6 +72,8 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
 
     boost::shared_ptr<world::LightManager> lightManager = world::Manager::getSingleton()->getLightManager();
     shaderProgram_->set_uniform3f("AmbientLightIntensity", lightManager->getAmbientIntensity());
+    shaderProgram_->set_uniform3f("GlobalLightIntensity", lightManager->getGlobalIntensity());
+    shaderProgram_->set_uniform3f("GlobalLightDirection", lightManager->getGlobalDirection());
 
     boost::shared_ptr<RenderQueue> renderQueue = ui::Manager::getSingleton()->getRenderQueue();
     std::list<world::IngameObject*>::const_iterator igIter = renderQueue->beginIngame();
@@ -103,6 +106,7 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
         CL_PrimitivesArray primarray(gc);
         primarray.set_attributes(0, curObj->getVertexCoordinates());
         primarray.set_attributes(1, tex1_coords);
+        primarray.set_attributes(2, curObj->getVertexNormals());
 
         gc.set_texture(1, *tex->getTexture());
         gc.draw_primitives(cl_triangles, 6, primarray);

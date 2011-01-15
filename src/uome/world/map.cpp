@@ -88,7 +88,7 @@ void MapTile::setSurroundingZ(int left, int right, int bottom) {
 
     invalidateRenderData(true);
 
-    // if the tile got a texture for the first time, we can finally add it to the render queue
+    // if the tile got surrounding z values from the loading thread for the first time, we can finally add it to the render queue
     // double adding checks are done in the function
     addToRenderQueue();
 }
@@ -108,9 +108,11 @@ bool MapTile::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixel
         return IngameObject::isInDrawArea(leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord);
     } else {
         return vertexCoordinates_[1].x <= rightPixelCoord &&
-                vertexCoordinates_[0].y <= bottomPixelCoord &&
+                (vertexCoordinates_[0].y <= bottomPixelCoord || vertexCoordinates_[1].y <= bottomPixelCoord ||
+                        vertexCoordinates_[2].y <= bottomPixelCoord || vertexCoordinates_[5].y <= bottomPixelCoord) &&
                 vertexCoordinates_[4].x >= leftPixelCoord &&
-                vertexCoordinates_[5].y >= topPixelCoord;
+                (vertexCoordinates_[0].y >= topPixelCoord || vertexCoordinates_[1].y >= topPixelCoord ||
+                        vertexCoordinates_[2].y >= topPixelCoord || vertexCoordinates_[5].y >= topPixelCoord);
     }
 }
 
@@ -128,6 +130,24 @@ bool MapTile::hasPixel(int pixelX, int pixelY) const {
 
 bool MapTile::isPixelInside(int pixelX, int pixelY, const CL_Vec2f& b, const CL_Vec2f& c) const {
     return (b.x * c.y + c.x * pixelY + pixelX * b.y - c.x*b.y - pixelX * c.y - b.x * pixelY) >= 0;
+}
+
+void MapTile::setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const CL_Vec3f& bottom, const CL_Vec3f& left) {
+    if (isFlat()) {
+        vertexNormals_[0] = top;
+        vertexNormals_[1] = right;
+        vertexNormals_[2] = left;
+        vertexNormals_[3] = right;
+        vertexNormals_[4] = left;
+        vertexNormals_[5] = bottom;
+    } else {
+        vertexNormals_[0] = top;
+        vertexNormals_[1] = left;
+        vertexNormals_[2] = right;
+        vertexNormals_[3] = left;
+        vertexNormals_[4] = right;
+        vertexNormals_[5] = bottom;
+    }
 }
 
 

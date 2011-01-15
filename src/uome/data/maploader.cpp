@@ -65,8 +65,8 @@ void MapLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned int le
 }
 
 void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item) {
-    int8_t zValues[11][11];
-    memset(&zValues, 0, 121);
+    int8_t zValues[15][15];
+    memset(&zValues, 0, 225);
 
     boost::shared_ptr<world::MapBlock> blocks[3][3];
     bool blocksLoaded[3][3];
@@ -100,11 +100,14 @@ void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item) {
         //blocksLoaded[2][0], blocksLoaded[2][1], blocksLoaded[2][2]);
 
     // step 1: fill the z map with the neighboring z values
-    unsigned int blockIndices[] = { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2 };
-    unsigned int tileIndices[] = { 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1 };
+    unsigned int blockIndices[] = { 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2 };
+    unsigned int tileIndices[] = { 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3 };
 
-    for (unsigned int x = 0; x < 11; ++x) {
-        for (unsigned int y = 0; y < 11; ++y) {
+    //unsigned int blockIndices[] = { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2 };
+    //unsigned int tileIndices[] = { 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1 };
+
+    for (unsigned int x = 0; x < 15; ++x) {
+        for (unsigned int y = 0; y < 15; ++y) {
             if (blocksLoaded[blockIndices[x]][blockIndices[y]]) {
                 zValues[x][y] = blocks[blockIndices[x]][blockIndices[y]]->get(tileIndices[x], tileIndices[y])->getLocZ();
             }
@@ -119,13 +122,90 @@ void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item) {
      *
      */
     // set the surrounding z values for tiles with a new important neighboring tile
-    for (unsigned int x = 1; x < 10; ++x) {
-        for (unsigned int y = 1; y < 10; ++y) {
+    for (unsigned int x = 2; x < 11; ++x) {
+        for (unsigned int y = 2; y < 11; ++y) {
             if (blocksLoaded[blockIndices[x]][blockIndices[y]]) {
                 blocks[blockIndices[x]][blockIndices[y]]->get(tileIndices[x], tileIndices[y])->setSurroundingZ(zValues[x][y + 1], zValues[x+1][y], zValues[x + 1][y+1]);
             }
         }
     }
+
+    /*  _____ _____ _____ _____
+     * |     | t10 | t20 |     |
+     * |_____|_____|_____|_____|
+     * | t01 | cur | t21 | t31 |
+     * |_____|_____|_____|_____|
+     * | t02 | t12 | t22 | t32 |
+     * |_____|_____|_____|_____|
+     * |     | t13 | t23 |     |
+     * |_____|_____|_____|_____|
+     */
+    // calculate new normals for all tiles that are influenced by this sector's z values
+    int8_t cur, t10, t20, t01, t21, t31, t02, t12, t22, t32, t13, t23;
+    boost::shared_ptr<world::MapTile> curTile;
+    CL_Vec3f topNormal, rightNormal, bottomNormal, leftNormal;
+
+    for (unsigned int x = 1; x < 13; ++x) {
+        for (unsigned int y = 1; y < 13; ++y) {
+            if (blocksLoaded[blockIndices[x]][blockIndices[y]]) {
+                curTile = blocks[blockIndices[x]][blockIndices[y]]->get(tileIndices[x], tileIndices[y]);
+
+                cur = zValues[x][y];
+                t10 = zValues[x][y-1];
+                t20 = zValues[x+1][y-1];
+                t01 = zValues[x-1][y];
+                t21 = zValues[x+1][y];
+                t31 = zValues[x+2][y];
+                t02 = zValues[x-1][y+1];
+                t12 = zValues[x][y+1];
+                t22 = zValues[x+1][y+1];
+                t32 = zValues[x+2][y+1];
+                t13 = zValues[x][y+2];
+                t23 = zValues[x+1][y+2];
+
+                topNormal = calculateNormal(cur, t10, t21, t12, t01);
+                rightNormal = calculateNormal(t21, t20, t31, t22, cur);
+                bottomNormal = calculateNormal(t22, t21, t32, t23, t12);
+                leftNormal = calculateNormal(t12, cur, t22, t13, t02);
+
+                curTile->setVertexNormals(topNormal, rightNormal, bottomNormal, leftNormal);
+            }
+        }
+    }
+}
+
+/*  _____ _____ _____
+ * |     | top |     |
+ * |_____|_____|_____|
+ * | lef | til | rig |
+ * |_____|_____|_____|
+ * |     | bot |     |
+ * |_____|_____|_____|
+ */
+CL_Vec3f MapLoader::calculateNormal(uint8_t tile, uint8_t top, uint8_t right, uint8_t bottom, uint8_t left) {
+    if (tile == top && tile == right && tile == bottom && tile == left) {
+        return CL_Vec3f(0, 0, 1);
+    }
+
+    CL_Vec3f u, v, ret;
+
+    u = CL_Vec3f(-22, -22, (left-tile)*4);
+    v = CL_Vec3f(-22, 22, (bottom-tile)*4);
+    ret = CL_Vec3f::cross(v, u).normalize();
+
+    u = CL_Vec3f(-22, 22, (bottom-tile)*4);
+    v = CL_Vec3f(22, 22, (right-tile)*4);
+    ret += CL_Vec3f::cross(v, u).normalize();
+
+    u = CL_Vec3f(22, 22, (right-tile)*4);
+    v = CL_Vec3f(22, -22, (top-tile)*4);
+    ret += CL_Vec3f::cross(v, u).normalize();
+
+    u = CL_Vec3f(22, -22, (top-tile)*4);
+    v = CL_Vec3f(-22, -22, (left-tile)*4);
+    ret += CL_Vec3f::cross(v, u).normalize();
+
+    return ret.normalize();
 }
 
 void MapLoader::readCallbackDifOffsets(int8_t* buf, unsigned int len) {
