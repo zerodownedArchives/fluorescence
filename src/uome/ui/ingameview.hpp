@@ -8,6 +8,11 @@
 #include "gumpmenu.hpp"
 
 namespace uome {
+
+namespace world {
+class IngameObject;
+}
+
 namespace ui {
 
 class IngameViewRenderer;
@@ -32,6 +37,8 @@ public:
 
     /// store all sectors this view needs (including some cache) in the list
     void getRequiredSectors(std::list<unsigned int>& list, unsigned int mapHeight, unsigned int cacheAdd);
+
+    boost::shared_ptr<world::IngameObject> getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY);
 
 private:
     unsigned int centerTileX_;

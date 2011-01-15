@@ -46,8 +46,8 @@ void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, 
         ++inputPtr;
     }
 
-    tex->initPixelBuffer(width, height, cl_rgba8);
-    uint32_t* pixBufPtr = reinterpret_cast<uint32_t*>(tex->getPixelBufferData());
+    tex->initPixelBuffer(width, height);
+    uint32_t* pixBufPtr = tex->getPixelBufferData();
     memset(pixBufPtr, 0, width * height * sizeof(uint32_t));
 
     unsigned int curX = 22;

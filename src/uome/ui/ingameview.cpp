@@ -8,6 +8,13 @@
 #include <world/manager.hpp>
 #include <world/sectormanager.hpp>
 #include <world/lightmanager.hpp>
+#include <world/map.hpp>
+#include <world/statics.hpp>
+
+#include <ui/manager.hpp>
+#include <ui/renderqueue.hpp>
+
+#include <data/tiledataloader.hpp>
 
 #include <ClanLib/Display/Window/keys.h>
 
@@ -82,7 +89,6 @@ void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int 
     int centerSectorY = (int)(getCenterTileY() / 8.0);
 
     list.push_back(centerSectorX * mapHeight + centerSectorY);
-    list.push_back(centerSectorX * mapHeight + centerSectorY + mapHeight);
     //return;
 
     unsigned int sectorX, sectorY, sectorId;
@@ -104,6 +110,8 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
 
     boost::shared_ptr<world::LightManager> lm;
     CL_Vec3f intensity;
+
+    boost::shared_ptr<world::IngameObject> clickedItem;
 
     switch (e.id) {
     case CL_KEY_UP:
@@ -165,12 +173,57 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         lm->setAmbientIntensity(intensity);
         break;
 
+    case CL_MOUSE_LEFT:
+        clickedItem = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
+        if (!clickedItem) {
+            LOG_DEBUG(LOGTYPE_UI, "Clicked, but found no item");
+        }
+        break;
+
     default:
         consumed = false;
         break;
     }
 
+    if (clickedItem) {
+        world::MapTile* tile = dynamic_cast<world::MapTile*>(clickedItem.get());
+        if (tile) {
+            LOGARG_INFO(LOGTYPE_UI, "Clicked map tile, id=%x loc=(%u/%u/%u) name=%S",
+                tile->getArtId(), tile->getLocX(), tile->getLocY(), tile->getLocZ(), const_cast<data::LandTileInfo*>(tile->getTileDataInfo())->name_.getTerminatedBuffer());
+        }
+
+        world::StaticItem* itm = dynamic_cast<world::StaticItem*>(clickedItem.get());
+        if (itm) {
+            LOGARG_INFO(LOGTYPE_UI, "Clicked static item, id=%x loc=(%i/%i/%i) name=%S",
+                itm->getArtId(), itm->getLocX(), itm->getLocY(), itm->getLocZ(), const_cast<data::StaticTileInfo*>(itm->getTileDataInfo())->name_.getTerminatedBuffer());
+        }
+
+        LOGARG_INFO(LOGTYPE_UI, "Vertex coords: %.0f/%.0f %.0f/%.0f %.0f/%.0f %.0f/%.0f %.0f/%.0f %.0f/%.0f",
+            clickedItem->getVertexCoordinates()[0].x, clickedItem->getVertexCoordinates()[0].y,
+            clickedItem->getVertexCoordinates()[1].x, clickedItem->getVertexCoordinates()[1].y,
+            clickedItem->getVertexCoordinates()[2].x, clickedItem->getVertexCoordinates()[2].y,
+            clickedItem->getVertexCoordinates()[3].x, clickedItem->getVertexCoordinates()[3].y,
+            clickedItem->getVertexCoordinates()[4].x, clickedItem->getVertexCoordinates()[4].y,
+            clickedItem->getVertexCoordinates()[5].x, clickedItem->getVertexCoordinates()[5].y);
+
+
+        if (e.shift) {
+            clickedItem->setVisible(false);
+        }
+    }
+
     return consumed;
+}
+
+boost::shared_ptr<world::IngameObject> IngameView::getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) {
+    LOGARG_INFO(LOGTYPE_UI, "IngameView::getFirstObjectAt %u %u", pixelX, pixelY);
+    int worldX = getCenterPixelX() - get_width()/2.0;
+    worldX += pixelX;
+
+    int worldY = getCenterPixelY() - get_height()/2.0;
+    worldY += pixelY;
+
+    return ui::Manager::getSingleton()->getRenderQueue()->getFirstIngameObjectAt(worldX, worldY);
 }
 
 }

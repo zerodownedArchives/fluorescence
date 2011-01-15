@@ -24,6 +24,14 @@ IngameObject::~IngameObject() {
     removeFromRenderQueueImmediately();
 }
 
+bool IngameObject::isVisible() const {
+    return visible_;
+}
+
+void IngameObject::setVisible(bool visible) {
+    visible_ = visible;
+}
+
 void IngameObject::setLocation(int locX, int locY, int locZ) {
     CL_Vec3<int> oldLocation = location_;
 
@@ -100,65 +108,30 @@ void IngameObject::removeFromRenderQueueImmediately() {
 bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {
     //LOGARG_DEBUG(LOGTYPE_WORLD, "isInDrawArea (%u %u %u %u) => x=%u y=%u\n", leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord, vertexCoordinates_[0u].x, vertexCoordinates_[0u].y);
 
-    // this code is not pretty. but as this function is called _very_ often, it is optimized a little
-    bool leftOk = false;
-    bool rightOk = false;
-    bool topOk = false;
-    bool bottomOk = false;
+    // almost every texture is a rectangle, with vertexCoordinates_[0] being top left and vertexCoordinates_[5] bottom right
+    // all non-rectangular cases are maptiles
+    return vertexCoordinates_[0].x <= rightPixelCoord &&
+            vertexCoordinates_[0].y <= bottomPixelCoord &&
+            vertexCoordinates_[5].x >= leftPixelCoord &&
+            vertexCoordinates_[5].y >= topPixelCoord;
+}
 
-    for (unsigned int i = 0; i < 6; ++i) {
-        if (vertexCoordinates_[i].x >= leftPixelCoord) {
-            leftOk = true;
-            break;
-        }
-    }
+bool IngameObject::hasPixel(int pixelX, int pixelY) const {
+    // almost every texture is a rectangle, with vertexCoordinates_[0] being top left and vertexCoordinates_[5] bottom right
+    // all non-rectangular cases are maptiles
+    bool coordinateCheck = vertexCoordinates_[0].x <= pixelX &&
+            vertexCoordinates_[0].y <= pixelY &&
+            vertexCoordinates_[5].x >= pixelX &&
+            vertexCoordinates_[5].y >= pixelY;
 
-    if (!leftOk) {
+    boost::shared_ptr<ui::Texture> tex = getIngameTexture();
+    if (coordinateCheck && tex && tex->isReadComplete()) {
+        unsigned int texPixelX = pixelX - vertexCoordinates_[0].x;
+        unsigned int texPixelY = pixelY - vertexCoordinates_[0].y;
+        return tex->hasPixel(texPixelX, texPixelY);
+    } else {
         return false;
     }
-
-    for (unsigned int i = 0; i < 6; ++i) {
-        if (vertexCoordinates_[i].x <= rightPixelCoord) {
-            rightOk = true;
-            break;
-        }
-    }
-
-    if (!rightOk) {
-        return false;
-    }
-
-    for (unsigned int i = 0; i < 6; ++i) {
-        if (vertexCoordinates_[i].y >= topPixelCoord) {
-            topOk = true;
-            break;
-        }
-    }
-
-    if (!topOk) {
-        return false;
-    }
-
-    for (unsigned int i = 0; i < 6; ++i) {
-        if (vertexCoordinates_[i].y <= bottomPixelCoord) {
-            bottomOk = true;
-            break;
-        }
-    }
-
-    return bottomOk;
-
-    // unoptimized code:
-
-    //for (unsigned int i = 0; i <6; ++i) {
-    //leftOk = leftOk || vertexCoordinates_[i].x >= leftPixelCoord;
-    //rightOk = rightOk || vertexCoordinates_[i].x <= rightPixelCoord;
-
-    //topOk = topOk || vertexCoordinates_[i].y >= topPixelCoord;
-    //bottomOk = bottomOk || vertexCoordinates_[i].y <= bottomPixelCoord;
-    //}
-
-    //return leftOk && rightOk && topOk && bottomOk;
 }
 
 }

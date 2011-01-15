@@ -44,6 +44,8 @@ public:
 
     void clear();
 
+    boost::shared_ptr<world::IngameObject> getFirstIngameObjectAt(int worldX, int worldY);
+
 private:
     /* I'm aware of the fact that, according to good programming standards, this should be a list of weak_ptr
      * I experimented with that quite a bit, but implementing this list with weak pointers has an incredibly heavy

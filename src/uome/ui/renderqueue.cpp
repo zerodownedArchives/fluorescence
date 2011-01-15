@@ -218,5 +218,19 @@ void RenderQueue::clear() {
     ingameList_.clear();
 }
 
+boost::shared_ptr<world::IngameObject> RenderQueue::getFirstIngameObjectAt(int worldX, int worldY) {
+    std::list<world::IngameObject*>::reverse_iterator igIter = ingameList_.rbegin();
+    std::list<world::IngameObject*>::reverse_iterator igEnd = ingameList_.rend();
+
+    for (; igIter != igEnd; ++igIter) {
+        world::IngameObject* curObj = *igIter;
+        if (curObj->isVisible() && curObj->hasPixel(worldX, worldY)) {
+            return (*igIter)->shared_from_this();
+        }
+    }
+
+    return boost::shared_ptr<world::IngameObject>();
+}
+
 }
 }

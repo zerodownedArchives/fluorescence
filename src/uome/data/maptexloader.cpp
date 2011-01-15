@@ -24,8 +24,8 @@ void MapTexLoader::readCallback(unsigned int index, int8_t* buf, unsigned int le
     // map textures are always quadratic
     unsigned short width = (extra == 1) ? 128 : 64;
 
-    tex->initPixelBuffer(width, width, cl_rgba8);
-    uint32_t* pixBufPtr = reinterpret_cast<uint32_t*>(tex->getPixelBufferData());
+    tex->initPixelBuffer(width, width);
+    uint32_t* pixBufPtr = tex->getPixelBufferData();
     memset(pixBufPtr, 0, width * width * sizeof(uint32_t));
 
     uint16_t* inputPtr = reinterpret_cast<uint16_t*>(buf);

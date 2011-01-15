@@ -77,6 +77,11 @@ void StaticItem::updateTextureProvider() {
     texture_ = data::Manager::getArtLoader()->getItemTexture(artId_);
 }
 
+const data::StaticTileInfo* StaticItem::getTileDataInfo() {
+    return tileDataInfo_;
+}
+
+
 std::list<boost::shared_ptr<StaticItem> >& StaticBlock::getItemList() {
     return itemList_;
 }

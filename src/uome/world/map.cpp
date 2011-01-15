@@ -32,7 +32,7 @@ void MapTile::updateVertexCoordinates() {
     int px = (getLocX() - getLocY()) * 22;
     int py = (getLocX() + getLocY()) * 22;
 
-    if ((zLeft_ == zRight_ && zLeft_ == zBottom_ && zLeft_ == getLocZ()) || tileDataInfo_->textureId_ < 0) {
+    if (isFlat()) {
         // flat tile or tile without texture
         py -= getLocZ() * 4;
         CL_Rectf rect(px, py, px + 44, py + 44);
@@ -59,6 +59,10 @@ void MapTile::updateVertexCoordinates() {
     }
 }
 
+bool MapTile::isFlat() const {
+    return (zLeft_ == zRight_ && zLeft_ == zBottom_ && zLeft_ == getLocZ()) || tileDataInfo_->textureId_ < 0;
+}
+
 void MapTile::updateRenderPriority() {
     renderPriority_[0] = getLocX() + getLocY();
 
@@ -66,7 +70,7 @@ void MapTile::updateRenderPriority() {
 }
 
 void MapTile::updateTextureProvider() {
-    if ((zLeft_ == zRight_ && zLeft_ == zBottom_ && zLeft_ == getLocZ()) || tileDataInfo_->textureId_ < 0) {
+    if (isFlat()) {
         texture_ = data::Manager::getArtLoader()->getMapTexture(artId_);
     } else {
         texture_ = data::Manager::getMapTexLoader()->get(tileDataInfo_->textureId_);
@@ -88,6 +92,44 @@ void MapTile::setSurroundingZ(int left, int right, int bottom) {
     // double adding checks are done in the function
     addToRenderQueue();
 }
+
+unsigned int MapTile::getArtId() {
+    return artId_;
+}
+
+const data::LandTileInfo* MapTile::getTileDataInfo() {
+    return tileDataInfo_;
+}
+
+bool MapTile::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {
+    //LOGARG_DEBUG(LOGTYPE_WORLD, "isInDrawArea (%u %u %u %u) => x=%u y=%u\n", leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord, vertexCoordinates_[0u].x, vertexCoordinates_[0u].y);
+
+    if (isFlat()) {
+        return IngameObject::isInDrawArea(leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord);
+    } else {
+        return vertexCoordinates_[1].x <= rightPixelCoord &&
+                vertexCoordinates_[0].y <= bottomPixelCoord &&
+                vertexCoordinates_[4].x >= leftPixelCoord &&
+                vertexCoordinates_[5].y >= topPixelCoord;
+    }
+}
+
+bool MapTile::hasPixel(int pixelX, int pixelY) const {
+    if (isFlat()) {
+        return IngameObject::hasPixel(pixelX, pixelY);
+    } else {
+        return isPixelInside(pixelX, pixelY, vertexCoordinates_[0], vertexCoordinates_[2]) &&
+                isPixelInside(pixelX, pixelY, vertexCoordinates_[2], vertexCoordinates_[5]) &&
+                isPixelInside(pixelX, pixelY, vertexCoordinates_[5], vertexCoordinates_[3]) &&
+                isPixelInside(pixelX, pixelY, vertexCoordinates_[3], vertexCoordinates_[0]);
+    }
+
+}
+
+bool MapTile::isPixelInside(int pixelX, int pixelY, const CL_Vec2f& b, const CL_Vec2f& c) const {
+    return (b.x * c.y + c.x * pixelY + pixelX * b.y - c.x*b.y - pixelX * c.y - b.x * pixelY) >= 0;
+}
+
 
 MapBlock::MapBlock() {
     for (unsigned int i = 0; i < 64; ++i) {

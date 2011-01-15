@@ -22,6 +22,14 @@ public:
     MapTile();
     virtual boost::shared_ptr<ui::Texture> getIngameTexture() const;
 
+    unsigned int getArtId();
+    const data::LandTileInfo* getTileDataInfo();
+
+    bool isFlat() const;
+
+    virtual bool hasPixel(int pixelX, int pixelY) const;
+    virtual bool isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const;
+
 private:
     unsigned int artId_;
 
@@ -42,6 +50,8 @@ private:
     virtual void updateTextureProvider();
 
     void setTexture();
+
+    bool isPixelInside(int pixelX, int pixelY, const CL_Vec2f& b, const CL_Vec2f& c) const;
 };
 
 class MapBlock : public data::OnDemandReadable {

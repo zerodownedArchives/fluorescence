@@ -33,6 +33,8 @@ public:
     void updateRenderPriority();
     void updateTextureProvider();
 
+    const data::StaticTileInfo* getTileDataInfo();
+
 private:
     unsigned int artId_;
     unsigned int hue_;

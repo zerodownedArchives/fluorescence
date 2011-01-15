@@ -68,9 +68,9 @@ const uint32_t* HuesLoader::getColorTable(unsigned int id) const {
 boost::shared_ptr<ui::Texture> HuesLoader::getHuesTexture() {
     if (!huesTexture_) {
         huesTexture_.reset(new ui::Texture());
-        huesTexture_->initPixelBuffer(32, hueCount_, cl_rgba8);
+        huesTexture_->initPixelBuffer(32, hueCount_);
 
-        uint32_t* pxBuf = reinterpret_cast<uint32_t*>(huesTexture_->getPixelBufferData());
+        uint32_t* pxBuf = huesTexture_->getPixelBufferData();
 
         for (unsigned int hueIdx = 0; hueIdx < hueCount_; ++hueIdx) {
             for (unsigned int pxIdx = 0; pxIdx < 32; ++pxIdx) {

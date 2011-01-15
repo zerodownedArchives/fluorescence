@@ -5,6 +5,7 @@
 #include <ClanLib/Core/Math/vec3.h>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
 namespace uome {
 
@@ -15,7 +16,7 @@ namespace ui {
 
 namespace world {
 
-class IngameObject {
+class IngameObject : public boost::enable_shared_from_this<IngameObject> {
 
 friend class ui::RenderQueue;
 
@@ -27,7 +28,8 @@ public:
     int getLocY() const { return location_[1u]; }
     int getLocZ() const { return location_[2u]; }
 
-    bool isVisible() const { return visible_; }
+    bool isVisible() const;
+    void setVisible(bool visible);
 
     virtual boost::shared_ptr<ui::Texture> getIngameTexture() const = 0;
 
@@ -43,7 +45,10 @@ public:
     const int* getRenderPriorities() const;
 
     /// returns whether or not this item is currently in the drawing area of the game window
-    bool isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const;
+    virtual bool isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const;
+
+    /// returns wheter or not the given pixel coordinate is covered by this object's texture
+    virtual bool hasPixel(int pixelX, int pixelY) const;
 
 protected:
     CL_Vec2f vertexCoordinates_[6];

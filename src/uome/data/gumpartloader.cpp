@@ -24,8 +24,8 @@ void GumpArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int l
     unsigned int width = (extra >> 16) & 0xFFFF;
     unsigned int height = extra & 0xFFFF;
 
-    tex->initPixelBuffer(width, height, cl_rgba8);
-    uint32_t* pixBufPtr = reinterpret_cast<uint32_t*>(tex->getPixelBufferData());
+    tex->initPixelBuffer(width, height);
+    uint32_t* pixBufPtr = tex->getPixelBufferData();
     memset(pixBufPtr, 0, width * height * sizeof(uint32_t));
 
 

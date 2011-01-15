@@ -4,6 +4,7 @@ set (UI_HPP
     texture.hpp
     renderqueue.hpp
     ingameviewrenderer.hpp
+    bitmask.hpp
     )
 
 set (UI_CPP
@@ -11,6 +12,7 @@ set (UI_CPP
     texture.cpp
     renderqueue.cpp
     ingameviewrenderer.cpp
+    bitmask.cpp
     )
 
 set (GUMPMENU_HPP
