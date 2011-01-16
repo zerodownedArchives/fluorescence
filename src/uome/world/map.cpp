@@ -77,10 +77,6 @@ void MapTile::updateTextureProvider() {
     }
 }
 
-void MapTile::setRightZ(int right) {
-    setSurroundingZ(zLeft_, right, zBottom_);
-}
-
 void MapTile::setSurroundingZ(int left, int right, int bottom) {
     zLeft_ = left;
     zRight_ = right;

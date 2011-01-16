@@ -34,7 +34,6 @@ IngameView::IngameView(const CL_Rect& bounds) : GumpMenu(bounds),
 }
 
 IngameView::~IngameView() {
-    LOG_DEBUG(LOGTYPE_UI, "IngameView dtor");
     world::Manager::getSingleton()->getSectorManager()->unregisterIngameView(this);
 }
 

@@ -44,7 +44,6 @@ private:
     int zLeft_;
     int zRight_;
     int zBottom_;
-    void setRightZ(int right);
     void setSurroundingZ(int left, int right, int bottom);
 
     virtual void updateVertexCoordinates();
