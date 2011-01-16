@@ -15,6 +15,7 @@ namespace ui {
 
 class IngameView;
 class RenderQueue;
+class CursorManager;
 
 class Manager {
 public:
@@ -36,6 +37,8 @@ public:
 
     boost::shared_ptr<CL_GUIManager> getGuiManager();
 
+    boost::shared_ptr<CursorManager> getCursorManager();
+
 private:
     static Manager* singleton_;
 
@@ -56,6 +59,8 @@ private:
     boost::shared_ptr<CL_GUIManager> guiManager_;
     boost::shared_ptr<CL_GUIWindowManagerTexture> windowManager_;
     boost::shared_ptr<CL_DisplayWindow> mainWindow_;
+
+    boost::shared_ptr<CursorManager> cursorManager_;
 };
 
 }

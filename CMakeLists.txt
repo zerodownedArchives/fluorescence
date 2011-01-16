@@ -16,6 +16,8 @@ set(ClanLib_VERSION_LIBNAME "22")
 set(ClanList_VERSION_DIRNAME "2.2")
 find_package(ClanLib REQUIRED COMPONENTS App Core Display GL GUI)
 
+find_package(X11 REQUIRED COMPONENTS cursor)
+
 EXEC_PROGRAM(icu-config
         ARGS "--ldflags" "--ldflags-icuio"
         OUTPUT_VARIABLE ICU_LIBRARIES)
@@ -24,7 +26,7 @@ EXEC_PROGRAM(icu-config
 #message(STATUS "cl libs: ${ClanLib_LIBRARIES}")
 #message(STATUS "icu libs: ${ICU_LIBRARIES}")
 
-set(UOME_LIBRARIES uomeui uomedata uomeworld uomemisc ${ClanLib_LIBRARIES} ${Boost_LIBRARIES} ${ICU_LIBRARIES})
+set(UOME_LIBRARIES uomeui uomedata uomeworld uomemisc ${ClanLib_LIBRARIES} ${Boost_LIBRARIES} ${ICU_LIBRARIES} -lXcursor)
 
 set(CMAKE_CXX_FLAGS "-Wall -Werror ${CMAKE_CXX_FLAGS} -msse2 -D_REENTRANT")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -DDEBUG")

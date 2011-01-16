@@ -110,6 +110,7 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
 
     boost::shared_ptr<world::LightManager> lm;
     CL_Vec3f intensity;
+    CL_Vec3f direction;
 
     boost::shared_ptr<world::IngameObject> clickedItem;
 
@@ -126,36 +127,7 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     case CL_KEY_RIGHT:
         centerTileX_ += 1;
         break;
-    case CL_KEY_R:
-        lm = world::Manager::getSingleton()->getLightManager();
-        intensity = lm->getAmbientIntensity();
-        if (e.ctrl) {
-            intensity.r = std::max(0.0, intensity.r - 0.1);
-        } else {
-            intensity.r += 0.1;
-        }
-        lm->setAmbientIntensity(intensity);
-        break;
-    case CL_KEY_G:
-        lm = world::Manager::getSingleton()->getLightManager();
-        intensity = lm->getAmbientIntensity();
-        if (e.ctrl) {
-            intensity.g = std::max(0.0, intensity.g - 0.1);
-        } else {
-            intensity.g += 0.1;
-        }
-        lm->setAmbientIntensity(intensity);
-        break;
-    case CL_KEY_B:
-        lm = world::Manager::getSingleton()->getLightManager();
-        intensity = lm->getAmbientIntensity();
-        if (e.ctrl) {
-            intensity.b = std::max(0.0, intensity.b - 0.1);
-        } else {
-            intensity.b += 0.1;
-        }
-        lm->setAmbientIntensity(intensity);
-        break;
+
     case CL_KEY_ADD:
         lm = world::Manager::getSingleton()->getLightManager();
         intensity = lm->getAmbientIntensity();

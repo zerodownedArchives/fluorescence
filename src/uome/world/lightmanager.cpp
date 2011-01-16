@@ -1,6 +1,8 @@
 
 #include "lightmanager.hpp"
 
+#include <stdlib.h>
+
 namespace uome {
 namespace world {
 
@@ -27,6 +29,10 @@ void LightManager::setGlobalIntensity(const CL_Vec3f& value) {
 
 CL_Vec3f LightManager::getGlobalDirection() const {
     return globalDirection_;
+}
+
+void LightManager::setGlobalDirection(const CL_Vec3f& direction) {
+    globalDirection_ = direction;
 }
 
 void LightManager::setGlobalAngle(float angle) {

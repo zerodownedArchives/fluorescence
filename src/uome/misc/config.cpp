@@ -117,6 +117,8 @@ bool Config::getVariablesMap(const std::vector<CL_String8>& args, boost::program
 
     ("ui.themes-directory", po::value<std::string>()->default_value("themes"), "Directory containing the themes for UO:ME")
     ("ui.default-theme", po::value<std::string>()->default_value("GUIThemeBasic"), "Default ui theme")
+    ("ui.cursor-artid-start", po::value<unsigned int>()->default_value(0x206A), "Begin art id of cursor sequence")
+    ("ui.cursor-artid-start-warmode", po::value<unsigned int>()->default_value(0x2053), "Begin art id of cursor sequence (warmode)")
     ;
 
     desc.add(filesDesc);

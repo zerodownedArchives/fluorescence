@@ -6,7 +6,7 @@ set (WORLD_HPP
     statics.hpp
     sector.hpp
     sectormanager.hpp
-    lightmanager.cpp
+    lightmanager.hpp
     )
 
 set (WORLD_CPP
@@ -16,7 +16,7 @@ set (WORLD_CPP
     statics.cpp
     sector.cpp
     sectormanager.cpp
-    lightmanager.hpp
+    lightmanager.cpp
     )
 
 add_library(uomeworld STATIC ${WORLD_HPP} ${WORLD_CPP})

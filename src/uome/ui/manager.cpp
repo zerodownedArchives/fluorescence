@@ -5,6 +5,7 @@
 
 #include "ingameview.hpp"
 #include "renderqueue.hpp"
+#include "cursormanager.hpp"
 
 #include <misc/logger.hpp>
 #include <misc/exception.hpp>
@@ -21,6 +22,7 @@ bool Manager::create(const boost::program_options::variables_map& config) {
     if (!singleton_) {
         try {
             singleton_ = new Manager(config);
+            singleton_->getCursorManager()->setCursor(CursorType::GAME_NORTH);
         } catch (const std::exception& ex) {
             LOGARG_CRITICAL(LOGTYPE_UI, "Error initializing ui::Manager: %s", ex.what());
             return false;
@@ -60,6 +62,8 @@ Manager::Manager(const boost::program_options::variables_map& config) {
     guiManager_.reset(new CL_GUIManager(*windowManager_, path.string()));
 
     renderQueue_.reset(new RenderQueue());
+
+    cursorManager_.reset(new CursorManager(config, mainWindow_));
 }
 
 Manager::~Manager() {
@@ -97,6 +101,10 @@ boost::shared_ptr<RenderQueue> Manager::getRenderQueue() {
 
 boost::shared_ptr<CL_GUIManager> Manager::getGuiManager() {
     return guiManager_;
+}
+
+boost::shared_ptr<CursorManager> Manager::getCursorManager() {
+    return cursorManager_;
 }
 
 }

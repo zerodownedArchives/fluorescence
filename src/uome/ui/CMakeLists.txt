@@ -5,6 +5,8 @@ set (UI_HPP
     renderqueue.hpp
     ingameviewrenderer.hpp
     bitmask.hpp
+    cursormanager.hpp
+    cursorimage.hpp
     )
 
 set (UI_CPP
@@ -13,6 +15,8 @@ set (UI_CPP
     renderqueue.cpp
     ingameviewrenderer.cpp
     bitmask.cpp
+    cursormanager.cpp
+    cursorimage.cpp
     )
 
 set (GUMPMENU_HPP

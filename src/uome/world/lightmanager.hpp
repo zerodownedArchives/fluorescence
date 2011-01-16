@@ -17,6 +17,8 @@ public:
     void setGlobalIntensity(const CL_Vec3f& value);
 
     CL_Vec3f getGlobalDirection() const;
+    void setGlobalDirection(const CL_Vec3f& direction);
+
     void setGlobalAngle(float angle);
     float getGlobalAngle() const;
 
