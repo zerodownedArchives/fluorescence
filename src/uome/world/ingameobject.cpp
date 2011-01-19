@@ -139,5 +139,12 @@ const CL_Vec3f* IngameObject::getVertexNormals() const {
     return vertexNormals_;
 }
 
+void IngameObject::onClick() {
+}
+
+void IngameObject::onDoubleClick() {
+    setVisible(false);
+}
+
 }
 }

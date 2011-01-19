@@ -16,6 +16,7 @@ namespace ui {
 class IngameView;
 class RenderQueue;
 class CursorManager;
+class DoubleClickHandler;
 
 class Manager {
 public:
@@ -28,16 +29,18 @@ public:
     void processMessages();
     void drawWindow();
 
-    CL_GraphicContext& getGraphicsContext();
-    boost::shared_ptr<CL_DisplayWindow> getMainWindow();
+    static CL_GraphicContext& getGraphicsContext();
+    static boost::shared_ptr<CL_DisplayWindow> getMainWindow();
 
-    CL_Texture* provideTexture(unsigned int width, unsigned int height);
+    static CL_Texture* provideTexture(unsigned int width, unsigned int height);
 
-    boost::shared_ptr<RenderQueue> getRenderQueue();
+    static boost::shared_ptr<RenderQueue> getRenderQueue();
 
-    boost::shared_ptr<CL_GUIManager> getGuiManager();
+    static boost::shared_ptr<CL_GUIManager> getGuiManager();
 
-    boost::shared_ptr<CursorManager> getCursorManager();
+    static boost::shared_ptr<CursorManager> getCursorManager();
+
+    static boost::shared_ptr<DoubleClickHandler> getDoubleClickHandler();
 
 private:
     static Manager* singleton_;
@@ -61,6 +64,8 @@ private:
     boost::shared_ptr<CL_DisplayWindow> mainWindow_;
 
     boost::shared_ptr<CursorManager> cursorManager_;
+
+    boost::shared_ptr<DoubleClickHandler> doubleClickHandler_;
 };
 
 }

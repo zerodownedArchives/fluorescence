@@ -6,6 +6,7 @@
 #include "ingameview.hpp"
 #include "renderqueue.hpp"
 #include "cursormanager.hpp"
+#include "doubleclickhandler.hpp"
 
 #include <misc/logger.hpp>
 #include <misc/exception.hpp>
@@ -64,6 +65,9 @@ Manager::Manager(const boost::program_options::variables_map& config) {
     renderQueue_.reset(new RenderQueue());
 
     cursorManager_.reset(new CursorManager(config, mainWindow_));
+
+    doubleClickHandler_.reset(new DoubleClickHandler(config));
+    doubleClickHandler_->start();
 }
 
 Manager::~Manager() {
@@ -84,27 +88,31 @@ void Manager::drawWindow() {
 }
 
 boost::shared_ptr<CL_DisplayWindow> Manager::getMainWindow() {
-    return mainWindow_;
+    return singleton_->mainWindow_;
 }
 
 CL_GraphicContext& Manager::getGraphicsContext() {
-    return mainWindow_->get_gc();
+    return singleton_->mainWindow_->get_gc();
 }
 
 CL_Texture* Manager::provideTexture(unsigned int width, unsigned int height) {
-    return new CL_Texture(getGraphicsContext(), width, height, cl_rgb8);
+    return new CL_Texture(singleton_->getGraphicsContext(), width, height, cl_rgb8);
 }
 
 boost::shared_ptr<RenderQueue> Manager::getRenderQueue() {
-    return renderQueue_;
+    return singleton_->renderQueue_;
 }
 
 boost::shared_ptr<CL_GUIManager> Manager::getGuiManager() {
-    return guiManager_;
+    return singleton_->guiManager_;
 }
 
 boost::shared_ptr<CursorManager> Manager::getCursorManager() {
-    return cursorManager_;
+    return singleton_->cursorManager_;
+}
+
+boost::shared_ptr<DoubleClickHandler> Manager::getDoubleClickHandler() {
+    return singleton_->doubleClickHandler_;
 }
 
 }

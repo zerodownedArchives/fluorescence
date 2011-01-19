@@ -90,7 +90,7 @@ void CursorImage::setHotspotFromTexture(boost::shared_ptr<ui::Texture> tex) {
         pixel[y * width_ + (width_-1)] = 0x00000000;
     }
 
-    LOGARG_DEBUG(LOGTYPE_UI, "Hotspot for %u found at %u/%u", cursorId_, hotspotX_, hotspotY_);
+    //LOGARG_DEBUG(LOGTYPE_UI, "Hotspot for %u found at %u/%u", cursorId_, hotspotX_, hotspotY_);
 }
 
 void CursorImage::activate() {

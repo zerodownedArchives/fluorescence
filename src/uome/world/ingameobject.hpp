@@ -53,6 +53,10 @@ public:
     /// returns wheter or not the given pixel coordinate is covered by this object's texture
     virtual bool hasPixel(int pixelX, int pixelY) const;
 
+
+    virtual void onClick();
+    virtual void onDoubleClick();
+
 protected:
     CL_Vec2f vertexCoordinates_[6];
     CL_Vec3f vertexNormals_[6];

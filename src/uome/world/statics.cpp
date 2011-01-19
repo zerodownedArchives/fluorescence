@@ -81,6 +81,11 @@ const data::StaticTileInfo* StaticItem::getTileDataInfo() {
     return tileDataInfo_;
 }
 
+void StaticItem::onClick() {
+    LOGARG_INFO(LOGTYPE_INPUT, "Clicked static, id=%x loc=(%i/%i/%i) name=%S",
+                getArtId(), getLocX(), getLocY(), getLocZ(), const_cast<data::StaticTileInfo*>(getTileDataInfo())->name_.getTerminatedBuffer());
+}
+
 
 std::list<boost::shared_ptr<StaticItem> >& StaticBlock::getItemList() {
     return itemList_;

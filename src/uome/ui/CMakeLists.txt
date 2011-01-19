@@ -7,6 +7,7 @@ set (UI_HPP
     bitmask.hpp
     cursormanager.hpp
     cursorimage.hpp
+    doubleclickhandler.hpp
     )
 
 set (UI_CPP
@@ -17,6 +18,7 @@ set (UI_CPP
     bitmask.cpp
     cursormanager.cpp
     cursorimage.cpp
+    doubleclickhandler.cpp
     )
 
 set (GUMPMENU_HPP

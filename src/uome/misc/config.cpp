@@ -119,6 +119,7 @@ bool Config::getVariablesMap(const std::vector<CL_String8>& args, boost::program
     ("ui.default-theme", po::value<std::string>()->default_value("GUIThemeBasic"), "Default ui theme")
     ("ui.cursor-artid-start", po::value<unsigned int>()->default_value(0x206A), "Begin art id of cursor sequence")
     ("ui.cursor-artid-start-warmode", po::value<unsigned int>()->default_value(0x2053), "Begin art id of cursor sequence (warmode)")
+    ("ui.doubleclick-timeout-ms", po::value<unsigned int>()->default_value(300), "Maximum interval between two clicks to be counted as double click")
     ;
 
     desc.add(filesDesc);

@@ -13,8 +13,7 @@
 
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
-
-#include <data/tiledataloader.hpp>
+#include <ui/doubleclickhandler.hpp>
 
 #include <ClanLib/Display/Window/keys.h>
 
@@ -31,6 +30,8 @@ IngameView::IngameView(const CL_Rect& bounds) : GumpMenu(bounds),
 
     func_render().set(this, &IngameView::renderOneFrame);
     func_input_pressed().set(this, &IngameView::onInputPressed);
+    func_input_released().set(this, &IngameView::onInputReleased);
+    func_input_doubleclick().set(this, &IngameView::onDoubleClick);
 }
 
 IngameView::~IngameView() {
@@ -111,8 +112,6 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     CL_Vec3f intensity;
     CL_Vec3f direction;
 
-    boost::shared_ptr<world::IngameObject> clickedItem;
-
     switch (e.id) {
     case CL_KEY_UP:
         centerTileY_ -= 1;
@@ -155,10 +154,24 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         LOGARG_DEBUG(LOGTYPE_UI, "mw down %f", lm->getGlobalAngle());
         break;
 
+    default:consumed = false;
+    }
+
+    return consumed;
+}
+
+bool IngameView::onInputReleased(const CL_InputEvent& e) {
+    bool consumed = true;
+
+    boost::shared_ptr<world::IngameObject> clickedObject;
+
+    switch (e.id) {
     case CL_MOUSE_LEFT:
-        clickedItem = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
-        if (!clickedItem) {
-            LOG_DEBUG(LOGTYPE_UI, "Clicked, but found no item");
+        clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
+        if (!clickedObject) {
+            LOG_DEBUG(LOGTYPE_UI, "Clicked, but found no object");
+        } else {
+            ui::Manager::getDoubleClickHandler()->notify(clickedObject);
         }
         break;
 
@@ -167,34 +180,22 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         break;
     }
 
-    if (clickedItem) {
-        world::MapTile* tile = dynamic_cast<world::MapTile*>(clickedItem.get());
-        if (tile) {
-            LOGARG_INFO(LOGTYPE_UI, "Clicked map, id=%x loc=(%i/%i/%i) name=%S",
-                tile->getArtId(), tile->getLocX(), tile->getLocY(), tile->getLocZ(), const_cast<data::LandTileInfo*>(tile->getTileDataInfo())->name_.getTerminatedBuffer());
-        }
-
-        world::StaticItem* itm = dynamic_cast<world::StaticItem*>(clickedItem.get());
-        if (itm) {
-            LOGARG_INFO(LOGTYPE_UI, "Clicked static, id=%x loc=(%i/%i/%i) name=%S",
-                itm->getArtId(), itm->getLocX(), itm->getLocY(), itm->getLocZ(), const_cast<data::StaticTileInfo*>(itm->getTileDataInfo())->name_.getTerminatedBuffer());
-        }
-
-        LOGARG_INFO(LOGTYPE_UI, "Vertex normals: %.2f/%.2f/%2.f %.2f/%.2f/%2.f %.2f/%.2f/%2.f %.2f/%.2f/%2.f %.2f/%.2f/%2.f %.2f/%.2f/%2.f ",
-            clickedItem->getVertexNormals()[0].x, clickedItem->getVertexNormals()[0].y, clickedItem->getVertexNormals()[0].z,
-            clickedItem->getVertexNormals()[1].x, clickedItem->getVertexNormals()[1].y, clickedItem->getVertexNormals()[0].z,
-            clickedItem->getVertexNormals()[2].x, clickedItem->getVertexNormals()[2].y, clickedItem->getVertexNormals()[0].z,
-            clickedItem->getVertexNormals()[3].x, clickedItem->getVertexNormals()[3].y, clickedItem->getVertexNormals()[0].z,
-            clickedItem->getVertexNormals()[4].x, clickedItem->getVertexNormals()[4].y, clickedItem->getVertexNormals()[0].z,
-            clickedItem->getVertexNormals()[5].x, clickedItem->getVertexNormals()[5].y, clickedItem->getVertexNormals()[0].z);
-
-
-        if (e.shift) {
-            clickedItem->setVisible(false);
-        }
-    }
-
     return consumed;
+}
+
+bool IngameView::onDoubleClick(const CL_InputEvent& e) {
+    //if (e.id == CL_MOUSE_LEFT) {
+        boost::shared_ptr<world::IngameObject> clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
+        if (!clickedObject) {
+            LOG_DEBUG(LOGTYPE_UI, "doublelicked, but found no object");
+        } else {
+            clickedObject->onClick();
+        }
+
+        return true;
+    //}
+
+    return false;
 }
 
 boost::shared_ptr<world::IngameObject> IngameView::getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) {

@@ -47,6 +47,8 @@ private:
     boost::shared_ptr<IngameViewRenderer> renderer_;
 
     bool onInputPressed(const CL_InputEvent& e);
+    bool onInputReleased(const CL_InputEvent & e);
+    bool onDoubleClick(const CL_InputEvent& e);
 };
 
 }

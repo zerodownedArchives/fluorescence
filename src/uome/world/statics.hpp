@@ -35,6 +35,8 @@ public:
 
     const data::StaticTileInfo* getTileDataInfo();
 
+    virtual void onClick();
+
 private:
     unsigned int artId_;
     unsigned int hue_;

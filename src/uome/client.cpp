@@ -23,9 +23,20 @@ namespace uome {
 Client::Client() {
 }
 
+Client* Client::singleton_ = NULL;
+Client* Client::getSingleton() {
+    return singleton_;
+}
+
 int Client::sMain(const std::vector<CL_String8>& args) {
-    Client instance;
-    return instance.main(args);
+    singleton_ = new Client();
+    int ret = singleton_->main(args);
+    delete singleton_;
+    return ret;
+}
+
+const boost::program_options::variables_map& Client::getConfig() const {
+    return config_;
 }
 
 int Client::main(const std::vector<CL_String8>& args) {
