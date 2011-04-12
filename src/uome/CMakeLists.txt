@@ -10,6 +10,7 @@ set(CLIENT_HPP
 
 set(CLIENT_CPP
     client.cpp
+    main.cpp
     )
 
 add_executable(client ${CLIENT_HPP} ${CLIENT_CPP})

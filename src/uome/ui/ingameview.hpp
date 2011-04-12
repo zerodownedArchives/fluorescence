@@ -5,7 +5,7 @@
 
 #include <list>
 
-#include "gumpmenu.hpp"
+#include "gumpelement.hpp"
 
 namespace uome {
 
@@ -17,9 +17,9 @@ namespace ui {
 
 class IngameViewRenderer;
 
-class IngameView : public GumpMenu {
+class IngameView : public GumpElement {
 public:
-    IngameView(const CL_Rect& bounds);
+    IngameView(CL_GUIComponent* parent, const CL_Rect& bounds);
     ~IngameView();
 
     unsigned int getCenterTileX();

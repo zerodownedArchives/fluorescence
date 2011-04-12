@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <ClanLib/Core/Text/string8.h>
-#include <ClanLib/App/clanapp.h>
 
 #include <boost/program_options.hpp>
 
@@ -31,7 +30,5 @@ private:
 };
 
 }
-
-CL_ClanApplication app(&uome::Client::sMain);
 
 #endif

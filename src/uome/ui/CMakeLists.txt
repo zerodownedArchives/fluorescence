@@ -22,12 +22,14 @@ set (UI_CPP
     )
 
 set (GUMPMENU_HPP
+    gumpfactory.hpp
     gumpmenu.hpp
     gumpelement.hpp
     ingameview.hpp
     )
 
 set (GUMPMENU_CPP
+    gumpfactory.cpp
     gumpmenu.cpp
     gumpelement.cpp
     ingameview.cpp

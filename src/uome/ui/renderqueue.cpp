@@ -36,7 +36,7 @@ bool RenderQueue::renderPriorityComparator(const world::IngameObject* a, const w
     /* None of the priorities differs. To make sure this function sorts the list exactly the same, no matter how the
      * list elements were in the list before, we use the memory address of the objects as a last resort
      */
-    return (unsigned int)a < (unsigned int)b;
+    return (unsigned long)a < (unsigned long)b;
 }
 
 RenderQueue::RenderQueue() {

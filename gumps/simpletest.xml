@@ -1,0 +1,12 @@
+<gump x="100" y="30" width="300" height="200">
+  <tbutton x="30" y="20" width="120" height="25" text="wohoo!!" />
+  <tbutton x="170" y="20" width="120" height="25" text="alright" />
+  <tcheckbox x="50" y="100" width="100" height="25" text="awesome?" checked="1" />
+  <tradiobutton x="170" y="100" width="40" height="25" text="1" />
+  <tradiobutton x="210" y="100" width="40" height="25" text="2" />
+  <tradiobutton x="250" y="100" width="40" height="25" text="3" group="numbers" />
+  
+  <tradiobutton x="170" y="130" width="40" height="25" text="7" group="foo" />
+  <tradiobutton x="210" y="130" width="40" height="25" text="8" group="foo" selected="1" />
+  <tradiobutton x="250" y="130" width="40" height="25" text="9" group="foo" />
+</gump>

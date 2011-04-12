@@ -20,8 +20,9 @@
 namespace uome {
 namespace ui {
 
-IngameView::IngameView(const CL_Rect& bounds) : GumpMenu(bounds),
+IngameView::IngameView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent),
         centerTileX_(0), centerTileY_(0) {
+    this->set_geometry(bounds);
     renderer_.reset(new IngameViewRenderer(this));
 
     world::Manager::getSingleton()->getSectorManager()->registerIngameView(this);
@@ -111,6 +112,8 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     boost::shared_ptr<world::LightManager> lm;
     CL_Vec3f intensity;
     CL_Vec3f direction;
+
+    LOGARG_INFO(LOGTYPE_INPUT, "input pressed: %u", e.id);
 
     switch (e.id) {
     case CL_KEY_UP:

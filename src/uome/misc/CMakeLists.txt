@@ -12,6 +12,11 @@ set(MISC_CPP
     config.cpp
     )
 
+set(PUGIXML
+    pugixml.hpp
+    pugiconfig.hpp
+    pugixml.cpp)
+
 add_library(uomemisc STATIC
-    ${MISC_HPP} ${MISC_CPP})
+    ${MISC_HPP} ${MISC_CPP} ${PUGIXML} )
 

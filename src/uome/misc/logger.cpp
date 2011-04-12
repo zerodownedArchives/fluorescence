@@ -62,6 +62,9 @@ void Logger::logArgMessage(unsigned int type, const char* message...) {
     u_fprintf(cout_, "\n");
     u_fflush(cout_);
 
+    va_end(arg);
+    va_start(arg, message);
+
     u_vfprintf(logFile_, message, arg);
     u_fprintf(logFile_, "\n");
     u_fflush(logFile_);

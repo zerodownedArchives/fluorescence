@@ -8,7 +8,7 @@
 namespace uome {
 namespace ui {
 
-GumpElement::GumpElement(GumpMenu* parent) :
+GumpElement::GumpElement(CL_GUIComponent* parent) :
     CL_GUIComponent(parent) {
 }
 

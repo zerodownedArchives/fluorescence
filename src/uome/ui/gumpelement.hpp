@@ -10,7 +10,7 @@ class GumpMenu;
 
 class GumpElement : public CL_GUIComponent {
 public:
-    GumpElement(GumpMenu* parent);
+    GumpElement(CL_GUIComponent* parent);
 };
 
 }

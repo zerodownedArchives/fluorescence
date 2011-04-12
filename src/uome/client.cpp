@@ -7,6 +7,8 @@
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
 #include <ui/ingameview.hpp>
+#include <ui/gumpmenu.hpp>
+#include <ui/gumpfactory.hpp>
 
 #include <data/manager.hpp>
 
@@ -66,8 +68,17 @@ int Client::main(const std::vector<CL_String8>& args) {
     ui::Manager* uiManager = uome::ui::Manager::getSingleton();
     boost::shared_ptr<CL_DisplayWindow> wnd = uiManager->getMainWindow();
 
-    ui::IngameView* ingameView = new ui::IngameView(CL_Rect(10, 10, CL_Size(800, 600)));
+    CL_GUITopLevelDescription desc(CL_Rect(10, 10, CL_Size(800, 600)), true);
+    desc.show_caption(false);
+
+    ui::GumpMenu* ingameMenu = new ui::GumpMenu(desc);
+
+    ui::IngameView* ingameView = new ui::IngameView(ingameMenu, CL_Rect(0, 0, CL_Size(800, 600)));
     ingameView->setCenterTiles(176 * 8, 202 * 8);
+
+
+    ui::GumpMenu* testGump = ui::GumpFactory::fromXmlFile("simpletest");
+    (void)testGump;
 
     timeval lastTime;
     gettimeofday(&lastTime, NULL);
@@ -115,7 +126,7 @@ int Client::main(const std::vector<CL_String8>& args) {
     world::Manager::destroy();
     data::Manager::destroy();
 
-    printf("end of main\n");
+    LOG_INFO(LOGTYPE_MAIN, "end of main");
 
     return 0;
 }
