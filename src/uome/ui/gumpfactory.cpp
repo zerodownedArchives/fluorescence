@@ -342,6 +342,28 @@ bool GumpFactory::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent) {
 }
 
 bool GumpFactory::parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent) {
+    CL_Rect bounds = getBoundsFromNode(node);
+    std::string align = node.attribute("align").value();
+    std::string text = node.attribute("text").value();
+
+    CL_Label* label = new CL_Label(parent);
+
+    if (align == "left") {
+        label->set_alignment(CL_Label::align_left);
+    } else if (align == "right") {
+        label->set_alignment(CL_Label::align_right);
+    } else if (align == "center") {
+        label->set_alignment(CL_Label::align_center);
+    } else if (align == "justify") {
+        label->set_alignment(CL_Label::align_justify);
+    } else {
+        LOGARG_WARN(LOGTYPE_UI, "Unknown label align: \"%s\"", align.c_str());
+        return false;
+    }
+
+    label->set_text(text);
+    label->set_geometry(bounds);
+
     return true;
 }
 
