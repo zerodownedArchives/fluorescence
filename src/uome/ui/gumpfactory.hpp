@@ -40,18 +40,23 @@ private:
 
     CL_Rect getBoundsFromNode(pugi::xml_node& node);
 
+    bool parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent);
+    bool parseTButton(pugi::xml_node& node, CL_GUIComponent* parent);
+    bool parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent);
+    bool parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* parent);
+    bool parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent);
+    bool parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent);
+    bool parseTGroupBox(pugi::xml_node& node, CL_GUIComponent* parent);
+    bool parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent);
+    bool parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent);
+    bool parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent);
+    bool parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent);
+    bool parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent);
 
-    bool parseTButton(pugi::xml_node& node, GumpMenu* parent);
-    bool parseTCheckBox(pugi::xml_node& node, GumpMenu* parent);
-    bool parseTRadioButton(pugi::xml_node& node, GumpMenu* parent);
-    bool parseTLineEdit(pugi::xml_node& node, GumpMenu* parent);
-    bool parseTComboBox(pugi::xml_node& node, GumpMenu* parent);
-    bool parseTGroupBox(pugi::xml_node& node, GumpMenu* parent);
-    bool parseTSpin(pugi::xml_node& node, GumpMenu* parent);
-    bool parseTTabs(pugi::xml_node& node, GumpMenu* parent);
-    bool parseTSlider(pugi::xml_node& node, GumpMenu* parent);
+    bool parseLabel(pugi::xml_node& node, CL_GUIComponent* parent);
+    bool parseImage(pugi::xml_node& node, CL_GUIComponent* parent);
 
-    std::map<std::string, boost::function<bool (pugi::xml_node&, GumpMenu*)> > functionTable_;
+    std::map<std::string, boost::function<bool (pugi::xml_node&, CL_GUIComponent*)> > functionTable_;
 };
 
 }

@@ -1,12 +1,48 @@
-<gump x="100" y="30" width="300" height="200">
-  <tbutton x="30" y="20" width="120" height="25" text="wohoo!!" />
-  <tbutton x="170" y="20" width="120" height="25" text="alright" />
-  <tcheckbox x="50" y="100" width="100" height="25" text="awesome?" checked="1" />
-  <tradiobutton x="170" y="100" width="40" height="25" text="1" />
-  <tradiobutton x="210" y="100" width="40" height="25" text="2" />
-  <tradiobutton x="250" y="100" width="40" height="25" text="3" group="numbers" />
+<gump x="100" y="30" width="600" height="600" title="Test Gump Menu">
+  <tbutton x="30" y="30" width="120" height="25" text="wohoo!!" />
+  <tbutton x="170" y="30" width="120" height="25" text="alright" />
   
-  <tradiobutton x="170" y="130" width="40" height="25" text="7" group="foo" />
-  <tradiobutton x="210" y="130" width="40" height="25" text="8" group="foo" selected="1" />
-  <tradiobutton x="250" y="130" width="40" height="25" text="9" group="foo" />
+  <tcheckbox x="50" y="75" width="100" height="25" text="awesome?" checked="1" />
+  
+  <tradiobutton x="170" y="65" width="40" height="25" text="1" />
+  <tradiobutton x="210" y="65" width="40" height="25" text="2" />
+  <tradiobutton x="250" y="65" width="40" height="25" text="3" />
+  
+  <tradiobutton x="170" y="90" width="40" height="25" text="7" group="foo" />
+  <tradiobutton x="210" y="90" width="40" height="25" text="8" group="foo" selected="1" />
+  <tradiobutton x="250" y="90" width="40" height="25" text="9" group="foo" />
+  
+  <tgroupbox x="15" y="120" width="300" height="70">
+    <tlineedit x="5" y="5" width="250" height="25" text="edit me pls!" maxlength="12" />
+    <tlineedit x="5" y="35" width="120" height="25" text="password" password="1" />
+    <tlineedit x="135" y="35" width="120" height="25" text="3829" numeric="1" maxlength="6" />
+  </tgroupbox>
+  
+  <ttabs x="15" y="210" width="400" height="150">
+    <ttabpage text="Choose">
+      <tbutton x="30" y="20" width="120" height="25" text="tab 1" />
+    </ttabpage>
+    
+    <ttabpage text="me!">
+      <tbutton x="50" y="20" width="120" height="25" text="tab 2" />
+    </ttabpage>
+    
+    <ttabpage text="or me!">
+      <tbutton x="70" y="20" width="120" height="25" text="tab 3" />
+    </ttabpage>
+  </ttabs>
+  
+  <tcombobox x="300" y="30" width="150" height="25">
+    <option text="First option" />
+    <option text="Second option" />
+    <option text="Other option" selected="1" />
+    <option text="One more" />
+  </tcombobox>
+  
+  <tslider x="350" y="60" width="200" height="25" type="horizontal" min="20" max="120" pagestep="10" value="30" />
+  <tslider x="500" y="90" width="25" height="200" type="vertical" min="20" max="120" pagestep="10" value="100" />
+  
+  <tspin x="330" y="120" width="100" height="25" type="float" min="0.0" max="1.0" value="0.3" stepsize="0.01" />
+  <tspin x="330" y="150" width="100" height="25" type="int" min="0" max="100" value="85" stepsize="5" />
+  
 </gump>
