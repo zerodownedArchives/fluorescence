@@ -39,7 +39,9 @@ private:
     GumpMenu* fromXml(pugi::xml_document& doc);
 
     CL_Rect getBoundsFromNode(pugi::xml_node& node);
+    bool parseCssId(pugi::xml_node& node, CL_GUIComponent* component);
 
+    // themed ui components
     bool parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent);
     bool parseTButton(pugi::xml_node& node, CL_GUIComponent* parent);
     bool parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent);
@@ -53,8 +55,10 @@ private:
     bool parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent);
     bool parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent);
 
-    bool parseLabel(pugi::xml_node& node, CL_GUIComponent* parent);
+    // supports both themed and uo images
     bool parseImage(pugi::xml_node& node, CL_GUIComponent* parent);
+
+    // uo components
 
     std::map<std::string, boost::function<bool (pugi::xml_node&, CL_GUIComponent*)> > functionTable_;
 };

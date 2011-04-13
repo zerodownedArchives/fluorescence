@@ -1,11 +1,17 @@
 
 #include "gumpfactory.hpp"
 
+#include <ClanLib/Display/Image/pixel_buffer.h>
+
 #include <boost/bind.hpp>
 
 #include <misc/logger.hpp>
 #include <client.hpp>
+#include <data/artloader.hpp>
+#include <data/gumpartloader.hpp>
+#include <data/manager.hpp>
 
+#include "texture.hpp"
 
 namespace uome {
 namespace ui {
@@ -35,7 +41,6 @@ GumpFactory::GumpFactory() {
     functionTable_["ttextedit"] = boost::bind(&GumpFactory::parseTTextEdit, this, _1, _2);
 
     functionTable_["image"] = boost::bind(&GumpFactory::parseImage, this, _1, _2);
-    functionTable_["label"] = boost::bind(&GumpFactory::parseLabel, this, _1, _2);
 }
 
 GumpMenu* GumpFactory::fromXmlFile(const std::string& name) {
@@ -126,12 +131,21 @@ CL_Rect GumpFactory::getBoundsFromNode(pugi::xml_node& node) {
     return bounds;
 }
 
+bool GumpFactory::parseCssId(pugi::xml_node& node, CL_GUIComponent* component) {
+    std::string cssid = node.attribute("cssid").value();
+    if (cssid.length() > 0) {
+        component->set_id_name(cssid);
+    }
+
+    return true;
+}
 
 bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent) {
     CL_Rect bounds = getBoundsFromNode(node);
     std::string text = node.attribute("text").value();
 
     CL_PushButton* button = new CL_PushButton(parent);
+    parseCssId(node, button);
     button->set_geometry(bounds);
     button->set_text(text);
 
@@ -144,6 +158,7 @@ bool GumpFactory::parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent) 
     int checked = node.attribute("checked").as_int();
 
     CL_CheckBox* cb = new CL_CheckBox(parent);
+    parseCssId(node, cb);
     cb->set_geometry(bounds);
     cb->set_text(text);
 
@@ -161,6 +176,7 @@ bool GumpFactory::parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* paren
     int selected = node.attribute("selected").as_int();
 
     CL_RadioButton* button = new CL_RadioButton(parent);
+    parseCssId(node, button);
     button->set_geometry(bounds);
     button->set_text(text);
     button->set_group_name(group);
@@ -180,6 +196,7 @@ bool GumpFactory::parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent) 
     unsigned int maxlength = node.attribute("maxlength").as_uint();
 
     CL_LineEdit* edit = new CL_LineEdit(parent);
+    parseCssId(node, edit);
     edit->set_text(text);
     edit->set_geometry(bounds);
     edit->set_select_all_on_focus_gain(false);
@@ -203,6 +220,7 @@ bool GumpFactory::parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent) 
     CL_Rect bounds = getBoundsFromNode(node);
 
     CL_ComboBox* box = new CL_ComboBox(parent);
+    parseCssId(node, box);
     box->set_geometry(bounds);
 
     CL_PopupMenu menu;
@@ -238,6 +256,7 @@ bool GumpFactory::parseTGroupBox(pugi::xml_node& node, CL_GUIComponent* parent) 
     CL_Rect bounds = getBoundsFromNode(node);
 
     CL_GroupBox* box = new CL_GroupBox(parent);
+    parseCssId(node, box);
     box->set_geometry(bounds);
 
     parseChildren(node, box);
@@ -250,6 +269,7 @@ bool GumpFactory::parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent) {
     std::string type = node.attribute("type").value();
 
     CL_Spin* spin = new CL_Spin(parent);
+    parseCssId(node, spin);
 
     if (type == "int") {
         int min = node.attribute("min").as_int();
@@ -285,6 +305,7 @@ bool GumpFactory::parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent) {
     CL_Rect bounds = getBoundsFromNode(node);
 
     CL_Tab* tabs = new CL_Tab(parent);
+    parseCssId(node, tabs);
     tabs->set_geometry(bounds);
 
     pugi::xml_node_iterator iter = node.begin();
@@ -299,6 +320,7 @@ bool GumpFactory::parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent) {
         } else {
             std::string tabTitle = iter->attribute("text").value();
             CL_TabPage* newpage = tabs->add_page(tabTitle);
+            parseCssId(*iter, newpage);
 
             parseChildren(*iter, newpage);
         }
@@ -317,6 +339,7 @@ bool GumpFactory::parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent) {
 
 
     CL_Slider* slider = new CL_Slider(parent);
+    parseCssId(node, slider);
 
     if (type == "vertical") {
         slider->set_vertical(true);
@@ -343,6 +366,7 @@ bool GumpFactory::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent) {
     std::string text = node.attribute("text").value();
 
     CL_Label* label = new CL_Label(parent);
+    parseCssId(node, label);
 
     if (align.length() == 0 || align == "left") {
         label->set_alignment(CL_Label::align_left);
@@ -364,15 +388,93 @@ bool GumpFactory::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent) {
 }
 
 bool GumpFactory::parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent) {
-    return true;
-}
+    // does not seem to work currently (clanlib problem)
 
+    //CL_Rect bounds = getBoundsFromNode(node);
+    //std::string text = node.attribute("text").value();
 
-bool GumpFactory::parseLabel(pugi::xml_node& node, CL_GUIComponent* parent) {
-    return true;
+    //CL_GUIComponentDescription desc;
+    //std::string cssid = node.attribute("cssid").value();
+    //desc.set_type_name("TextEdit");
+    //if (cssid.length() > 0) {
+        //desc.set_id_name(cssid);
+    //}
+    //CL_TextEdit* edit = new CL_TextEdit(desc, parent);
+    //edit->set_geometry(bounds);
+
+    //return true;
+
+    LOG_WARN(LOGTYPE_UI, "TextEdit is currently not supported, sorry!");
+    return false;
 }
 
 bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent) {
+    std::string path = node.attribute("path").value();
+    unsigned int gumpId = node.attribute("gumpid").as_uint();
+    unsigned int artId = node.attribute("artid").as_uint();
+
+    int locX = node.attribute("x").as_int();
+    int locY = node.attribute("y").as_int();
+    unsigned int width = node.attribute("width").as_uint();
+    unsigned int height = node.attribute("height").as_uint();
+
+    CL_ImageView* img = new CL_ImageView(parent);
+    parseCssId(node, img);
+
+    // path takes precedence over gumpid, gumpid over artid
+    if (path.length() > 0) {
+        CL_PixelBuffer buf(path);
+        img->set_image(buf);
+
+        if (width == 0) {
+            width = buf.get_width();
+        }
+
+        if (height == 0) {
+            height = buf.get_height();
+        }
+    } else if (gumpId) {
+        boost::shared_ptr<ui::Texture> texture = data::Manager::getGumpArtLoader()->getTexture(gumpId);
+        // TODO: find something better than busy waiting here
+        while(!texture->isReadComplete()) {
+            usleep(1);
+        }
+
+        img->set_image(*(texture->getPixelBuffer()));
+
+        if (width == 0) {
+            width = texture->getPixelBuffer()->get_width();
+        }
+
+        if (height == 0) {
+            height = texture->getPixelBuffer()->get_height();
+        }
+    } else if (artId) {
+        boost::shared_ptr<ui::Texture> texture = data::Manager::getArtLoader()->getItemTexture(artId);
+        // TODO: find something better than busy waiting here
+        while(!texture->isReadComplete()) {
+            usleep(1);
+        }
+
+        img->set_image(*(texture->getPixelBuffer()));
+
+        if (width == 0) {
+            width = texture->getPixelBuffer()->get_width();
+        }
+
+        if (height == 0) {
+            height = texture->getPixelBuffer()->get_height();
+        }
+    } else {
+        LOG_WARN(LOGTYPE_UI, "Image component without image information! Please supply path, gumpid or artid");
+        return false;
+    }
+
+
+    CL_Rect bounds(locX, locY, CL_Size(width, height));
+    img->set_geometry(bounds);
+    img->set_scale_to_fit();
+
     return true;
 }
 

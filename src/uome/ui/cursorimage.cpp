@@ -58,7 +58,7 @@ void CursorImage::set(unsigned int cursorId, unsigned int artId, boost::shared_p
 void CursorImage::setHotspotFromTexture(boost::shared_ptr<ui::Texture> tex) {
     // TODO: find something better than busy waiting here
     while (!tex->isReadComplete()) {
-        usleep(10);
+        usleep(1);
     }
 
     hotspotX_ = 0;
