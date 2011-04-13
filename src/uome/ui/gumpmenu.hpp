@@ -34,6 +34,13 @@ private:
 
     void internalActivatePage(unsigned int pageId);
     void internalDeactivatePage(unsigned int pageId);
+
+    bool draggable_;
+    bool isDragged_;
+    CL_Point lastMousePos_;
+    bool onInputPressed(const CL_InputEvent& msg);
+    bool onInputReleased(const CL_InputEvent& msg);
+    bool onPointerMoved(const CL_InputEvent& msg);
 };
 
 }

@@ -10,9 +10,14 @@ namespace ui {
 
 GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
     CL_Window(ui::Manager::getSingleton()->getGuiManager().get(), desc),
-    activePageId_(0), firstPageId_(0) {
+    activePageId_(0), firstPageId_(0),
+    draggable_(true), isDragged_(false) {
 
     addPage(0);
+
+    func_input_pressed().set(this, &GumpMenu::onInputPressed);
+    func_input_released().set(this, &GumpMenu::onInputReleased);
+    func_input_pointer_moved().set(this, &GumpMenu::onPointerMoved);
 }
 
 void GumpMenu::addPage(unsigned int pageId) {
@@ -94,6 +99,49 @@ void GumpMenu::internalDeactivatePage(unsigned int pageId) {
     }
 }
 
+bool GumpMenu::onInputPressed(const CL_InputEvent& msg) {
+    if (msg.id == CL_MOUSE_LEFT) {
+        if (!draggable_) {
+            return false;
+        }
+
+        bring_to_front();
+        capture_mouse(true);
+        lastMousePos_ = msg.mouse_pos;
+        isDragged_ = true;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool GumpMenu::onInputReleased(const CL_InputEvent& msg) {
+    if (msg.id == CL_MOUSE_LEFT) {
+        if (!draggable_) {
+            return false;
+        }
+
+        isDragged_ = false;
+        capture_mouse(false);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool GumpMenu::onPointerMoved(const CL_InputEvent& msg) {
+    if (isDragged_) {
+        CL_Rect geometry = get_window_geometry();
+        geometry.translate(msg.mouse_pos.x - lastMousePos_.x, msg.mouse_pos.y - lastMousePos_.y);
+        //last_mouse_pos = e.mouse_pos;
+        set_window_geometry(geometry);
+
+        return true;
+    }
+    return false;
+}
 
 }
 }
