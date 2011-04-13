@@ -12,6 +12,7 @@
 #include <data/manager.hpp>
 
 #include "texture.hpp"
+#include "components/basebutton.hpp"
 
 namespace uome {
 namespace ui {
@@ -28,19 +29,21 @@ GumpFactory* GumpFactory::getSingleton() {
 }
 
 GumpFactory::GumpFactory() {
-    functionTable_["tbutton"] = boost::bind(&GumpFactory::parseTButton, this, _1, _2);
-    functionTable_["tcheckbox"] = boost::bind(&GumpFactory::parseTCheckBox, this, _1, _2);
-    functionTable_["tradiobutton"] = boost::bind(&GumpFactory::parseTRadioButton, this, _1, _2);
-    functionTable_["tlineedit"] = boost::bind(&GumpFactory::parseTLineEdit, this, _1, _2);
-    functionTable_["tcombobox"] = boost::bind(&GumpFactory::parseTComboBox, this, _1, _2);
-    functionTable_["tgroupbox"] = boost::bind(&GumpFactory::parseTGroupBox, this, _1, _2);
-    functionTable_["tspin"] = boost::bind(&GumpFactory::parseTSpin, this, _1, _2);
-    functionTable_["ttabs"] = boost::bind(&GumpFactory::parseTTabs, this, _1, _2);
-    functionTable_["tslider"] = boost::bind(&GumpFactory::parseTSlider, this, _1, _2);
-    functionTable_["tlabel"] = boost::bind(&GumpFactory::parseTLabel, this, _1, _2);
-    functionTable_["ttextedit"] = boost::bind(&GumpFactory::parseTTextEdit, this, _1, _2);
+    functionTable_["tbutton"] = boost::bind(&GumpFactory::parseTButton, this, _1, _2, _3);
+    functionTable_["tcheckbox"] = boost::bind(&GumpFactory::parseTCheckBox, this, _1, _2, _3);
+    functionTable_["tradiobutton"] = boost::bind(&GumpFactory::parseTRadioButton, this, _1, _2, _3);
+    functionTable_["tlineedit"] = boost::bind(&GumpFactory::parseTLineEdit, this, _1, _2, _3);
+    functionTable_["tcombobox"] = boost::bind(&GumpFactory::parseTComboBox, this, _1, _2, _3);
+    functionTable_["tgroupbox"] = boost::bind(&GumpFactory::parseTGroupBox, this, _1, _2, _3);
+    functionTable_["tspin"] = boost::bind(&GumpFactory::parseTSpin, this, _1, _2, _3);
+    functionTable_["ttabs"] = boost::bind(&GumpFactory::parseTTabs, this, _1, _2, _3);
+    functionTable_["tslider"] = boost::bind(&GumpFactory::parseTSlider, this, _1, _2, _3);
+    functionTable_["tlabel"] = boost::bind(&GumpFactory::parseTLabel, this, _1, _2, _3);
+    functionTable_["ttextedit"] = boost::bind(&GumpFactory::parseTTextEdit, this, _1, _2, _3);
 
-    functionTable_["image"] = boost::bind(&GumpFactory::parseImage, this, _1, _2);
+    functionTable_["page"] = boost::bind(&GumpFactory::parsePage, this, _1, _2, _3);
+
+    functionTable_["image"] = boost::bind(&GumpFactory::parseImage, this, _1, _2, _3);
 }
 
 GumpMenu* GumpFactory::fromXmlFile(const std::string& name) {
@@ -54,7 +57,7 @@ GumpMenu* GumpFactory::fromXmlFile(const std::string& name) {
 
     boost::filesystem::path path = gumpsDirectory / fileName;
 
-    LOGARG_DEBUG(LOGTYPE_UI, "Parsing gumps file: %s", path.string().c_str());
+    LOGARG_DEBUG(LOGTYPE_UI, "Parsing xml gump file: %s", path.string().c_str());
 
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(path.string().c_str());
@@ -62,6 +65,7 @@ GumpMenu* GumpFactory::fromXmlFile(const std::string& name) {
     if (result) {
         return getSingleton()->fromXml(doc);
     } else {
+        LOGARG_ERROR(LOGTYPE_UI, "Error parsing file at offset %i: %s", result.offset, result.description());
         return NULL;
     }
 }
@@ -73,6 +77,7 @@ GumpMenu* GumpFactory::fromXmlString(const std::string& str) {
     if (result) {
         return getSingleton()->fromXml(doc);
     } else {
+        LOGARG_ERROR(LOGTYPE_UI, "Error parsing string at offset %i: %s", result.offset, result.description());
         return NULL;
     }
 }
@@ -96,22 +101,24 @@ GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc) {
 
     GumpMenu* ret = new GumpMenu(desc);
 
-    parseChildren(rootNode, ret);
+    parseChildren(rootNode, ret, ret);
+
+    ret->activateFirstPage();
 
     return ret;
 }
 
-bool GumpFactory::parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent) {
+bool GumpFactory::parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent, GumpMenu* top) {
     pugi::xml_node_iterator iter = rootNode.begin();
     pugi::xml_node_iterator iterEnd = rootNode.end();
 
     bool ret = true;
 
     for (; iter != iterEnd && ret; ++iter) {
-        std::map<std::string, boost::function<bool (pugi::xml_node&, CL_GUIComponent*)> >::iterator function = functionTable_.find(iter->name());
+        std::map<std::string, boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> >::iterator function = functionTable_.find(iter->name());
 
         if (function != functionTable_.end()) {
-            ret = (function->second)(*iter, parent);
+            ret = (function->second)(*iter, parent, top);
         } else {
             LOGARG_WARN(LOGTYPE_UI, "Unknown gump tag \"%s\"", iter->name());
         }
@@ -140,19 +147,30 @@ bool GumpFactory::parseCssId(pugi::xml_node& node, CL_GUIComponent* component) {
     return true;
 }
 
-bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent) {
+bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node);
     std::string text = node.attribute("text").value();
+    unsigned int buttonId = node.attribute("id").as_uint();
+    unsigned int pageId = node.attribute("page").as_uint();
 
-    CL_PushButton* button = new CL_PushButton(parent);
+    components::BaseButton* button = new components::BaseButton(parent);
     parseCssId(node, button);
     button->set_geometry(bounds);
     button->set_text(text);
 
+    button->setButtonId(buttonId);
+    button->setPageId(pageId);
+    button->func_clicked().set(top, &GumpMenu::onButtonClicked, button);
+
+    if (!buttonId && !pageId) {
+        LOG_WARN(LOGTYPE_UI, "Button without id or page");
+    }
+
+    top->addToCurrentPage(button);
     return true;
 }
 
-bool GumpFactory::parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent) {
+bool GumpFactory::parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node);
     std::string text = node.attribute("text").value();
     int checked = node.attribute("checked").as_int();
@@ -166,10 +184,11 @@ bool GumpFactory::parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent) 
         cb->set_checked(true);
     }
 
+    top->addToCurrentPage(cb);
     return true;
 }
 
-bool GumpFactory::parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* parent) {
+bool GumpFactory::parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node);
     std::string text = node.attribute("text").value();
     std::string group = node.attribute("group").value();
@@ -185,10 +204,11 @@ bool GumpFactory::parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* paren
         button->set_selected(true);
     }
 
+    top->addToCurrentPage(button);
     return true;
 }
 
-bool GumpFactory::parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent) {
+bool GumpFactory::parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node);
     std::string text = node.attribute("text").value();
     int numeric = node.attribute("numeric").as_int();
@@ -213,10 +233,11 @@ bool GumpFactory::parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent) 
         edit->set_max_length(maxlength);
     }
 
+    top->addToCurrentPage(edit);
     return true;
 }
 
-bool GumpFactory::parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent) {
+bool GumpFactory::parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node);
 
     CL_ComboBox* box = new CL_ComboBox(parent);
@@ -228,13 +249,12 @@ bool GumpFactory::parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent) 
     pugi::xml_node_iterator iter = node.begin();
     pugi::xml_node_iterator iterEnd = node.end();
 
-    bool ret = true;
     unsigned int selected = 0;
 
-    for (unsigned int index = 0; iter != iterEnd && ret; ++iter, ++index) {
+    for (unsigned int index = 0; iter != iterEnd; ++iter, ++index) {
         if (strcmp(iter->name(), "option") != 0) {
             LOGARG_WARN(LOGTYPE_UI, "Something different than option in combobox: \"%s\"", iter->name());
-            ret = false;
+            return false;
         } else {
             std::string text = iter->attribute("text").value();
             int isSelected = iter->attribute("selected").as_int();
@@ -249,22 +269,24 @@ bool GumpFactory::parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent) 
     box->set_popup_menu(menu);
     box->set_selected_item(selected);
 
-    return ret;
+    top->addToCurrentPage(box);
+    return true;
 }
 
-bool GumpFactory::parseTGroupBox(pugi::xml_node& node, CL_GUIComponent* parent) {
+bool GumpFactory::parseTGroupBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node);
 
     CL_GroupBox* box = new CL_GroupBox(parent);
     parseCssId(node, box);
     box->set_geometry(bounds);
 
-    parseChildren(node, box);
+    parseChildren(node, box, top);
 
+    top->addToCurrentPage(box);
     return true;
 }
 
-bool GumpFactory::parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent) {
+bool GumpFactory::parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node);
     std::string type = node.attribute("type").value();
 
@@ -298,10 +320,11 @@ bool GumpFactory::parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent) {
 
     spin->set_geometry(bounds);
 
+    top->addToCurrentPage(spin);
     return true;
 }
 
-bool GumpFactory::parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent) {
+bool GumpFactory::parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node);
 
     CL_Tab* tabs = new CL_Tab(parent);
@@ -311,25 +334,24 @@ bool GumpFactory::parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent) {
     pugi::xml_node_iterator iter = node.begin();
     pugi::xml_node_iterator iterEnd = node.end();
 
-    bool ret = true;
-
-    for (; iter != iterEnd && ret; ++iter) {
+    for (; iter != iterEnd; ++iter) {
         if (strcmp(iter->name(), "ttabpage") != 0) {
             LOGARG_WARN(LOGTYPE_UI, "Something different than ttabpage in ttabs: \"%s\"", iter->name());
-            ret = false;
+            return false;
         } else {
             std::string tabTitle = iter->attribute("text").value();
             CL_TabPage* newpage = tabs->add_page(tabTitle);
             parseCssId(*iter, newpage);
 
-            parseChildren(*iter, newpage);
+            parseChildren(*iter, newpage, top);
         }
     }
 
-    return ret;
+    top->addToCurrentPage(tabs);
+    return true;
 }
 
-bool GumpFactory::parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent) {
+bool GumpFactory::parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node);
     std::string type = node.attribute("type").value();
     int min = node.attribute("min").as_int();
@@ -357,10 +379,11 @@ bool GumpFactory::parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent) {
     slider->set_lock_to_ticks(false);
     slider->set_geometry(bounds);
 
+    top->addToCurrentPage(slider);
     return true;
 }
 
-bool GumpFactory::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent) {
+bool GumpFactory::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node);
     std::string align = node.attribute("align").value();
     std::string text = node.attribute("text").value();
@@ -384,10 +407,11 @@ bool GumpFactory::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent) {
     label->set_text(text);
     label->set_geometry(bounds);
 
+    top->addToCurrentPage(label);
     return true;
 }
 
-bool GumpFactory::parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent) {
+bool GumpFactory::parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     // does not seem to work currently (clanlib problem)
 
     //CL_Rect bounds = getBoundsFromNode(node);
@@ -408,7 +432,7 @@ bool GumpFactory::parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent) 
     return false;
 }
 
-bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent) {
+bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     std::string path = node.attribute("path").value();
     unsigned int gumpId = node.attribute("gumpid").as_uint();
     unsigned int artId = node.attribute("artid").as_uint();
@@ -475,7 +499,27 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent) {
     img->set_geometry(bounds);
     img->set_scale_to_fit();
 
+    top->addToCurrentPage(img);
     return true;
+}
+
+bool GumpFactory::parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    unsigned int id = node.attribute("id").as_uint();
+
+    // check that we add pages only at the top level hierarchy
+    if (top->getActivePageId() != 0) {
+        // adding a page inside another page
+        LOGARG_ERROR(LOGTYPE_UI, "Adding page %i inside of page %i", top->getActivePageId(), id);
+        return false;
+    }
+
+    top->addPage(id);
+
+    bool ret = parseChildren(node, parent, top);
+
+    top->activatePage(0);
+
+    return ret;
 }
 
 }

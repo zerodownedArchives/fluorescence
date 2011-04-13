@@ -42,7 +42,7 @@ void DoubleClickHandler::run() {
         if (!running_) {
             break;
         }
-        LOG_DEBUG(LOGTYPE_INPUT, "after first wait");
+        //LOG_DEBUG(LOGTYPE_INPUT, "after first wait");
 
         boost::posix_time::ptime wakeTime = boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(timeoutMillis_);
 
@@ -51,13 +51,13 @@ void DoubleClickHandler::run() {
             break;
         }
 
-        LOG_DEBUG(LOGTYPE_INPUT, "after timed wait");
+        //LOG_DEBUG(LOGTYPE_INPUT, "after timed wait");
 
         if (doubleClick) {
-            LOG_DEBUG(LOGTYPE_INPUT, "dch doubleclick");
+            //LOG_DEBUG(LOGTYPE_INPUT, "dch doubleclick");
             lastObject_->onDoubleClick();
         } else {
-            LOG_DEBUG(LOGTYPE_INPUT, "dch click");
+            //LOG_DEBUG(LOGTYPE_INPUT, "dch click");
             lastObject_->onClick();
         }
 

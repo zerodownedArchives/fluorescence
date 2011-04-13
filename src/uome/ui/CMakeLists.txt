@@ -26,6 +26,8 @@ set (GUMPMENU_HPP
     gumpmenu.hpp
     gumpelement.hpp
     ingameview.hpp
+
+    components/basebutton.hpp
     )
 
 set (GUMPMENU_CPP
@@ -33,6 +35,8 @@ set (GUMPMENU_CPP
     gumpmenu.cpp
     gumpelement.cpp
     ingameview.cpp
+
+    components/basebutton.cpp
     )
 
 add_library(uomeui STATIC ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP})

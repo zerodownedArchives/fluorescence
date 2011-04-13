@@ -42,25 +42,28 @@ private:
     bool parseCssId(pugi::xml_node& node, CL_GUIComponent* component);
 
     // themed ui components
-    bool parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent);
-    bool parseTButton(pugi::xml_node& node, CL_GUIComponent* parent);
-    bool parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent);
-    bool parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* parent);
-    bool parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent);
-    bool parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent);
-    bool parseTGroupBox(pugi::xml_node& node, CL_GUIComponent* parent);
-    bool parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent);
-    bool parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent);
-    bool parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent);
-    bool parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent);
-    bool parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent);
+    bool parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTGroupBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
     // supports both themed and uo images
-    bool parseImage(pugi::xml_node& node, CL_GUIComponent* parent);
+    bool parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
     // uo components
+    bool parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
-    std::map<std::string, boost::function<bool (pugi::xml_node&, CL_GUIComponent*)> > functionTable_;
+    // TODO
+
+    std::map<std::string, boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> > functionTable_;
 };
 
 }
