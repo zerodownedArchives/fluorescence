@@ -100,6 +100,7 @@ void GumpMenu::internalDeactivatePage(unsigned int pageId) {
 }
 
 bool GumpMenu::onInputPressed(const CL_InputEvent& msg) {
+    //LOGARG_INFO(LOGTYPE_INPUT, "input pressed gumpmenu: %u", msg.id);
     if (msg.id == CL_MOUSE_LEFT) {
         if (!draggable_) {
             return false;

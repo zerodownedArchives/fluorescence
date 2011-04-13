@@ -115,7 +115,7 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     CL_Vec3f intensity;
     CL_Vec3f direction;
 
-    //LOGARG_INFO(LOGTYPE_INPUT, "input pressed: %u", e.id);
+    //LOGARG_INFO(LOGTYPE_INPUT, "input pressed ingameview: %u", e.id);
 
     switch (e.id) {
     case CL_KEY_UP:
@@ -160,6 +160,7 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         break;
 
     case CL_MOUSE_LEFT:
+        set_focus();
         break;
 
     default:consumed = false;
