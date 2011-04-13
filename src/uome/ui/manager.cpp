@@ -83,6 +83,7 @@ void Manager::processMessages() {
 }
 
 void Manager::drawWindow() {
+    getGraphicsContext().clear();
     windowManager_->draw_windows(getGraphicsContext());
     mainWindow_->flip();
 }

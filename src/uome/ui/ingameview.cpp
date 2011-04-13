@@ -69,7 +69,9 @@ unsigned int IngameView::getHeight() {
 }
 
 void IngameView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
+    gc.push_cliprect(get_geometry());
     renderer_->renderOneFrame(gc, clipRect);
+    gc.pop_cliprect();
 }
 
 void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int mapHeight, unsigned int cacheAdd) {
@@ -113,7 +115,7 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     CL_Vec3f intensity;
     CL_Vec3f direction;
 
-    LOGARG_INFO(LOGTYPE_INPUT, "input pressed: %u", e.id);
+    //LOGARG_INFO(LOGTYPE_INPUT, "input pressed: %u", e.id);
 
     switch (e.id) {
     case CL_KEY_UP:
@@ -155,6 +157,9 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         lm = world::Manager::getSingleton()->getLightManager();
         lm->setGlobalAngle(lm->getGlobalAngle() - 5);
         LOGARG_DEBUG(LOGTYPE_UI, "mw down %f", lm->getGlobalAngle());
+        break;
+
+    case CL_MOUSE_LEFT:
         break;
 
     default:consumed = false;

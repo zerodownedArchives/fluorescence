@@ -68,12 +68,12 @@ int Client::main(const std::vector<CL_String8>& args) {
     ui::Manager* uiManager = uome::ui::Manager::getSingleton();
     boost::shared_ptr<CL_DisplayWindow> wnd = uiManager->getMainWindow();
 
-    CL_GUITopLevelDescription desc(CL_Rect(10, 10, CL_Size(800, 600)), true);
-    desc.show_caption(false);
+    CL_GUITopLevelDescription desc(CL_Rect(10, 10, CL_Size(810, 610)), true);
+    desc.set_decorations(false);
 
     ui::GumpMenu* ingameMenu = new ui::GumpMenu(desc);
 
-    ui::IngameView* ingameView = new ui::IngameView(ingameMenu, CL_Rect(0, 0, CL_Size(800, 600)));
+    ui::IngameView* ingameView = new ui::IngameView(ingameMenu, CL_Rect(5, 5, CL_Size(800, 600)));
     ingameView->setCenterTiles(176 * 8, 202 * 8);
 
 
