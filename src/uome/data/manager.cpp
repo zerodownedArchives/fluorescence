@@ -8,8 +8,10 @@
 #include "maploader.hpp"
 #include "staticsloader.hpp"
 #include "maptexloader.hpp"
+#include "animdataloader.hpp"
 
 #include <ui/singletextureprovider.hpp>
+#include <ui/animdatatextureprovider.hpp>
 
 namespace uome {
 namespace data {
@@ -82,6 +84,10 @@ void Manager::init(const boost::program_options::variables_map& config) {
     path = getPathFor(config, "files.gumpart-mul");
     LOGARG_INFO(LOGTYPE_DATA, "Opening gump art from idx=%s mul=%s", idxPath.string().c_str(), path.string().c_str());
     gumpArtLoader_.reset(new GumpArtLoader(idxPath, path));
+
+    path = getPathFor(config, "files.animdata-mul");
+    LOGARG_INFO(LOGTYPE_DATA, "Opening animdata from mul=%s", path.string().c_str());
+    animDataLoader_.reset(new AnimDataLoader(path));
 
 
     char* mapConfigEnabled = strdup("files.map0-enabled");
@@ -230,11 +236,17 @@ StaticsLoader* Manager::getStaticsLoader(unsigned int index) {
 }
 
 boost::shared_ptr<ui::TextureProvider> Manager::getItemTextureProvider(unsigned int artId) {
-    // check for entry in animdata
-    // if exists, load complex textureprovider
-    // if not, just load the simple one
+    boost::shared_ptr<ui::TextureProvider> ret;
 
-    boost::shared_ptr<ui::SingleTextureProvider> ret(new ui::SingleTextureProvider(artId));
+    // check for animate flag in tiledata
+    if (getTileDataLoader()->getStaticTileInfo(artId)->animation()) {
+        // if exists, load complex textureprovider
+        ret.reset(new ui::AnimDataTextureProvider(artId));
+    } else {
+        // if not, just load the simple one
+        ret.reset(new ui::SingleTextureProvider(artId));
+    }
+
     return ret;
 }
 

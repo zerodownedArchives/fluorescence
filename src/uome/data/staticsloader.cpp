@@ -66,6 +66,10 @@ void StaticsLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned in
 
         item->itemList_.push_back(cur);
     }
+
+    boost::shared_ptr<world::StaticItem> animItem(new world::StaticItem);
+    animItem->indexInBlock_ = 4000;
+    animItem->set(cellOffsetX, cellOffsetY, 100, 0x1abe, 0);
 }
 
 void StaticsLoader::readCallbackDifOffsets(int8_t* buf, unsigned int len) {

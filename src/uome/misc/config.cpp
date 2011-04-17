@@ -38,6 +38,7 @@ bool Config::getVariablesMap(const std::vector<CL_String8>& args, boost::program
     ("files.tiledata-mul", po::value<std::string>()->default_value("Tiledata.mul"), "Location of tiledata.mul")
     ("files.maptex-idx", po::value<std::string>()->default_value("Texidx.mul"), "Location of texidx.mul")
     ("files.maptex-mul", po::value<std::string>()->default_value("Texmaps.mul"), "Location of texmaps.mul")
+    ("files.animdata-mul", po::value<std::string>()->default_value("Animdata.mul"), "Location of animdata.mul")
 
     ("files.map0-enabled", po::value<bool>()->default_value(true), "Whether or not map0 is enabled")
     ("files.map0-mul", po::value<std::string>()->default_value("Map0.mul"), "Location of map0.mul")
