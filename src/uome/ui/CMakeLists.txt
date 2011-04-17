@@ -2,6 +2,8 @@
 set (UI_HPP
     manager.hpp
     texture.hpp
+    textureprovider.hpp
+    singletextureprovider.hpp
     renderqueue.hpp
     ingameviewrenderer.hpp
     bitmask.hpp
@@ -13,6 +15,7 @@ set (UI_HPP
 set (UI_CPP
     manager.cpp
     texture.cpp
+    singletextureprovider.cpp
     renderqueue.cpp
     ingameviewrenderer.cpp
     bitmask.cpp

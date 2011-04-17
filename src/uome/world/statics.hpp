@@ -7,6 +7,8 @@
 #include <data/ondemandreadable.hpp>
 #include <data/tiledataloader.hpp>
 
+#include <ui/textureprovider.hpp>
+
 #include "ingameobject.hpp"
 
 namespace uome {
@@ -42,7 +44,7 @@ private:
     unsigned int hue_;
     unsigned int indexInBlock_;
 
-    boost::shared_ptr<ui::Texture> texture_;
+    boost::shared_ptr<ui::TextureProvider> textureProvider_;
 
     const data::StaticTileInfo* tileDataInfo_;
 

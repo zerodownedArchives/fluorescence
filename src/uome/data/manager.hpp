@@ -7,6 +7,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include <ui/textureprovider.hpp>
+
 namespace uome {
 namespace data {
 
@@ -25,6 +27,8 @@ public:
     static Manager* getSingleton();
     ~Manager();
 
+
+    static boost::shared_ptr<ui::TextureProvider> getItemTextureProvider(unsigned int artId);
 
     static ArtLoader* getArtLoader() { return getSingleton()->artLoader_.get(); }
     static TileDataLoader* getTileDataLoader() { return getSingleton()->tileDataLoader_.get(); }

@@ -9,6 +9,8 @@
 #include "staticsloader.hpp"
 #include "maptexloader.hpp"
 
+#include <ui/singletextureprovider.hpp>
+
 namespace uome {
 namespace data {
 
@@ -225,6 +227,15 @@ StaticsLoader* Manager::getStaticsLoader(unsigned int index) {
         LOGARG_WARN(LOGTYPE_DATA, "Trying to access uninitialized statics index %u", index);
         return sing->fallbackStaticsLoader_.get();
     }
+}
+
+boost::shared_ptr<ui::TextureProvider> Manager::getItemTextureProvider(unsigned int artId) {
+    // check for entry in animdata
+    // if exists, load complex textureprovider
+    // if not, just load the simple one
+
+    boost::shared_ptr<ui::SingleTextureProvider> ret(new ui::SingleTextureProvider(artId));
+    return ret;
 }
 
 

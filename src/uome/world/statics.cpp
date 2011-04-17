@@ -11,7 +11,7 @@ namespace uome {
 namespace world {
 
 boost::shared_ptr<ui::Texture> StaticItem::getIngameTexture() const {
-    return texture_;
+    return textureProvider_->getTexture();
 }
 
 unsigned int StaticItem::getArtId() {
@@ -74,7 +74,7 @@ void StaticItem::updateRenderPriority() {
 }
 
 void StaticItem::updateTextureProvider() {
-    texture_ = data::Manager::getArtLoader()->getItemTexture(artId_);
+    textureProvider_ = data::Manager::getItemTextureProvider(artId_);
 }
 
 const data::StaticTileInfo* StaticItem::getTileDataInfo() {

@@ -7,8 +7,8 @@ namespace uome {
 namespace world {
 
 LightManager::LightManager() :
-        ambientIntensity_(0.2, 0.2, 0.2), globalIntensity_(0.8, 0.8, 0.8) {
-    setGlobalAngle(70);
+        ambientIntensity_(0.3, 0.3, 0.3), globalIntensity_(0.2, 0.2, 0.2) {
+    setGlobalAngle(150);
 }
 
 CL_Vec3f LightManager::getAmbientIntensity() const {
