@@ -1,4 +1,4 @@
-<gump x="100" y="30" width="600" height="600" title="Test Gump Menu">
+<gump x="100" y="30" width="600" height="600" title="Test Gump Menu" closable="1" draggable="true">
     <tbutton x="30" y="30" width="120" height="25" text="wohoo!!" page="1" />
     <tbutton x="170" y="30" width="120" height="25" text="alright" page="14" />
 

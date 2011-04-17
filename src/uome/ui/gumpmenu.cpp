@@ -11,6 +11,7 @@ namespace ui {
 GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
     CL_Window(ui::Manager::getSingleton()->getGuiManager().get(), desc),
     activePageId_(0), firstPageId_(0),
+    closable_(true),
     draggable_(true), isDragged_(false) {
 
     addPage(0);
@@ -127,6 +128,11 @@ bool GumpMenu::onInputReleased(const CL_InputEvent& msg) {
         capture_mouse(false);
 
         return true;
+    } else if (msg.id == CL_MOUSE_RIGHT && closable_) {
+        capture_mouse(false);
+        ui::Manager::getSingleton()->closeGumpMenu(this);
+
+        return true;
     }
 
     return false;
@@ -142,6 +148,27 @@ bool GumpMenu::onPointerMoved(const CL_InputEvent& msg) {
         return true;
     }
     return false;
+}
+
+void GumpMenu::setClosable(bool value) {
+    closable_ = value;
+}
+
+bool GumpMenu::isClosable() {
+    return closable_;
+}
+
+void GumpMenu::setDraggable(bool value) {
+    draggable_ = value;
+
+    if (!draggable_) {
+        capture_mouse(false);
+        isDragged_ = false;
+    }
+}
+
+bool GumpMenu::isDraggable() {
+    return draggable_;
 }
 
 }

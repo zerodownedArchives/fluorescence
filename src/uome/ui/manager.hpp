@@ -10,6 +10,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options.hpp>
 
+#include <list>
+
 namespace uome {
 namespace ui {
 
@@ -17,6 +19,7 @@ class IngameView;
 class RenderQueue;
 class CursorManager;
 class DoubleClickHandler;
+class GumpMenu;
 
 class Manager {
 public:
@@ -35,12 +38,12 @@ public:
     static CL_Texture* provideTexture(unsigned int width, unsigned int height);
 
     static boost::shared_ptr<RenderQueue> getRenderQueue();
-
     static boost::shared_ptr<CL_GUIManager> getGuiManager();
-
     static boost::shared_ptr<CursorManager> getCursorManager();
-
     static boost::shared_ptr<DoubleClickHandler> getDoubleClickHandler();
+
+    void closeGumpMenu(GumpMenu* menu);
+    void processCloseList();
 
 private:
     static Manager* singleton_;
@@ -66,6 +69,8 @@ private:
     boost::shared_ptr<CursorManager> cursorManager_;
 
     boost::shared_ptr<DoubleClickHandler> doubleClickHandler_;
+
+    std::list<GumpMenu*> closeList_;
 };
 
 }

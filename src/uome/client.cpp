@@ -72,6 +72,7 @@ int Client::main(const std::vector<CL_String8>& args) {
     desc.set_decorations(false);
 
     ui::GumpMenu* ingameMenu = new ui::GumpMenu(desc);
+    ingameMenu->setClosable(false);
 
     ui::IngameView* ingameView = new ui::IngameView(ingameMenu, CL_Rect(5, 5, CL_Size(800, 600)));
     ingameView->setCenterTiles(176 * 8, 202 * 8);
@@ -131,6 +132,9 @@ int Client::main(const std::vector<CL_String8>& args) {
         uiManager->drawWindow();
 
         CL_KeepAlive::process();
+
+        ui::Manager::getSingleton()->processCloseList();
+
         //CL_System::sleep(10);
     }
 

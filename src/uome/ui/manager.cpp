@@ -7,6 +7,7 @@
 #include "renderqueue.hpp"
 #include "cursormanager.hpp"
 #include "doubleclickhandler.hpp"
+#include "gumpmenu.hpp"
 
 #include <misc/logger.hpp>
 #include <misc/exception.hpp>
@@ -114,6 +115,21 @@ boost::shared_ptr<CursorManager> Manager::getCursorManager() {
 
 boost::shared_ptr<DoubleClickHandler> Manager::getDoubleClickHandler() {
     return singleton_->doubleClickHandler_;
+}
+
+void Manager::closeGumpMenu(GumpMenu* menu) {
+    closeList_.push_back(menu);
+}
+
+void Manager::processCloseList() {
+    std::list<GumpMenu*>::iterator iter = closeList_.begin();
+    std::list<GumpMenu*>::iterator end = closeList_.end();
+
+    for (; iter != end; ++iter) {
+        delete (*iter);
+    }
+
+    closeList_.clear();
 }
 
 }

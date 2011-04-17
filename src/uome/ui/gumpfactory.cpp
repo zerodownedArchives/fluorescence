@@ -89,6 +89,8 @@ GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc) {
 
     CL_Rect bounds = getBoundsFromNode(rootNode);
     std::string title = rootNode.attribute("title").value();
+    bool closable = rootNode.attribute("closable").as_bool();
+    bool draggable = rootNode.attribute("draggable").as_bool();
 
     CL_GUITopLevelDescription desc(bounds, false);
 
@@ -100,6 +102,8 @@ GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc) {
     }
 
     GumpMenu* ret = new GumpMenu(desc);
+    ret->setClosable(closable);
+    ret->setDraggable(draggable);
 
     parseChildren(rootNode, ret, ret);
 

@@ -27,6 +27,12 @@ public:
 
     void onButtonClicked(components::BaseButton* button);
 
+    void setClosable(bool value);
+    bool isClosable();
+
+    void setDraggable(bool value);
+    bool isDraggable();
+
 private:
     unsigned int activePageId_;
     std::map<unsigned int, std::vector<CL_GUIComponent*> > pages_;
@@ -34,6 +40,8 @@ private:
 
     void internalActivatePage(unsigned int pageId);
     void internalDeactivatePage(unsigned int pageId);
+
+    bool closable_;
 
     bool draggable_;
     bool isDragged_;
