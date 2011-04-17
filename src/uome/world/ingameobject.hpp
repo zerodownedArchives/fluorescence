@@ -37,7 +37,7 @@ public:
 
     bool isRenderDataValid() const;
     void invalidateRenderData(bool updateTextureProvider = false);
-    void updateRenderData(); ///< calls updateVertexCoordinates, updateRenderPriority and updateTexture
+    bool updateRenderData(unsigned int elapsedMillis); ///< calls updateVertexCoordinates, updateRenderPriority, updateTextureProvider and updateAnimation
 
     const CL_Vec2f* getVertexCoordinates() const;
 
@@ -67,6 +67,8 @@ protected:
 
     void requestUpdateTextureProvider();
     virtual void updateTextureProvider() = 0;
+
+    virtual void updateAnimation(unsigned int elapsedMillis) = 0;
 
     virtual void updateVertexCoordinates() = 0;
 

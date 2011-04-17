@@ -89,10 +89,6 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
 
         // check if texture is ready to be drawn
         boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
-        if (!tex) {
-            int i = 0;
-            (void)i;
-        }
 
         if (!tex->isReadComplete()) {
             continue;

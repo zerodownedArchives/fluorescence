@@ -171,21 +171,18 @@ bool RenderQueue::processAddList() {
     return ret;
 }
 
-void RenderQueue::prepareRender() {
+void RenderQueue::prepareRender(unsigned int elapsedMillis) {
     processRemoveList();
     bool requireSort = processAddList();
-
 
     std::list<world::IngameObject*>::iterator igIter = ingameList_.begin();
     std::list<world::IngameObject*>::iterator igEnd = ingameList_.end();
 
     for (; igIter != igEnd; ++igIter) {
         world::IngameObject* curObj = *igIter;
+
         // update rendering data (priority, vertex coordinates, texture, ...)
-        if (!curObj->isRenderDataValid()) {
-            curObj->updateRenderData();
-            requireSort = true;
-        }
+        requireSort |= curObj->updateRenderData(elapsedMillis);
     }
 
     if (requireSort) {

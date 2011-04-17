@@ -48,9 +48,10 @@ private:
     int zBottom_;
     void setSurroundingZ(int left, int right, int bottom);
 
-    virtual void updateVertexCoordinates();
-    virtual void updateRenderPriority();
-    virtual void updateTextureProvider();
+    void updateVertexCoordinates();
+    void updateRenderPriority();
+    void updateTextureProvider();
+    void updateAnimation(unsigned int elapsedMillis);
 
     void setTexture();
 

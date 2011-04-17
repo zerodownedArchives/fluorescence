@@ -77,6 +77,10 @@ void MapTile::updateTextureProvider() {
     }
 }
 
+void MapTile::updateAnimation(unsigned int elapsedMillis) {
+    // no animation on maptile
+}
+
 void MapTile::setSurroundingZ(int left, int right, int bottom) {
     zLeft_ = left;
     zRight_ = right;

@@ -35,7 +35,7 @@ public:
 
     /// Calling this function will make the client re-sort the queue at the next rendering
     void requireIngameSort();
-    void prepareRender();
+    void prepareRender(unsigned int elapsedMillis);
 
     std::list<world::IngameObject*>::const_iterator beginIngame();
     std::list<world::IngameObject*>::const_iterator endIngame();

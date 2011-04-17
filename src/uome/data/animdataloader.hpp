@@ -10,6 +10,9 @@ namespace uome {
 namespace data {
 
 struct AnimDataInfo {
+    AnimDataInfo() : frameCount_(0) {
+    }
+
     unsigned int artIds_[64];
     unsigned int frameCount_;
     unsigned int frameIntervalMillis_;

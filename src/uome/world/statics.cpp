@@ -77,6 +77,10 @@ void StaticItem::updateTextureProvider() {
     textureProvider_ = data::Manager::getItemTextureProvider(artId_);
 }
 
+void StaticItem::updateAnimation(unsigned int elapsedMillis) {
+    textureProvider_->update(elapsedMillis);
+}
+
 const data::StaticTileInfo* StaticItem::getTileDataInfo() {
     return tileDataInfo_;
 }

@@ -50,7 +50,9 @@ void StaticsLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned in
     int8_t cellZ;
     uint16_t hue;
 
-    for (unsigned int i = 0; i < itemCount; ++i) {
+    unsigned int i;
+
+    for (i = 0; i < itemCount; ++i) {
         boost::shared_ptr<world::StaticItem> cur(new world::StaticItem);
 
         artId = *(reinterpret_cast<uint16_t*>(buf));
@@ -68,8 +70,9 @@ void StaticsLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned in
     }
 
     boost::shared_ptr<world::StaticItem> animItem(new world::StaticItem);
-    animItem->indexInBlock_ = 4000;
-    animItem->set(cellOffsetX, cellOffsetY, 100, 0x1abe, 0);
+    animItem->indexInBlock_ = i;
+    animItem->set(cellOffsetX, cellOffsetY, cellZ, 0x371a, 0);
+    item->itemList_.push_back(animItem);
 }
 
 void StaticsLoader::readCallbackDifOffsets(int8_t* buf, unsigned int len) {

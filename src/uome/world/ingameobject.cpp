@@ -71,21 +71,29 @@ const int* IngameObject::getRenderPriorities() const {
     return renderPriority_;
 }
 
-void IngameObject::updateRenderData() {
-    if (textureProviderUpdateRequired_) {
-        updateTextureProvider();
-        textureProviderUpdateRequired_ = false;
+bool IngameObject::updateRenderData(unsigned int elapsedMillis) {
+    bool bigUpdate = false;
+    if (!isRenderDataValid()) {
+        bigUpdate = true;
+        if (textureProviderUpdateRequired_) {
+            updateTextureProvider();
+            textureProviderUpdateRequired_ = false;
+        }
+
+        boost::shared_ptr<ui::Texture> tex = getIngameTexture();
+        if (!tex->isReadComplete()) {
+            return false;
+        }
+
+        updateVertexCoordinates();
+        updateRenderPriority();
+
+        renderDataValid_ = true;
     }
 
-    boost::shared_ptr<ui::Texture> tex = getIngameTexture();
-    if (!tex->isReadComplete()) {
-        return;
-    }
+    updateAnimation(elapsedMillis);
 
-    updateVertexCoordinates();
-    updateRenderPriority();
-
-    renderDataValid_ = true;
+    return bigUpdate;
 }
 
 void IngameObject::requestUpdateTextureProvider() {

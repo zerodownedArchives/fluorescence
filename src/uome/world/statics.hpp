@@ -31,10 +31,6 @@ public:
 
     unsigned int getArtId();
 
-    void updateVertexCoordinates();
-    void updateRenderPriority();
-    void updateTextureProvider();
-
     const data::StaticTileInfo* getTileDataInfo();
 
     virtual void onClick();
@@ -49,6 +45,11 @@ private:
     const data::StaticTileInfo* tileDataInfo_;
 
     void set(int locX, int locY, int locZ, unsigned int artId, unsigned int hue);
+
+    void updateVertexCoordinates();
+    void updateRenderPriority();
+    void updateTextureProvider();
+    void updateAnimation(unsigned int elapsedMillis);
 };
 
 class StaticBlock : public data::OnDemandReadable {

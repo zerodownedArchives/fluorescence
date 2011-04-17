@@ -83,31 +83,44 @@ int Client::main(const std::vector<CL_String8>& args) {
     timeval lastTime;
     gettimeofday(&lastTime, NULL);
 
+    // elapsed milliseconds since the last cycle
+    unsigned int elapsedMillis;
+
+    // fps are calculated every 50 frames => sum time
+    unsigned int fpsSum = 0;
+
 
     unsigned int i = 0;
     while (!wnd->get_ic().get_keyboard().get_keycode(CL_KEY_ESCAPE)) {
         ++i;
+
+        timeval curTime;
+        gettimeofday(&curTime, NULL);
+
+        elapsedMillis = (curTime.tv_sec - lastTime.tv_sec) * 1000;
+        elapsedMillis += (curTime.tv_usec - lastTime.tv_usec) / 1000;
+
+        lastTime = curTime;
+
+        fpsSum += elapsedMillis;
+
         if (i % 50 == 0) {
-            timeval curTime;
-            gettimeofday(&curTime, NULL);
-
-            float diff = (curTime.tv_sec - lastTime.tv_sec);
-            diff += (curTime.tv_usec - lastTime.tv_usec) / 1000000.0f;
-
-            float fps = diff / 50.0f;
-            fps = 1/fps;
+            float fps = fpsSum / 1000.0f; // seconds
+            fps /= 50.0f; // 50 cycles
+            fps = 1 / fps;
 
             std::ostringstream titleHelper;
             titleHelper << "UO:ME -- fps: " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << fps;
             wnd->set_title(titleHelper.str());
+
+            fpsSum = 0;
             //LOGARG_DEBUG(LOGTYPE_MAIN, "fps: %.1f", fps);
-            lastTime = curTime;
         }
 
         // adding sectors has to be done before sorting
         world::Manager::getSingleton()->getSectorManager()->addNewSectors();
 
-        uiManager->getRenderQueue()->prepareRender();
+        uiManager->getRenderQueue()->prepareRender((unsigned int)elapsedMillis);
 
         // deleting sectors has to be done after RenderQueue::prepareRender()
         // TODO: maybe before add?
