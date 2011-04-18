@@ -47,7 +47,7 @@ void StaticsLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned in
     uint16_t artId;
     uint8_t cellX;
     uint8_t cellY;
-    int8_t cellZ;
+    int8_t cellZ = 0;
     uint16_t hue;
 
     unsigned int i;
@@ -69,6 +69,7 @@ void StaticsLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned in
         item->itemList_.push_back(cur);
     }
 
+    // TODO: remove
     boost::shared_ptr<world::StaticItem> animItem(new world::StaticItem);
     animItem->indexInBlock_ = i;
     animItem->set(cellOffsetX, cellOffsetY, cellZ, 0x371a, 0);

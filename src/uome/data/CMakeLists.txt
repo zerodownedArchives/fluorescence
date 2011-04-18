@@ -25,6 +25,7 @@ set(DATA_LOADERS_HPP
     staticsloader.hpp
     maptexloader.hpp
     animdataloader.hpp
+    animloader.hpp
     )
 
 set(DATA_LOADERS_CPP
@@ -37,6 +38,7 @@ set(DATA_LOADERS_CPP
     staticsloader.cpp
     maptexloader.cpp
     animdataloader.cpp
+    animloader.cpp
     )
 
 add_library(uomedata STATIC

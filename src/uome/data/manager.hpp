@@ -8,6 +8,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <ui/textureprovider.hpp>
+#include <ui/animation.hpp>
 
 namespace uome {
 namespace data {
@@ -20,6 +21,7 @@ class MapLoader;
 class StaticsLoader;
 class MapTexLoader;
 class AnimDataLoader;
+class AnimLoader;
 
 class Manager {
 public:
@@ -30,6 +32,7 @@ public:
 
 
     static boost::shared_ptr<ui::TextureProvider> getItemTextureProvider(unsigned int artId);
+    static std::vector<boost::shared_ptr<ui::Animation> > getFullAnim(unsigned int animId);
 
     static ArtLoader* getArtLoader() { return getSingleton()->artLoader_.get(); }
     static TileDataLoader* getTileDataLoader() { return getSingleton()->tileDataLoader_.get(); }
@@ -39,6 +42,7 @@ public:
     static StaticsLoader* getStaticsLoader(unsigned int index);
     static MapTexLoader* getMapTexLoader() { return getSingleton()->mapTexLoader_.get(); }
     static AnimDataLoader* getAnimDataLoader() { return getSingleton()->animDataLoader_.get(); }
+    static AnimLoader* getAnimLoader(unsigned int index);
 
 private:
     static Manager* singleton_;
@@ -62,6 +66,9 @@ private:
 
     boost::shared_ptr<StaticsLoader> staticsLoader_[5];
     boost::shared_ptr<StaticsLoader> fallbackStaticsLoader_;
+
+    boost::shared_ptr<AnimLoader> animLoader_[5];
+    boost::shared_ptr<AnimLoader> fallbackAnimLoader_;
 };
 
 }

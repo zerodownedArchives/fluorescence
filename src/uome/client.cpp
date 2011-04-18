@@ -20,6 +20,10 @@
 #include <iomanip>
 
 
+#include <data/animloader.hpp>
+#include <ui/animtextureprovider.hpp>
+
+
 namespace uome {
 
 Client::Client() {
@@ -81,13 +85,20 @@ int Client::main(const std::vector<CL_String8>& args) {
     ui::GumpMenu* testGump = ui::GumpFactory::fromXmlFile("simpletest");
     (void)testGump;
 
+    boost::shared_ptr<ui::Animation> testAnimShared = data::Manager::getAnimLoader(0)->getAnimation(58);
+    ui::Animation* testAnim = testAnimShared.get();
+    (void)testAnim;
+
+
+    //ui::AnimTextureProvider testTexPro(58);
+
     timeval lastTime;
     gettimeofday(&lastTime, NULL);
 
     // elapsed milliseconds since the last cycle
     unsigned int elapsedMillis;
 
-    // fps are calculated every 50 frames => sum time
+    // fps are calculated every 100 frames => sum time
     unsigned int fpsSum = 0;
 
 
@@ -105,9 +116,9 @@ int Client::main(const std::vector<CL_String8>& args) {
 
         fpsSum += elapsedMillis;
 
-        if (i % 50 == 0) {
+        if (i % 100 == 0) {
             float fps = fpsSum / 1000.0f; // seconds
-            fps /= 50.0f; // 50 cycles
+            fps /= 100.0f; // 100 cycles
             fps = 1 / fps;
 
             std::ostringstream titleHelper;
@@ -133,7 +144,13 @@ int Client::main(const std::vector<CL_String8>& args) {
 
         CL_KeepAlive::process();
 
-        ui::Manager::getSingleton()->processCloseList();
+        uiManager->processCloseList();
+
+        if (testAnim->isReadComplete() && testAnim->getFrame(0).texture_->isReadComplete()) {
+            CL_Draw::texture(ui::Manager::getGraphicsContext(), *(testAnim->getFrame(0).texture_->getTexture()), CL_Quadf(CL_Rect(30, 30, CL_Size(200, 200))));
+        } else {
+            LOG_DEBUG(LOGTYPE_MAIN, "tex not read complete");
+        }
 
         //CL_System::sleep(10);
     }

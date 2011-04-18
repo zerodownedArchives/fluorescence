@@ -115,6 +115,45 @@ bool Config::getVariablesMap(const std::vector<CL_String8>& args, boost::program
     ("files.statics4-dif-idx", po::value<std::string>()->default_value("Stadifi4.mul"), "Location of stadifi4.mul")
     ("files.statics4-dif-mul", po::value<std::string>()->default_value("Stadif4.mul"), "Location of stadif4.mul")
 
+    ("files.body-def", po::value<std::string>()->default_value("Body.def"), "Location of body.def")
+    ("files.bodyconf-def", po::value<std::string>()->default_value("Bodyconv"), "Location of bodyconv.def")
+
+    ("files.anim0-enabled", po::value<bool>()->default_value(true), "Wheter or not anim is enabled")
+    ("files.anim0-idx", po::value<std::string>()->default_value("Anim.idx"), "Location of anim.idx")
+    ("files.anim0-mul", po::value<std::string>()->default_value("Anim.mul"), "Location of anim.mul")
+    ("files.anim0-highdetail", po::value<unsigned int>()->default_value(200), "High detail count")
+    ("files.anim0-lowdetail", po::value<unsigned int>()->default_value(200), "Low detail count")
+
+    ("files.anim1-enabled", po::value<bool>()->default_value(true), "Wheter or not anim1 is enabled")
+    ("files.anim1-idx", po::value<std::string>()->default_value("Anim.idx"), "Location of anim1.idx")
+    ("files.anim1-mul", po::value<std::string>()->default_value("Anim.mul"), "Location of anim1.mul")
+    ("files.anim1-highdetail", po::value<unsigned int>()->default_value(200), "High detail count")
+    ("files.anim1-lowdetail", po::value<unsigned int>()->default_value(200), "Low detail count")
+
+    ("files.anim2-enabled", po::value<bool>()->default_value(true), "Wheter or not anim2 is enabled")
+    ("files.anim2-idx", po::value<std::string>()->default_value("Anim2.idx"), "Location of anim2.idx")
+    ("files.anim2-mul", po::value<std::string>()->default_value("Anim2.mul"), "Location of anim2.mul")
+    ("files.anim2-highdetail", po::value<unsigned int>()->default_value(200), "High detail count")
+    ("files.anim2-lowdetail", po::value<unsigned int>()->default_value(200), "Low detail count")
+
+    ("files.anim3-enabled", po::value<bool>()->default_value(true), "Wheter or not anim3 is enabled")
+    ("files.anim3-idx", po::value<std::string>()->default_value("Anim3.idx"), "Location of anim3.idx")
+    ("files.anim3-mul", po::value<std::string>()->default_value("Anim3.mul"), "Location of anim3.mul")
+    ("files.anim3-highdetail", po::value<unsigned int>()->default_value(200), "High detail count")
+    ("files.anim3-lowdetail", po::value<unsigned int>()->default_value(200), "Low detail count")
+
+    ("files.anim4-enabled", po::value<bool>()->default_value(true), "Wheter or not anim4 is enabled")
+    ("files.anim4-idx", po::value<std::string>()->default_value("Anim4.idx"), "Location of anim4.idx")
+    ("files.anim4-mul", po::value<std::string>()->default_value("Anim4.mul"), "Location of anim4.mul")
+    ("files.anim4-highdetail", po::value<unsigned int>()->default_value(200), "High detail count")
+    ("files.anim4-lowdetail", po::value<unsigned int>()->default_value(200), "Low detail count")
+
+    ("files.anim5-enabled", po::value<bool>()->default_value(true), "Wheter or not anim5 is enabled")
+    ("files.anim5-idx", po::value<std::string>()->default_value("Anim5.idx"), "Location of anim5.idx")
+    ("files.anim5-mul", po::value<std::string>()->default_value("Anim5.mul"), "Location of anim5.mul")
+    ("files.anim5-highdetail", po::value<unsigned int>()->default_value(200), "High detail count")
+    ("files.anim5-lowdetail", po::value<unsigned int>()->default_value(200), "Low detail count")
+
 
     ("ui.themes-directory", po::value<std::string>()->default_value("themes"), "Directory containing the themes for UO:ME")
     ("ui.default-theme", po::value<std::string>()->default_value("GUIThemeBasic"), "Default ui theme")

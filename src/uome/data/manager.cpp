@@ -9,6 +9,7 @@
 #include "staticsloader.hpp"
 #include "maptexloader.hpp"
 #include "animdataloader.hpp"
+#include "animloader.hpp"
 
 #include <ui/singletextureprovider.hpp>
 #include <ui/animdatatextureprovider.hpp>
@@ -182,6 +183,48 @@ void Manager::init(const boost::program_options::variables_map& config) {
     free(staticsConfigDifMulPath);
 
 
+
+
+
+    char* animConfigEnabled = strdup("files.anim0-enabled");
+    char* animConfigIdxPath = strdup("files.anim0-idx");
+    char* animConfigMulPath = strdup("files.anim0-mul");
+    char* animConfigHighDetailCount = strdup("files.anim0-highdetail");
+    char* animConfigLowDetailCount = strdup("files.anim0-lowdetail");
+
+    unsigned int highDetailCount;
+    unsigned int lowDetailCount;
+
+    indexChar = '0';
+    for (unsigned int index = 0; index < 5; ++index, ++indexChar) {
+        animConfigEnabled[10] = indexChar;
+
+        if (!config[animConfigEnabled].as<bool>()) {
+            continue;
+        }
+
+        animConfigIdxPath[10] = indexChar;
+        animConfigMulPath[10] = indexChar;
+        animConfigHighDetailCount[10] = indexChar;
+        animConfigLowDetailCount[10] = indexChar;
+
+        idxPath = getPathFor(config, animConfigIdxPath);
+        path = getPathFor(config, animConfigMulPath);
+        highDetailCount = config[animConfigHighDetailCount].as<unsigned int>();
+        lowDetailCount = config[animConfigLowDetailCount].as<unsigned int>();
+        LOGARG_INFO(LOGTYPE_DATA, "Opening anim%c from idx=%s, mul=%s, high detail=%u, low detail=%u", indexChar, idxPath.string().c_str(), path.string().c_str(), highDetailCount, lowDetailCount);
+        animLoader_[index].reset(new AnimLoader(idxPath, path, highDetailCount, lowDetailCount));
+
+        if (!fallbackAnimLoader_.get()) {
+            fallbackAnimLoader_ = animLoader_[index];
+        }
+    }
+
+    free(animConfigEnabled);
+    free(animConfigIdxPath);
+    free(animConfigMulPath);
+    free(animConfigHighDetailCount);
+    free(animConfigLowDetailCount);
 }
 
 Manager::~Manager() {
@@ -210,7 +253,7 @@ MapLoader* Manager::getMapLoader(unsigned int index) {
     Manager* sing = getSingleton();
 
     MapLoader* ret = sing->mapLoader_[index].get();
-    if (sing->mapLoader_[index].get()) {
+    if (ret) {
         return ret;
     } else {
         LOGARG_WARN(LOGTYPE_DATA, "Trying to access uninitialized map index %u", index);
@@ -227,7 +270,7 @@ StaticsLoader* Manager::getStaticsLoader(unsigned int index) {
     Manager* sing = getSingleton();
 
     StaticsLoader* ret = sing->staticsLoader_[index].get();
-    if (sing->staticsLoader_[index].get()) {
+    if (ret) {
         return ret;
     } else {
         LOGARG_WARN(LOGTYPE_DATA, "Trying to access uninitialized statics index %u", index);
@@ -248,6 +291,32 @@ boost::shared_ptr<ui::TextureProvider> Manager::getItemTextureProvider(unsigned 
     }
 
     return ret;
+}
+
+std::vector<boost::shared_ptr<ui::Animation> > Manager::getFullAnim(unsigned int animId) {
+    // check .def files for correct anim file
+    // load anim
+
+    std::vector<boost::shared_ptr<ui::Animation> > ret;
+    ret.push_back(getSingleton()->animLoader_[0]->getAnimation(animId));
+    return ret;
+}
+
+AnimLoader* Manager::getAnimLoader(unsigned int index) {
+    if (index > 5) {
+        LOGARG_WARN(LOGTYPE_DATA, "Trying to access anim loader with index %u", index);
+        index = 0;
+    }
+
+    Manager* sing = getSingleton();
+
+    AnimLoader* ret = sing->animLoader_[index].get();
+    if (ret) {
+        return ret;
+    } else {
+        LOGARG_WARN(LOGTYPE_DATA, "Trying to access uninitialized anim loader index %u", index);
+        return sing->fallbackAnimLoader_.get();
+    }
 }
 
 
