@@ -24,7 +24,7 @@ XorEncryption::XorEncryption(uint32_t seed, uint32_t key1, uint32_t key2) {
             & 0xFFFF0000);
 }
 
-void XorEncryption::encrypt(int8_t* dst, int8_t* src, unsigned int length) {
+void XorEncryption::encrypt(int8_t* dst, const int8_t* src, unsigned int length) {
     uint32_t temp1 = 0;
     uint32_t temp2 = 0;
 
@@ -39,7 +39,7 @@ void XorEncryption::encrypt(int8_t* dst, int8_t* src, unsigned int length) {
     }
 }
 
-void XorEncryption::decrypt(int8_t* dst, int8_t* src, unsigned int length) {
+void XorEncryption::decrypt(int8_t* dst, const int8_t* src, unsigned int length) {
     memcpy(dst, src, length);
 }
 

@@ -8,8 +8,8 @@ namespace net {
 
 class NoEncryption : public Encryption {
 public:
-    virtual void encrypt(int8_t* dst, int8_t* src, unsigned int length);
-    virtual void decrypt(int8_t* dst, int8_t* src, unsigned int length);
+    virtual void encrypt(int8_t* dst, const int8_t* src, unsigned int length);
+    virtual void decrypt(int8_t* dst, const int8_t* src, unsigned int length);
 };
 
 }

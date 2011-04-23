@@ -6,6 +6,7 @@ set (NET_HPP
     twofishencryption.hpp
     noencryption.hpp
     decompress.hpp
+    socket.hpp
     )
     
 set (NET_CPP
@@ -14,6 +15,7 @@ set (NET_CPP
     twofishencryption.cpp
     noencryption.cpp
     decompress.cpp
+    socket.cpp
     )
     
 set (MD5

@@ -10,8 +10,8 @@ class XorEncryption : public Encryption {
 public:
     XorEncryption(uint32_t seed, uint32_t key1, uint32_t key2);
 
-    virtual void encrypt(int8_t* dst, int8_t* src, unsigned int length);
-    virtual void decrypt(int8_t* dst, int8_t* src, unsigned int length);
+    virtual void encrypt(int8_t* dst, const int8_t* src, unsigned int length);
+    virtual void decrypt(int8_t* dst, const int8_t* src, unsigned int length);
 
 private:
     uint32_t seed_;
