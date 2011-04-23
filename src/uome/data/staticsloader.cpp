@@ -79,7 +79,7 @@ void StaticsLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned in
 
     world::Mobile* mob = new world::Mobile(15);
     mob->setLocation(cellOffsetX + 2, cellOffsetY + 2, cellZ);
-    mob->setBodyId(85);
+    mob->setBodyId(400);
 }
 
 void StaticsLoader::readCallbackDifOffsets(int8_t* buf, unsigned int len) {

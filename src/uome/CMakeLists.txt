@@ -3,6 +3,7 @@ add_subdirectory(data)
 add_subdirectory(misc)
 add_subdirectory(ui)
 add_subdirectory(world)
+add_subdirectory(net)
 
 set(CLIENT_HPP
     client.hpp
