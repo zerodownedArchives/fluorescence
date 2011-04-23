@@ -45,14 +45,14 @@ void AnimLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len,
 
 
     for (unsigned int frameIdx = 0; frameIdx < frameCount; ++frameIdx) {
-        int8_t* ptr = buf + 0x200 + frameOffsets[frameIdx];
+        uint8_t* ptr = reinterpret_cast<uint8_t*>(buf) + 0x200 + frameOffsets[frameIdx];
         //int8_t* frameStart = ptr;
 
         // frame header
         ui::AnimationFrame curFrame;
-        curFrame.centerX_ = *reinterpret_cast<uint16_t*>(ptr);
+        curFrame.centerX_ = *reinterpret_cast<int16_t*>(ptr);
         ptr += 2;
-        curFrame.centerY_ = *reinterpret_cast<uint16_t*>(ptr);
+        curFrame.centerY_ = *reinterpret_cast<int16_t*>(ptr);
         ptr += 2;
 
         unsigned int width = *reinterpret_cast<uint16_t*>(ptr);
@@ -76,11 +76,13 @@ void AnimLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len,
 
             // keep track of sign
             if ((xOffset & 0x200) == 0x200) {
-                xOffset |= 0xFFFFFC00;
+                //xOffset |= 0xFFFFFC00;
+                xOffset |= 0xFFFFFE00;
             }
 
             if ((yOffset & 0x200) == 0x200) {
-                yOffset |= 0xFFFFFC00;
+                //yOffset |= 0xFFFFFC00;
+                yOffset |= 0xFFFFFE00;
             }
 
             unsigned int yPixel = curFrame.centerY_ + yOffset + height;

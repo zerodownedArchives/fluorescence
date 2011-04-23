@@ -29,9 +29,9 @@ friend class data::StaticsLoader;
 public:
     virtual boost::shared_ptr<ui::Texture> getIngameTexture() const;
 
-    unsigned int getArtId();
+    unsigned int getArtId() const;
 
-    const data::StaticTileInfo* getTileDataInfo();
+    const data::StaticTileInfo* getTileDataInfo() const;
 
     virtual void onClick();
 
@@ -49,7 +49,7 @@ private:
     void updateVertexCoordinates();
     void updateRenderPriority();
     void updateTextureProvider();
-    void updateAnimation(unsigned int elapsedMillis);
+    bool updateAnimation(unsigned int elapsedMillis);
 };
 
 class StaticBlock : public data::OnDemandReadable {

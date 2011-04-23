@@ -14,7 +14,7 @@ boost::shared_ptr<ui::Texture> StaticItem::getIngameTexture() const {
     return textureProvider_->getTexture();
 }
 
-unsigned int StaticItem::getArtId() {
+unsigned int StaticItem::getArtId() const {
     return artId_;
 }
 
@@ -77,11 +77,11 @@ void StaticItem::updateTextureProvider() {
     textureProvider_ = data::Manager::getItemTextureProvider(artId_);
 }
 
-void StaticItem::updateAnimation(unsigned int elapsedMillis) {
-    textureProvider_->update(elapsedMillis);
+bool StaticItem::updateAnimation(unsigned int elapsedMillis) {
+    return textureProvider_->update(elapsedMillis);
 }
 
-const data::StaticTileInfo* StaticItem::getTileDataInfo() {
+const data::StaticTileInfo* StaticItem::getTileDataInfo() const {
     return tileDataInfo_;
 }
 

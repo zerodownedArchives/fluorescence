@@ -18,9 +18,10 @@ class AnimTextureProvider : public TextureProvider {
 public:
     AnimTextureProvider(unsigned int animId);
 
-    virtual boost::shared_ptr<ui::Texture> getTexture();
+    virtual boost::shared_ptr<ui::Texture> getTexture() const;
+    AnimationFrame getCurrentFrame() const;
 
-    virtual void update(unsigned int elapsedMillis);
+    virtual bool update(unsigned int elapsedMillis);
 
 private:
     std::vector<boost::shared_ptr<Animation> > animations_;

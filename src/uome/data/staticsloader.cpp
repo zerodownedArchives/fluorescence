@@ -2,6 +2,8 @@
 #include "staticsloader.hpp"
 #include "fullfileloader.hpp"
 
+#include <world/mobile.hpp>
+
 #include <boost/bind.hpp>
 
 namespace uome {
@@ -74,6 +76,10 @@ void StaticsLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned in
     animItem->indexInBlock_ = i;
     animItem->set(cellOffsetX, cellOffsetY, cellZ, 0x371a, 0);
     item->itemList_.push_back(animItem);
+
+    world::Mobile* mob = new world::Mobile(15);
+    mob->setLocation(cellOffsetX + 2, cellOffsetY + 2, cellZ);
+    mob->setBodyId(85);
 }
 
 void StaticsLoader::readCallbackDifOffsets(int8_t* buf, unsigned int len) {

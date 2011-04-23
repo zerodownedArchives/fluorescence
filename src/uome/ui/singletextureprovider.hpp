@@ -13,9 +13,9 @@ class SingleTextureProvider : public TextureProvider {
 public:
     SingleTextureProvider(unsigned int artId);
 
-    virtual boost::shared_ptr<ui::Texture> getTexture();
+    virtual boost::shared_ptr<ui::Texture> getTexture() const;
 
-    virtual void update(unsigned int elapsedMillis);
+    virtual bool update(unsigned int elapsedMillis);
 
 private:
     boost::shared_ptr<ui::Texture> texture_;

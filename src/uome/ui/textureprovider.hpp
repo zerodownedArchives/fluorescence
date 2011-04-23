@@ -9,9 +9,10 @@ class Texture;
 class TextureProvider {
 public:
 
-    virtual boost::shared_ptr<ui::Texture> getTexture() = 0;
+    virtual boost::shared_ptr<ui::Texture> getTexture() const = 0;
 
-    virtual void update(unsigned int elapsedMillis) = 0;
+    /// returns true if the frame changed
+    virtual bool update(unsigned int elapsedMillis) = 0;
 };
 
 }

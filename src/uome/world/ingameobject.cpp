@@ -85,13 +85,19 @@ bool IngameObject::updateRenderData(unsigned int elapsedMillis) {
             return false;
         }
 
+        updateAnimation(elapsedMillis);
+
         updateVertexCoordinates();
         updateRenderPriority();
 
         renderDataValid_ = true;
-    }
+    } else {
+        bool frameChanged = updateAnimation(elapsedMillis);
 
-    updateAnimation(elapsedMillis);
+        if (frameChanged) {
+            updateVertexCoordinates();
+        }
+    }
 
     return bigUpdate;
 }

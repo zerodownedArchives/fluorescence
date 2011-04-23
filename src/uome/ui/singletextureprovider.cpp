@@ -11,12 +11,13 @@ SingleTextureProvider::SingleTextureProvider(unsigned int artId_) {
     texture_ = data::Manager::getArtLoader()->getItemTexture(artId_);
 }
 
-boost::shared_ptr<ui::Texture> SingleTextureProvider::getTexture() {
+boost::shared_ptr<ui::Texture> SingleTextureProvider::getTexture() const {
     return texture_;
 }
 
-void SingleTextureProvider::update(unsigned int elapsedMillis) {
+bool SingleTextureProvider::update(unsigned int elapsedMillis) {
     // do nothing
+    return false;
 }
 
 }

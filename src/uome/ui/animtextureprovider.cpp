@@ -7,7 +7,7 @@
 namespace uome {
 namespace ui {
 
-AnimTextureProvider::AnimTextureProvider(unsigned int animId) : currentAnimId_(0), currentIdx_(0), millis_(0), frameMillis_(0) {
+AnimTextureProvider::AnimTextureProvider(unsigned int animId) : currentAnimId_(0), currentIdx_(0), millis_(0), frameMillis_(100) {
     animations_ = data::Manager::getFullAnim(animId);
 
     if (animations_.size() == 0) {
@@ -22,12 +22,22 @@ AnimTextureProvider::AnimTextureProvider(unsigned int animId) : currentAnimId_(0
     }
 }
 
-boost::shared_ptr<ui::Texture> AnimTextureProvider::getTexture() {
+boost::shared_ptr<ui::Texture> AnimTextureProvider::getTexture() const {
     boost::shared_ptr<ui::Texture> ret = animations_[currentAnimId_]->getFrame(currentIdx_).texture_;
     return ret;
 }
 
-void AnimTextureProvider::update(unsigned int elapsedMillis) {
+AnimationFrame AnimTextureProvider::getCurrentFrame() const {
+    return animations_[currentAnimId_]->getFrame(currentIdx_);
+}
+
+bool AnimTextureProvider::update(unsigned int elapsedMillis) {
+    if (animations_.size() == 0 || !animations_[currentAnimId_]->isReadComplete() || elapsedMillis == 0) {
+        return false;
+    }
+
+    unsigned int lastIdx = currentIdx_;
+
     unsigned int newMillis = millis_ + elapsedMillis;
 
     unsigned int maxMillis = animations_[currentAnimId_]->getFrameCount() * frameMillis_;
@@ -40,6 +50,8 @@ void AnimTextureProvider::update(unsigned int elapsedMillis) {
     }
 
     millis_ = newMillis;
+
+    return lastIdx != currentIdx_;
 }
 
 }

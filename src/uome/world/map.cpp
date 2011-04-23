@@ -77,8 +77,9 @@ void MapTile::updateTextureProvider() {
     }
 }
 
-void MapTile::updateAnimation(unsigned int elapsedMillis) {
+bool MapTile::updateAnimation(unsigned int elapsedMillis) {
     // no animation on maptile
+    return false;
 }
 
 void MapTile::setSurroundingZ(int left, int right, int bottom) {

@@ -25,12 +25,14 @@ AnimDataTextureProvider::AnimDataTextureProvider(unsigned int artId) : currentId
     }
 }
 
-boost::shared_ptr<ui::Texture> AnimDataTextureProvider::getTexture() {
+boost::shared_ptr<ui::Texture> AnimDataTextureProvider::getTexture() const {
     boost::shared_ptr<ui::Texture> ret = textures_[currentIdx_];
     return ret;
 }
 
-void AnimDataTextureProvider::update(unsigned int elapsedMillis) {
+bool AnimDataTextureProvider::update(unsigned int elapsedMillis) {
+    unsigned int lastIdx = currentIdx_;
+
     unsigned int newMillis = millis_ + elapsedMillis;
 
     unsigned int maxMillis = info_.frameStart_ + info_.frameCount_ * info_.frameIntervalMillis_;
@@ -46,6 +48,8 @@ void AnimDataTextureProvider::update(unsigned int elapsedMillis) {
     //LOGARG_DEBUG(LOGTYPE_UI, "Anim TexPro update elapsed=%u millis=%u interval=%u frame=%u", elapsedMillis, millis_, info_.frameIntervalMillis_, currentIdx_);
 
     millis_ = newMillis;
+
+    return lastIdx != currentIdx_;
 }
 
 }

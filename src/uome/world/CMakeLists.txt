@@ -7,6 +7,8 @@ set (WORLD_HPP
     sector.hpp
     sectormanager.hpp
     lightmanager.hpp
+    serverobject.hpp
+    mobile.hpp
     )
 
 set (WORLD_CPP
@@ -17,6 +19,8 @@ set (WORLD_CPP
     sector.cpp
     sectormanager.cpp
     lightmanager.cpp
+    serverobject.cpp
+    mobile.cpp
     )
 
 add_library(uomeworld STATIC ${WORLD_HPP} ${WORLD_CPP})

@@ -68,7 +68,7 @@ protected:
     void requestUpdateTextureProvider();
     virtual void updateTextureProvider() = 0;
 
-    virtual void updateAnimation(unsigned int elapsedMillis) = 0;
+    virtual bool updateAnimation(unsigned int elapsedMillis) = 0;
 
     virtual void updateVertexCoordinates() = 0;
 

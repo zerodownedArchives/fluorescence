@@ -51,7 +51,7 @@ private:
     void updateVertexCoordinates();
     void updateRenderPriority();
     void updateTextureProvider();
-    void updateAnimation(unsigned int elapsedMillis);
+    bool updateAnimation(unsigned int elapsedMillis);
 
     void setTexture();
 

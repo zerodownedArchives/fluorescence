@@ -17,9 +17,9 @@ class AnimDataTextureProvider : public TextureProvider {
 public:
     AnimDataTextureProvider(unsigned int artId);
 
-    virtual boost::shared_ptr<ui::Texture> getTexture();
+    virtual boost::shared_ptr<ui::Texture> getTexture() const;
 
-    virtual void update(unsigned int elapsedMillis);
+    virtual bool update(unsigned int elapsedMillis);
 
 private:
     std::vector<boost::shared_ptr<ui::Texture> > textures_;
