@@ -1,7 +1,7 @@
 #ifndef UOME_NET_PACKETS__HPP
 #define UOME_NET_PACKETS__HPP
 
-#include "packet.hpp"
+#include <net/packet.hpp>
 
 namespace uome {
 namespace net {

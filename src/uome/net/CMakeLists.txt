@@ -26,10 +26,12 @@ set (NET_CPP
 
 set (PACKETS_HPP
     packets/loginrequest.hpp
+    packets/serverlist.hpp
     )
 
 set (PACKETS_CPP
     packets/loginrequest.cpp
+    packets/serverlist.cpp
     )
 
 set (MD5

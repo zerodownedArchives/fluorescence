@@ -18,7 +18,6 @@ public:
 
 protected:
     virtual bool writePacketInfo(int8_t* buf, unsigned int len, unsigned int& index) const;
-    virtual bool readPacketInfo(const int8_t* buf, unsigned int len, unsigned int& index);
 
     uint32_t id_;
 

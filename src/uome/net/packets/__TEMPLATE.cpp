@@ -5,7 +5,7 @@ namespace uome {
 namespace net {
 namespace packets {
 
-TEMPLATE::TEMPLATE(const UnicodeString& name, const UnicodeString& password) : Packet(0x80) {
+TEMPLATE::TEMPLATE() : Packet(0x00) {
 }
 
 bool TEMPLATE::write(int8_t* buf, unsigned int len, unsigned int& index) const {
@@ -18,8 +18,6 @@ bool TEMPLATE::write(int8_t* buf, unsigned int len, unsigned int& index) const {
 
 bool TEMPLATE::read(const int8_t* buf, unsigned int len, unsigned int& index) {
     bool ret = true;
-
-    ret &= readPacketInfo(buf, len, index);
 
     return ret;
 }
