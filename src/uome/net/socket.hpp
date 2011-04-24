@@ -30,6 +30,8 @@ public:
 
     bool sendAll();
 
+    void setUseDecompress(bool value);
+
 private:
     int socketFd_;
 
@@ -44,12 +46,15 @@ private:
     unsigned int sendIndex_;
 
     boost::shared_ptr<Encryption> encryption_;
+
     Decompress decompress_;
+    bool useDecompress_;
 
     bool running_;
     boost::thread receiveThread_;
     void receiveRun();
 
+    bool criticalError_;
 
     void dumpBuffer(int8_t* buffer, unsigned int length);
 };

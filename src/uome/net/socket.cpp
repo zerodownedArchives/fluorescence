@@ -21,7 +21,7 @@
 namespace uome {
 namespace net {
 
-Socket::Socket() : socketFd_(0), decompressedIndex_(0), sendIndex_(0), running_(false) {
+Socket::Socket() : socketFd_(0), decompressedIndex_(0), sendIndex_(0), useDecompress_(false), running_(false) {
 }
 
 Socket::~Socket() {
@@ -91,6 +91,7 @@ bool Socket::connect(const std::string& host, unsigned short port) {
 
     sendIndex_ = 0;
     running_ = true;
+    criticalError_ = false;
 
     receiveThread_ = boost::thread(&Socket::receiveRun, this);
 
@@ -108,7 +109,7 @@ void Socket::close() {
 }
 
 void Socket::receiveRun() {
-    while (running_) {
+    while (running_ && !criticalError_) {
         socketMutex_.lock();
         int recvLen = recv(socketFd_, rawBuffer_, 0x4000, 0);
         socketMutex_.unlock();
@@ -120,12 +121,16 @@ void Socket::receiveRun() {
                 encryption_->decrypt(rawBuffer_, rawBuffer_, recvLen);
             }
 
-            dumpBuffer(rawBuffer_, recvLen);
+            unsigned int decompLen = recvLen;
+            if (useDecompress_) {
+                // decompress data
+                LOG_INFO(LOGTYPE_NETWORK, "decompress");
+                decompLen = decompress_.huffmanDecompress(decompressedBuffer_ + decompressedIndex_, 0x10000 - decompressedIndex_, rawBuffer_, recvLen);
+            } else {
+                memcpy(decompressedBuffer_ + decompressedIndex_, rawBuffer_, recvLen);
+            }
 
-            // decompress data
-            LOG_INFO(LOGTYPE_NETWORK, "decompress");
-            unsigned int decompLen = decompress_.huffmanDecompress(decompressedBuffer_ + decompressedIndex_, 0x10000 - decompressedIndex_, rawBuffer_, recvLen);
-
+            LOG_INFO(LOGTYPE_NETWORK, "buffer dump:");
             dumpBuffer(decompressedBuffer_, decompLen);
 
             // parse packet
@@ -150,7 +155,8 @@ void Socket::receiveRun() {
                 #else
                     LOGARG_ERROR(LOGTYPE_NETWORK, "Socket error in receiveRun(): %s", strerror(errno));
                 #endif
-                // TODO: set error indicator
+
+                criticalError_ = true;
                 break;
             }
         }
@@ -162,13 +168,13 @@ void Socket::dumpBuffer(int8_t* buf, unsigned int length) {
         if (i % 8 == 0) {
             printf("\n%4u: ", i);
         }
-        printf("%x(%c) ", buf[i], buf[i]);
+        printf("%x(%c) ", (uint8_t)buf[i], buf[i]);
     }
     printf("\n");
 }
 
 bool Socket::sendAll() {
-    if (sendIndex_ == 0) {
+    if (sendIndex_ == 0 || criticalError_) {
         return true;
     }
 
@@ -188,6 +194,8 @@ bool Socket::sendAll() {
             LOGARG_ERROR(LOGTYPE_NETWORK, "Socket error in sendAll(): %s", strerror(errno));
         #endif
 
+        criticalError_ = true;
+
         return false;
     }
 
@@ -204,6 +212,10 @@ bool Socket::sendAll() {
 void Socket::writeSeed(uint32_t seed) {
     PacketWriter::write(sendBuffer_, 0x10000, sendIndex_, seed);
     LOGARG_DEBUG(LOGTYPE_NETWORK, "Index after seed: %u", sendIndex_);
+}
+
+void Socket::setUseDecompress(bool value) {
+    useDecompress_ = value;
 }
 
 }

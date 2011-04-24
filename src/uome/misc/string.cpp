@@ -11,7 +11,7 @@ UnicodeString StringConverter::fromUtf8(const char* buffer, int bufferSize) {
     UErrorCode error = U_ZERO_ERROR;
     UnicodeString ret(buffer, bufferSize, getUtf8Converter(), error);
     if (U_FAILURE(error)) {
-        ret = UnicodeString("");
+        ret = UnicodeString("##UOMEERROR"); // set indicator (yeah, don't say it...)
         LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert from utf-8 string");
     }
     return ret;
@@ -21,7 +21,7 @@ UnicodeString StringConverter::fromUnicode(const char* buffer, int bufferSize) {
     UErrorCode error = U_ZERO_ERROR;
     UnicodeString ret(buffer, bufferSize, getUnicodeConverter(), error);
     if (U_FAILURE(error)) {
-        ret = UnicodeString("");
+        ret = UnicodeString("##UOMEERROR"); // set error indicator (yeah, don't say it...)
         LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert from utf-16be string");
     }
     return ret;

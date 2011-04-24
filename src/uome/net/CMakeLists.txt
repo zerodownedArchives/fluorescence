@@ -9,6 +9,7 @@ set (NET_HPP
     socket.hpp
     packet.hpp
     packetwriter.hpp
+    packetreader.hpp
     )
 
 set (NET_CPP
@@ -20,6 +21,7 @@ set (NET_CPP
     socket.cpp
     packet.cpp
     packetwriter.cpp
+    packetreader.cpp
     )
 
 set (PACKETS_HPP
