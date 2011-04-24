@@ -16,12 +16,15 @@
 #include <world/sectormanager.hpp>
 #include <world/sector.hpp>
 
+#include <net/manager.hpp>
+
 #include <iostream>
 #include <iomanip>
 
 
-#include <data/animloader.hpp>
-#include <ui/animtextureprovider.hpp>
+
+#include <net/socket.hpp>
+#include <net/packets/loginrequest.hpp>
 
 
 namespace uome {
@@ -53,6 +56,40 @@ int Client::main(const std::vector<CL_String8>& args) {
         return 1;
     }
 
+
+    LOG_INFO(LOGTYPE_MAIN, "Initializing network");
+    if (!net::Manager::create(config_)) {
+        return 1;
+    }
+
+
+    char buf[5];
+    UnicodeString str("1234567890");
+    LOGARG_INFO(LOGTYPE_MAIN, "stringconv: %i", StringConverter::toUtf8(str, buf, 5, false));
+
+
+    net::Socket socket;
+    if (!socket.connect("localhost", 5003)) {
+        LOG_INFO(LOGTYPE_MAIN, "Unable to connect socket");
+    } else {
+        LOG_INFO(LOGTYPE_MAIN, "Socket connected");
+
+        socket.writeSeed(0);
+        LOG_INFO(LOGTYPE_MAIN, "Seed sent");
+
+        UnicodeString name("admin2");
+        UnicodeString pass("adm");
+        net::packets::LoginRequest req(name, pass);
+        socket.write(req);
+        socket.sendAll();
+    }
+
+
+    usleep(1000 * 1000);
+    socket.close();
+
+    return 1;
+
     LOG_INFO(LOGTYPE_MAIN, "Creating data loaders");
     if (!data::Manager::create(config_)) {
         LOG_DEBUG(LOGTYPE_MAIN, "Unable to intialize manager, exiting!");
@@ -68,6 +105,12 @@ int Client::main(const std::vector<CL_String8>& args) {
     if (!world::Manager::create(config_)) {
         return 1;
     }
+
+    LOG_INFO(LOGTYPE_MAIN, "Initializing network");
+    if (!net::Manager::create(config_)) {
+        return 1;
+    }
+
 
     ui::Manager* uiManager = uome::ui::Manager::getSingleton();
     boost::shared_ptr<CL_DisplayWindow> wnd = uiManager->getMainWindow();
@@ -85,12 +128,6 @@ int Client::main(const std::vector<CL_String8>& args) {
     ui::GumpMenu* testGump = ui::GumpFactory::fromXmlFile("simpletest");
     (void)testGump;
 
-    boost::shared_ptr<ui::Animation> testAnimShared = data::Manager::getAnimLoader(0)->getAnimation(58);
-    ui::Animation* testAnim = testAnimShared.get();
-    (void)testAnim;
-
-
-    //ui::AnimTextureProvider testTexPro(58);
 
     timeval lastTime;
     gettimeofday(&lastTime, NULL);
@@ -145,12 +182,6 @@ int Client::main(const std::vector<CL_String8>& args) {
         CL_KeepAlive::process();
 
         uiManager->processCloseList();
-
-        if (testAnim->isReadComplete() && testAnim->getFrame(0).texture_->isReadComplete()) {
-            CL_Draw::texture(ui::Manager::getGraphicsContext(), *(testAnim->getFrame(0).texture_->getTexture()), CL_Quadf(CL_Rect(30, 30, CL_Size(200, 200))));
-        } else {
-            LOG_DEBUG(LOGTYPE_MAIN, "tex not read complete");
-        }
 
         //CL_System::sleep(10);
     }

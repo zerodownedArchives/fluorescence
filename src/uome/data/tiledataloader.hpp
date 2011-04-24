@@ -14,7 +14,7 @@ namespace data {
 struct LandTileInfo {
     uint32_t flags_;
     uint16_t textureId_;
-    String name_;
+    UnicodeString name_;
 
     UOME_FLAG_GETTER(background,    0x00000001)
     UOME_FLAG_GETTER(weapon,        0x00000002)
@@ -66,7 +66,7 @@ struct StaticTileInfo {
     uint8_t unknown4_;
     uint8_t unknown5_;
     uint8_t height_;
-    String name_;
+    UnicodeString name_;
 
     UOME_FLAG_GETTER(background,    0x00000001)
     UOME_FLAG_GETTER(weapon,        0x00000002)

@@ -10,14 +10,17 @@ extern "C" {
 
 namespace uome {
 
-typedef UnicodeString String;
-
 class StringConverter {
 public:
-    static String fromUtf8(const char* buffer, int bufferSize);
-    static String fromUnicode(const char* buffer, int bufferSize);
-    static int toUtf8(const String& str, char* buffer, int bufferSize, bool nullTerminated);
-    static int toUnicode(const String& str, char* buffer, int bufferSize, bool nullTerminated);
+    static UnicodeString fromUtf8(const char* buffer, int bufferSize);
+    static UnicodeString fromUnicode(const char* buffer, int bufferSize);
+    static int toUtf8(const UnicodeString& str, char* buffer, int bufferSize, bool nullTerminated);
+    static int toUnicode(const UnicodeString& str, char* buffer, int bufferSize, bool nullTerminated);
+
+    static UnicodeString fromUtf8(const int8_t* buffer, int bufferSize);
+    static UnicodeString fromUnicode(const int8_t* buffer, int bufferSize);
+    static int toUtf8(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated);
+    static int toUnicode(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated);
 
 private:
     static UConverter* getUtf8Converter();

@@ -19,7 +19,7 @@ struct Hue {
     uint32_t colorTable_[32];
     uint16_t tableStart;
     uint16_t tableEnd;
-    String name_;
+    UnicodeString name_;
 };
 
 class HuesLoader {

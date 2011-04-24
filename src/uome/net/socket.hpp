@@ -21,6 +21,15 @@ public:
     bool connect(const std::string& host, unsigned short port);
     void close();
 
+    template<class P>
+    bool write(const P& packet) {
+        return packet.write(sendBuffer_, 0x10000, sendIndex_);
+    }
+
+    void writeSeed(uint32_t seed);
+
+    bool sendAll();
+
 private:
     int socketFd_;
 
@@ -28,13 +37,10 @@ private:
 
     int8_t rawBuffer_[0x4000];
 
-    int8_t decryptedBuffer_[0x4000];
-    unsigned int decryptedIndex_;
-
     int8_t decompressedBuffer_[0x10000];
     unsigned int decompressedIndex_;
 
-    int8_t sendBuffer[0x10000];
+    int8_t sendBuffer_[0x10000];
     unsigned int sendIndex_;
 
     boost::shared_ptr<Encryption> encryption_;
@@ -43,6 +49,9 @@ private:
     bool running_;
     boost::thread receiveThread_;
     void receiveRun();
+
+
+    void dumpBuffer(int8_t* buffer, unsigned int length);
 };
 
 }

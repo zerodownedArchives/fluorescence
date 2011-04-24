@@ -126,7 +126,7 @@ Decompress::~Decompress() {
     delete huffmanTree_;
 }
 
-void Decompress::huffmanDecompress(int8_t* dst, unsigned int dstLen, uint8_t* src, unsigned int srcLen) {
+unsigned int Decompress::huffmanDecompress(int8_t* dst, unsigned int dstLen, int8_t* src, unsigned int srcLen) {
     unsigned int readBits = 0;
     unsigned int srcIndex = 0;
     unsigned int dstIndex = 0;
@@ -138,7 +138,7 @@ void Decompress::huffmanDecompress(int8_t* dst, unsigned int dstLen, uint8_t* sr
 
     BinaryTree* curTree = huffmanTree_;
 
-    while (srcIndex < srcLen) {
+    while (srcIndex < srcLen && dstIndex < dstLen) {
         if (readBits <= 0) {
             readValue = usrc[srcIndex];
             srcIndex++;
@@ -164,6 +164,8 @@ void Decompress::huffmanDecompress(int8_t* dst, unsigned int dstLen, uint8_t* sr
             }
         } while (readBits > 0);
     }
+
+    return dstIndex;
 }
 
 

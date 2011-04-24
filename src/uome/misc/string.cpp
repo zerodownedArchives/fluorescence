@@ -7,27 +7,27 @@
 
 namespace uome {
 
-String StringConverter::fromUtf8(const char* buffer, int bufferSize) {
+UnicodeString StringConverter::fromUtf8(const char* buffer, int bufferSize) {
     UErrorCode error = U_ZERO_ERROR;
-    String ret(buffer, bufferSize, getUtf8Converter(), error);
+    UnicodeString ret(buffer, bufferSize, getUtf8Converter(), error);
     if (U_FAILURE(error)) {
-        ret = String("");
+        ret = UnicodeString("");
         LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert from utf-8 string");
     }
     return ret;
 }
 
-String StringConverter::fromUnicode(const char* buffer, int bufferSize) {
+UnicodeString StringConverter::fromUnicode(const char* buffer, int bufferSize) {
     UErrorCode error = U_ZERO_ERROR;
-    String ret(buffer, bufferSize, getUnicodeConverter(), error);
+    UnicodeString ret(buffer, bufferSize, getUnicodeConverter(), error);
     if (U_FAILURE(error)) {
-        ret = String("");
+        ret = UnicodeString("");
         LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert from utf-16be string");
     }
     return ret;
 }
 
-int StringConverter::toUtf8(const String& str, char* buffer, int bufferSize, bool nullTerminated) {
+int StringConverter::toUtf8(const UnicodeString& str, char* buffer, int bufferSize, bool nullTerminated) {
     UErrorCode error = U_ZERO_ERROR;
     int ret = str.extract(buffer, bufferSize, getUtf8Converter(), error);
     if (U_FAILURE(error)) {
@@ -48,7 +48,7 @@ int StringConverter::toUtf8(const String& str, char* buffer, int bufferSize, boo
     }
 }
 
-int StringConverter::toUnicode(const String& str, char* buffer, int bufferSize, bool nullTerminated) {
+int StringConverter::toUnicode(const UnicodeString& str, char* buffer, int bufferSize, bool nullTerminated) {
     UErrorCode error = U_ZERO_ERROR;
     int ret = str.extract(buffer, bufferSize, getUnicodeConverter(), error);
     if (U_FAILURE(error)) {
@@ -94,6 +94,22 @@ UConverter* StringConverter::getUnicodeConverter() {
     }
 
     return conv;
+}
+
+UnicodeString StringConverter::fromUtf8(const int8_t* buffer, int bufferSize) {
+    return fromUtf8(reinterpret_cast<const char*>(buffer), bufferSize);
+}
+
+UnicodeString StringConverter::fromUnicode(const int8_t* buffer, int bufferSize) {
+    return fromUnicode(reinterpret_cast<const char*>(buffer), bufferSize);
+}
+
+int StringConverter::toUtf8(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated) {
+    return toUtf8(str, reinterpret_cast<char*>(buffer), bufferSize, nullTerminated);
+}
+
+int StringConverter::toUnicode(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated) {
+    return toUnicode(str, reinterpret_cast<char*>(buffer), bufferSize, nullTerminated);
 }
 
 }

@@ -29,7 +29,7 @@ public:
     Decompress();
     ~Decompress();
 
-    void huffmanDecompress(int8_t* dst, unsigned int dstLen, uint8_t* src, unsigned int srcLen);
+    unsigned int huffmanDecompress(int8_t* dst, unsigned int dstLen, int8_t* src, unsigned int srcLen);
 
 private:
     BinaryTree* huffmanTree_;
