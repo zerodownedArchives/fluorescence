@@ -228,6 +228,7 @@ void Manager::init(Config& config) {
 }
 
 Manager::~Manager() {
+    LOG_INFO(LOGTYPE_DATA, "Manager shutdown");
 }
 
 boost::filesystem::path Manager::getPathFor(Config& config, const char* configValue) {

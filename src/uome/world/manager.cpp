@@ -44,6 +44,7 @@ Manager::Manager(const Config& config) : currentMapId_(0) {
 }
 
 Manager::~Manager() {
+    LOG_INFO(LOGTYPE_WORLD, "Manager shutdown");
 }
 
 boost::shared_ptr<SectorManager> Manager::getSectorManager() {

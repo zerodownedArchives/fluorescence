@@ -101,25 +101,23 @@ const char* Logger::getTypeText(unsigned int type) {
     case LOGTYPE_MAIN:
         return "MAIN: ";
     case LOGTYPE_INPUT:
-        return "INPUT: ";
+        return "INPT: ";
     case LOGTYPE_NETWORK:
-        return "NET: ";
+        return "NET:  ";
     case LOGTYPE_RENDERER:
         return "RNDR: ";
     case LOGTYPE_DATA:
         return "DATA: ";
     case LOGTYPE_UI:
-        return "UI: ";
+        return "UI:   ";
     case LOGTYPE_SOUND:
-        return "SOUND: ";
+        return "SND:  ";
     case LOGTYPE_WORLD:
-        return "WORLD: ";
-    case LOGTYPE_PRERENDERER:
-        return "PRNDR: ";
+        return "WRLD: ";
     case LOGTYPE_CONFIG:
         return "CONF: ";
     case LOGTYPE_PYTHON:
-        return "PY: ";
+        return "PY:   ";
     case LOGTYPE_UNKNOWN:
     default:
         return "UOME: ";

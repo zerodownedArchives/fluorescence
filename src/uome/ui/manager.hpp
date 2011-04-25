@@ -31,10 +31,9 @@ public:
 
     bool setShardConfig(Config& config);
 
-    bool shouldExit();
+    void step();
 
-    void processMessages();
-    void drawWindow();
+    bool shouldExit();
 
     static CL_GraphicContext& getGraphicsContext();
     static boost::shared_ptr<CL_DisplayWindow> getMainWindow();
@@ -47,7 +46,6 @@ public:
     static boost::shared_ptr<DoubleClickHandler> getDoubleClickHandler();
 
     void closeGumpMenu(GumpMenu* menu);
-    void processCloseList();
 
 private:
     static Manager* singleton_;
@@ -75,6 +73,7 @@ private:
     boost::shared_ptr<DoubleClickHandler> doubleClickHandler_;
 
     std::list<GumpMenu*> closeList_;
+    void processCloseList();
 
     CL_Slot slotCloseWindow;
 };

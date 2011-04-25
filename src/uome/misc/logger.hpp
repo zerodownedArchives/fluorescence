@@ -79,7 +79,6 @@ enum LOGTYPE {
     LOGTYPE_SOUND       = 1 << 7,
     LOGTYPE_WORLD       = 1 << 8,
 
-    LOGTYPE_PRERENDERER = 1 << 9,
     LOGTYPE_CONFIG      = 1 << 10,
     LOGTYPE_PYTHON      = 1 << 11,
 

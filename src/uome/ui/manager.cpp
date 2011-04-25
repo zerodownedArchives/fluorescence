@@ -96,6 +96,7 @@ bool Manager::setShardConfig(Config& config) {
 }
 
 Manager::~Manager() {
+    LOG_INFO(LOGTYPE_UI, "Manager shutdown");
     if (renderQueue_) {
         renderQueue_->clear();
     }
@@ -105,14 +106,16 @@ bool Manager::shouldExit() {
     return guiManager_->get_exit_flag();
 }
 
-void Manager::processMessages() {
+void Manager::step() {
     windowManager_->process();
-}
 
-void Manager::drawWindow() {
     getGraphicsContext().clear();
     windowManager_->draw_windows(getGraphicsContext());
     mainWindow_->flip();
+
+    CL_KeepAlive::process();
+
+    processCloseList();
 }
 
 boost::shared_ptr<CL_DisplayWindow> Manager::getMainWindow() {

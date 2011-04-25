@@ -22,6 +22,7 @@ private:
     Manager(const Config& config);
     Manager(const Manager& copy) { }
     Manager& operator=(const Manager& copy) { return *this; }
+    ~Manager();
 
 };
 

@@ -41,6 +41,10 @@ void Manager::destroy() {
 Manager::Manager(const Config& config) {
 }
 
+Manager::~Manager() {
+    LOG_INFO(LOGTYPE_NETWORK, "Manager shutdown");
+}
+
 boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
     boost::shared_ptr<Packet> ret;
 

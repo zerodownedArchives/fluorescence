@@ -29,7 +29,7 @@
 
 namespace uome {
 
-Client::Client() : state_(STATE_SHARD_SELECTION) {
+Client::Client() : state_(STATE_SHARD_SELECTION), requestedState_(STATE_SHARD_SELECTION) {
 }
 
 Client* Client::singleton_ = NULL;
@@ -48,28 +48,65 @@ Config* Client::getConfig() {
     return &config_;
 }
 
-std::string Client::chooseShard() {
-    // if we already have a command line argument, take it
-    if (config_.count("shard")) {
-        return config_["shard"].as<std::string>();
-    }
-    // otherwise, show dialog
+bool Client::openChooseShard() {
 
+    // show shard selection dialog
     LOG_INFO(LOGTYPE_MAIN, "Selecting shard through user interface");
+
     std::string shard("localhost");
     config_.set("shard", shard);
 
 
 
-    return "localhost";
+    return true;
 }
 
 void Client::shutdown() {
-    setState(STATE_LOGOUT);
+    setState(state_ + 1);
 }
 
 void Client::setState(unsigned int value) {
-    state_ = value;
+    requestedState_ = value;
+}
+
+bool Client::handleStateChange() {
+    // end old state
+    switch (state_) {
+    case STATE_SHARD_SELECTION:
+        if (requestedState_ != STATE_SHUTDOWN) {
+            std::string selectedShard = config_["shard"].as<std::string>();
+            LOGARG_INFO(LOGTYPE_MAIN, "Selected shard: %s", selectedShard.c_str());
+
+            if (!initFull(selectedShard)) {
+                return false;
+            }
+        }
+        break;
+    }
+
+
+    // start new state
+    switch(requestedState_) {
+    case STATE_LOGIN:
+        ui::GumpFactory::fromXmlFile("simpletest");
+        break;
+
+    case STATE_PLAYING:
+        ui::Manager* uiManager = uome::ui::Manager::getSingleton();
+        boost::shared_ptr<CL_DisplayWindow> wnd = uiManager->getMainWindow();
+
+        CL_GUITopLevelDescription desc(CL_Rect(10, 10, CL_Size(810, 610)), true);
+        desc.set_decorations(false);
+
+        ui::GumpMenu* ingameMenu = new ui::GumpMenu(desc);
+        ingameMenu->setClosable(false);
+
+        ui::IngameView* ingameView = new ui::IngameView(ingameMenu, CL_Rect(5, 5, CL_Size(800, 600)));
+        ingameView->setCenterTiles(176 * 8, 202 * 8);
+        break;
+    }
+
+    return true;
 }
 
 void Client::cleanUp() {
@@ -123,106 +160,6 @@ bool Client::initFull(const std::string& selectedShard) {
     return true;
 }
 
-int Client::main(const std::vector<CL_String8>& args) {
-    LOG_INFO(LOGTYPE_MAIN, "Starting client");
-
-    if (!initBase(args)) {
-        cleanUp();
-        return 1;
-    }
-
-    std::string selectedShard = chooseShard();
-    LOGARG_INFO(LOGTYPE_MAIN, "Selected shard: %s", selectedShard.c_str());
-
-    if (!initFull(selectedShard)) {
-        cleanUp();
-        return 1;
-    }
-
-
-    //net::Socket socket;
-    //if (!socket.connect("localhost", 5003)) {
-        //LOG_INFO(LOGTYPE_MAIN, "Unable to connect socket");
-    //} else {
-        //LOG_INFO(LOGTYPE_MAIN, "Socket connected");
-
-        //socket.writeSeed(0);
-        //LOG_INFO(LOGTYPE_MAIN, "Seed sent");
-
-        //UnicodeString name("admin2");
-        //UnicodeString pass("adm");
-        //net::packets::LoginRequest req(name, pass);
-        //socket.write(req);
-        //socket.sendAll();
-    //}
-
-
-    //usleep(1000 * 1000);
-    //socket.close();
-
-
-    ui::Manager* uiManager = uome::ui::Manager::getSingleton();
-    boost::shared_ptr<CL_DisplayWindow> wnd = uiManager->getMainWindow();
-
-    CL_GUITopLevelDescription desc(CL_Rect(10, 10, CL_Size(810, 610)), true);
-    desc.set_decorations(false);
-
-    ui::GumpMenu* ingameMenu = new ui::GumpMenu(desc);
-    ingameMenu->setClosable(false);
-
-    ui::IngameView* ingameView = new ui::IngameView(ingameMenu, CL_Rect(5, 5, CL_Size(800, 600)));
-    ingameView->setCenterTiles(176 * 8, 202 * 8);
-
-
-    ui::GumpMenu* testGump = ui::GumpFactory::fromXmlFile("simpletest");
-    (void)testGump;
-
-
-
-    timeval lastTime;
-    gettimeofday(&lastTime, NULL);
-
-    // elapsed milliseconds since the last cycle
-    unsigned int elapsedMillis;
-
-    while (state_ != STATE_LOGOUT) {
-        timeval curTime;
-        gettimeofday(&curTime, NULL);
-
-        elapsedMillis = (curTime.tv_sec - lastTime.tv_sec) * 1000;
-        elapsedMillis += (curTime.tv_usec - lastTime.tv_usec) / 1000;
-
-        lastTime = curTime;
-
-        switch(state_) {
-        case STATE_SHARD_SELECTION:
-            break;
-        case STATE_LOGIN:
-            break;
-        case STATE_PLAYING:
-            calculateFps(elapsedMillis);
-            doStatePlaying(elapsedMillis);
-            break;
-        }
-
-        // call renderer
-        uiManager->processMessages();
-        uiManager->drawWindow();
-
-        CL_KeepAlive::process();
-
-        uiManager->processCloseList();
-
-        if (state_ != STATE_PLAYING) {
-            CL_System::sleep(10);
-        }
-    }
-
-    cleanUp();
-
-    LOG_INFO(LOGTYPE_MAIN, "end of main");
-    return 0;
-}
 
 float Client::calculateFps(unsigned int elapsedMillis) {
     // fps are calculated every 100 frames => sum time
@@ -250,8 +187,93 @@ float Client::calculateFps(unsigned int elapsedMillis) {
     return fps;
 }
 
+int Client::main(const std::vector<CL_String8>& args) {
+    LOG_INFO(LOGTYPE_MAIN, "Starting client");
+
+    if (!initBase(args)) {
+        cleanUp();
+        return 1;
+    }
+
+    std::string selectedShard;
+    // if we already have a command line argument, take it
+    if (config_.count("shard")) {
+        setState(STATE_LOGIN);
+    } else {
+        openChooseShard();
+    }
+
+    //net::Socket socket;
+    //if (!socket.connect("localhost", 5003)) {
+        //LOG_INFO(LOGTYPE_MAIN, "Unable to connect socket");
+    //} else {
+        //LOG_INFO(LOGTYPE_MAIN, "Socket connected");
+
+        //socket.writeSeed(0);
+        //LOG_INFO(LOGTYPE_MAIN, "Seed sent");
+
+        //UnicodeString name("admin2");
+        //UnicodeString pass("adm");
+        //net::packets::LoginRequest req(name, pass);
+        //socket.write(req);
+        //socket.sendAll();
+    //}
 
 
+    //usleep(1000 * 1000);
+    //socket.close();
+
+
+    timeval lastTime;
+    gettimeofday(&lastTime, NULL);
+
+    // elapsed milliseconds since the last cycle
+    unsigned int elapsedMillis;
+
+    ui::Manager* uiManager = ui::Manager::getSingleton();
+
+    while (state_ != STATE_SHUTDOWN) {
+        timeval curTime;
+        gettimeofday(&curTime, NULL);
+
+        elapsedMillis = (curTime.tv_sec - lastTime.tv_sec) * 1000;
+        elapsedMillis += (curTime.tv_usec - lastTime.tv_usec) / 1000;
+
+        lastTime = curTime;
+
+        // check for state change
+        if (requestedState_ != state_) {
+            if (!handleStateChange()) {
+                setState(STATE_SHUTDOWN);
+                continue;
+            }
+            state_ = requestedState_;
+        }
+
+        switch(state_) {
+        case STATE_SHARD_SELECTION:
+            break;
+        case STATE_LOGIN:
+            break;
+        case STATE_PLAYING:
+            calculateFps(elapsedMillis);
+            doStatePlaying(elapsedMillis);
+            break;
+        }
+
+        // call renderer
+        uiManager->step();
+
+        if (state_ != STATE_PLAYING) {
+            CL_System::sleep(10);
+        }
+    }
+
+    cleanUp();
+
+    LOG_INFO(LOGTYPE_MAIN, "end of main");
+    return 0;
+}
 
 void Client::doStatePlaying(unsigned int elapsedMillis) {
     // adding sectors has to be done before sorting
