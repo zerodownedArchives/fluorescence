@@ -1,22 +1,21 @@
 
 set(MISC_HPP
-    logger.hpp
-    string.hpp
-    config.hpp
-    exception.hpp
+    misc/logger.hpp
+    misc/string.hpp
+    misc/config.hpp
+    misc/exception.hpp
     )
 
 set(MISC_CPP
-    logger.cpp
-    string.cpp
-    config.cpp
+    misc/logger.cpp
+    misc/string.cpp
+    misc/config.cpp
     )
 
 set(PUGIXML
-    pugixml.hpp
-    pugiconfig.hpp
-    pugixml.cpp)
+    misc/pugixml.hpp
+    misc/pugiconfig.hpp
+    misc/pugixml.cpp)
 
-add_library(uomemisc STATIC
-    ${MISC_HPP} ${MISC_CPP} ${PUGIXML} )
+set(MISC_FILES ${MISC_HPP} ${MISC_CPP} ${PUGIXML} PARENT_SCOPE)
 

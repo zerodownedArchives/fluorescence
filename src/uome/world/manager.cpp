@@ -18,7 +18,7 @@ Manager* Manager::getSingleton() {
     return singleton_;
 }
 
-bool Manager::create(const boost::program_options::variables_map& config) {
+bool Manager::create(const Config& config) {
     if (!singleton_) {
         try {
             singleton_ = new Manager(config);
@@ -38,7 +38,7 @@ void Manager::destroy() {
     }
 }
 
-Manager::Manager(const boost::program_options::variables_map& config) : currentMapId_(0) {
+Manager::Manager(const Config& config) : currentMapId_(0) {
     sectorManager_.reset(new SectorManager(config));
     lightManager_.reset(new LightManager());
 }

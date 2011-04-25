@@ -1,49 +1,49 @@
 
 set (DATA_HPP
-    fullfileloader.hpp
-    ondemandreadable.hpp
-    ondemandfileloader.hpp
-    manager.hpp
-    weakptrcache.hpp
-    indexedondemandfileloader.hpp
-    fixedsizeondemandfileloader.hpp
-    util.hpp
+    data/fullfileloader.hpp
+    data/ondemandreadable.hpp
+    data/ondemandfileloader.hpp
+    data/manager.hpp
+    data/weakptrcache.hpp
+    data/indexedondemandfileloader.hpp
+    data/fixedsizeondemandfileloader.hpp
+    data/util.hpp
     )
 
 set (DATA_CPP
-    fullfileloader.cpp
-    manager.cpp
+    data/fullfileloader.cpp
+    data/manager.cpp
     )
 
 set(DATA_LOADERS_HPP
-    indexloader.hpp
-    artloader.hpp
-    tiledataloader.hpp
-    huesloader.hpp
-    gumpartloader.hpp
-    maploader.hpp
-    staticsloader.hpp
-    maptexloader.hpp
-    animdataloader.hpp
-    animloader.hpp
+    data/indexloader.hpp
+    data/artloader.hpp
+    data/tiledataloader.hpp
+    data/huesloader.hpp
+    data/gumpartloader.hpp
+    data/maploader.hpp
+    data/staticsloader.hpp
+    data/maptexloader.hpp
+    data/animdataloader.hpp
+    data/animloader.hpp
     )
 
 set(DATA_LOADERS_CPP
-    indexloader.cpp
-    artloader.cpp
-    tiledataloader.cpp
-    huesloader.cpp
-    gumpartloader.cpp
-    maploader.cpp
-    staticsloader.cpp
-    maptexloader.cpp
-    animdataloader.cpp
-    animloader.cpp
+    data/indexloader.cpp
+    data/artloader.cpp
+    data/tiledataloader.cpp
+    data/huesloader.cpp
+    data/gumpartloader.cpp
+    data/maploader.cpp
+    data/staticsloader.cpp
+    data/maptexloader.cpp
+    data/animdataloader.cpp
+    data/animloader.cpp
     )
 
-add_library(uomedata STATIC
+set (DATA_FILES
     ${DATA_HPP} ${DATA_CPP}
-    ${DATA_LOADERS_HPP} ${DATA_LOADERS_CPP})
+    ${DATA_LOADERS_HPP} ${DATA_LOADERS_CPP} PARENT_SCOPE)
 
-add_subdirectory(test)
+#add_subdirectory(test)
 

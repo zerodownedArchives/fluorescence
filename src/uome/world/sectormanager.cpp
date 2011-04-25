@@ -17,7 +17,7 @@
 
 namespace uome {
 namespace world {
-SectorManager::SectorManager(const boost::program_options::variables_map& config) :
+SectorManager::SectorManager(const Config& config) :
         updateCounter_(0) {
     sectorAddFrequency_ = 60;
     sectorAddDistanceCache_ = 2;

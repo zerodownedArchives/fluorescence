@@ -10,7 +10,7 @@ namespace net {
 
 Manager* Manager::singleton_ = 0;
 
-bool Manager::create(const boost::program_options::variables_map& config) {
+bool Manager::create(const Config& config) {
     if (!singleton_) {
         try {
             singleton_ = new Manager(config);
@@ -31,7 +31,14 @@ Manager* Manager::getSingleton() {
     return singleton_;
 }
 
-Manager::Manager(const boost::program_options::variables_map& config) {
+void Manager::destroy() {
+    if (singleton_) {
+        delete singleton_;
+        singleton_ = NULL;
+    }
+}
+
+Manager::Manager(const Config& config) {
 }
 
 boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {

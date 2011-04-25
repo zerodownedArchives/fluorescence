@@ -3,12 +3,13 @@
 
 #include <misc/exception.hpp>
 
-#include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <ui/textureprovider.hpp>
 #include <ui/animation.hpp>
+
+#include <misc/config.hpp>
 
 namespace uome {
 namespace data {
@@ -25,7 +26,7 @@ class AnimLoader;
 
 class Manager {
 public:
-    static bool create(const boost::program_options::variables_map& config);
+    static bool create(Config& config);
     static void destroy();
     static Manager* getSingleton();
     ~Manager();
@@ -48,11 +49,11 @@ private:
     static Manager* singleton_;
 
     Manager();
-    void init(const boost::program_options::variables_map& config);
+    void init(Config& config);
     Manager(const Manager& copy) { }
     Manager& operator=(const Manager& copy) { return *this; }
 
-    boost::filesystem::path getPathFor(const boost::program_options::variables_map& config, const char* configValue);
+    boost::filesystem::path getPathFor(Config& config, const char* configValue);
 
     boost::shared_ptr<ArtLoader> artLoader_;
     boost::shared_ptr<TileDataLoader> tileDataLoader_;

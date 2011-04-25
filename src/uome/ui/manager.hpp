@@ -12,6 +12,8 @@
 
 #include <list>
 
+#include <misc/config.hpp>
+
 namespace uome {
 namespace ui {
 
@@ -23,9 +25,11 @@ class GumpMenu;
 
 class Manager {
 public:
-    static bool create(const boost::program_options::variables_map& config);
+    static bool create();
     static void destroy();
     static Manager* getSingleton();
+
+    bool setShardConfig(Config& config);
 
     bool shouldExit();
 
@@ -48,7 +52,7 @@ public:
 private:
     static Manager* singleton_;
 
-    Manager(const boost::program_options::variables_map& config);
+    Manager();
     ~Manager();
     Manager(const Manager& copy) { }
     void operator=(const Manager& copy) { }

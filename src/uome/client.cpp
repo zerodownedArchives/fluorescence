@@ -44,85 +44,114 @@ int Client::sMain(const std::vector<CL_String8>& args) {
     return ret;
 }
 
-const boost::program_options::variables_map& Client::getConfig() const {
-    return config_;
+Config* Client::getConfig() {
+    return &config_;
+}
+
+std::string Client::chooseShard() {
+    // if we already have a command line argument, take it
+    if (config_.count("shard")) {
+        return config_["shard"].as<std::string>();
+    }
+    // otherwise, show dialog
+
+    std::string shard("localhost");
+    config_.set("shard", shard);
+
+
+
+    return "localhost";
+}
+
+void Client::cleanUp() {
+    ui::Manager::destroy();
+    world::Manager::destroy();
+    data::Manager::destroy();
+    net::Manager::destroy();
 }
 
 int Client::main(const std::vector<CL_String8>& args) {
     LOG_INFO(LOGTYPE_MAIN, "Starting client");
 
-    LOG_INFO(LOGTYPE_MAIN, "Parsing configuration");
-    if (!Config::getVariablesMap(args, config_)) {
-        return 1;
-    }
-
-
-    LOG_INFO(LOGTYPE_MAIN, "Initializing network");
-    if (!net::Manager::create(config_)) {
-        return 1;
-    }
-
-
-    char buf[5];
-    UnicodeString str("1234567890");
-    LOGARG_INFO(LOGTYPE_MAIN, "stringconv: %i", StringConverter::toUtf8(str, buf, 5, false));
-
-
-    net::Socket socket;
-    if (!socket.connect("localhost", 5003)) {
-        LOG_INFO(LOGTYPE_MAIN, "Unable to connect socket");
-    } else {
-        LOG_INFO(LOGTYPE_MAIN, "Socket connected");
-
-        socket.writeSeed(0);
-        LOG_INFO(LOGTYPE_MAIN, "Seed sent");
-
-        UnicodeString name("admin2");
-        UnicodeString pass("adm");
-        net::packets::LoginRequest req(name, pass);
-        socket.write(req);
-        socket.sendAll();
-    }
-
-
-    usleep(1000 * 1000);
-    socket.close();
-
-    return 1;
-
-    LOG_INFO(LOGTYPE_MAIN, "Creating data loaders");
-    if (!data::Manager::create(config_)) {
-        LOG_DEBUG(LOGTYPE_MAIN, "Unable to intialize manager, exiting!");
+    LOG_INFO(LOGTYPE_MAIN, "Parsing command line");
+    if (!config_.parseCommandLine(args)) {
         return 1;
     }
 
     LOG_INFO(LOGTYPE_MAIN, "Initializing ui");
-    if (!ui::Manager::create(config_)) {
+    if (!ui::Manager::create()) {
+        cleanUp();
+        return 1;
+    }
+
+    LOG_INFO(LOGTYPE_MAIN, "Selecting shard");
+    std::string selectedShard = chooseShard();
+    LOGARG_INFO(LOGTYPE_MAIN, "Selected shard: %s", selectedShard.c_str());
+
+    LOG_INFO(LOGTYPE_MAIN, "Parsing shard config");
+    if (!config_.parseShardConfig(selectedShard)) {
+        return 1;
+    }
+
+    LOG_INFO(LOGTYPE_MAIN, "Creating data loaders");
+    if (!data::Manager::create(config_)) {
+        cleanUp();
+        return 1;
+    }
+
+    LOG_INFO(LOGTYPE_MAIN, "Setting up ui");
+    if (!ui::Manager::getSingleton()->setShardConfig(config_)) {
+        cleanUp();
         return 1;
     }
 
     LOG_INFO(LOGTYPE_MAIN, "Initializing world");
     if (!world::Manager::create(config_)) {
+        cleanUp();
         return 1;
     }
 
     LOG_INFO(LOGTYPE_MAIN, "Initializing network");
     if (!net::Manager::create(config_)) {
+        cleanUp();
         return 1;
     }
+
+
+
+    //net::Socket socket;
+    //if (!socket.connect("localhost", 5003)) {
+        //LOG_INFO(LOGTYPE_MAIN, "Unable to connect socket");
+    //} else {
+        //LOG_INFO(LOGTYPE_MAIN, "Socket connected");
+
+        //socket.writeSeed(0);
+        //LOG_INFO(LOGTYPE_MAIN, "Seed sent");
+
+        //UnicodeString name("admin2");
+        //UnicodeString pass("adm");
+        //net::packets::LoginRequest req(name, pass);
+        //socket.write(req);
+        //socket.sendAll();
+    //}
+
+
+    //usleep(1000 * 1000);
+    //socket.close();
+
 
 
     ui::Manager* uiManager = uome::ui::Manager::getSingleton();
     boost::shared_ptr<CL_DisplayWindow> wnd = uiManager->getMainWindow();
 
-    CL_GUITopLevelDescription desc(CL_Rect(10, 10, CL_Size(810, 610)), true);
-    desc.set_decorations(false);
+    //CL_GUITopLevelDescription desc(CL_Rect(10, 10, CL_Size(810, 610)), true);
+    //desc.set_decorations(false);
 
-    ui::GumpMenu* ingameMenu = new ui::GumpMenu(desc);
-    ingameMenu->setClosable(false);
+    //ui::GumpMenu* ingameMenu = new ui::GumpMenu(desc);
+    //ingameMenu->setClosable(false);
 
-    ui::IngameView* ingameView = new ui::IngameView(ingameMenu, CL_Rect(5, 5, CL_Size(800, 600)));
-    ingameView->setCenterTiles(176 * 8, 202 * 8);
+    //ui::IngameView* ingameView = new ui::IngameView(ingameMenu, CL_Rect(5, 5, CL_Size(800, 600)));
+    //ingameView->setCenterTiles(176 * 8, 202 * 8);
 
 
     ui::GumpMenu* testGump = ui::GumpFactory::fromXmlFile("simpletest");
@@ -186,10 +215,8 @@ int Client::main(const std::vector<CL_String8>& args) {
         //CL_System::sleep(10);
     }
 
-    // clean up
-    ui::Manager::destroy();
-    world::Manager::destroy();
-    data::Manager::destroy();
+
+    cleanUp();
 
     LOG_INFO(LOGTYPE_MAIN, "end of main");
 

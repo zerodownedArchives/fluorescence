@@ -4,7 +4,7 @@
 namespace uome {
 namespace ui {
 
-CursorManager::CursorManager(const boost::program_options::variables_map& config, boost::shared_ptr<CL_DisplayWindow> window) :
+CursorManager::CursorManager(Config& config, boost::shared_ptr<CL_DisplayWindow> window) :
         warMode_(false) {
 
     unsigned int artIdStart = config["ui.cursor-artid-start"].as<unsigned int>();

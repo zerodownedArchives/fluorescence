@@ -1,9 +1,10 @@
 #ifndef UOME_UI_DOUBLECLICKHANDLER_HPP
 #define UOME_UI_DOUBLECLICKHANDLER_HPP
 
-#include <boost/program_options/variables_map.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
+
+#include <misc/config.hpp>
 
 namespace boost {
     class thread;
@@ -27,7 +28,7 @@ namespace ui {
  */
 class DoubleClickHandler {
 public:
-    DoubleClickHandler(const boost::program_options::variables_map& config);
+    DoubleClickHandler(Config& config);
     ~DoubleClickHandler();
 
     void start();

@@ -10,7 +10,7 @@
 namespace uome {
 namespace ui {
 
-DoubleClickHandler::DoubleClickHandler(const boost::program_options::variables_map& config) : running_(true), sema_(0) {
+DoubleClickHandler::DoubleClickHandler(Config& config) : running_(true), sema_(0) {
     timeoutMillis_ = config["ui.doubleclick-timeout-ms"].as<unsigned int>();
 }
 

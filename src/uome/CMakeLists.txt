@@ -14,5 +14,5 @@ set(CLIENT_CPP
     main.cpp
     )
 
-add_executable(client ${CLIENT_HPP} ${CLIENT_CPP})
+add_executable(client ${DATA_FILES} ${MISC_FILES} ${NET_FILES} ${UI_FILES} ${WORLD_FILES}  ${CLIENT_HPP} ${CLIENT_CPP} )
 target_link_libraries(client ${UOME_LIBRARIES})

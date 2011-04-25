@@ -1,28 +1,28 @@
 
 set (WORLD_HPP
-    manager.hpp
-    ingameobject.hpp
-    map.hpp
-    statics.hpp
-    sector.hpp
-    sectormanager.hpp
-    lightmanager.hpp
-    serverobject.hpp
-    mobile.hpp
+    world/manager.hpp
+    world/ingameobject.hpp
+    world/map.hpp
+    world/statics.hpp
+    world/sector.hpp
+    world/sectormanager.hpp
+    world/lightmanager.hpp
+    world/serverobject.hpp
+    world/mobile.hpp
     )
 
 set (WORLD_CPP
-    manager.cpp
-    ingameobject.cpp
-    map.cpp
-    statics.cpp
-    sector.cpp
-    sectormanager.cpp
-    lightmanager.cpp
-    serverobject.cpp
-    mobile.cpp
+    world/manager.cpp
+    world/ingameobject.cpp
+    world/map.cpp
+    world/statics.cpp
+    world/sector.cpp
+    world/sectormanager.cpp
+    world/lightmanager.cpp
+    world/serverobject.cpp
+    world/mobile.cpp
     )
 
-add_library(uomeworld STATIC ${WORLD_HPP} ${WORLD_CPP})
+set(WORLD_FILES ${WORLD_HPP} ${WORLD_CPP} PARENT_SCOPE)
 
 #add_subdirectory(test)

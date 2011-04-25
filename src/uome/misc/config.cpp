@@ -4,31 +4,26 @@
 #include <iostream>
 #include <fstream>
 
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
+
 #include "logger.hpp"
 
 
 namespace uome {
 
-bool Config::getVariablesMap(const std::vector<CL_String8>& args, boost::program_options::variables_map& map) {
-
-    // transform vector to default argc, argv
-    int argc = args.size();
-    char* argv[argc];
-    for (int i = 0; i < argc; ++i) {
-        argv[i] = const_cast<char*>(args[i].c_str());
-    }
-
+Config::Config() : consoleDesc_("Console options"), filesDesc_("Files options"), uiDesc_("User interface options") {
     namespace po = boost::program_options;
-    po::options_description desc("Console options");
-    po::options_description filesDesc("Files options");
 
-    desc.add_options()
+    consoleDesc_.add_options()
     ("help", "Receive this message")
-    ("configfile", po::value<std::string>()->default_value(UOME_DEFAULT_CONFIG_FILE_NAME), "UO:ME config file")
+    ("help-files", "Receive file-related parameter informations")
+    ("help-ui", "Receive ui-related parameter informations")
+    ("shard", po::value<std::string>(), "The shard you want to connect to. If empty, shard selection dialog is shown. Shard name can also be given without --shard prefix")
     ;
 
-    // mul file paths
-    filesDesc.add_options()
+    // file paths
+    filesDesc_.add_options()
     ("files.mul-directory", po::value<std::string>()->default_value("./"), "Directory containing the mul files")
     ("files.art-idx", po::value<std::string>()->default_value("Artidx.mul"), "Location of artidx.mul")
     ("files.art-mul", po::value<std::string>()->default_value("Art.mul"), "Location of art.mul")
@@ -153,50 +148,106 @@ bool Config::getVariablesMap(const std::vector<CL_String8>& args, boost::program
     ("files.anim5-mul", po::value<std::string>()->default_value("Anim5.mul"), "Location of anim5.mul")
     ("files.anim5-highdetail", po::value<unsigned int>()->default_value(200), "High detail count")
     ("files.anim5-lowdetail", po::value<unsigned int>()->default_value(200), "Low detail count")
+    ;
 
-
-    ("ui.themes-directory", po::value<std::string>()->default_value("themes"), "Directory containing the themes for UO:ME")
-    ("ui.default-theme", po::value<std::string>()->default_value("GUIThemeBasic"), "Default ui theme")
+    uiDesc_.add_options()
+    ("ui.theme", po::value<std::string>()->default_value("default"), "Name of the theme to use")
     ("ui.gumps-directory", po::value<std::string>()->default_value("gumps"), "Directory containing the xml gump files")
     ("ui.cursor-artid-start", po::value<unsigned int>()->default_value(0x206A), "Begin art id of cursor sequence")
     ("ui.cursor-artid-start-warmode", po::value<unsigned int>()->default_value(0x2053), "Begin art id of cursor sequence (warmode)")
     ("ui.doubleclick-timeout-ms", po::value<unsigned int>()->default_value(300), "Maximum interval between two clicks to be counted as double click")
     ;
+}
 
-    desc.add(filesDesc);
+bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
+    // transform vector to default argc, argv
+    int argc = args.size();
+    char* argv[argc];
+    for (int i = 0; i < argc; ++i) {
+        argv[i] = const_cast<char*>(args[i].c_str());
+    }
 
-    std::ifstream stream;
+    namespace po = boost::program_options;
+    po::options_description desc("All options");
+
+    desc.add(consoleDesc_);
+    desc.add(filesDesc_);
+    desc.add(uiDesc_);
 
     try {
         // parse console
-        po::store(po::parse_command_line(argc, argv, desc), map);
+        po::positional_options_description p;
+        p.add("shard", 1);
+        po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), variablesMap_);
 
-        if (map.count("help")) {
-            std::cout << desc << std::endl;
+        if (variablesMap_.count("help")) {
+            std::cout << consoleDesc_ << std::endl;
+            return false;
+        } else if (variablesMap_.count("help-files")) {
+            std::cout << filesDesc_ << std::endl;
+            return false;
+        } else if (variablesMap_.count("help-ui")) {
+            std::cout << uiDesc_ << std::endl;
             return false;
         }
 
-        // parse file
-        std::string configFilePath = map["configfile"].as<std::string>();
-        stream.open(configFilePath.c_str());
-
-        if (stream.is_open()) {
-            po::store(po::parse_config_file(stream, desc), map);
-            stream.close();
-            return true;
-        } else {
-            LOGARG_CRITICAL(LOGTYPE_UNKNOWN, "Error opening config file: %s", configFilePath.c_str());
-            stream.close();
-            return false;
-        }
-
-        po::notify(map);
+        po::notify(variablesMap_);
     } catch (const std::exception& ex) {
-        LOGARG_CRITICAL(LOGTYPE_UNKNOWN, "Error reading config: %s", ex.what());
-        stream.close();
+        LOGARG_CRITICAL(LOGTYPE_MAIN, "Error parsing command line: %s", ex.what());
         return false;
     }
 
-    return false;
+    return true;
 }
+
+bool Config::parseShardConfig(const std::string& shardName) {
+    namespace po = boost::program_options;
+    po::options_description desc("All options");
+
+    desc.add(filesDesc_);
+    desc.add(uiDesc_);
+
+    boost::filesystem::path cfgPath = "shards";
+    cfgPath = cfgPath / shardName / "uome.cfg";
+
+    if (!boost::filesystem::exists(cfgPath)) {
+        LOGARG_CRITICAL(LOGTYPE_MAIN, "Unable to open config file %s for shard %s", cfgPath.string().c_str(), shardName.c_str());
+        return false;
+    }
+
+    bool success = true;
+    std::ifstream stream(cfgPath.string().c_str());
+    if (!stream.is_open()) {
+        LOGARG_CRITICAL(LOGTYPE_MAIN, "Unable to open config file %s for shard %s", cfgPath.string().c_str(), shardName.c_str());
+        return false;
+    }
+
+    try {
+        po::store(po::parse_config_file(stream, desc), variablesMap_);
+
+        po::notify(variablesMap_);
+    } catch (const std::exception& ex) {
+        LOGARG_CRITICAL(LOGTYPE_MAIN, "Error parsing config file: %s", ex.what());
+        success = false;
+    }
+
+    stream.close();
+
+    mutableVariablesMap_.insert(variablesMap_.begin(), variablesMap_.end());
+
+    return success;
+}
+
+boost::program_options::variable_value& Config::operator[](const std::string& name) {
+    return get(name);
+}
+
+boost::program_options::variable_value& Config::get(const std::string& name) {
+    return mutableVariablesMap_[name];
+}
+
+unsigned int Config::count(const std::string& name) const {
+    return mutableVariablesMap_.count(name);
+}
+
 }

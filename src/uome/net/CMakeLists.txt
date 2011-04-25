@@ -1,58 +1,58 @@
 
 set (NET_HPP
-    manager.hpp
-    encryption.hpp
-    xorencryption.hpp
-    twofishencryption.hpp
-    noencryption.hpp
-    decompress.hpp
-    socket.hpp
-    packet.hpp
-    packetlist.hpp
-    packetwriter.hpp
-    packetreader.hpp
+    net/manager.hpp
+    net/encryption.hpp
+    net/xorencryption.hpp
+    net/twofishencryption.hpp
+    net/noencryption.hpp
+    net/decompress.hpp
+    net/socket.hpp
+    net/packet.hpp
+    net/packetlist.hpp
+    net/packetwriter.hpp
+    net/packetreader.hpp
     )
 
 set (NET_CPP
-    manager.cpp
-    xorencryption.cpp
-    twofishencryption.cpp
-    noencryption.cpp
-    decompress.cpp
-    socket.cpp
-    packet.cpp
-    packetwriter.cpp
-    packetreader.cpp
+    net/manager.cpp
+    net/xorencryption.cpp
+    net/twofishencryption.cpp
+    net/noencryption.cpp
+    net/decompress.cpp
+    net/socket.cpp
+    net/packet.cpp
+    net/packetwriter.cpp
+    net/packetreader.cpp
     )
 
 set (PACKETS_HPP
-    packets/unknown.hpp
+    net/packets/unknown.hpp
 
-    packets/loginrequest.hpp
-    packets/serverlist.hpp
+    net/packets/loginrequest.hpp
+    net/packets/serverlist.hpp
     )
 
 set (PACKETS_CPP
-    packets/unknown.cpp
+    net/packets/unknown.cpp
 
-    packets/loginrequest.cpp
-    packets/serverlist.cpp
+    net/packets/loginrequest.cpp
+    net/packets/serverlist.cpp
     )
 
 set (MD5
-    md5/global.h
-    md5/md5.h
-    md5/md5c.c
+    net/md5/global.h
+    net/md5/md5.h
+    net/md5/md5c.c
     )
 
 set (TWOFISH
-    twofish/aes.h
-    twofish/debug.h
-    twofish/platform.h
-    twofish/table.h
-    twofish/twofish.c
+    net/twofish/aes.h
+    net/twofish/debug.h
+    net/twofish/platform.h
+    net/twofish/table.h
+    net/twofish/twofish.c
     )
 
-add_library(uomenet STATIC ${NET_HPP} ${NET_CPP} ${MD5} ${TWOFISH} ${PACKETS_HPP} ${PACKETS_CPP})
+set(NET_FILES ${NET_HPP} ${NET_CPP} ${MD5} ${TWOFISH} ${PACKETS_HPP} ${PACKETS_CPP} PARENT_SCOPE)
 
 #add_subdirectory(test)

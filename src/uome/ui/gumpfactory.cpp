@@ -52,7 +52,7 @@ GumpMenu* GumpFactory::fromXmlFile(const std::string& name) {
         return NULL;
     }
 
-    std::string gumpsDirectory = Client::getSingleton()->getConfig()["ui.gumps-directory"].as<std::string>();
+    std::string gumpsDirectory = Client::getSingleton()->getConfig()->get("ui.gumps-directory").as<std::string>();
     boost::filesystem::path fileName = name + ".xml";
 
     boost::filesystem::path path = gumpsDirectory / fileName;

@@ -2,6 +2,7 @@
 #include "manager.hpp"
 
 #include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
 
 #include "ingameview.hpp"
 #include "renderqueue.hpp"
@@ -20,11 +21,10 @@ namespace ui {
 
 Manager* Manager::singleton_ = NULL;
 
-bool Manager::create(const boost::program_options::variables_map& config) {
+bool Manager::create() {
     if (!singleton_) {
         try {
-            singleton_ = new Manager(config);
-            singleton_->getCursorManager()->setCursor(CursorType::GAME_NORTH);
+            singleton_ = new Manager();
         } catch (const std::exception& ex) {
             LOGARG_CRITICAL(LOGTYPE_UI, "Error initializing ui::Manager: %s", ex.what());
             return false;
@@ -50,29 +50,51 @@ Manager* Manager::getSingleton() {
     return singleton_;
 }
 
-Manager::Manager(const boost::program_options::variables_map& config) {
+Manager::Manager() {
     CL_OpenGLWindowDescription description;
-    description.set_size(CL_Size(1024, 768), true);
-    description.set_title("UO:ME -- 0 fps");
+    description.set_size(CL_Size(800, 600), true);
+    description.set_title("UO:ME");
     mainWindow_.reset(new CL_DisplayWindow(description));
 
     windowManager_.reset(new CL_GUIWindowManagerTexture(*mainWindow_));
 
-    boost::filesystem::path themeDirPath = config["ui.themes-directory"].as<std::string>();
-    boost::filesystem::path path = config["ui.default-theme"].as<std::string>();
-    path = themeDirPath / path;
+    boost::filesystem::path path = "themes";
+    path = path / "default";
+    guiManager_.reset(new CL_GUIManager(*windowManager_, path.string()));
+}
+
+bool Manager::setShardConfig(Config& config) {
+    boost::filesystem::path path = "shards";
+    path = path / config["shard"].as<std::string>() / "themes" / config["ui.theme"].as<std::string>();
+
+    if (!boost::filesystem::exists(path)) {
+        path = "themes";
+        path = path / config["ui.theme"].as<std::string>();
+
+        if (!boost::filesystem::exists(path)) {
+            LOGARG_CRITICAL(LOGTYPE_UI, "Unable to load theme %s: directory does not exists", config["ui.theme"].as<std::string>().c_str());
+            return false;
+        }
+    }
+
+    guiManager_->exit_with_code(0);
     guiManager_.reset(new CL_GUIManager(*windowManager_, path.string()));
 
     renderQueue_.reset(new RenderQueue());
 
     cursorManager_.reset(new CursorManager(config, mainWindow_));
+    singleton_->getCursorManager()->setCursor(CursorType::GAME_WEST);
 
     doubleClickHandler_.reset(new DoubleClickHandler(config));
     doubleClickHandler_->start();
+
+    return true;
 }
 
 Manager::~Manager() {
-    renderQueue_->clear();
+    if (renderQueue_) {
+        renderQueue_->clear();
+    }
 }
 
 bool Manager::shouldExit() {

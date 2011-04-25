@@ -5,7 +5,8 @@
 #include <list>
 
 #include <boost/shared_ptr.hpp>
-#include <boost/program_options/variables_map.hpp>
+
+#include <misc/config.hpp>
 
 namespace uome {
 
@@ -19,7 +20,7 @@ class Sector;
 
 class SectorManager {
 public:
-    SectorManager(const boost::program_options::variables_map& config);
+    SectorManager(const Config& config);
 
     ~SectorManager();
 

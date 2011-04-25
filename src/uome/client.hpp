@@ -6,6 +6,8 @@
 
 #include <boost/program_options.hpp>
 
+#include <misc/config.hpp>
+
 namespace uome {
 
 namespace world {
@@ -21,12 +23,15 @@ public:
     static int sMain(const std::vector<CL_String8>& args); ///< static helper to call main
     int main(const std::vector<CL_String8>& args);
 
-    const boost::program_options::variables_map& getConfig() const;
+    Config* getConfig();
 
 private:
     static Client* singleton_;
 
-    boost::program_options::variables_map config_;
+    Config config_;
+
+    std::string chooseShard();
+    void cleanUp();
 };
 
 }

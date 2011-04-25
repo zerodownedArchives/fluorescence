@@ -1,7 +1,7 @@
 #ifndef UOME_WORLD_MANAGER_HPP
 #define UOME_WORLD_MANAGER_HPP
 
-#include <boost/program_options/variables_map.hpp>
+#include <misc/config.hpp>
 
 namespace uome {
 namespace world {
@@ -12,7 +12,7 @@ class LightManager;
 class Manager {
 public:
     ~Manager();
-    static bool create(const boost::program_options::variables_map& config);
+    static bool create(const Config& config);
     static void destroy();
     static Manager* getSingleton();
 
@@ -25,7 +25,7 @@ public:
 
 private:
     static Manager* singleton_;
-    Manager(const boost::program_options::variables_map& config);
+    Manager(const Config& config);
     Manager(const Manager& copy) {}
     void operator=(const Manager& copy) {}
 

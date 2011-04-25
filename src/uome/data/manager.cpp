@@ -19,7 +19,7 @@ namespace data {
 
 Manager* Manager::singleton_= NULL;
 
-bool Manager::create(const boost::program_options::variables_map& config) {
+bool Manager::create(Config& config) {
     if (!singleton_) {
         try {
             singleton_ = new Manager();
@@ -51,7 +51,7 @@ Manager* Manager::getSingleton() {
 Manager::Manager() {
 }
 
-void Manager::init(const boost::program_options::variables_map& config) {
+void Manager::init(Config& config) {
     boost::filesystem::path mulDirPath = config["files.mul-directory"].as<std::string>();
     if (!boost::filesystem::exists(mulDirPath) || !boost::filesystem::is_directory(mulDirPath)) {
         throw Exception("Invalid mul directory");
@@ -230,7 +230,7 @@ void Manager::init(const boost::program_options::variables_map& config) {
 Manager::~Manager() {
 }
 
-boost::filesystem::path Manager::getPathFor(const boost::program_options::variables_map& config, const char* configValue) {
+boost::filesystem::path Manager::getPathFor(Config& config, const char* configValue) {
     static boost::filesystem::path mulDirPath = config["files.mul-directory"].as<std::string>();
     if (config.count(configValue) <= 0) {
         LOGARG_ERROR(LOGTYPE_DATA, "Trying to read unknown config vaule %s", configValue);

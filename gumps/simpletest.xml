@@ -50,8 +50,8 @@
         <tlabel x="0" y="425" width="600" height="25" align="right" text="Right aligned" />
         <tlabel x="100" y="450" width="120" height="25" text="Big text" cssid="label-bigfont" />
 
-        <image x="5" y="480" path="../themes/GUIThemeBasic/Images/CheckBoxIndeterminatedHot.png" />
-        <image x="25" y="480" width="30" height="30" path="../themes/GUIThemeBasic/Images/CheckBoxIndeterminatedHot.png" />
+        <image x="5" y="480" path="themes/default/Images/CheckBoxIndeterminatedHot.png" />
+        <image x="25" y="480" width="30" height="30" path="themes/default/Images/CheckBoxIndeterminatedHot.png" />
         <image x="65" y="480" artid="16" />
         <image x="120" y="480" width="100" artid="16" />
         <image x="230" y="480" gumpid="230" />

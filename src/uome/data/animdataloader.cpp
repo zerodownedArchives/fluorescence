@@ -42,14 +42,14 @@ void AnimDataLoader::readCallback(int8_t* buf, unsigned int len) {
         }
 
         if (frameCount > 0) {
-            LOGARG_DEBUG(LOGTYPE_DATA, "Added animdata id %#x", artIdx);
+            //LOGARG_DEBUG(LOGTYPE_DATA, "Added animdata id %#x", artIdx);
             infos_[artIdx] = curInfo;
         }
 
         ptr += 68;
     }
 
-    LOGARG_INFO(LOGTYPE_DATA, "AnimDataLoader count: %#x", itemCount);
+    //LOGARG_INFO(LOGTYPE_DATA, "AnimDataLoader count: %#x", itemCount);
 }
 
 AnimDataInfo AnimDataLoader::getInfo(unsigned int artId) {

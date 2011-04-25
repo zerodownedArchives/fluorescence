@@ -2,7 +2,8 @@
 #define UOME_UI_CURSORMANAGER_HPP
 
 #include <boost/shared_ptr.hpp>
-#include <boost/program_options/variables_map.hpp>
+
+#include <misc/config.hpp>
 
 #include "cursorimage.hpp"
 
@@ -36,7 +37,7 @@ struct CursorType {
 
 class CursorManager {
 public:
-    CursorManager(const boost::program_options::variables_map& config, boost::shared_ptr<CL_DisplayWindow> window);
+    CursorManager(Config& config, boost::shared_ptr<CL_DisplayWindow> window);
 
     void setWarMode(bool value);
     void setCursor(unsigned int id);
