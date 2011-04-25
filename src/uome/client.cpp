@@ -49,7 +49,7 @@ Config* Client::getConfig() {
 }
 
 void Client::shutdown() {
-    setState(state_ + 1);
+    setState(STATE_SHUTDOWN);
 }
 
 void Client::setState(unsigned int value) {
@@ -187,8 +187,13 @@ int Client::main(const std::vector<CL_String8>& args) {
     if (config_.count("shard") > 0) {
         setState(STATE_LOGIN);
     } else {
-        LOG_INFO(LOGTYPE_MAIN, "Selecting shard through user interface");
-        ui::Manager::getSingleton()->openChooseShard();
+        if (!ui::Manager::getSingleton()->openChooseShard()) {
+            LOG_CRITICAL(LOGTYPE_MAIN, "No shard chosen, and unable to select through ui");
+            cleanUp();
+            return 1;
+        } else {
+            LOG_INFO(LOGTYPE_MAIN, "Selecting shard through user interface");
+        }
     }
 
     //net::Socket socket;

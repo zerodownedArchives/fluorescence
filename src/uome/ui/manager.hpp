@@ -45,7 +45,7 @@ public:
 
     void closeGumpMenu(GumpMenu* menu);
 
-    void openChooseShard();
+    bool openChooseShard();
 
 private:
     static Manager* singleton_;

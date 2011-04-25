@@ -13,6 +13,9 @@
 
 #include "texture.hpp"
 #include "components/basebutton.hpp"
+#include "components/pagebutton.hpp"
+#include "components/serverbutton.hpp"
+#include "components/localbutton.hpp"
 
 namespace uome {
 namespace ui {
@@ -160,19 +163,24 @@ bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     std::string text = node.attribute("text").value();
     unsigned int buttonId = node.attribute("id").as_uint();
     unsigned int pageId = node.attribute("page").as_uint();
+    std::string action = node.attribute("action").value();
+    std::string param = node.attribute("param").value();
 
-    components::BaseButton* button = new components::BaseButton(parent);
+    components::BaseButton* button;
+    if (action.length() > 0) {
+        button = new components::LocalButton(parent, action, param);
+    } else if (!node.attribute("id").empty()) {
+        button = new components::ServerButton(parent, buttonId);
+    } else if (!node.attribute("page").empty()) {
+        button = new components::PageButton(parent, pageId);
+    } else {
+        LOG_WARN(LOGTYPE_UI, "Button without action, id or page");
+        return false;
+    }
+
     parseCssId(node, button);
     button->set_geometry(bounds);
     button->set_text(text);
-
-    button->setButtonId(buttonId);
-    button->setPageId(pageId);
-    button->func_clicked().set(top, &GumpMenu::onButtonClicked, button);
-
-    if (!buttonId && !pageId) {
-        LOG_WARN(LOGTYPE_UI, "Button without id or page");
-    }
 
     top->addToCurrentPage(button);
     return true;

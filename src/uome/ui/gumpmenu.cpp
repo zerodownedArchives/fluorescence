@@ -5,8 +5,6 @@
 
 #include <misc/logger.hpp>
 
-#include "buttonclickhandler/default.hpp"
-
 namespace uome {
 namespace ui {
 
@@ -14,8 +12,7 @@ GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
     CL_Window(ui::Manager::getSingleton()->getGuiManager().get(), desc),
     activePageId_(0), firstPageId_(0),
     closable_(true),
-    draggable_(true), isDragged_(false),
-    buttonClickHandler_(new buttonclickhandler::Default) {
+    draggable_(true), isDragged_(false) {
 
     addPage(0);
 
@@ -75,14 +72,6 @@ void GumpMenu::activatePage(unsigned int pageId) {
 
 unsigned int GumpMenu::getActivePageId() {
     return activePageId_;
-}
-
-void GumpMenu::onButtonClicked(components::BaseButton* button) {
-    if (button->getPageId()) {
-        activatePage(button->getPageId());
-    } else {
-        buttonClickHandler_->onButtonClicked(button);
-    }
 }
 
 void GumpMenu::internalActivatePage(unsigned int pageId) {
@@ -172,10 +161,6 @@ void GumpMenu::setDraggable(bool value) {
 
 bool GumpMenu::isDraggable() {
     return draggable_;
-}
-
-void GumpMenu::setButtonClickHandler(boost::shared_ptr<ButtonClickHandler> handler) {
-    buttonClickHandler_ = handler;
 }
 
 }

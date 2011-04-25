@@ -13,7 +13,6 @@ set (UI_HPP
     ui/cursormanager.hpp
     ui/cursorimage.hpp
     ui/doubleclickhandler.hpp
-    ui/buttonclickhandler.hpp
     )
 
 set (UI_CPP
@@ -38,6 +37,9 @@ set (GUMPMENU_HPP
     ui/ingameview.hpp
 
     ui/components/basebutton.hpp
+    ui/components/serverbutton.hpp
+    ui/components/localbutton.hpp
+    ui/components/pagebutton.hpp
     )
 
 set (GUMPMENU_CPP
@@ -47,15 +49,18 @@ set (GUMPMENU_CPP
     ui/ingameview.cpp
 
     ui/components/basebutton.cpp
+    ui/components/serverbutton.cpp
+    ui/components/localbutton.cpp
+    ui/components/pagebutton.cpp
     )
 
-set (BUTTONCLICKHANDLER_HPP
-    ui/buttonclickhandler/default.hpp
+set (GUMPS_HPP
+    ui/gumps/shardselection.hpp
     )
 
-set (BUTTONCLICKHANDLER_CPP
-    ui/buttonclickhandler/default.cpp
+set (GUMPS_CPP
+    ui/gumps/shardselection.cpp
     )
 
-SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${BUTTONCLICKHANDLER_HPP} ${BUTTONCLICKHANDLER_CPP} PARENT_SCOPE)
+SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${GUMPS_HPP} ${GUMPS_CPP} PARENT_SCOPE)
 

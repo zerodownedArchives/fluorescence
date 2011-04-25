@@ -18,6 +18,8 @@
 #include <world/manager.hpp>
 #include <world/sectormanager.hpp>
 
+#include "gumps/shardselection.hpp"
+
 namespace uome {
 namespace ui {
 
@@ -157,7 +159,9 @@ void Manager::processCloseList() {
     closeList_.clear();
 }
 
-void Manager::openChooseShard() {
+bool Manager::openChooseShard() {
+    return gumps::ShardSelection::create() != NULL;
+
 }
 
 }

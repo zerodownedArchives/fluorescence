@@ -237,6 +237,7 @@ bool Config::parseShardConfig(const std::string& shardName) {
 
     mutableVariablesMap_.clear();
     mutableVariablesMap_.insert(variablesMap_.begin(), variablesMap_.end());
+    set("shard", shardName);
 
     return success;
 }

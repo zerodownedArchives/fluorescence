@@ -11,15 +11,7 @@ class BaseButton : public CL_PushButton {
 public:
     BaseButton(CL_GUIComponent* parent);
 
-    void setButtonId(unsigned int value);
-    unsigned int getButtonId();
-
-    void setPageId(unsigned int value);
-    unsigned int getPageId();
-
-private:
-    unsigned int buttonId_;
-    unsigned int pageId_;
+    virtual void onClicked(BaseButton* self) = 0;
 };
 
 }

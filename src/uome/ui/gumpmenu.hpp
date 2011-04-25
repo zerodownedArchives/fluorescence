@@ -8,7 +8,6 @@
 #include <map>
 
 #include "components/basebutton.hpp"
-#include "buttonclickhandler.hpp"
 
 namespace uome {
 namespace ui {
@@ -26,15 +25,11 @@ public:
 
     unsigned int getActivePageId();
 
-    void onButtonClicked(components::BaseButton* button);
-
     void setClosable(bool value);
     bool isClosable();
 
     void setDraggable(bool value);
     bool isDraggable();
-
-    void setButtonClickHandler(boost::shared_ptr<ButtonClickHandler> handler);
 
 private:
     unsigned int activePageId_;
@@ -52,8 +47,6 @@ private:
     bool onInputPressed(const CL_InputEvent& msg);
     bool onInputReleased(const CL_InputEvent& msg);
     bool onPointerMoved(const CL_InputEvent& msg);
-
-    boost::shared_ptr<ButtonClickHandler> buttonClickHandler_;
 };
 
 }
