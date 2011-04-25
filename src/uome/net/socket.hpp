@@ -7,6 +7,7 @@
 
 #include "encryption.hpp"
 #include "decompress.hpp"
+#include "packet.hpp"
 
 namespace uome {
 namespace net {
@@ -23,7 +24,7 @@ public:
 
     template<class P>
     bool write(const P& packet) {
-        return packet.write(sendBuffer_, 0x10000, sendIndex_);
+        return packet.write(sendBuffer_, 0x10000, sendSize_);
     }
 
     void writeSeed(uint32_t seed);
@@ -40,10 +41,10 @@ private:
     int8_t rawBuffer_[0x4000];
 
     int8_t decompressedBuffer_[0x10000];
-    unsigned int decompressedIndex_;
+    unsigned int decompressedSize_;
 
     int8_t sendBuffer_[0x10000];
-    unsigned int sendIndex_;
+    unsigned int sendSize_;
 
     boost::shared_ptr<Encryption> encryption_;
 
@@ -57,6 +58,11 @@ private:
     bool criticalError_;
 
     void dumpBuffer(int8_t* buffer, unsigned int length);
+
+
+    boost::mutex packetQueueMutex_;
+    std::list<boost::shared_ptr<Packet> > packetQueue_;
+    void parsePackets();
 };
 
 }

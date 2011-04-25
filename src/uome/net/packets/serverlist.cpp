@@ -1,6 +1,8 @@
 
 #include "serverlist.hpp"
 
+#include <misc/logger.hpp>
+
 namespace uome {
 namespace net {
 namespace packets {
@@ -13,7 +15,7 @@ bool ServerList::read(const int8_t* buf, unsigned int len, unsigned int& index) 
 
     ret = ret && PacketReader::read(buf, len, index, flags_);
 
-    unsigned int listSize;
+    uint16_t listSize;
     ret = ret && PacketReader::read(buf, len, index, listSize);
 
     for (unsigned int i = 0; i < listSize && ret; ++i) {

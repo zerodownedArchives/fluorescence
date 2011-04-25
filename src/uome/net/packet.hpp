@@ -11,15 +11,20 @@ namespace net {
 
 class Packet {
 public:
-    Packet(uint32_t id);
+    // 0 indicates a variable sized packet
+    Packet(uint8_t id, uint16_t size = 0);
 
     virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
     virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
 
+    bool hasVariableSize();
+    uint16_t getSize(); ///< for fixed size packets
+
 protected:
     virtual bool writePacketInfo(int8_t* buf, unsigned int len, unsigned int& index) const;
 
-    uint32_t id_;
+    uint8_t id_;
+    uint16_t size_;
 
 };
 

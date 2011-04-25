@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <netinet/in.h>
 
 namespace uome {
 namespace net {
@@ -77,6 +78,87 @@ bool PacketReader::readUnicodeFixed(const int8_t* buf, unsigned int len, unsigne
         return false;
     }
 }
+
+bool PacketReader::read(const int8_t* buf, unsigned int len, unsigned int& index, uint8_t& value) {
+    if (index + sizeof(uint8_t) > len) {
+        return false;
+    }
+
+    value = *reinterpret_cast<const uint8_t*>(&buf[index]);
+
+    index += sizeof(uint8_t);
+
+    return true;
+}
+
+bool PacketReader::read(const int8_t* buf, unsigned int len, unsigned int& index, uint16_t& value) {
+    if (index + sizeof(uint16_t) > len) {
+        return false;
+    }
+
+    value = *reinterpret_cast<const uint16_t*>(&buf[index]);
+    value = ntohs(value);
+
+    index += sizeof(uint16_t);
+
+    return true;
+}
+
+bool PacketReader::read(const int8_t* buf, unsigned int len, unsigned int& index, uint32_t& value) {
+    if (index + sizeof(uint32_t) > len) {
+        return false;
+    }
+
+    value = *reinterpret_cast<const uint32_t*>(&buf[index]);
+    value = ntohs(value);
+
+    index += sizeof(uint32_t);
+
+    return true;
+}
+
+
+bool PacketReader::read(const int8_t* buf, unsigned int len, unsigned int& index, int8_t& value) {
+    if (index + sizeof(int8_t) > len) {
+        return false;
+    }
+
+    value = buf[index];
+
+    index += sizeof(int8_t);
+
+    return true;
+}
+
+
+bool PacketReader::read(const int8_t* buf, unsigned int len, unsigned int& index, int16_t& value) {
+    if (index + sizeof(int16_t) > len) {
+        return false;
+    }
+
+    value = *reinterpret_cast<const int16_t*>(&buf[index]);
+    value = ntohs(value);
+
+    index += sizeof(int16_t);
+
+    return true;
+}
+
+
+bool PacketReader::read(const int8_t* buf, unsigned int len, unsigned int& index, int32_t& value) {
+    if (index + sizeof(int32_t) > len) {
+        return false;
+    }
+
+    value = *reinterpret_cast<const int32_t*>(&buf[index]);
+    value = ntohl(value);
+
+    index += sizeof(int32_t);
+
+    return true;
+}
+
+
 
 }
 }

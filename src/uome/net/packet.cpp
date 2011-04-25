@@ -4,7 +4,7 @@
 namespace uome {
 namespace net {
 
-Packet::Packet(uint32_t id) : id_(id) {
+Packet::Packet(uint8_t id, uint16_t size) : id_(id), size_(size) {
 }
 
 bool Packet::writePacketInfo(int8_t* buf, unsigned int len, unsigned int& index) const {
@@ -21,6 +21,14 @@ bool Packet::write(int8_t* buf, unsigned int len, unsigned int& index) const {
 
 bool Packet::read(const int8_t* buf, unsigned int len, unsigned int& index) {
     return true;
+}
+
+bool Packet::hasVariableSize() {
+    return size_ == 0;
+}
+
+uint16_t Packet::getSize() {
+    return size_;
 }
 
 }

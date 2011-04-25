@@ -3,6 +3,8 @@
 
 #include <misc/logger.hpp>
 
+#include "packetlist.hpp"
+
 namespace uome {
 namespace net {
 
@@ -30,6 +32,17 @@ Manager* Manager::getSingleton() {
 }
 
 Manager::Manager(const boost::program_options::variables_map& config) {
+}
+
+boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
+    boost::shared_ptr<Packet> ret;
+
+    switch (id) {
+        case 0xA8: ret.reset(new packets::ServerList()); break;
+        default: ret.reset(new packets::Unknown(id)); break;
+    }
+
+    return ret;
 }
 
 }

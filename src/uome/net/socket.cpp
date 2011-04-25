@@ -16,12 +16,14 @@
 
 #include <misc/logger.hpp>
 
+#include "manager.hpp"
 #include "packetwriter.hpp"
+#include "packetreader.hpp"
 
 namespace uome {
 namespace net {
 
-Socket::Socket() : socketFd_(0), decompressedIndex_(0), sendIndex_(0), useDecompress_(false), running_(false) {
+Socket::Socket() : socketFd_(0), decompressedSize_(0), sendSize_(0), useDecompress_(false), running_(false) {
 }
 
 Socket::~Socket() {
@@ -89,7 +91,7 @@ bool Socket::connect(const std::string& host, unsigned short port) {
     #endif
 
 
-    sendIndex_ = 0;
+    sendSize_ = 0;
     running_ = true;
     criticalError_ = false;
 
@@ -125,19 +127,17 @@ void Socket::receiveRun() {
             if (useDecompress_) {
                 // decompress data
                 LOG_INFO(LOGTYPE_NETWORK, "decompress");
-                decompLen = decompress_.huffmanDecompress(decompressedBuffer_ + decompressedIndex_, 0x10000 - decompressedIndex_, rawBuffer_, recvLen);
+                decompLen = decompress_.huffmanDecompress(decompressedBuffer_ + decompressedSize_, 0x10000 - decompressedSize_, rawBuffer_, recvLen);
             } else {
-                memcpy(decompressedBuffer_ + decompressedIndex_, rawBuffer_, recvLen);
+                memcpy(decompressedBuffer_ + decompressedSize_, rawBuffer_, recvLen);
             }
+
+            decompressedSize_ += decompLen;
 
             LOG_INFO(LOGTYPE_NETWORK, "buffer dump:");
             dumpBuffer(decompressedBuffer_, decompLen);
 
-            // parse packet
-
-            // lock packet queue
-            // enqueue packet
-            // unlock packet queue
+            parsePackets();
 
             // sleep a little
             usleep(10);
@@ -174,15 +174,15 @@ void Socket::dumpBuffer(int8_t* buf, unsigned int length) {
 }
 
 bool Socket::sendAll() {
-    if (sendIndex_ == 0 || criticalError_) {
+    if (sendSize_ == 0 || criticalError_) {
         return true;
     }
 
     LOG_INFO(LOGTYPE_NETWORK, "sendAll pre send:");
-    dumpBuffer(sendBuffer_, sendIndex_);
+    dumpBuffer(sendBuffer_, sendSize_);
 
     socketMutex_.lock();
-    unsigned int sendLen = ::send(socketFd_, sendBuffer_, sendIndex_, 0);
+    unsigned int sendLen = ::send(socketFd_, sendBuffer_, sendSize_, 0);
     socketMutex_.unlock();
 
     LOG_INFO(LOGTYPE_NETWORK, "sendAll post send:");
@@ -199,23 +199,83 @@ bool Socket::sendAll() {
         return false;
     }
 
-    if (sendLen != sendIndex_) {
+    if (sendLen != sendSize_) {
         LOG_ERROR(LOGTYPE_NETWORK, "Socket error in sendAll(): Unable to send all bytes");
         return false;
     }
 
-    sendIndex_ = 0;
+    sendSize_ = 0;
 
     return true;
 }
 
 void Socket::writeSeed(uint32_t seed) {
-    PacketWriter::write(sendBuffer_, 0x10000, sendIndex_, seed);
-    LOGARG_DEBUG(LOGTYPE_NETWORK, "Index after seed: %u", sendIndex_);
+    PacketWriter::write(sendBuffer_, 0x10000, sendSize_, seed);
+    LOGARG_DEBUG(LOGTYPE_NETWORK, "Index after seed: %u", sendSize_);
 }
 
 void Socket::setUseDecompress(bool value) {
     useDecompress_ = value;
+}
+
+void Socket::parsePackets() {
+    unsigned int idx = 0;
+    unsigned int lastPacketStart = 0;
+    while (idx < decompressedSize_) {
+        lastPacketStart = idx;
+
+        bool readSuccess = true;
+        uint8_t packetId;
+        readSuccess = PacketReader::read(decompressedBuffer_, decompressedSize_, idx, packetId);
+
+        LOGARG_DEBUG(LOGTYPE_NETWORK, "Parsing packet id=%u", packetId);
+
+        boost::shared_ptr<Packet> newPacket = Manager::createPacket(packetId);
+
+        if (!newPacket) {
+            LOGARG_ERROR(LOGTYPE_NETWORK, "Unable to create packet for id %u", packetId);
+            continue;
+        }
+
+        uint16_t packetSize;
+        if (newPacket->hasVariableSize()) {
+            readSuccess = readSuccess && PacketReader::read(decompressedBuffer_, decompressedSize_, idx, packetSize);
+        } else {
+            packetSize = newPacket->getSize();
+        }
+
+        LOGARG_DEBUG(LOGTYPE_NETWORK, "Parsing packet size=%u", packetSize);
+
+        readSuccess = readSuccess && newPacket->read(decompressedBuffer_, decompressedSize_, idx);
+
+        LOGARG_DEBUG(LOGTYPE_NETWORK, "Parsing packet idx=%u", idx);
+
+        if (readSuccess) {
+            if (idx - lastPacketStart < packetSize) {
+                LOGARG_DEBUG(LOGTYPE_NETWORK, "Not enough bytes read for packet id=%u len=%u read=%u", packetId, packetSize, idx - lastPacketStart);
+            } else {
+                LOGARG_DEBUG(LOGTYPE_NETWORK, "Read of packet id=%u len=%u successful!", packetId, packetSize);
+
+                packetQueueMutex_.lock();
+                packetQueue_.push_back(newPacket);
+                packetQueueMutex_.unlock();
+            }
+        } else {
+            // not enouth bytes received yet
+            break;
+        }
+
+        // set idx to start of next packet
+        idx = lastPacketStart + packetSize;
+    }
+
+    if (lastPacketStart != decompressedSize_) { // some bytes left
+        if (lastPacketStart > 0) {
+            // move unread bytes to start of buffer
+            memmove(decompressedBuffer_, decompressedBuffer_ + lastPacketStart, decompressedSize_ - lastPacketStart);
+            decompressedSize_ -= lastPacketStart;
+        }
+    }
 }
 
 }

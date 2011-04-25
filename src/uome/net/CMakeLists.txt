@@ -8,6 +8,7 @@ set (NET_HPP
     decompress.hpp
     socket.hpp
     packet.hpp
+    packetlist.hpp
     packetwriter.hpp
     packetreader.hpp
     )
@@ -25,11 +26,15 @@ set (NET_CPP
     )
 
 set (PACKETS_HPP
+    packets/unknown.hpp
+
     packets/loginrequest.hpp
     packets/serverlist.hpp
     )
 
 set (PACKETS_CPP
+    packets/unknown.cpp
+
     packets/loginrequest.cpp
     packets/serverlist.cpp
     )

@@ -15,8 +15,8 @@ public:
     struct ServerListEntry {
         uint16_t index_;
         UnicodeString name_;
-        int8_t fullPercentage_;
-        int8_t timezoneBias_;
+        uint8_t fullPercentage_;
+        uint8_t timezoneBias_;
         uint32_t serverAddress_;
     };
 
@@ -24,8 +24,7 @@ public:
 
     virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
 
-private:
-    int8_t flags_;
+    uint8_t flags_;
     std::list<ServerListEntry> listEntries_;
 };
 

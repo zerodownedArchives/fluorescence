@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <netinet/in.h>
 
 namespace uome {
 namespace net {
@@ -77,6 +78,82 @@ bool PacketWriter::writeUnicodeFixed(int8_t* buf, unsigned int len, unsigned int
     } else {
         return false;
     }
+}
+
+bool PacketWriter::write(int8_t* buf, unsigned int len, unsigned int& index, const uint8_t& value) {
+    if (index + sizeof(uint8_t) > len) {
+        return false;
+    }
+
+    *reinterpret_cast<uint8_t*>(&buf[index]) = value;
+
+    index += sizeof(uint8_t);
+
+    return true;
+}
+
+bool PacketWriter::write(int8_t* buf, unsigned int len, unsigned int& index, const uint16_t& value) {
+    if (index + sizeof(uint16_t) > len) {
+        return false;
+    }
+
+    uint16_t byteOrder = htons(value);
+    *reinterpret_cast<uint16_t*>(&buf[index]) = byteOrder;
+
+    index += sizeof(uint16_t);
+
+    return true;
+}
+
+bool PacketWriter::write(int8_t* buf, unsigned int len, unsigned int& index, const uint32_t& value) {
+    if (index + sizeof(uint32_t) > len) {
+        return false;
+    }
+
+    uint32_t byteOrder = htonl(value);
+    *reinterpret_cast<uint32_t*>(&buf[index]) = byteOrder;
+
+    index += sizeof(uint32_t);
+
+    return true;
+}
+
+bool PacketWriter::write(int8_t* buf, unsigned int len, unsigned int& index, const int8_t& value) {
+    if (index + sizeof(int8_t) > len) {
+        return false;
+    }
+
+    buf[index] = value;
+
+    index += sizeof(int8_t);
+
+    return true;
+}
+
+bool PacketWriter::write(int8_t* buf, unsigned int len, unsigned int& index, const int16_t& value) {
+    if (index + sizeof(int16_t) > len) {
+        return false;
+    }
+
+    int16_t byteOrder = htons(value);
+    *reinterpret_cast<int16_t*>(&buf[index]) = byteOrder;
+
+    index += sizeof(int16_t);
+
+    return true;
+}
+
+bool PacketWriter::write(int8_t* buf, unsigned int len, unsigned int& index, const int32_t& value) {
+    if (index + sizeof(int32_t) > len) {
+        return false;
+    }
+
+    int32_t byteOrder = htonl(value);
+    *reinterpret_cast<int32_t*>(&buf[index]) = byteOrder;
+
+    index += sizeof(int32_t);
+
+    return true;
 }
 
 }
