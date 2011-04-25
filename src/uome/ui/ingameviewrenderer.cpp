@@ -23,7 +23,7 @@ IngameViewRenderer::IngameViewRenderer(IngameView* ingameView) :
 
     CL_GraphicContext gc = uome::ui::Manager::getSingleton()->getGraphicsContext();
 
-    shaderProgram_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "../shader/vertex.glsl", "../shader/fragment.glsl")));
+    shaderProgram_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/vertex.glsl", "shader/fragment.glsl")));
     shaderProgram_->bind_attribute_location(0, "gl_Vertex");
     shaderProgram_->bind_attribute_location(1, "TexCoord0");
     shaderProgram_->bind_attribute_location(2, "gl_Normal");

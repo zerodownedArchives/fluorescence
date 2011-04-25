@@ -47,15 +47,19 @@ GumpFactory::GumpFactory() {
 }
 
 GumpMenu* GumpFactory::fromXmlFile(const std::string& name) {
-    if (name.find("..") != std::string::npos) {
-        LOGARG_WARN(LOGTYPE_UI, "Directory traversal attempt, trying to read gump file %s", name.c_str());
-        return NULL;
+    std::string fileName = name + ".xml";
+    boost::filesystem::path path = "shards";
+    path = path / Client::getSingleton()->getConfig()->get("shard").as<std::string>() / "gumps" / fileName;
+
+    if (!boost::filesystem::exists(path)) {
+        path = "gumps";
+        path = path / fileName;
+
+        if (!boost::filesystem::exists(path)) {
+            LOGARG_CRITICAL(LOGTYPE_UI, "Unable to gump xml %s: file not found", name.c_str());
+            return false;
+        }
     }
-
-    std::string gumpsDirectory = Client::getSingleton()->getConfig()->get("ui.gumps-directory").as<std::string>();
-    boost::filesystem::path fileName = name + ".xml";
-
-    boost::filesystem::path path = gumpsDirectory / fileName;
 
     LOGARG_DEBUG(LOGTYPE_UI, "Parsing xml gump file: %s", path.string().c_str());
 
@@ -451,15 +455,20 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
 
     // path takes precedence over gumpid, gumpid over artid
     if (path.length() > 0) {
-        CL_PixelBuffer buf(path);
-        img->set_image(buf);
+        try {
+            CL_PixelBuffer buf(path);
+            img->set_image(buf);
 
-        if (width == 0) {
-            width = buf.get_width();
-        }
+            if (width == 0) {
+                width = buf.get_width();
+            }
 
-        if (height == 0) {
-            height = buf.get_height();
+            if (height == 0) {
+                height = buf.get_height();
+            }
+        } catch (const CL_Exception& ex) {
+            LOGARG_ERROR(LOGTYPE_UI, "Unable to load image from path %s: %s", path.c_str(), ex.what());
+            return false;
         }
     } else if (gumpId) {
         boost::shared_ptr<ui::Texture> texture = data::Manager::getGumpArtLoader()->getTexture(gumpId);

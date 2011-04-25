@@ -152,7 +152,6 @@ Config::Config() : consoleDesc_("Console options"), filesDesc_("Files options"),
 
     uiDesc_.add_options()
     ("ui.theme", po::value<std::string>()->default_value("default"), "Name of the theme to use")
-    ("ui.gumps-directory", po::value<std::string>()->default_value("gumps"), "Directory containing the xml gump files")
     ("ui.cursor-artid-start", po::value<unsigned int>()->default_value(0x206A), "Begin art id of cursor sequence")
     ("ui.cursor-artid-start-warmode", po::value<unsigned int>()->default_value(0x2053), "Begin art id of cursor sequence (warmode)")
     ("ui.doubleclick-timeout-ms", po::value<unsigned int>()->default_value(300), "Maximum interval between two clicks to be counted as double click")
