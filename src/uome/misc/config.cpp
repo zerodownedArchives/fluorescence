@@ -191,6 +191,9 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
         }
 
         po::notify(variablesMap_);
+
+        mutableVariablesMap_.insert(variablesMap_.begin(), variablesMap_.end());
+
     } catch (const std::exception& ex) {
         LOGARG_CRITICAL(LOGTYPE_MAIN, "Error parsing command line: %s", ex.what());
         return false;
@@ -232,6 +235,7 @@ bool Config::parseShardConfig(const std::string& shardName) {
 
     stream.close();
 
+    mutableVariablesMap_.clear();
     mutableVariablesMap_.insert(variablesMap_.begin(), variablesMap_.end());
 
     return success;

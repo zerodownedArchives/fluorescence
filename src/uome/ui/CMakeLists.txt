@@ -13,6 +13,7 @@ set (UI_HPP
     ui/cursormanager.hpp
     ui/cursorimage.hpp
     ui/doubleclickhandler.hpp
+    ui/buttonclickhandler.hpp
     )
 
 set (UI_CPP
@@ -48,5 +49,13 @@ set (GUMPMENU_CPP
     ui/components/basebutton.cpp
     )
 
-SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} PARENT_SCOPE)
+set (BUTTONCLICKHANDLER_HPP
+    ui/buttonclickhandler/default.hpp
+    )
+
+set (BUTTONCLICKHANDLER_CPP
+    ui/buttonclickhandler/default.cpp
+    )
+
+SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${BUTTONCLICKHANDLER_HPP} ${BUTTONCLICKHANDLER_CPP} PARENT_SCOPE)
 

@@ -31,10 +31,6 @@ public:
 
     bool setShardConfig(Config& config);
 
-    void step();
-
-    bool shouldExit();
-
     static CL_GraphicContext& getGraphicsContext();
     static boost::shared_ptr<CL_DisplayWindow> getMainWindow();
 
@@ -45,7 +41,11 @@ public:
     static boost::shared_ptr<CursorManager> getCursorManager();
     static boost::shared_ptr<DoubleClickHandler> getDoubleClickHandler();
 
+    void step();
+
     void closeGumpMenu(GumpMenu* menu);
+
+    void openChooseShard();
 
 private:
     static Manager* singleton_;

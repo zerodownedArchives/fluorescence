@@ -102,10 +102,6 @@ Manager::~Manager() {
     }
 }
 
-bool Manager::shouldExit() {
-    return guiManager_->get_exit_flag();
-}
-
 void Manager::step() {
     windowManager_->process();
 
@@ -159,6 +155,9 @@ void Manager::processCloseList() {
     }
 
     closeList_.clear();
+}
+
+void Manager::openChooseShard() {
 }
 
 }

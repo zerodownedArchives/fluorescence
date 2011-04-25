@@ -40,7 +40,6 @@ private:
 
     Config config_;
 
-    bool openChooseShard();
     void cleanUp();
 
     bool initBase(const std::vector<CL_String8>& args);

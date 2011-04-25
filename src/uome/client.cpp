@@ -48,19 +48,6 @@ Config* Client::getConfig() {
     return &config_;
 }
 
-bool Client::openChooseShard() {
-
-    // show shard selection dialog
-    LOG_INFO(LOGTYPE_MAIN, "Selecting shard through user interface");
-
-    std::string shard("localhost");
-    config_.set("shard", shard);
-
-
-
-    return true;
-}
-
 void Client::shutdown() {
     setState(state_ + 1);
 }
@@ -197,10 +184,11 @@ int Client::main(const std::vector<CL_String8>& args) {
 
     std::string selectedShard;
     // if we already have a command line argument, take it
-    if (config_.count("shard")) {
+    if (config_.count("shard") > 0) {
         setState(STATE_LOGIN);
     } else {
-        openChooseShard();
+        LOG_INFO(LOGTYPE_MAIN, "Selecting shard through user interface");
+        ui::Manager::getSingleton()->openChooseShard();
     }
 
     //net::Socket socket;
