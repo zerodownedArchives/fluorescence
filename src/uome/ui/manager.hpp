@@ -75,6 +75,8 @@ private:
     boost::shared_ptr<DoubleClickHandler> doubleClickHandler_;
 
     std::list<GumpMenu*> closeList_;
+
+    CL_Slot slotCloseWindow;
 };
 
 }

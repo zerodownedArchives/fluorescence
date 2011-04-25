@@ -29,7 +29,7 @@
 
 namespace uome {
 
-Client::Client() {
+Client::Client() : state_(STATE_SHARD_SELECTION) {
 }
 
 Client* Client::singleton_ = NULL;
@@ -55,6 +55,7 @@ std::string Client::chooseShard() {
     }
     // otherwise, show dialog
 
+    LOG_INFO(LOGTYPE_MAIN, "Selecting shard through user interface");
     std::string shard("localhost");
     config_.set("shard", shard);
 
@@ -63,60 +64,80 @@ std::string Client::chooseShard() {
     return "localhost";
 }
 
+void Client::shutdown() {
+    setState(STATE_LOGOUT);
+}
+
+void Client::setState(unsigned int value) {
+    state_ = value;
+}
+
 void Client::cleanUp() {
+    net::Manager::destroy();
     ui::Manager::destroy();
     world::Manager::destroy();
     data::Manager::destroy();
-    net::Manager::destroy();
 }
 
-int Client::main(const std::vector<CL_String8>& args) {
-    LOG_INFO(LOGTYPE_MAIN, "Starting client");
-
+bool Client::initBase(const std::vector<CL_String8>& args) {
     LOG_INFO(LOGTYPE_MAIN, "Parsing command line");
     if (!config_.parseCommandLine(args)) {
-        return 1;
+        return false;
     }
 
     LOG_INFO(LOGTYPE_MAIN, "Initializing ui");
     if (!ui::Manager::create()) {
         cleanUp();
-        return 1;
+        return false;
     }
 
-    LOG_INFO(LOGTYPE_MAIN, "Selecting shard");
-    std::string selectedShard = chooseShard();
-    LOGARG_INFO(LOGTYPE_MAIN, "Selected shard: %s", selectedShard.c_str());
+    return true;
+}
 
+bool Client::initFull(const std::string& selectedShard) {
     LOG_INFO(LOGTYPE_MAIN, "Parsing shard config");
     if (!config_.parseShardConfig(selectedShard)) {
-        return 1;
+        return false;
     }
 
     LOG_INFO(LOGTYPE_MAIN, "Creating data loaders");
     if (!data::Manager::create(config_)) {
-        cleanUp();
-        return 1;
+        return false;
     }
 
     LOG_INFO(LOGTYPE_MAIN, "Setting up ui");
     if (!ui::Manager::getSingleton()->setShardConfig(config_)) {
-        cleanUp();
-        return 1;
+        return false;
     }
 
     LOG_INFO(LOGTYPE_MAIN, "Initializing world");
     if (!world::Manager::create(config_)) {
-        cleanUp();
-        return 1;
+        return false;
     }
 
     LOG_INFO(LOGTYPE_MAIN, "Initializing network");
     if (!net::Manager::create(config_)) {
+        return false;
+    }
+
+    return true;
+}
+
+int Client::main(const std::vector<CL_String8>& args) {
+    LOG_INFO(LOGTYPE_MAIN, "Starting client");
+
+    if (!initBase(args)) {
         cleanUp();
         return 1;
     }
 
+    std::string selectedShard = chooseShard();
+    LOGARG_INFO(LOGTYPE_MAIN, "Selected shard: %s", selectedShard.c_str());
+
+    if (!initFull(selectedShard)) {
+        cleanUp();
+        return 1;
+    }
 
 
     //net::Socket socket;
@@ -140,7 +161,6 @@ int Client::main(const std::vector<CL_String8>& args) {
     //socket.close();
 
 
-
     ui::Manager* uiManager = uome::ui::Manager::getSingleton();
     boost::shared_ptr<CL_DisplayWindow> wnd = uiManager->getMainWindow();
 
@@ -158,20 +178,14 @@ int Client::main(const std::vector<CL_String8>& args) {
     (void)testGump;
 
 
+
     timeval lastTime;
     gettimeofday(&lastTime, NULL);
 
     // elapsed milliseconds since the last cycle
     unsigned int elapsedMillis;
 
-    // fps are calculated every 100 frames => sum time
-    unsigned int fpsSum = 0;
-
-
-    unsigned int i = 0;
-    while (!wnd->get_ic().get_keyboard().get_keycode(CL_KEY_ESCAPE)) {
-        ++i;
-
+    while (state_ != STATE_LOGOUT) {
         timeval curTime;
         gettimeofday(&curTime, NULL);
 
@@ -180,29 +194,16 @@ int Client::main(const std::vector<CL_String8>& args) {
 
         lastTime = curTime;
 
-        fpsSum += elapsedMillis;
-
-        if (i % 100 == 0) {
-            float fps = fpsSum / 1000.0f; // seconds
-            fps /= 100.0f; // 100 cycles
-            fps = 1 / fps;
-
-            std::ostringstream titleHelper;
-            titleHelper << "UO:ME -- fps: " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << fps;
-            wnd->set_title(titleHelper.str());
-
-            fpsSum = 0;
-            //LOGARG_DEBUG(LOGTYPE_MAIN, "fps: %.1f", fps);
+        switch(state_) {
+        case STATE_SHARD_SELECTION:
+            break;
+        case STATE_LOGIN:
+            break;
+        case STATE_PLAYING:
+            calculateFps(elapsedMillis);
+            doStatePlaying(elapsedMillis);
+            break;
         }
-
-        // adding sectors has to be done before sorting
-        world::Manager::getSingleton()->getSectorManager()->addNewSectors();
-
-        uiManager->getRenderQueue()->prepareRender((unsigned int)elapsedMillis);
-
-        // deleting sectors has to be done after RenderQueue::prepareRender()
-        // TODO: maybe before add?
-        world::Manager::getSingleton()->getSectorManager()->deleteSectors();
 
         // call renderer
         uiManager->processMessages();
@@ -212,15 +213,57 @@ int Client::main(const std::vector<CL_String8>& args) {
 
         uiManager->processCloseList();
 
-        //CL_System::sleep(1);
+        if (state_ != STATE_PLAYING) {
+            CL_System::sleep(10);
+        }
     }
-
 
     cleanUp();
 
     LOG_INFO(LOGTYPE_MAIN, "end of main");
-
     return 0;
+}
+
+float Client::calculateFps(unsigned int elapsedMillis) {
+    // fps are calculated every 100 frames => sum time
+    static unsigned int fpsSum = 0;
+    static unsigned int frameCount = 0;
+    static float fps;
+
+    ++frameCount;
+    fpsSum += elapsedMillis;
+
+    if (frameCount >= 100) {
+        fps = fpsSum / 1000.0f; // seconds
+        fps /= 100.0f; // 100 cycles
+        fps = 1 / fps;
+
+        std::ostringstream titleHelper;
+        titleHelper << "UO:ME -- fps: " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << fps;
+        ui::Manager::getSingleton()->getMainWindow()->set_title(titleHelper.str());
+
+        fpsSum = 0;
+        frameCount = 0;
+        //LOGARG_DEBUG(LOGTYPE_MAIN, "fps: %.1f", fps);
+    }
+
+    return fps;
+}
+
+
+
+
+void Client::doStatePlaying(unsigned int elapsedMillis) {
+    // adding sectors has to be done before sorting
+    world::Manager::getSingleton()->getSectorManager()->addNewSectors();
+
+    ui::Manager::getSingleton()->getRenderQueue()->prepareRender((unsigned int)elapsedMillis);
+
+    // deleting sectors has to be done after RenderQueue::prepareRender()
+    // TODO: maybe before add?
+    world::Manager::getSingleton()->getSectorManager()->deleteSectors();
+
+    //CL_System::sleep(1);
 }
 
 }

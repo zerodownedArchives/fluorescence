@@ -10,6 +10,8 @@
 #include "doubleclickhandler.hpp"
 #include "gumpmenu.hpp"
 
+#include <client.hpp>
+
 #include <misc/logger.hpp>
 #include <misc/exception.hpp>
 
@@ -55,6 +57,8 @@ Manager::Manager() {
     description.set_size(CL_Size(800, 600), true);
     description.set_title("UO:ME");
     mainWindow_.reset(new CL_DisplayWindow(description));
+
+    slotCloseWindow = mainWindow_->sig_window_close().connect(Client::getSingleton(), &Client::shutdown);
 
     windowManager_.reset(new CL_GUIWindowManagerTexture(*mainWindow_));
 
