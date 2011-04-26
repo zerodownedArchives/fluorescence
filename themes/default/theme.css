@@ -1,4 +1,11 @@
 
+/* default font */
+label, checkbox, button, lineedit, combobox, frame, listview, menubar, radiobar, slider, spin, statusbar, tabheader, tooltip, window
+{
+    font-family:DevinneSwash;
+    font-size:18pt;
+}
+
 checkbox
 {
     text-gap:3;
@@ -1464,7 +1471,6 @@ spin arrow_down:disabled
     bg-image:SpinArrowDownDisabled;
 }
 
-
 statusbar
 {
     preferred-width:100;
@@ -1727,5 +1733,5 @@ window buttonclose:disabled
 
 label#label-bigfont
 {
-    font-size:18;
+    font-size:18pt;
 }

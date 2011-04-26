@@ -19,14 +19,18 @@ public:
     /**
      * \brief Create a gump menu according to the description in the xml file
      * Gumps are delete by the gui system automatically, so there is no need to delete or free this pointer
+     * \param menu if the second parameter is NULL, a new gump is created, otherwise, the components are inserted in menu. \
+            Top level attributes are not parsed then
      */
-    static GumpMenu* fromXmlFile(const std::string& name);
+    static GumpMenu* fromXmlFile(const std::string& name, GumpMenu* menu = NULL);
 
     /**
      * \brief Create a gump menu according to the description in the string
      * Gumps are delete by the gui system automatically, so there is no need to delete or free this pointer
+     * \param menu if the second parameter is NULL, a new gump is created, otherwise, the components are inserted in menu. \
+            Top level attributes are not parsed then
      */
-    static GumpMenu* fromXmlString(const std::string& str);
+    static GumpMenu* fromXmlString(const std::string& str, GumpMenu* menu = NULL);
 
 private:
     static GumpFactory* singleton_;
@@ -36,10 +40,10 @@ private:
     GumpFactory(const GumpFactory& factory) { }
     GumpFactory& operator=(const GumpFactory& factory) { return *this; }
 
-    GumpMenu* fromXml(pugi::xml_document& doc);
+    GumpMenu* fromXml(pugi::xml_document& doc, GumpMenu* menu);
 
     CL_Rect getBoundsFromNode(pugi::xml_node& node);
-    bool parseCssId(pugi::xml_node& node, CL_GUIComponent* component);
+    bool parseId(pugi::xml_node& node, CL_GUIComponent* component);
 
     // themed ui components
     bool parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent, GumpMenu* top);

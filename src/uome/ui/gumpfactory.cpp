@@ -49,7 +49,7 @@ GumpFactory::GumpFactory() {
     functionTable_["image"] = boost::bind(&GumpFactory::parseImage, this, _1, _2, _3);
 }
 
-GumpMenu* GumpFactory::fromXmlFile(const std::string& name) {
+GumpMenu* GumpFactory::fromXmlFile(const std::string& name, GumpMenu* menu) {
     std::string fileName = name + ".xml";
     boost::filesystem::path path = "shards";
     path = path / Client::getSingleton()->getConfig()->get("shard").as<std::string>() / "gumps" / fileName;
@@ -60,7 +60,7 @@ GumpMenu* GumpFactory::fromXmlFile(const std::string& name) {
 
         if (!boost::filesystem::exists(path)) {
             LOGARG_CRITICAL(LOGTYPE_UI, "Unable to gump xml %s: file not found", name.c_str());
-            return false;
+            return menu;
         }
     }
 
@@ -70,47 +70,51 @@ GumpMenu* GumpFactory::fromXmlFile(const std::string& name) {
     pugi::xml_parse_result result = doc.load_file(path.string().c_str());
 
     if (result) {
-        return getSingleton()->fromXml(doc);
+        return getSingleton()->fromXml(doc, menu);
     } else {
         LOGARG_ERROR(LOGTYPE_UI, "Error parsing file at offset %i: %s", result.offset, result.description());
-        return NULL;
+        return menu;
     }
 }
 
-GumpMenu* GumpFactory::fromXmlString(const std::string& str) {
+GumpMenu* GumpFactory::fromXmlString(const std::string& str, GumpMenu* menu) {
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_buffer(str.c_str(), str.length());
 
     if (result) {
-        return getSingleton()->fromXml(doc);
+        return getSingleton()->fromXml(doc, menu);
     } else {
         LOGARG_ERROR(LOGTYPE_UI, "Error parsing string at offset %i: %s", result.offset, result.description());
-        return NULL;
+        return menu;
     }
 }
 
 
-GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc) {
+GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
 
     pugi::xml_node rootNode = doc.child("gump");
 
-    CL_Rect bounds = getBoundsFromNode(rootNode);
-    std::string title = rootNode.attribute("title").value();
-    bool closable = rootNode.attribute("closable").as_bool();
-    bool draggable = rootNode.attribute("draggable").as_bool();
+    GumpMenu* ret = menu;
 
-    CL_GUITopLevelDescription desc(bounds, false);
+    if (!ret) {
+        CL_Rect bounds = getBoundsFromNode(rootNode);
+        std::string title = rootNode.attribute("title").value();
+        bool closable = rootNode.attribute("closable").as_bool();
+        bool draggable = rootNode.attribute("draggable").as_bool();
 
-    if (title.length() > 0) {
-        desc.set_decorations(true);
-        desc.set_title(title);
-    } else {
-        desc.set_decorations(false);
+        CL_GUITopLevelDescription desc(bounds, false);
+
+        if (title.length() > 0) {
+            desc.set_decorations(true);
+            desc.set_title(title);
+        } else {
+            desc.set_decorations(false);
+        }
+
+        ret = new GumpMenu(desc);
+        ret->setClosable(closable);
+        ret->setDraggable(draggable);
     }
-
-    GumpMenu* ret = new GumpMenu(desc);
-    ret->setClosable(closable);
-    ret->setDraggable(draggable);
 
     parseChildren(rootNode, ret, ret);
 
@@ -149,8 +153,8 @@ CL_Rect GumpFactory::getBoundsFromNode(pugi::xml_node& node) {
     return bounds;
 }
 
-bool GumpFactory::parseCssId(pugi::xml_node& node, CL_GUIComponent* component) {
-    std::string cssid = node.attribute("cssid").value();
+bool GumpFactory::parseId(pugi::xml_node& node, CL_GUIComponent* component) {
+    std::string cssid = node.attribute("id").value();
     if (cssid.length() > 0) {
         component->set_id_name(cssid);
     }
@@ -161,7 +165,7 @@ bool GumpFactory::parseCssId(pugi::xml_node& node, CL_GUIComponent* component) {
 bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node);
     std::string text = node.attribute("text").value();
-    unsigned int buttonId = node.attribute("id").as_uint();
+    unsigned int buttonId = node.attribute("buttonid").as_uint();
     unsigned int pageId = node.attribute("page").as_uint();
     std::string action = node.attribute("action").value();
     std::string param = node.attribute("param").value();
@@ -169,7 +173,7 @@ bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     components::BaseButton* button;
     if (action.length() > 0) {
         button = new components::LocalButton(parent, action, param);
-    } else if (!node.attribute("id").empty()) {
+    } else if (!node.attribute("buttonid").empty()) {
         button = new components::ServerButton(parent, buttonId);
     } else if (!node.attribute("page").empty()) {
         button = new components::PageButton(parent, pageId);
@@ -178,7 +182,7 @@ bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, Gu
         return false;
     }
 
-    parseCssId(node, button);
+    parseId(node, button);
     button->set_geometry(bounds);
     button->set_text(text);
 
@@ -192,7 +196,7 @@ bool GumpFactory::parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent, 
     int checked = node.attribute("checked").as_int();
 
     CL_CheckBox* cb = new CL_CheckBox(parent);
-    parseCssId(node, cb);
+    parseId(node, cb);
     cb->set_geometry(bounds);
     cb->set_text(text);
 
@@ -210,8 +214,13 @@ bool GumpFactory::parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* paren
     std::string group = node.attribute("group").value();
     int selected = node.attribute("selected").as_int();
 
+    if (group.length() == 0) {
+        LOG_ERROR(LOGTYPE_UI, "Adding tradiobutton without group");
+        return false;
+    }
+
     CL_RadioButton* button = new CL_RadioButton(parent);
-    parseCssId(node, button);
+    parseId(node, button);
     button->set_geometry(bounds);
     button->set_text(text);
     button->set_group_name(group);
@@ -232,7 +241,7 @@ bool GumpFactory::parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent, 
     unsigned int maxlength = node.attribute("maxlength").as_uint();
 
     CL_LineEdit* edit = new CL_LineEdit(parent);
-    parseCssId(node, edit);
+    parseId(node, edit);
     edit->set_text(text);
     edit->set_geometry(bounds);
     edit->set_select_all_on_focus_gain(false);
@@ -257,7 +266,7 @@ bool GumpFactory::parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent, 
     CL_Rect bounds = getBoundsFromNode(node);
 
     CL_ComboBox* box = new CL_ComboBox(parent);
-    parseCssId(node, box);
+    parseId(node, box);
     box->set_geometry(bounds);
 
     CL_PopupMenu menu;
@@ -293,7 +302,7 @@ bool GumpFactory::parseTGroupBox(pugi::xml_node& node, CL_GUIComponent* parent, 
     CL_Rect bounds = getBoundsFromNode(node);
 
     CL_GroupBox* box = new CL_GroupBox(parent);
-    parseCssId(node, box);
+    parseId(node, box);
     box->set_geometry(bounds);
 
     parseChildren(node, box, top);
@@ -307,7 +316,7 @@ bool GumpFactory::parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     std::string type = node.attribute("type").value();
 
     CL_Spin* spin = new CL_Spin(parent);
-    parseCssId(node, spin);
+    parseId(node, spin);
 
     if (type == "int") {
         int min = node.attribute("min").as_int();
@@ -344,7 +353,7 @@ bool GumpFactory::parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     CL_Rect bounds = getBoundsFromNode(node);
 
     CL_Tab* tabs = new CL_Tab(parent);
-    parseCssId(node, tabs);
+    parseId(node, tabs);
     tabs->set_geometry(bounds);
 
     pugi::xml_node_iterator iter = node.begin();
@@ -357,7 +366,7 @@ bool GumpFactory::parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent, Gump
         } else {
             std::string tabTitle = iter->attribute("text").value();
             CL_TabPage* newpage = tabs->add_page(tabTitle);
-            parseCssId(*iter, newpage);
+            parseId(*iter, newpage);
 
             parseChildren(*iter, newpage, top);
         }
@@ -377,7 +386,7 @@ bool GumpFactory::parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent, Gu
 
 
     CL_Slider* slider = new CL_Slider(parent);
-    parseCssId(node, slider);
+    parseId(node, slider);
 
     if (type == "vertical") {
         slider->set_vertical(true);
@@ -405,7 +414,7 @@ bool GumpFactory::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     std::string text = node.attribute("text").value();
 
     CL_Label* label = new CL_Label(parent);
-    parseCssId(node, label);
+    parseId(node, label);
 
     if (align.length() == 0 || align == "left") {
         label->set_alignment(CL_Label::align_left);
@@ -459,7 +468,7 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     unsigned int height = node.attribute("height").as_uint();
 
     CL_ImageView* img = new CL_ImageView(parent);
-    parseCssId(node, img);
+    parseId(node, img);
 
     // path takes precedence over gumpid, gumpid over artid
     if (path.length() > 0) {
@@ -525,16 +534,16 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
 }
 
 bool GumpFactory::parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    unsigned int id = node.attribute("id").as_uint();
+    unsigned int number = node.attribute("number").as_uint();
 
-    // check that we add pages only at the top level hierarchy
     if (top->getActivePageId() != 0) {
+    // check that we add pages only at the top level hierarchy
         // adding a page inside another page
-        LOGARG_ERROR(LOGTYPE_UI, "Adding page %i inside of page %i", top->getActivePageId(), id);
+        LOGARG_ERROR(LOGTYPE_UI, "Adding page %i inside of page %i", top->getActivePageId(), number);
         return false;
     }
 
-    top->addPage(id);
+    top->addPage(number);
 
     bool ret = parseChildren(node, parent, top);
 

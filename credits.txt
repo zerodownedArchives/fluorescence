@@ -1,0 +1,4 @@
+UO:ME makes extensive use of ClanLib (www.ClanLib.org). 
+
+The "Devinne Swash" font was created by Dieter Steffmann (http://www.steffmann.de/). It is available at http://www.fontspace.com/dieter-steffmann/devinne-swash
+

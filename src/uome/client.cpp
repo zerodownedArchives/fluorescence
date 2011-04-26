@@ -75,7 +75,7 @@ bool Client::handleStateChange() {
     // start new state
     switch(requestedState_) {
     case STATE_LOGIN:
-        ui::GumpFactory::fromXmlFile("simpletest");
+        ui::GumpFactory::fromXmlFile("login");
         break;
 
     case STATE_PLAYING:

@@ -9,6 +9,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options.hpp>
+#include <boost/filesystem/path.hpp>
 
 #include <list>
 
@@ -76,6 +77,8 @@ private:
     void processCloseList();
 
     CL_Slot slotCloseWindow;
+
+    void loadFontDirectory(const boost::filesystem::path& path);
 };
 
 }

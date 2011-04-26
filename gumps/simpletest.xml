@@ -2,12 +2,12 @@
     <tbutton x="30" y="30" width="120" height="25" text="wohoo!!" page="1" />
     <tbutton x="170" y="30" width="120" height="25" text="alright" page="14" />
 
-    <page id="1">
+    <page number="1">
         <tcheckbox x="50" y="75" width="100" height="25" text="awesome?" checked="1" />
 
-        <tradiobutton x="170" y="65" width="40" height="25" text="1" />
-        <tradiobutton x="210" y="65" width="40" height="25" text="2" />
-        <tradiobutton x="250" y="65" width="40" height="25" text="3" />
+        <tradiobutton x="170" y="65" width="40" height="25" text="1" group="first" />
+        <tradiobutton x="210" y="65" width="40" height="25" text="2" group="first" />
+        <tradiobutton x="250" y="65" width="40" height="25" text="3" group="first" />
 
         <tradiobutton x="170" y="90" width="40" height="25" text="7" group="foo" />
         <tradiobutton x="210" y="90" width="40" height="25" text="8" group="foo" selected="1" />
@@ -21,15 +21,15 @@
 
         <ttabs x="15" y="210" width="400" height="150">
             <ttabpage text="Choose">
-                <tbutton x="30" y="20" width="120" height="25" text="tab 1" id="21" />
+                <tbutton x="30" y="20" width="120" height="25" text="tab 1" buttonid="21" />
             </ttabpage>
 
             <ttabpage text="me!">
-                <tbutton x="50" y="20" width="120" height="25" text="tab 2" id="22" />
+                <tbutton x="50" y="20" width="120" height="25" text="tab 2" buttonid="22" />
             </ttabpage>
 
             <ttabpage text="or me!">
-                <tbutton x="70" y="20" width="120" height="25" text="tab 3" id="23" />
+                <tbutton x="70" y="20" width="120" height="25" text="tab 3" buttonid="23" />
             </ttabpage>
         </ttabs>
 
@@ -48,7 +48,7 @@
 
         <tlabel x="0" y="400" width="600" height="25" align="center" text="Centered text" />
         <tlabel x="0" y="425" width="600" height="25" align="right" text="Right aligned" />
-        <tlabel x="100" y="450" width="120" height="25" text="Big text" cssid="label-bigfont" />
+        <tlabel x="100" y="450" width="120" height="25" text="Big text" id="label-bigfont" />
 
         <image x="5" y="480" path="themes/default/Images/CheckBoxIndeterminatedHot.png" />
         <image x="25" y="480" width="30" height="30" path="themes/default/Images/CheckBoxIndeterminatedHot.png" />
@@ -58,7 +58,7 @@
         <image x="300" y="480" width="50" height="10" gumpid="230" />
     </page>
   
-    <page id="14">
+    <page number="14">
         <image x="230" y="280" gumpid="10" />
     </page>
 </gump>

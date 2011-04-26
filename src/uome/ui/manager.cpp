@@ -1,7 +1,6 @@
 
 #include "manager.hpp"
 
-#include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
 #include "ingameview.hpp"
@@ -67,6 +66,9 @@ Manager::Manager() {
     boost::filesystem::path path = "themes";
     path = path / "default";
     guiManager_.reset(new CL_GUIManager(*windowManager_, path.string()));
+
+    path = "fonts";
+    loadFontDirectory(path);
 }
 
 bool Manager::setShardConfig(Config& config) {
@@ -85,6 +87,13 @@ bool Manager::setShardConfig(Config& config) {
 
     guiManager_->exit_with_code(0);
     guiManager_.reset(new CL_GUIManager(*windowManager_, path.string()));
+
+    path = "fonts";
+    loadFontDirectory(path);
+
+    path = "shards";
+    path = path / config["shard"].as<std::string>() / "fonts";
+    loadFontDirectory(path);
 
     renderQueue_.reset(new RenderQueue());
 
@@ -162,6 +171,33 @@ void Manager::processCloseList() {
 bool Manager::openChooseShard() {
     return gumps::ShardSelection::create() != NULL;
 
+}
+
+void Manager::loadFontDirectory(const boost::filesystem::path& path) {
+    namespace bfs = boost::filesystem;
+
+    if (!bfs::exists(path) || !bfs::is_directory(path)) {
+        LOGARG_ERROR(LOGTYPE_UI, "Unable to load fonts directory %s", path.string().c_str());
+        return;
+    }
+
+    bfs::directory_iterator iter(path);
+    bfs::directory_iterator end;
+
+    for (; iter != end; ++iter) {
+        if (bfs::is_directory(iter->status())) {
+            loadFontDirectory(iter->path());
+        } else {
+            std::string ext = iter->path().extension();
+
+            if (ext != ".ttf") {
+                LOGARG_ERROR(LOGTYPE_UI, "Unable to load font %s: only ttf fonts supported", iter->path().string().c_str());
+                continue;
+            }
+
+            CL_Font_System::register_font(iter->path().string(), iter->path().stem());
+        }
+    }
 }
 
 }

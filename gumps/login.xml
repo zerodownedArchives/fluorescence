@@ -1,0 +1,16 @@
+<gump x="225" y="205" width="350" height="190" closable="0" draggable="0">
+    <tlabel x="15" y="18" width="95" height="20" text="IP/Hostname:" />
+    <tlineedit id="loginip" x="120" y="15" width="215" height="25" />
+    
+    <tlabel x="15" y="48" width="95" height="20" text="Port:" />
+    <tlineedit id="loginport" x="120" y="45" width="215" height="25" numeric="1" maxlength="5" />
+    
+    <tlabel x="15" y="78" width="95" height="20" text="Account:" />
+    <tlineedit id="loginaccount" x="120" y="75" width="215" height="25" />
+    
+    <tlabel x="15" y="108" width="95" height="20" text="Password:" />
+    <tlineedit id="loginpassword" x="120" y="105" width="215" height="25"  password="1" />
+    
+    <tbutton x="30" y="150" width="130" height="25" text="Close UO:ME" action="shutdown" /> 
+    <tbutton x="190" y="150" width="130" height="25" text="Connect" action="connect" />
+</gump>

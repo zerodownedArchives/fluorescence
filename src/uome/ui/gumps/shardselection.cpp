@@ -33,7 +33,7 @@ ShardSelection* ShardSelection::create() {
         }
     }
 
-    unsigned int windowHeight = nameList.size() * 28 + 106; // two more buttons and some space top/bottom
+    unsigned int windowHeight = nameList.size() * 28 + 101; // two more buttons and some space top/bottom
     unsigned int windowWidth = 250;
 
     CL_GUITopLevelDescription desc(CL_Rect(275, 300 - (windowHeight / 2), CL_Size(windowWidth, windowHeight)), true);
@@ -65,7 +65,7 @@ ShardSelection::ShardSelection(const CL_GUITopLevelDescription& desc, const std:
 
     ui::components::LocalButton* closeButton = new ui::components::LocalButton(this, "shutdown");
     closeButton->set_geometry(CL_Rect(20, 30 + idx * 28, CL_Size(210, 25)));
-    closeButton->set_text("Close client");
+    closeButton->set_text("Close UO:ME");
     ++idx;
 }
 
