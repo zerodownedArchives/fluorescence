@@ -52,6 +52,19 @@ void Client::shutdown() {
     setState(STATE_SHUTDOWN);
 }
 
+void Client::shutdown(ui::GumpMenu* menu, const std::string& parameter) {
+    shutdown();
+}
+
+void Client::selectShard(ui::GumpMenu* menu, const std::string& parameter) {
+    config_.set("shard", parameter);
+    setState(STATE_LOGIN);
+}
+
+void Client::connect(ui::GumpMenu* menu, const std::string& parameter) {
+    LOG_DEBUG(LOGTYPE_MAIN, "TODO: Client::connect");
+}
+
 void Client::setState(unsigned int value) {
     requestedState_ = value;
 }

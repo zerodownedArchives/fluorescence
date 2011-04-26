@@ -19,6 +19,8 @@
 
 #include "gumps/shardselection.hpp"
 
+#include "components/localbutton.hpp"
+
 namespace uome {
 namespace ui {
 
@@ -57,6 +59,7 @@ Manager::Manager() {
     CL_OpenGLWindowDescription description;
     description.set_size(CL_Size(800, 600), true);
     description.set_title("UO:ME");
+    description.set_allow_resize(true);
     mainWindow_.reset(new CL_DisplayWindow(description));
 
     slotCloseWindow = mainWindow_->sig_window_close().connect(Client::getSingleton(), &Client::shutdown);
@@ -69,6 +72,8 @@ Manager::Manager() {
 
     path = "fonts";
     loadFontDirectory(path);
+
+    components::LocalButton::buildBasicActionTable();
 }
 
 bool Manager::setShardConfig(Config& config) {
@@ -103,6 +108,8 @@ bool Manager::setShardConfig(Config& config) {
     doubleClickHandler_.reset(new DoubleClickHandler(config));
     doubleClickHandler_->start();
 
+    components::LocalButton::buildFullActionTable();
+
     return true;
 }
 
@@ -118,7 +125,7 @@ void Manager::step() {
 
     getGraphicsContext().clear();
     windowManager_->draw_windows(getGraphicsContext());
-    mainWindow_->flip();
+    mainWindow_->flip(); // use parameter 1 here for vsync
 
     CL_KeepAlive::process();
 

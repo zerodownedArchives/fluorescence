@@ -1,4 +1,4 @@
-<gump x="225" y="205" width="350" height="190" closable="0" draggable="0">
+<gump x="225" y="205" width="350" height="190" closable="0" draggable="1">
     <tlabel x="15" y="18" width="95" height="20" text="IP/Hostname:" />
     <tlineedit id="loginip" x="120" y="15" width="215" height="25" />
     
