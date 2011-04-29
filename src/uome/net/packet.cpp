@@ -1,6 +1,8 @@
 
 #include "packet.hpp"
 
+#include <misc/logger.hpp>
+
 namespace uome {
 namespace net {
 
@@ -29,6 +31,10 @@ bool Packet::hasVariableSize() {
 
 uint16_t Packet::getSize() {
     return size_;
+}
+
+void Packet::onReceive() {
+    LOGARG_ERROR(LOGTYPE_NETWORK, "Received unhandled packet %u", id_);
 }
 
 }

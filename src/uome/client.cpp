@@ -83,7 +83,7 @@ bool Client::handleStateChange() {
     // start new state
     switch(requestedState_) {
     case STATE_LOGIN:
-        ui::Manager::getSingleton()->openXmlGump("login");
+        ui::Manager::getSingleton()->openLoginGump();
         break;
 
     case STATE_PLAYING:
@@ -200,7 +200,7 @@ int Client::main(const std::vector<CL_String8>& args) {
     if (config_.count("shard") > 0) {
         setState(STATE_LOGIN);
     } else {
-        if (!ui::Manager::getSingleton()->openChooseShard()) {
+        if (!ui::Manager::getSingleton()->openChooseShardGump()) {
             LOG_CRITICAL(LOGTYPE_MAIN, "No shard chosen, and unable to select through ui");
             cleanUp();
             return 1;

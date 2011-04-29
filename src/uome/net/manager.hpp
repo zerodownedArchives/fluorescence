@@ -26,6 +26,7 @@ public:
     static boost::shared_ptr<Packet> createPacket(uint8_t id);
 
     bool connect(ui::GumpMenu* menu, const std::string& parameter);
+    void disconnect();
 
 private:
     static Manager* singleton_;

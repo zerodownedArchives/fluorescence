@@ -3,6 +3,7 @@
 
 
 #include "packets/loginrequest.hpp"
+#include "packets/loginreject.hpp"
 #include "packets/serverlist.hpp"
 
 #include "packets/unknown.hpp"

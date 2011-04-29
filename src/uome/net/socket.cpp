@@ -261,7 +261,7 @@ void Socket::parsePackets() {
                 LOGARG_DEBUG(LOGTYPE_NETWORK, "Read of packet id=%u len=%u successful!", packetId, packetSize);
 
                 packetQueueMutex_.lock();
-                packetQueue_.push_back(newPacket);
+                packetQueue_.push(newPacket);
                 packetQueueMutex_.unlock();
             }
         } else {
@@ -284,6 +284,19 @@ void Socket::parsePackets() {
 
 bool Socket::isConnected() {
     return socketFd_ != -1;
+}
+
+boost::shared_ptr<Packet> Socket::getNextPacket() {
+    boost::shared_ptr<Packet> ret;
+
+    packetQueueMutex_.lock();
+    if (!packetQueue_.empty()) {
+        ret = packetQueue_.front();
+        packetQueue_.pop();
+    }
+    packetQueueMutex_.unlock();
+
+    return ret;
 }
 
 }

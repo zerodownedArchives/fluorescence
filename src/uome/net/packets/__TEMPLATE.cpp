@@ -22,6 +22,9 @@ bool TEMPLATE::read(const int8_t* buf, unsigned int len, unsigned int& index) {
     return ret;
 }
 
+void TEMPLATE::onReceive() {
+}
+
 }
 }
 }

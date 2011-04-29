@@ -20,6 +20,8 @@ public:
     bool hasVariableSize();
     uint16_t getSize(); ///< for fixed size packets
 
+    virtual void onReceive();
+
 protected:
     virtual bool writePacketInfo(int8_t* buf, unsigned int len, unsigned int& index) const;
 

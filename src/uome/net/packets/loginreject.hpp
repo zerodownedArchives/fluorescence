@@ -1,5 +1,5 @@
-#ifndef UOME_NET_PACKETS__HPP
-#define UOME_NET_PACKETS__HPP
+#ifndef UOME_NET_PACKETS_LOGINREJECT_HPP
+#define UOME_NET_PACKETS_LOGINREJECT_HPP
 
 #include <net/packet.hpp>
 
@@ -8,17 +8,16 @@ namespace net {
 
 namespace packets {
 
-class TEMPLATE : public Packet {
+class LoginReject : public Packet {
 public:
-    TEMPLATE();
+    LoginReject();
 
-    virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
     virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
 
     virtual void onReceive();
 
 private:
-
+    uint8_t reason_;
 };
 
 }

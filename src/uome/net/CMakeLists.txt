@@ -30,6 +30,7 @@ set (PACKETS_HPP
 
     net/packets/loginrequest.hpp
     net/packets/serverlist.hpp
+    net/packets/loginreject.hpp
     )
 
 set (PACKETS_CPP
@@ -37,6 +38,7 @@ set (PACKETS_CPP
 
     net/packets/loginrequest.cpp
     net/packets/serverlist.cpp
+    net/packets/loginreject.cpp
     )
 
 set (MD5

@@ -5,6 +5,8 @@
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 
+#include <queue>
+
 #include "encryption.hpp"
 #include "decompress.hpp"
 #include "packet.hpp"
@@ -35,6 +37,8 @@ public:
 
     void setUseDecompress(bool value);
 
+    boost::shared_ptr<Packet> getNextPacket();
+
 private:
     int socketFd_;
 
@@ -63,7 +67,7 @@ private:
 
 
     boost::mutex packetQueueMutex_;
-    std::list<boost::shared_ptr<Packet> > packetQueue_;
+    std::queue<boost::shared_ptr<Packet> > packetQueue_;
     void parsePackets();
 };
 

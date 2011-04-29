@@ -17,8 +17,9 @@ Config::Config() : consoleDesc_("Console options"), filesDesc_("Files options"),
 
     consoleDesc_.add_options()
     ("help", "Receive this message")
-    ("help-files", "Receive file-related parameter informations")
-    ("help-ui", "Receive ui-related parameter informations")
+    ("help-files", "Receive file-related parameter information")
+    ("help-ui", "Receive ui-related parameter information")
+    ("help-shard", "Receive shard-related parameter information")
     ("shard", po::value<std::string>(), "The shard you want to connect to. If empty, shard selection dialog is shown. Shard name can also be given without --shard prefix")
     ;
 
@@ -156,6 +157,14 @@ Config::Config() : consoleDesc_("Console options"), filesDesc_("Files options"),
     ("ui.cursor-artid-start-warmode", po::value<unsigned int>()->default_value(0x2053), "Begin art id of cursor sequence (warmode)")
     ("ui.doubleclick-timeout-ms", po::value<unsigned int>()->default_value(300), "Maximum interval between two clicks to be counted as double click")
     ;
+
+    shardDesc_.add_options()
+    ("shard.host", po::value<std::string>(), "Hostname or IP address of the server")
+    ("shard.port", po::value<unsigned short>(), "Port number")
+    ("shard.account", po::value<std::string>(), "Account name")
+    ("shard.password", po::value<std::string>(), "Account password")
+    ("shard.save-password", po::value<bool>()->default_value(false), "Wheter or not to save the password in the cfg file")
+    ;
 }
 
 bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
@@ -172,6 +181,7 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
     desc.add(consoleDesc_);
     desc.add(filesDesc_);
     desc.add(uiDesc_);
+    desc.add(shardDesc_);
 
     try {
         // parse console
@@ -187,6 +197,9 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
             return false;
         } else if (variablesMap_.count("help-ui")) {
             std::cout << uiDesc_ << std::endl;
+            return false;
+        } else if (variablesMap_.count("help-shard")) {
+            std::cout << shardDesc_ << std::endl;
             return false;
         }
 
@@ -208,6 +221,7 @@ bool Config::parseShardConfig(const std::string& shardName) {
 
     desc.add(filesDesc_);
     desc.add(uiDesc_);
+    desc.add(shardDesc_);
 
     boost::filesystem::path cfgPath = "shards";
     cfgPath = cfgPath / shardName / "uome.cfg";

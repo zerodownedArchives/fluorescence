@@ -27,7 +27,7 @@ void LocalButton::buildBasicActionTable() {
 }
 
 void LocalButton::buildFullActionTable() {
-    actionTable_["connect"] = ClickAction(true, boost::bind(&net::Manager::connect, net::Manager::getSingleton(), _1, _2));
+    actionTable_["connect"] = ClickAction(false, boost::bind(&net::Manager::connect, net::Manager::getSingleton(), _1, _2));
 }
 
 LocalButton::LocalButton(CL_GUIComponent* parent, const std::string& action, const std::string& parameter) : BaseButton(parent),

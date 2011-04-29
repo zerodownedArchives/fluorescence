@@ -9,6 +9,7 @@
 #include "doubleclickhandler.hpp"
 #include "gumpmenu.hpp"
 #include "gumpfactory.hpp"
+#include "gumpmenus.hpp"
 #include "gumps/shardselection.hpp"
 #include "components/localbutton.hpp"
 
@@ -158,6 +159,10 @@ void Manager::closeGumpMenu(GumpMenu* menu) {
     closeList_.push_back(menu);
 }
 
+void Manager::closeGumpMenu(const std::string& gumpName) {
+    LOG_ERROR(LOGTYPE_UI, "Not yet implemented function closeGumpMenu called");
+}
+
 void Manager::processCloseList() {
     std::list<GumpMenu*>::iterator iter = closeList_.begin();
     std::list<GumpMenu*>::iterator end = closeList_.end();
@@ -169,9 +174,12 @@ void Manager::processCloseList() {
     closeList_.clear();
 }
 
-bool Manager::openChooseShard() {
+bool Manager::openChooseShardGump() {
     return gumps::ShardSelection::create() != NULL;
+}
 
+bool Manager::openLoginGump() {
+    return GumpMenus::openLoginGump() != NULL;
 }
 
 void Manager::loadFontDirectory(const boost::filesystem::path& path) {
@@ -201,8 +209,12 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
     }
 }
 
-void Manager::openXmlGump(const std::string& name) {
-    GumpFactory::fromXmlFile(name);
+GumpMenu* Manager::openXmlGump(const std::string& name) {
+    return GumpFactory::fromXmlFile(name);
+}
+
+bool Manager::openMessageBox(const std::string& message) {
+    return GumpMenus::openMessageBox(message) != NULL;
 }
 
 }

@@ -13,6 +13,7 @@ set (UI_HPP
     ui/cursormanager.hpp
     ui/cursorimage.hpp
     ui/doubleclickhandler.hpp
+    ui/gumpmenus.hpp
     )
 
 set (UI_CPP
@@ -28,6 +29,7 @@ set (UI_CPP
     ui/cursormanager.cpp
     ui/cursorimage.cpp
     ui/doubleclickhandler.cpp
+    ui/gumpmenus.cpp
     )
 
 set (GUMPMENU_HPP

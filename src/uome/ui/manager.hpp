@@ -44,10 +44,15 @@ public:
 
     void step();
 
-    void openXmlGump(const std::string& name);
+    GumpMenu* openXmlGump(const std::string& name);
+    void closeGumpMenu(const std::string& name);
     void closeGumpMenu(GumpMenu* menu);
 
-    bool openChooseShard();
+
+    // special gumps
+    bool openChooseShardGump();
+    bool openLoginGump();
+    bool openMessageBox(const std::string& message);
 
 private:
     static Manager* singleton_;

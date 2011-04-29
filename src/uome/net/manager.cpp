@@ -2,6 +2,7 @@
 #include "manager.hpp"
 
 #include <misc/logger.hpp>
+#include <ui/manager.hpp>
 #include <ui/gumpmenu.hpp>
 
 #include "packetlist.hpp"
@@ -48,7 +49,14 @@ Manager::~Manager() {
 
 void Manager::step() {
     if (socket_.isConnected()) {
-        // TODO: handle received packets
+        // handle received packets
+        boost::shared_ptr<Packet> packet = socket_.getNextPacket();
+        while (packet) {
+            packet->onReceive();
+            packet = socket_.getNextPacket();
+        }
+
+        // send packets to server
         socket_.sendAll();
     }
 }
@@ -65,34 +73,34 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
 }
 
 bool Manager::connect(ui::GumpMenu* menu, const std::string& parameter) {
-    CL_LineEdit* ipCom = dynamic_cast<CL_LineEdit*>(menu->get_named_item("loginip"));
+    CL_LineEdit* ipCom = dynamic_cast<CL_LineEdit*>(menu->get_named_item("loginhost"));
     if (!ipCom) {
-        LOG_ERROR(LOGTYPE_UI, "Unable to find input field for the server ip. Did you change the login gump template?");
+        ui::Manager::getSingleton()->openMessageBox("Unable to find input field for the server host. Did you change the login gump template?");
         return false;
     }
 
     CL_LineEdit* portCom = dynamic_cast<CL_LineEdit*>(menu->get_named_item("loginport"));
     if (!portCom) {
-        LOG_ERROR(LOGTYPE_UI, "Unable to find input field for the server port. Did you change the login gump template?");
+        ui::Manager::getSingleton()->openMessageBox("Unable to find input field for the server port. Did you change the login gump template?");
         return false;
     }
 
     CL_LineEdit* accCom = dynamic_cast<CL_LineEdit*>(menu->get_named_item("loginaccount"));
     if (!accCom) {
-        LOG_ERROR(LOGTYPE_UI, "Unable to find input field for the account name. Did you change the login gump template?");
+        ui::Manager::getSingleton()->openMessageBox("Unable to find input field for the account name. Did you change the login gump template?");
         return false;
     }
 
     CL_LineEdit* pwCom = dynamic_cast<CL_LineEdit*>(menu->get_named_item("loginpassword"));
     if (!pwCom) {
-        LOG_ERROR(LOGTYPE_UI, "Unable to find input field for the password. Did you change the login gump template?");
+        ui::Manager::getSingleton()->openMessageBox("Unable to find input field for the password. Did you change the login gump template?");
         return false;
     }
 
     std::string host = ipCom->get_text();
     int port = portCom->get_text_int();
     if (port <= 0) {
-        LOG_ERROR(LOGTYPE_UI, "Unable to find parse port number");
+        ui::Manager::getSingleton()->openMessageBox("Unable to find parse port number");
         return false;
     }
 
@@ -106,8 +114,13 @@ bool Manager::connect(ui::GumpMenu* menu, const std::string& parameter) {
 
         return true;
     } else {
+        ui::Manager::getSingleton()->openMessageBox("Could not connect to server");
         return false;
     }
+}
+
+void Manager::disconnect() {
+    socket_.close();
 }
 
 }

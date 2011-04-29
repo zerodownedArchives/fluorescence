@@ -42,7 +42,8 @@ private:
 
     GumpMenu* fromXml(pugi::xml_document& doc, GumpMenu* menu);
 
-    CL_Rect getBoundsFromNode(pugi::xml_node& node);
+    CL_Rect getBoundsFromNode(pugi::xml_node& node, const CL_GUIComponent* parent);
+    CL_Rect getBoundsFromNode(pugi::xml_node& node, const CL_Rect& parentGeometry);
     bool parseId(pugi::xml_node& node, CL_GUIComponent* component);
 
     // themed ui components

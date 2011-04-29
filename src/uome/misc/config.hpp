@@ -31,6 +31,7 @@ private:
     boost::program_options::options_description consoleDesc_;
     boost::program_options::options_description filesDesc_;
     boost::program_options::options_description uiDesc_;
+    boost::program_options::options_description shardDesc_;
 
     boost::program_options::variables_map variablesMap_;
 
