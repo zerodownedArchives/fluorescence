@@ -56,13 +56,5 @@ set (GUMPMENU_CPP
     ui/components/pagebutton.cpp
     )
 
-set (GUMPS_HPP
-    ui/gumps/shardselection.hpp
-    )
-
-set (GUMPS_CPP
-    ui/gumps/shardselection.cpp
-    )
-
-SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${GUMPS_HPP} ${GUMPS_CPP} PARENT_SCOPE)
+SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} PARENT_SCOPE)
 

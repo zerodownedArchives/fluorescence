@@ -34,8 +34,16 @@ LocalButton::LocalButton(CL_GUIComponent* parent, const std::string& action, con
         action_(action), parameter_(parameter) {
 }
 
+void LocalButton::setAction(const std::string& value) {
+    action_ = value;
+}
+
 const std::string& LocalButton::getAction() {
     return action_;
+}
+
+void LocalButton::setParameter(const std::string& value) {
+    parameter_ = value;
 }
 
 const std::string& LocalButton::getParameter() {

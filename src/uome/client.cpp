@@ -122,6 +122,7 @@ bool Client::initBase(const std::vector<CL_String8>& args) {
         cleanUp();
         return false;
     }
+    ui::components::LocalButton::buildBasicActionTable();
 
     return true;
 }

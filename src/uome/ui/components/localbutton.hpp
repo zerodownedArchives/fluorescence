@@ -19,7 +19,10 @@ public:
 
     LocalButton(CL_GUIComponent* parent, const std::string& action, const std::string& parameter = "");
 
+    void setAction(const std::string& value);
     const std::string& getAction();
+
+    void setParameter(const std::string& value);
     const std::string& getParameter();
 
     virtual void onClicked(BaseButton* self);

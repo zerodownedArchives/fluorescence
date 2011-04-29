@@ -10,8 +10,6 @@
 #include "gumpmenu.hpp"
 #include "gumpfactory.hpp"
 #include "gumpmenus.hpp"
-#include "gumps/shardselection.hpp"
-#include "components/localbutton.hpp"
 
 #include <client.hpp>
 
@@ -69,8 +67,6 @@ Manager::Manager() {
 
     path = "fonts";
     loadFontDirectory(path);
-
-    components::LocalButton::buildBasicActionTable();
 }
 
 bool Manager::setShardConfig(Config& config) {
@@ -175,7 +171,7 @@ void Manager::processCloseList() {
 }
 
 bool Manager::openChooseShardGump() {
-    return gumps::ShardSelection::create() != NULL;
+    return GumpMenus::openShardSelectionGump() != NULL;
 }
 
 bool Manager::openLoginGump() {

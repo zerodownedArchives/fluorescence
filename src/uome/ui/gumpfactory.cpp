@@ -51,9 +51,13 @@ GumpFactory::GumpFactory() {
 }
 
 GumpMenu* GumpFactory::fromXmlFile(const std::string& name, GumpMenu* menu) {
+    // can be called before a shard is set
+    boost::filesystem::path path;
     std::string fileName = name + ".xml";
-    boost::filesystem::path path = "shards";
-    path = path / Client::getSingleton()->getConfig()->get("shard").as<std::string>() / "gumps" / fileName;
+    if (Client::getSingleton()->getConfig()->count("shard")) {
+        path = "shards";
+        path = path / Client::getSingleton()->getConfig()->get("shard").as<std::string>() / "gumps" / fileName;
+    }
 
     if (!boost::filesystem::exists(path)) {
         path = "gumps";

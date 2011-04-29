@@ -1,0 +1,18 @@
+<gump x="center" y="center" width="250" height="250" closable="0" draggable="0">
+    <!-- 
+    In case you want to redesign this gump, keep in mind that at this point, you can not
+    access any uo data (i.e. art.mul graphics), as the mul files are not loaded yet.
+    
+    All action="selectshard" buttons that are not used (due to having less shard folders than
+    buttons) are set insivible.
+    -->
+    
+    <tbutton x="center" y="20" width="210" height="25" action="selectshard" />
+    <tbutton x="center" y="48" width="210" height="25" action="selectshard" />
+    <tbutton x="center" y="76" width="210" height="25" action="selectshard" />
+    <tbutton x="center" y="104" width="210" height="25" action="selectshard" />
+    <tbutton x="center" y="132" width="210" height="25" action="selectshard" />
+    
+    <tbutton x="center" y="175" width="210" height="25" text="Create shard" action="createshard" />
+    <tbutton x="center" y="203" width="210" height="25" text="Close UO:ME" action="shutdown" />
+</gump>
