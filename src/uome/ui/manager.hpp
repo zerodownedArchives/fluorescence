@@ -10,6 +10,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include <list>
 
@@ -77,6 +78,7 @@ private:
 
     boost::shared_ptr<DoubleClickHandler> doubleClickHandler_;
 
+    boost::mutex closeListMutex_;
     std::list<GumpMenu*> closeList_;
     void processCloseList();
 

@@ -28,6 +28,7 @@ void LocalButton::buildBasicActionTable() {
 
 void LocalButton::buildFullActionTable() {
     actionTable_["connect"] = ClickAction(false, boost::bind(&net::Manager::connect, net::Manager::getSingleton(), _1, _2));
+    actionTable_["disconnect"] = ClickAction(true, boost::bind(&Client::disconnect, Client::getSingleton(), _1, _2));
 }
 
 LocalButton::LocalButton(CL_GUIComponent* parent, const std::string& action, const std::string& parameter) : BaseButton(parent),
@@ -57,6 +58,7 @@ void LocalButton::onClicked(BaseButton* self) {
 
         if (it != actionTable_.end()) {
             bool funcRet = (it->second.callback_) (gump, parameter_);
+            LOGARG_INFO(LOGTYPE_UI, "FuncRet: %i close: %i", funcRet, it->second.closeGumpMenu_);
             if (funcRet && it->second.closeGumpMenu_) { // close gump if callback was successful
                 ui::Manager::getSingleton()->closeGumpMenu(gump);
             }

@@ -225,8 +225,7 @@ void Socket::setUseDecompress(bool value) {
 void Socket::parsePackets() {
     unsigned int idx = 0;
     unsigned int lastPacketStart = 0;
-    while (idx < decompressedSize_) {
-        lastPacketStart = idx;
+    while ((lastPacketStart = idx) < decompressedSize_) {
 
         bool readSuccess = true;
         uint8_t packetId;
@@ -279,6 +278,8 @@ void Socket::parsePackets() {
             memmove(decompressedBuffer_, decompressedBuffer_ + lastPacketStart, decompressedSize_ - lastPacketStart);
             decompressedSize_ -= lastPacketStart;
         }
+    } else {
+        decompressedSize_ = 0;
     }
 }
 

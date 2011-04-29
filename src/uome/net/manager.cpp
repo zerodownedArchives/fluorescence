@@ -1,6 +1,7 @@
 
 #include "manager.hpp"
 
+#include <client.hpp>
 #include <misc/logger.hpp>
 #include <ui/manager.hpp>
 #include <ui/gumpmenu.hpp>
@@ -105,6 +106,8 @@ bool Manager::connect(ui::GumpMenu* menu, const std::string& parameter) {
     }
 
     if (socket_.connect(host, port)) {
+        Client::getSingleton()->setState(Client::STATE_LOGIN);
+
         socket_.writeSeed(0);
         // send packet
         UnicodeString name(accCom->get_text().c_str());

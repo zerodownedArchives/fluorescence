@@ -22,6 +22,7 @@ class Client {
 public:
     enum {
         STATE_SHARD_SELECTION,
+        STATE_PRE_LOGIN,
         STATE_LOGIN,
         STATE_PLAYING,
         STATE_SHUTDOWN,
@@ -40,6 +41,7 @@ public:
     void setState(unsigned int state);
 
     // gump callbacks
+    bool disconnect(ui::GumpMenu* menu, const std::string& parameter);
     bool shutdown(ui::GumpMenu* menu, const std::string& parameter);
     bool selectShard(ui::GumpMenu* menu, const std::string& parameter);
 
@@ -60,8 +62,9 @@ private:
 
     bool handleStateChange();
 
-    void doStateShardSelection(unsigned int elapsedMillis);
-    void doStateLogin(unsigned int elapsedMillis);
+    void doStateShardSelection();
+    void doStatePreLogin();
+    void doStateLogin();
     void doStatePlaying(unsigned int elapsedMillis);
 };
 

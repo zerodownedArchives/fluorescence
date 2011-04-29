@@ -152,7 +152,9 @@ boost::shared_ptr<DoubleClickHandler> Manager::getDoubleClickHandler() {
 }
 
 void Manager::closeGumpMenu(GumpMenu* menu) {
+    closeListMutex_.lock();
     closeList_.push_back(menu);
+    closeListMutex_.unlock();
 }
 
 void Manager::closeGumpMenu(const std::string& gumpName) {
@@ -160,14 +162,19 @@ void Manager::closeGumpMenu(const std::string& gumpName) {
 }
 
 void Manager::processCloseList() {
+    closeListMutex_.lock();
+
     std::list<GumpMenu*>::iterator iter = closeList_.begin();
     std::list<GumpMenu*>::iterator end = closeList_.end();
 
     for (; iter != end; ++iter) {
+        LOG_INFO(LOGTYPE_UI, "Close gump");
         delete (*iter);
     }
 
     closeList_.clear();
+
+    closeListMutex_.unlock();
 }
 
 void Manager::loadFontDirectory(const boost::filesystem::path& path) {

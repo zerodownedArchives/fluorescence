@@ -57,7 +57,13 @@ bool Client::shutdown(ui::GumpMenu* menu, const std::string& parameter) {
 
 bool Client::selectShard(ui::GumpMenu* menu, const std::string& parameter) {
     config_.set("shard", parameter);
-    setState(STATE_LOGIN);
+    setState(STATE_PRE_LOGIN);
+    return true;
+}
+
+bool Client::disconnect(ui::GumpMenu* menu, const std::string& parameter) {
+    net::Manager::getSingleton()->disconnect();
+    setState(STATE_PRE_LOGIN);
     return true;
 }
 
@@ -83,7 +89,7 @@ bool Client::handleStateChange() {
 
     // start new state
     switch(requestedState_) {
-    case STATE_LOGIN:
+    case STATE_PRE_LOGIN:
         ui::GumpMenus::openLoginGump();
         break;
 
@@ -200,7 +206,7 @@ int Client::main(const std::vector<CL_String8>& args) {
     std::string selectedShard;
     // if we already have a command line argument, take it
     if (config_.count("shard") > 0) {
-        setState(STATE_LOGIN);
+        setState(STATE_PRE_LOGIN);
     } else {
         if (!ui::GumpMenus::openShardSelectionGump()) {
             LOG_CRITICAL(LOGTYPE_MAIN, "No shard chosen, and unable to select through ui");
@@ -237,11 +243,15 @@ int Client::main(const std::vector<CL_String8>& args) {
 
         switch(state_) {
         case STATE_SHARD_SELECTION:
-            doStateShardSelection(elapsedMillis);
+            doStateShardSelection();
+            break;
+
+        case STATE_PRE_LOGIN:
+            doStatePreLogin();
             break;
 
         case STATE_LOGIN:
-            doStateLogin(elapsedMillis);
+            doStateLogin();
             break;
 
         case STATE_PLAYING:
@@ -272,7 +282,7 @@ void Client::doStatePlaying(unsigned int elapsedMillis) {
     uiManager->step();
 }
 
-void Client::doStateShardSelection(unsigned int elapsedMillis) {
+void Client::doStateShardSelection() {
     static ui::Manager* uiManager = ui::Manager::getSingleton();
 
     uiManager->step();
@@ -280,7 +290,15 @@ void Client::doStateShardSelection(unsigned int elapsedMillis) {
     CL_System::sleep(10);
 }
 
-void Client::doStateLogin(unsigned int elapsedMillis) {
+void Client::doStatePreLogin() {
+    static ui::Manager* uiManager = ui::Manager::getSingleton();
+
+    uiManager->step();
+
+    CL_System::sleep(10);
+}
+
+void Client::doStateLogin() {
     static ui::Manager* uiManager = ui::Manager::getSingleton();
     static net::Manager* netManager = net::Manager::getSingleton();
 
