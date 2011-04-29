@@ -1,5 +1,5 @@
 #ifndef UOME_NET_SOCKET_HPP
-#define UOME_NET_SOCKET_CPP
+#define UOME_NET_SOCKET_HPP
 
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/thread.hpp>
@@ -21,6 +21,8 @@ public:
 
     bool connect(const std::string& host, unsigned short port);
     void close();
+
+    bool isConnected();
 
     template<class P>
     bool write(const P& packet) {

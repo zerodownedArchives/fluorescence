@@ -4,9 +4,15 @@
 #include <boost/shared_ptr.hpp>
 
 #include <misc/config.hpp>
+
 #include "packet.hpp"
+#include "socket.hpp"
 
 namespace uome {
+namespace ui {
+    class GumpMenu;
+}
+
 namespace net {
 
 class Manager {
@@ -15,7 +21,11 @@ public:
     static Manager* getSingleton();
     static void destroy();
 
+    void step();
+
     static boost::shared_ptr<Packet> createPacket(uint8_t id);
+
+    bool connect(ui::GumpMenu* menu, const std::string& parameter);
 
 private:
     static Manager* singleton_;
@@ -23,6 +33,8 @@ private:
     Manager(const Manager& copy) { }
     Manager& operator=(const Manager& copy) { return *this; }
     ~Manager();
+
+    Socket socket_;
 
 };
 

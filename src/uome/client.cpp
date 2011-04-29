@@ -1,6 +1,9 @@
 
 #include "client.hpp"
 
+#include <iostream>
+#include <iomanip>
+
 #include <misc/config.hpp>
 #include <misc/logger.hpp>
 
@@ -8,7 +11,7 @@
 #include <ui/renderqueue.hpp>
 #include <ui/ingameview.hpp>
 #include <ui/gumpmenu.hpp>
-#include <ui/gumpfactory.hpp>
+#include <ui/components/localbutton.hpp>
 
 #include <data/manager.hpp>
 
@@ -18,13 +21,7 @@
 
 #include <net/manager.hpp>
 
-#include <iostream>
-#include <iomanip>
 
-
-
-#include <net/socket.hpp>
-#include <net/packets/loginrequest.hpp>
 
 
 namespace uome {
@@ -52,17 +49,15 @@ void Client::shutdown() {
     setState(STATE_SHUTDOWN);
 }
 
-void Client::shutdown(ui::GumpMenu* menu, const std::string& parameter) {
+bool Client::shutdown(ui::GumpMenu* menu, const std::string& parameter) {
     shutdown();
+    return true;
 }
 
-void Client::selectShard(ui::GumpMenu* menu, const std::string& parameter) {
+bool Client::selectShard(ui::GumpMenu* menu, const std::string& parameter) {
     config_.set("shard", parameter);
     setState(STATE_LOGIN);
-}
-
-void Client::connect(ui::GumpMenu* menu, const std::string& parameter) {
-    LOG_DEBUG(LOGTYPE_MAIN, "TODO: Client::connect");
+    return true;
 }
 
 void Client::setState(unsigned int value) {
@@ -88,7 +83,7 @@ bool Client::handleStateChange() {
     // start new state
     switch(requestedState_) {
     case STATE_LOGIN:
-        ui::GumpFactory::fromXmlFile("login");
+        ui::Manager::getSingleton()->openXmlGump("login");
         break;
 
     case STATE_PLAYING:
@@ -157,6 +152,10 @@ bool Client::initFull(const std::string& selectedShard) {
         return false;
     }
 
+    LOG_INFO(LOGTYPE_MAIN, "Setting up event handlers");
+    ui::components::LocalButton::buildFullActionTable();
+    // init packet handler
+
     return true;
 }
 
@@ -210,34 +209,11 @@ int Client::main(const std::vector<CL_String8>& args) {
         }
     }
 
-    //net::Socket socket;
-    //if (!socket.connect("localhost", 5003)) {
-        //LOG_INFO(LOGTYPE_MAIN, "Unable to connect socket");
-    //} else {
-        //LOG_INFO(LOGTYPE_MAIN, "Socket connected");
-
-        //socket.writeSeed(0);
-        //LOG_INFO(LOGTYPE_MAIN, "Seed sent");
-
-        //UnicodeString name("admin2");
-        //UnicodeString pass("adm");
-        //net::packets::LoginRequest req(name, pass);
-        //socket.write(req);
-        //socket.sendAll();
-    //}
-
-
-    //usleep(1000 * 1000);
-    //socket.close();
-
-
     timeval lastTime;
     gettimeofday(&lastTime, NULL);
 
     // elapsed milliseconds since the last cycle
     unsigned int elapsedMillis;
-
-    ui::Manager* uiManager = ui::Manager::getSingleton();
 
     while (state_ != STATE_SHUTDOWN) {
         timeval curTime;
@@ -259,20 +235,17 @@ int Client::main(const std::vector<CL_String8>& args) {
 
         switch(state_) {
         case STATE_SHARD_SELECTION:
+            doStateShardSelection(elapsedMillis);
             break;
+
         case STATE_LOGIN:
+            doStateLogin(elapsedMillis);
             break;
+
         case STATE_PLAYING:
             calculateFps(elapsedMillis);
             doStatePlaying(elapsedMillis);
             break;
-        }
-
-        // call renderer
-        uiManager->step();
-
-        if (state_ != STATE_PLAYING) {
-            CL_System::sleep(10);
         }
     }
 
@@ -283,16 +256,36 @@ int Client::main(const std::vector<CL_String8>& args) {
 }
 
 void Client::doStatePlaying(unsigned int elapsedMillis) {
-    // adding sectors has to be done before sorting
-    world::Manager::getSingleton()->getSectorManager()->addNewSectors();
+    static world::Manager* worldManager = world::Manager::getSingleton();
+    static ui::Manager* uiManager = ui::Manager::getSingleton();
+    static net::Manager* netManager = net::Manager::getSingleton();
 
-    ui::Manager::getSingleton()->getRenderQueue()->prepareRender((unsigned int)elapsedMillis);
+    netManager->step();
 
-    // deleting sectors has to be done after RenderQueue::prepareRender()
-    // TODO: maybe before add?
-    world::Manager::getSingleton()->getSectorManager()->deleteSectors();
+    worldManager->getSectorManager()->addNewSectors();
+    uiManager->getRenderQueue()->prepareRender((unsigned int)elapsedMillis);
+    // deleting sectors has to be done after RenderQueue::prepareRender() (list is sorted now)
+    worldManager->getSectorManager()->deleteSectors();
 
-    //CL_System::sleep(1);
+    uiManager->step();
+}
+
+void Client::doStateShardSelection(unsigned int elapsedMillis) {
+    static ui::Manager* uiManager = ui::Manager::getSingleton();
+
+    uiManager->step();
+
+    CL_System::sleep(10);
+}
+
+void Client::doStateLogin(unsigned int elapsedMillis) {
+    static ui::Manager* uiManager = ui::Manager::getSingleton();
+    static net::Manager* netManager = net::Manager::getSingleton();
+
+    netManager->step();
+    uiManager->step();
+
+    CL_System::sleep(10);
 }
 
 }

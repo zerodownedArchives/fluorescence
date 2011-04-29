@@ -31,10 +31,10 @@ private:
     struct ClickAction {
         ClickAction();
 
-        ClickAction(bool closeGumpMenu, boost::function<void (GumpMenu*, const std::string&)> callback);
+        ClickAction(bool closeGumpMenu, boost::function<bool (GumpMenu*, const std::string&)> callback);
 
         bool closeGumpMenu_;
-        boost::function<void (GumpMenu*, const std::string&)> callback_;
+        boost::function<bool (GumpMenu*, const std::string&)> callback_;
     };
 
     static std::map<std::string, ClickAction> actionTable_;

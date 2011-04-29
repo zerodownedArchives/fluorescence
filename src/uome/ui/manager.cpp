@@ -8,18 +8,14 @@
 #include "cursormanager.hpp"
 #include "doubleclickhandler.hpp"
 #include "gumpmenu.hpp"
+#include "gumpfactory.hpp"
+#include "gumps/shardselection.hpp"
+#include "components/localbutton.hpp"
 
 #include <client.hpp>
 
 #include <misc/logger.hpp>
 #include <misc/exception.hpp>
-
-#include <world/manager.hpp>
-#include <world/sectormanager.hpp>
-
-#include "gumps/shardselection.hpp"
-
-#include "components/localbutton.hpp"
 
 namespace uome {
 namespace ui {
@@ -107,8 +103,6 @@ bool Manager::setShardConfig(Config& config) {
 
     doubleClickHandler_.reset(new DoubleClickHandler(config));
     doubleClickHandler_->start();
-
-    components::LocalButton::buildFullActionTable();
 
     return true;
 }
@@ -205,6 +199,10 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
             CL_Font_System::register_font(iter->path().string(), iter->path().stem());
         }
     }
+}
+
+void Manager::openXmlGump(const std::string& name) {
+    GumpFactory::fromXmlFile(name);
 }
 
 }

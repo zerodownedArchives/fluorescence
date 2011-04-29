@@ -56,6 +56,7 @@ bool Socket::connect(const std::string& host, unsigned short port) {
 
     if (!hostent) {
         LOGARG_ERROR(LOGTYPE_NETWORK, "Unknown host: %s", host.c_str());
+        close();
         return false;
     }
 
@@ -70,6 +71,7 @@ bool Socket::connect(const std::string& host, unsigned short port) {
         #else
             LOGARG_ERROR(LOGTYPE_NETWORK, "Unable to connect socket: %s", strerror(errno));
         #endif
+        close();
         return false;
     }
 
@@ -78,6 +80,7 @@ bool Socket::connect(const std::string& host, unsigned short port) {
         u_long iMode = 1;
         if (ioctlsocket(m_sock, FIONBIO, &iMode) != 0) {
             LOGARG_ERROR(LOGTYPE_NETWORK, "Unable to set socket to nonblocking: %s", strerror(WSAGetLastError()));
+            close();
             return false;
         }
     #else
@@ -86,10 +89,12 @@ bool Socket::connect(const std::string& host, unsigned short port) {
         if ((flags = fcntl(socketFd_, F_GETFL, 0)) < 0 ||
                 fcntl(socketFd_, F_SETFL, flags | O_NONBLOCK) < 0) {
             LOGARG_ERROR(LOGTYPE_NETWORK, "Unable to set socket to nonblocking: %s", strerror(errno));
+            close();
             return false;
         }
     #endif
 
+    LOGARG_INFO(LOGTYPE_NETWORK, "Socket connected to %s:%u", host.c_str(), port);
 
     sendSize_ = 0;
     running_ = true;
@@ -211,7 +216,6 @@ bool Socket::sendAll() {
 
 void Socket::writeSeed(uint32_t seed) {
     PacketWriter::write(sendBuffer_, 0x10000, sendSize_, seed);
-    LOGARG_DEBUG(LOGTYPE_NETWORK, "Index after seed: %u", sendSize_);
 }
 
 void Socket::setUseDecompress(bool value) {
@@ -276,6 +280,10 @@ void Socket::parsePackets() {
             decompressedSize_ -= lastPacketStart;
         }
     }
+}
+
+bool Socket::isConnected() {
+    return socketFd_ != -1;
 }
 
 }

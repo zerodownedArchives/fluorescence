@@ -40,9 +40,8 @@ public:
     void setState(unsigned int state);
 
     // gump callbacks
-    void shutdown(ui::GumpMenu* menu, const std::string& parameter);
-    void selectShard(ui::GumpMenu* menu, const std::string& parameter);
-    void connect(ui::GumpMenu* menu, const std::string& parameter);
+    bool shutdown(ui::GumpMenu* menu, const std::string& parameter);
+    bool selectShard(ui::GumpMenu* menu, const std::string& parameter);
 
 private:
     static Client* singleton_;
@@ -61,6 +60,8 @@ private:
 
     bool handleStateChange();
 
+    void doStateShardSelection(unsigned int elapsedMillis);
+    void doStateLogin(unsigned int elapsedMillis);
     void doStatePlaying(unsigned int elapsedMillis);
 };
 

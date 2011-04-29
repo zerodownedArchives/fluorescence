@@ -44,6 +44,7 @@ public:
 
     void step();
 
+    void openXmlGump(const std::string& name);
     void closeGumpMenu(GumpMenu* menu);
 
     bool openChooseShard();
