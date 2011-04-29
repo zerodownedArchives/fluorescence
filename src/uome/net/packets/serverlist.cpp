@@ -3,6 +3,9 @@
 
 #include <misc/logger.hpp>
 
+#include <ui/manager.hpp>
+#include <ui/gumpmenus.hpp>
+
 namespace uome {
 namespace net {
 namespace packets {
@@ -30,6 +33,11 @@ bool ServerList::read(const int8_t* buf, unsigned int len, unsigned int& index) 
     }
 
     return ret;
+}
+
+void ServerList::onReceive() {
+    ui::Manager::getSingleton()->closeGumpMenu("login");
+    ui::GumpMenus::openServerListGump(this);
 }
 
 }

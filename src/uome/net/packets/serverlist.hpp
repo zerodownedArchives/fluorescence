@@ -24,6 +24,8 @@ public:
 
     virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
 
+    virtual void onReceive();
+
     uint8_t flags_;
     std::list<ServerListEntry> listEntries_;
 };

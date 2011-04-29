@@ -1,0 +1,14 @@
+<gump x="center" y="center" width="250" height="250" closable="0" draggable="0">
+    <!-- 
+    All action="selectserver" buttons that are not used (due to having less shard folders than
+    buttons) are set insivible.
+    -->
+    
+    <tbutton x="center" y="20" width="210" height="25" action="selectserver" />
+    <tbutton x="center" y="48" width="210" height="25" action="selectserver" />
+    <tbutton x="center" y="76" width="210" height="25" action="selectserver" />
+    <tbutton x="center" y="104" width="210" height="25" action="selectserver" />
+    <tbutton x="center" y="132" width="210" height="25" action="selectserver" />
+    
+    <tbutton x="center" y="203" width="210" height="25" text="Disconnect" action="disconnect" />
+</gump>

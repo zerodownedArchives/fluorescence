@@ -50,8 +50,6 @@ public:
 
 
     // special gumps
-    bool openChooseShardGump();
-    bool openLoginGump();
     bool openMessageBox(const std::string& message);
 
 private:

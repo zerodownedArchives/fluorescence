@@ -170,14 +170,6 @@ void Manager::processCloseList() {
     closeList_.clear();
 }
 
-bool Manager::openChooseShardGump() {
-    return GumpMenus::openShardSelectionGump() != NULL;
-}
-
-bool Manager::openLoginGump() {
-    return GumpMenus::openLoginGump() != NULL;
-}
-
 void Manager::loadFontDirectory(const boost::filesystem::path& path) {
     namespace bfs = boost::filesystem;
 

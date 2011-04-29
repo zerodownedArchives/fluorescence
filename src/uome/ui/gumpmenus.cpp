@@ -11,6 +11,8 @@
 #include <misc/logger.hpp>
 #include <misc/config.hpp>
 
+#include <net/packets/serverlist.hpp>
+
 #include "gumpmenu.hpp"
 #include "gumpfactory.hpp"
 #include "components/localbutton.hpp"
@@ -97,6 +99,46 @@ GumpMenu* GumpMenus::openShardSelectionGump() {
 
     return menu;
 }
+
+GumpMenu* GumpMenus::openServerListGump(const net::packets::ServerList* list) {
+    GumpMenu* menu = GumpFactory::fromXmlFile("serverlist");
+
+    if (menu) {
+        std::list<std::string> nameList;
+
+        std::list<net::packets::ServerList::ServerListEntry>::const_iterator entryIter = list->listEntries_.begin();
+        std::list<net::packets::ServerList::ServerListEntry>::const_iterator entryEnd = list->listEntries_.end();
+
+        std::vector<CL_GUIComponent*> allComponents = menu->get_child_components();
+        std::vector<CL_GUIComponent*>::iterator compIter = allComponents.begin();
+        std::vector<CL_GUIComponent*>::iterator compEnd = allComponents.end();
+
+        for (; compIter != compEnd; ++compIter) {
+            ui::components::LocalButton* localButton = dynamic_cast<ui::components::LocalButton*>(*compIter);
+
+            if (localButton && localButton->getAction() == "selectserver") {
+                if (entryIter != entryEnd) {
+                    // another server left
+                    std::string serverName;
+                    serverName = entryIter->name_.toUTF8String(serverName);
+                    localButton->set_text(serverName);
+
+                    std::stringstream ss;
+                    ss << entryIter->index_;
+                    localButton->setParameter(ss.str());
+
+                    ++entryIter;
+                } else {
+                    localButton->set_enabled(false);
+                    localButton->set_text("- - -");
+                }
+            }
+        }
+    }
+
+    return menu;
+}
+
 
 }
 }
