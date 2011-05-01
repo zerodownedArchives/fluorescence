@@ -24,6 +24,7 @@ std::map<std::string, LocalButton::ClickAction> LocalButton::actionTable_ = std:
 void LocalButton::buildBasicActionTable() {
     actionTable_["shutdown"] = ClickAction(false, boost::bind(&Client::shutdown, Client::getSingleton(), _1, _2));
     actionTable_["selectshard"] = ClickAction(true, boost::bind(&Client::selectShard, Client::getSingleton(), _1, _2));
+    actionTable_["close"] = ClickAction(true, boost::bind(&LocalButton::closeHelper, _1, _2));
 }
 
 void LocalButton::buildFullActionTable() {
@@ -51,6 +52,11 @@ const std::string& LocalButton::getParameter() {
     return parameter_;
 }
 
+bool LocalButton::closeHelper(GumpMenu* menu, const std::string& param) {
+    return true;
+}
+
+
 void LocalButton::onClicked(BaseButton* self) {
     GumpMenu* gump = dynamic_cast<GumpMenu*>(get_top_level_component());
     if (gump) {
@@ -58,7 +64,6 @@ void LocalButton::onClicked(BaseButton* self) {
 
         if (it != actionTable_.end()) {
             bool funcRet = (it->second.callback_) (gump, parameter_);
-            LOGARG_INFO(LOGTYPE_UI, "FuncRet: %i close: %i", funcRet, it->second.closeGumpMenu_);
             if (funcRet && it->second.closeGumpMenu_) { // close gump if callback was successful
                 ui::Manager::getSingleton()->closeGumpMenu(gump);
             }

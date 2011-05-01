@@ -168,7 +168,6 @@ void Manager::processCloseList() {
     std::list<GumpMenu*>::iterator end = closeList_.end();
 
     for (; iter != end; ++iter) {
-        LOG_INFO(LOGTYPE_UI, "Close gump");
         delete (*iter);
     }
 

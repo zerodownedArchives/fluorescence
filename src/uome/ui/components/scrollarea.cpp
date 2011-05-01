@@ -68,7 +68,7 @@ void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int 
     bool vVisible = true;
     bool hVisible = true;
 
-    // this has to run twice, because the visibility of one scrollbar effects the other
+    // this has to run twice, because the visibility of one scrollbar affects the other
     for (unsigned int i = 0; i < 2; ++i) {
         switch (verticalVisibility) {
         case VISIBLE_ALWAYS:

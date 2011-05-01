@@ -41,6 +41,8 @@ private:
     };
 
     static std::map<std::string, ClickAction> actionTable_;
+
+    static bool closeHelper(GumpMenu* menu, const std::string& param);
 };
 
 }

@@ -1,5 +1,5 @@
 <gump x="center" y="center" width="250" height="125" closable="1" draggable="1">
     <tlabel id="messagetext" x="10" y="15" width="230" height="80" align="center" />
     
-    <tbutton x="center" y="90" width="130" height="25" text="ok" buttonid="0" />
+    <tbutton x="center" y="90" width="130" height="25" text="ok" action="close" />
 </gump>
