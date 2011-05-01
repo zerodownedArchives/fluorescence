@@ -17,6 +17,7 @@
 #include "components/pagebutton.hpp"
 #include "components/serverbutton.hpp"
 #include "components/localbutton.hpp"
+#include "components/scrollarea.hpp"
 
 namespace uome {
 namespace ui {
@@ -44,6 +45,7 @@ GumpFactory::GumpFactory() {
     functionTable_["tslider"] = boost::bind(&GumpFactory::parseTSlider, this, _1, _2, _3);
     functionTable_["tlabel"] = boost::bind(&GumpFactory::parseTLabel, this, _1, _2, _3);
     functionTable_["ttextedit"] = boost::bind(&GumpFactory::parseTTextEdit, this, _1, _2, _3);
+    functionTable_["tscrollarea"] = boost::bind(&GumpFactory::parseTScrollArea, this, _1, _2, _3);
 
     functionTable_["page"] = boost::bind(&GumpFactory::parsePage, this, _1, _2, _3);
 
@@ -577,6 +579,64 @@ bool GumpFactory::parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpM
     top->activatePage(0);
 
     return ret;
+}
+
+bool GumpFactory::parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, parent);
+    std::string hVisibilityStr = node.attribute("hvisible").value();
+    std::string vVisibilityStr = node.attribute("vvisible").value();
+
+    static std::string visibilityAlways("always");
+    static std::string visibilityNever("never");
+    static std::string visibilityOnDemand("ondemand");
+
+    unsigned int hVisibility = components::ScrollArea::VISIBLE_ON_DEMAND;
+    if (hVisibilityStr.length() > 0) {
+        if (hVisibilityStr == visibilityAlways) {
+            hVisibility = components::ScrollArea::VISIBLE_ALWAYS;
+        } else if (hVisibilityStr == visibilityNever) {
+            hVisibility = components::ScrollArea::VISIBLE_NEVER;
+        } else if (hVisibilityStr == visibilityOnDemand) {
+            hVisibility = components::ScrollArea::VISIBLE_ON_DEMAND;
+        } else {
+            LOGARG_ERROR(LOGTYPE_UI, "Unknown scrollbar hvisibility: %s. Possible values: always/never/ondemand", hVisibilityStr.c_str());
+            return false;
+        }
+    }
+
+    unsigned int vVisibility = components::ScrollArea::VISIBLE_ON_DEMAND;
+    if (vVisibilityStr.length() > 0) {
+        if (vVisibilityStr == visibilityAlways) {
+            vVisibility = components::ScrollArea::VISIBLE_ALWAYS;
+        } else if (vVisibilityStr == visibilityNever) {
+            vVisibility = components::ScrollArea::VISIBLE_NEVER;
+        } else if (vVisibilityStr == visibilityOnDemand) {
+            vVisibility = components::ScrollArea::VISIBLE_ON_DEMAND;
+        } else {
+            LOGARG_ERROR(LOGTYPE_UI, "Unknown scrollbar vvisibility: %s. Possible values: always/never/ondemand", vVisibilityStr.c_str());
+            return false;
+        }
+    }
+
+
+    components::ScrollArea* area = new components::ScrollArea(parent);
+    parseId(node, area);
+    area->set_geometry(bounds);
+
+    unsigned int hLineStep = node.attribute("hstep").as_uint();
+    unsigned int hPageStep = node.attribute("hpage").as_uint();
+    unsigned int vLineStep = node.attribute("vstep").as_uint();
+    unsigned int vPageStep = node.attribute("vpage").as_uint();
+    unsigned int marginLeft = node.attribute("marginleft").as_uint();
+    unsigned int marginBottom = node.attribute("marginbottom").as_uint();
+
+    top->addToCurrentPage(area);
+
+    parseChildren(node, area->getClientArea(), top);
+
+    area->updateScrollbars(vVisibility, hVisibility, vPageStep, hPageStep, vLineStep, hLineStep, marginLeft, marginBottom);
+
+    return true;
 }
 
 }

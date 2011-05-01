@@ -42,6 +42,7 @@ set (GUMPMENU_HPP
     ui/components/serverbutton.hpp
     ui/components/localbutton.hpp
     ui/components/pagebutton.hpp
+    ui/components/scrollarea.hpp
     )
 
 set (GUMPMENU_CPP
@@ -54,6 +55,7 @@ set (GUMPMENU_CPP
     ui/components/serverbutton.cpp
     ui/components/localbutton.cpp
     ui/components/pagebutton.cpp
+    ui/components/scrollarea.cpp
     )
 
 SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} PARENT_SCOPE)
