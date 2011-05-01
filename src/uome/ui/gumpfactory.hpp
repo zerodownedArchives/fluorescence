@@ -6,6 +6,7 @@
 #include <boost/function.hpp>
 
 #include <map>
+#include <vector>
 
 #include <misc/pugixml.hpp>
 
@@ -16,6 +17,24 @@ namespace ui {
 
 class GumpFactory {
 public:
+    struct RepeatKeyword {
+        RepeatKeyword(const std::string& node, const std::string& attribute, const std::string& search);
+
+        bool operator<(const RepeatKeyword& rhs) const;
+
+        std::string nodeText_;
+        std::string attributeText_;
+        std::string searchText_;
+    };
+
+    struct RepeatContext {
+        unsigned int repeatCount_;
+        std::map<RepeatKeyword, std::vector<std::string> > keywordReplacments_;
+    };
+
+    static void addRepeatContext(const std::string& name, const RepeatContext& context);
+    static void removeRepeatContext(const std::string& name);
+
     /**
      * \brief Create a gump menu according to the description in the xml file
      * Gumps are delete by the gui system automatically, so there is no need to delete or free this pointer
@@ -61,6 +80,8 @@ private:
     bool parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
+    bool parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+
     // supports both themed and uo images
     bool parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
@@ -69,7 +90,9 @@ private:
 
     // TODO
 
+
     std::map<std::string, boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> > functionTable_;
+    std::map<std::string, RepeatContext> repeatContexts_;
 };
 
 }

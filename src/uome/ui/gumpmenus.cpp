@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <list>
+#include <vector>
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
@@ -62,40 +63,25 @@ GumpMenu* GumpMenus::openShardSelectionGump() {
         return NULL;
     }
 
-    GumpMenu* menu = GumpFactory::fromXmlFile("shardselection");
+    std::vector<std::string> nameList;
 
-    if (menu) {
-        std::list<std::string> nameList;
+    bfs::directory_iterator nameIter(path);
+    bfs::directory_iterator nameEnd;
 
-        bfs::directory_iterator nameIter(path);
-        bfs::directory_iterator nameEnd;
-
-        std::vector<CL_GUIComponent*> allComponents = menu->get_child_components();
-        std::vector<CL_GUIComponent*>::iterator compIter = allComponents.begin();
-        std::vector<CL_GUIComponent*>::iterator compEnd = allComponents.end();
-
-        for (; compIter != compEnd; ++compIter) {
-            ui::components::LocalButton* localButton = dynamic_cast<ui::components::LocalButton*>(*compIter);
-
-            if (localButton && localButton->getAction() == "selectshard") {
-                if (nameIter != nameEnd) {
-                    // another shard left
-                    std::string shardName = nameIter->path().filename();
-                    localButton->setParameter(shardName);
-                    localButton->set_text(shardName);
-
-                    do {
-                        ++nameIter;
-                    } while (nameIter != nameEnd && !bfs::is_directory(nameIter->status()));
-                } else {
-                    localButton->set_enabled(false);
-                    localButton->set_text("- - -");
-                }
-            }
+    for (; nameIter != nameEnd; ++nameIter) {
+        if (bfs::is_directory(nameIter->status())) {
+            nameList.push_back(nameIter->path().filename());
         }
-
-
     }
+
+    GumpFactory::RepeatContext context;
+    context.repeatCount_ = nameList.size();
+    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "param", "shardname")] = nameList;
+    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "text", "shardname")] = nameList;
+
+    GumpFactory::addRepeatContext("shardlist", context);
+    GumpMenu* menu = GumpFactory::fromXmlFile("shardselection");
+    GumpFactory::removeRepeatContext("shardlist");
 
     return menu;
 }

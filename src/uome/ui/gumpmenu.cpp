@@ -36,6 +36,15 @@ void GumpMenu::addPage(unsigned int pageId) {
     }
 }
 
+void GumpMenu::removeFromPages(const CL_GUIComponent* component) {
+    std::map<unsigned int, std::vector<CL_GUIComponent*> >::iterator iter = pages_.begin();
+    std::map<unsigned int, std::vector<CL_GUIComponent*> >::iterator end = pages_.end();
+
+    for (; iter != end; ++iter) {
+        std::remove(iter->second.begin(), iter->second.end(), component);
+    }
+}
+
 void GumpMenu::addToCurrentPage(CL_GUIComponent* component) {
     pages_[activePageId_].push_back(component);
 }

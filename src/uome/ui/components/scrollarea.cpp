@@ -141,18 +141,31 @@ void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int 
     if (verticalLineStep) {
         verticalScrollBar_->set_line_step(verticalLineStep);
     } else {
-        verticalScrollBar_->set_line_step(verticalScrollBar_->get_page_step() / 10);
+        int lineStep = verticalScrollBar_->get_page_step() / 10;
+        lineStep = std::max(1, lineStep);
+        verticalScrollBar_->set_line_step(lineStep);
     }
 
     if (horizontalLineStep) {
         horizontalScrollBar_->set_line_step(horizontalLineStep);
     } else {
-        horizontalScrollBar_->set_line_step(horizontalScrollBar_->get_page_step() / 10);
+        int lineStep = horizontalScrollBar_->get_page_step() / 10;
+        lineStep = std::max(1, lineStep);
+        horizontalScrollBar_->set_line_step(lineStep);
     }
 
     clientArea_->set_clip_children(true);
     verticalScrollBar_->set_visible(vVisible);
     horizontalScrollBar_->set_visible(hVisible);
+
+    // if scrollbar is visible but not needed, disable
+    if (hVisible && childWidth <= viewSizeWidth) {
+        horizontalScrollBar_->set_enabled(false);
+    }
+
+    if (vVisible && childHeight <= viewSizeHeight) {
+        verticalScrollBar_->set_enabled(false);
+    }
 }
 
 void ScrollArea::onScroll() {

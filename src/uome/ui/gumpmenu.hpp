@@ -19,6 +19,7 @@ public:
 
     void addPage(unsigned int pageId);
 
+    void removeFromPages(const CL_GUIComponent* component);
     void addToCurrentPage(CL_GUIComponent* component);
 
     void activatePage(unsigned int pageId);

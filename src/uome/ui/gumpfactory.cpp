@@ -22,6 +22,26 @@
 namespace uome {
 namespace ui {
 
+GumpFactory::RepeatKeyword::RepeatKeyword(const std::string& node, const std::string& attribute, const std::string& search) :
+            nodeText_(node), attributeText_(attribute), searchText_(search) {
+}
+
+bool GumpFactory::RepeatKeyword::operator<(const RepeatKeyword& rhs) const {
+    if (nodeText_ == rhs.nodeText_) {
+        if (attributeText_ == rhs.attributeText_) {
+            if (searchText_ == rhs.searchText_) {
+                return true;
+            } else {
+                return searchText_ < rhs.searchText_;
+            }
+        } else {
+            return attributeText_ < rhs.attributeText_;
+        }
+    } else {
+        return nodeText_ < rhs.nodeText_;
+    }
+}
+
 
 GumpFactory* GumpFactory::singleton_ = NULL;
 
@@ -46,10 +66,19 @@ GumpFactory::GumpFactory() {
     functionTable_["tlabel"] = boost::bind(&GumpFactory::parseTLabel, this, _1, _2, _3);
     functionTable_["ttextedit"] = boost::bind(&GumpFactory::parseTTextEdit, this, _1, _2, _3);
     functionTable_["tscrollarea"] = boost::bind(&GumpFactory::parseTScrollArea, this, _1, _2, _3);
+    functionTable_["repeat"] = boost::bind(&GumpFactory::parseRepeat, this, _1, _2, _3);
 
     functionTable_["page"] = boost::bind(&GumpFactory::parsePage, this, _1, _2, _3);
 
     functionTable_["image"] = boost::bind(&GumpFactory::parseImage, this, _1, _2, _3);
+}
+
+void GumpFactory::addRepeatContext(const std::string& name, const RepeatContext& context) {
+    getSingleton()->repeatContexts_[name] = context;
+}
+
+void GumpFactory::removeRepeatContext(const std::string& name) {
+    getSingleton()->repeatContexts_.erase(name);
 }
 
 GumpMenu* GumpFactory::fromXmlFile(const std::string& name, GumpMenu* menu) {
@@ -77,7 +106,16 @@ GumpMenu* GumpFactory::fromXmlFile(const std::string& name, GumpMenu* menu) {
     pugi::xml_parse_result result = doc.load_file(path.string().c_str());
 
     if (result) {
-        return getSingleton()->fromXml(doc, menu);
+        GumpMenu* ret = getSingleton()->fromXml(doc, menu);
+
+        // save transformed document (debug)
+        // std::cout << "Saving result: " << doc.save_file("out.xml") << std::endl;
+
+        if (ret) {
+            ret->setName(name);
+        }
+
+        return ret;
     } else {
         LOGARG_ERROR(LOGTYPE_UI, "Error parsing file at offset %i: %s", result.offset, result.description());
         return menu;
@@ -90,9 +128,7 @@ GumpMenu* GumpFactory::fromXmlString(const std::string& str, GumpMenu* menu) {
 
     if (result) {
         GumpMenu* ret = getSingleton()->fromXml(doc, menu);
-        if (ret) {
-            ret->setName(str);
-        }
+
         return ret;
     } else {
         LOGARG_ERROR(LOGTYPE_UI, "Error parsing string at offset %i: %s", result.offset, result.description());
@@ -635,6 +671,92 @@ bool GumpFactory::parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent
     parseChildren(node, area->getClientArea(), top);
 
     area->updateScrollbars(vVisibility, hVisibility, vPageStep, hPageStep, vLineStep, hLineStep, marginLeft, marginBottom);
+
+    return true;
+}
+
+bool GumpFactory::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    std::string name = node.attribute("name").value();
+
+    if (repeatContexts_.count(name) == 0) {
+        LOGARG_ERROR(LOGTYPE_UI, "Trying to access unknown repeat context %s", name.c_str());
+        return false;
+    }
+
+    const RepeatContext& context = repeatContexts_[name];
+
+    int xIncrease = node.attribute("xincrease").as_int();
+    int yIncrease = node.attribute("yincrease").as_int();
+    unsigned int xLimit = node.attribute("xlimit").as_uint();
+    unsigned int yLimit = node.attribute("ylimit").as_uint();
+
+    unsigned int xIndex = 0;
+    unsigned int yIndex = 0;
+
+    pugi::xml_node::iterator nodeIter;
+    pugi::xml_node::iterator nodeEnd = node.end();
+
+    pugi::xml_node::attribute_iterator attrIter;
+    pugi::xml_node::attribute_iterator attrEnd;
+
+    std::map<RepeatKeyword, std::vector<std::string> >::const_iterator contextIter;
+    std::map<RepeatKeyword, std::vector<std::string> >::const_iterator contextEnd = context.keywordReplacments_.end();
+
+    for (unsigned int index = 0; index < context.repeatCount_; ++index) {
+
+        for (nodeIter = node.begin(); nodeIter != nodeEnd; ++nodeIter) {
+            pugi::xml_node newNode = node.parent().insert_child_after(nodeIter->type(), node);
+            newNode.set_name(nodeIter->name());
+
+            attrIter = nodeIter->attributes_begin();
+            attrEnd = nodeIter->attributes_end();
+
+            for (; attrIter != attrEnd; ++attrIter) {
+                bool contextHit = false;
+
+                for (contextIter = context.keywordReplacments_.begin(); contextIter != contextEnd; ++contextIter) {
+                    if (contextIter->first.nodeText_ == nodeIter->name() &&
+                            contextIter->first.attributeText_ == attrIter->name() &&
+                            contextIter->first.searchText_ == attrIter->value()) {
+                        contextHit = true;
+
+                        pugi::xml_attribute newAttr = newNode.append_attribute(attrIter->name());
+                        newAttr.set_value(contextIter->second[index].c_str());
+                    }
+                }
+
+                if (!contextHit) {
+                    pugi::xml_attribute newAttr = newNode.append_attribute(attrIter->name());
+
+                    // increase and y values, if found
+                    static std::string attrNameX("x");
+                    static std::string attrNameY("y");
+                    static std::string attrValueCenter("center");
+                    if (attrNameX == newAttr.name() && attrValueCenter != attrIter->value()) {
+                        int baseX = attrIter->as_int();
+                        int curXIncrease = xIncrease * xIndex;
+                        int curX = baseX + curXIncrease;
+                        newAttr.set_value(curX);
+
+                        if (++xIndex >= xLimit && xLimit != 0) {
+                            xIndex = 0;
+                        }
+                    } else if (attrNameY == newAttr.name() && attrValueCenter != attrIter->value()) {
+                        int baseY = attrIter->as_int();
+                        int curYIncrease = yIncrease * yIndex;
+                        int curY = baseY + curYIncrease;
+                        newAttr.set_value(curY);
+
+                        if (++yIndex >= yLimit && yLimit != 0) {
+                            yIndex = 0;
+                        }
+                    } else {
+                        newAttr.set_value(attrIter->value());
+                    }
+                }
+            }
+        }
+    }
 
     return true;
 }
