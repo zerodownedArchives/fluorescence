@@ -87,40 +87,31 @@ GumpMenu* GumpMenus::openShardSelectionGump() {
 }
 
 GumpMenu* GumpMenus::openServerListGump(const net::packets::ServerList* list) {
-    GumpMenu* menu = GumpFactory::fromXmlFile("serverlist");
+    std::vector<std::string> nameList;
+    std::vector<std::string> indexList;
 
-    if (menu) {
-        std::list<std::string> nameList;
+    std::list<net::packets::ServerList::ServerListEntry>::const_iterator entryIter = list->listEntries_.begin();
+    std::list<net::packets::ServerList::ServerListEntry>::const_iterator entryEnd = list->listEntries_.end();
 
-        std::list<net::packets::ServerList::ServerListEntry>::const_iterator entryIter = list->listEntries_.begin();
-        std::list<net::packets::ServerList::ServerListEntry>::const_iterator entryEnd = list->listEntries_.end();
 
-        std::vector<CL_GUIComponent*> allComponents = menu->get_child_components();
-        std::vector<CL_GUIComponent*>::iterator compIter = allComponents.begin();
-        std::vector<CL_GUIComponent*>::iterator compEnd = allComponents.end();
+    for (; entryIter != entryEnd; ++entryIter) {
+        std::string serverName;
+        serverName = entryIter->name_.toUTF8String(serverName);
+        nameList.push_back(serverName);
 
-        for (; compIter != compEnd; ++compIter) {
-            ui::components::LocalButton* localButton = dynamic_cast<ui::components::LocalButton*>(*compIter);
-
-            if (localButton && localButton->getAction() == "selectserver") {
-                if (entryIter != entryEnd) {
-                    // another server left
-                    std::string serverName;
-                    serverName = entryIter->name_.toUTF8String(serverName);
-                    localButton->set_text(serverName);
-
-                    std::stringstream ss;
-                    ss << entryIter->index_;
-                    localButton->setParameter(ss.str());
-
-                    ++entryIter;
-                } else {
-                    localButton->set_enabled(false);
-                    localButton->set_text("- - -");
-                }
-            }
-        }
+        std::stringstream ss;
+        ss << entryIter->index_;
+        indexList.push_back(ss.str());
     }
+
+    GumpFactory::RepeatContext context;
+    context.repeatCount_ = nameList.size();
+    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "param", "serverindex")] = indexList;
+    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "text", "servername")] = nameList;
+
+    GumpFactory::addRepeatContext("serverlist", context);
+    GumpMenu* menu = GumpFactory::fromXmlFile("serverlist");
+    GumpFactory::removeRepeatContext("serverlist");
 
     return menu;
 }

@@ -28,6 +28,8 @@ public:
     bool connect(ui::GumpMenu* menu, const std::string& parameter);
     void disconnect();
 
+    bool selectServer(ui::GumpMenu* menu, const std::string& parameter);
+
 private:
     static Manager* singleton_;
     Manager(const Config& config);

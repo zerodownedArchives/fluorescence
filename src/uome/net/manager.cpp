@@ -126,5 +126,14 @@ void Manager::disconnect() {
     socket_.close();
 }
 
+bool Manager::selectServer(ui::GumpMenu* menu, const std::string& parameter) {
+    unsigned int index = atoi(parameter.c_str());
+
+    packets::GameServerSelect pkt(index);
+    socket_.write(pkt);
+
+    return true;
+}
+
 }
 }

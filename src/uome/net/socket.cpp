@@ -183,14 +183,9 @@ bool Socket::sendAll() {
         return true;
     }
 
-    LOG_INFO(LOGTYPE_NETWORK, "sendAll pre send:");
-    dumpBuffer(sendBuffer_, sendSize_);
-
     socketMutex_.lock();
     unsigned int sendLen = ::send(socketFd_, sendBuffer_, sendSize_, 0);
     socketMutex_.unlock();
-
-    LOG_INFO(LOGTYPE_NETWORK, "sendAll post send:");
 
     if (sendLen < 0) {
         #ifdef WIN32
@@ -231,12 +226,12 @@ void Socket::parsePackets() {
         uint8_t packetId;
         readSuccess = PacketReader::read(decompressedBuffer_, decompressedSize_, idx, packetId);
 
-        LOGARG_DEBUG(LOGTYPE_NETWORK, "Parsing packet id=%u", packetId);
+        LOGARG_DEBUG(LOGTYPE_NETWORK, "Parsing packet id=%x", packetId);
 
         boost::shared_ptr<Packet> newPacket = Manager::createPacket(packetId);
 
         if (!newPacket) {
-            LOGARG_ERROR(LOGTYPE_NETWORK, "Unable to create packet for id %u", packetId);
+            LOGARG_ERROR(LOGTYPE_NETWORK, "Unable to create packet for id %x", packetId);
             continue;
         }
 
@@ -251,13 +246,13 @@ void Socket::parsePackets() {
 
         readSuccess = readSuccess && newPacket->read(decompressedBuffer_, decompressedSize_, idx);
 
-        LOGARG_DEBUG(LOGTYPE_NETWORK, "Parsing packet idx=%u", idx);
+        LOGARG_DEBUG(LOGTYPE_NETWORK, "Parsing packet idx=%x", idx);
 
         if (readSuccess) {
             if (idx - lastPacketStart < packetSize) {
-                LOGARG_DEBUG(LOGTYPE_NETWORK, "Not enough bytes read for packet id=%u len=%u read=%u", packetId, packetSize, idx - lastPacketStart);
+                LOGARG_DEBUG(LOGTYPE_NETWORK, "Not enough bytes read for packet id=%x len=%u read=%u", packetId, packetSize, idx - lastPacketStart);
             } else {
-                LOGARG_DEBUG(LOGTYPE_NETWORK, "Read of packet id=%u len=%u successful!", packetId, packetSize);
+                LOGARG_DEBUG(LOGTYPE_NETWORK, "Read of packet id=%x len=%u successful!", packetId, packetSize);
 
                 packetQueueMutex_.lock();
                 packetQueue_.push(newPacket);
