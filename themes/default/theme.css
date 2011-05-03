@@ -1656,7 +1656,7 @@ window
 {
     bg-color: #d0d0d0;
     bg-image:WindowBackdrop;
-    bg-image-sizing:repear;
+    bg-image-sizing:repeat;
  }
 
 window caption

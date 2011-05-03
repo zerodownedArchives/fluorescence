@@ -92,6 +92,8 @@ void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int 
     int centerSectorY = (int)(getCenterTileY() / 8.0);
 
     list.push_back(centerSectorX * mapHeight + centerSectorY);
+
+    // uncomment this to load just a single sector
     //return;
 
     unsigned int sectorX, sectorY, sectorId;

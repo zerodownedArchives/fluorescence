@@ -63,7 +63,8 @@ bool Client::selectShard(ui::GumpMenu* menu, const std::string& parameter) {
 
 bool Client::disconnect(ui::GumpMenu* menu, const std::string& parameter) {
     net::Manager::getSingleton()->disconnect();
-    setState(STATE_PRE_LOGIN);
+    //setState(STATE_PRE_LOGIN);
+    setState(STATE_PLAYING);
     return true;
 }
 

@@ -125,6 +125,5 @@ GumpMenu* GumpMenus::openServerListGump(const net::packets::ServerList* list) {
     return menu;
 }
 
-
 }
 }
