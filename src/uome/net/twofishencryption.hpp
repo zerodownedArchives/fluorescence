@@ -15,8 +15,8 @@ class TwofishEncryption : public Encryption {
 public:
     TwofishEncryption(unsigned int seed);
 
-    virtual void encrypt(int8_t* dst, int8_t* src, unsigned int len);
-    virtual void decrypt(int8_t* dst, int8_t* src, unsigned int len);
+    virtual void encrypt(int8_t* dst, const int8_t* src, unsigned int len);
+    virtual void decrypt(int8_t* dst, const int8_t* src, unsigned int len);
 
 private:
     cipherInstance cipherInstance_;

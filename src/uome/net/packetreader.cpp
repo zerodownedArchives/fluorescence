@@ -110,7 +110,7 @@ bool PacketReader::read(const int8_t* buf, unsigned int len, unsigned int& index
     }
 
     value = *reinterpret_cast<const uint32_t*>(&buf[index]);
-    value = ntohs(value);
+    value = ntohl(value);
 
     index += sizeof(uint32_t);
 

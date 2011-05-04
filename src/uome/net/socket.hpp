@@ -22,6 +22,7 @@ public:
     void setEncryption(boost::shared_ptr<Encryption> value);
 
     bool connect(const std::string& host, unsigned short port);
+    bool connect(unsigned int ip, unsigned short port);
     void close();
 
     bool isConnected();

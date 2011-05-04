@@ -11,13 +11,13 @@ namespace packets {
 
 class LoginRequest : public Packet {
 public:
-    LoginRequest(const UnicodeString& name, const UnicodeString& password);
+    LoginRequest(const std::string& name, const std::string& password);
 
     virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
 
 private:
-    UnicodeString name_;
-    UnicodeString password_;
+    std::string name_;
+    std::string password_;
 };
 
 }

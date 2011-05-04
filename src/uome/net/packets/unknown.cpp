@@ -47,7 +47,7 @@ Unknown::Unknown(uint8_t id) : Packet(id) {
 bool Unknown::read(const int8_t* buf, unsigned int len, unsigned int& index) {
     bool ret = true;
 
-    index += size_;
+    index = len;
 
     return ret;
 }

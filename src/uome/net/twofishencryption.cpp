@@ -1,24 +1,30 @@
 
 #include "twofishencryption.hpp"
 
+#include <string.h>
+
 #include <misc/logger.hpp>
 
 namespace uome {
 namespace net {
 
 TwofishEncryption::TwofishEncryption(uint32_t seed) {
+    memset(&keyInstance_, 0, sizeof(keyInstance));
+    memset(&cipherInstance_, 0, sizeof(cipherInstance));
+
     if (makeKey(&keyInstance_, DIR_ENCRYPT, 128, NULL) != TRUE || cipherInit(&cipherInstance_, MODE_ECB, NULL) != TRUE) {
         LOG_ERROR(LOGTYPE_NETWORK, "Error initializing twofish (makekey)");
         throw std::exception();
     }
 
-    uint8_t* pKey = reinterpret_cast<uint8_t*>(&keyInstance_.key32);
-    for (unsigned int i = 0; i < 4; i++) {
-        *pKey++ = (uint8_t)((seed & 0xFF000000) >> 24);
-        *pKey++ = (uint8_t)((seed & 0x00FF0000) >> 16);
-        *pKey++ = (uint8_t)((seed & 0x0000FF00) >> 8);
-        *pKey++ = (uint8_t)(seed & 0x000000FF);
-    }
+    keyInstance_.key32[0] = keyInstance_.key32[1] = keyInstance_.key32[2] = keyInstance_.key32[3] = seed;
+    //uint8_t* pKey = reinterpret_cast<uint8_t*>(&keyInstance_.key32);
+    //for (unsigned int i = 0; i < 4; i++) {
+        //*pKey++ = (uint8_t)((seed & 0xFF000000) >> 24);
+        //*pKey++ = (uint8_t)((seed & 0x00FF0000) >> 16);
+        //*pKey++ = (uint8_t)((seed & 0x0000FF00) >> 8);
+        //*pKey++ = (uint8_t)(seed & 0x000000FF);
+    //}
 
     LOGARG_DEBUG(LOGTYPE_NETWORK, "Twofish-Key: %X (*4)", keyInstance_.key32[0]);
 
@@ -42,7 +48,7 @@ TwofishEncryption::TwofishEncryption(uint32_t seed) {
 }
 
 
-void TwofishEncryption::encrypt(int8_t* dst, int8_t* src, unsigned int len) {
+void TwofishEncryption::encrypt(int8_t* dst, const int8_t* src, unsigned int len) {
     for (unsigned int i = 0; i < len; i++) {
         if (sendPos_ >= TWOFISH_CRYPT_TABLE_LENGTH) {
             reEncryptInternalBuffer();
@@ -53,7 +59,7 @@ void TwofishEncryption::encrypt(int8_t* dst, int8_t* src, unsigned int len) {
     }
 }
 
-void TwofishEncryption::decrypt(int8_t* dst, int8_t* src, unsigned int len) {
+void TwofishEncryption::decrypt(int8_t* dst, const int8_t* src, unsigned int len) {
     for (unsigned int i = 0; i < len; i++) {
         if (receivePos_ >= 0x10) {
             receivePos_ = 0;

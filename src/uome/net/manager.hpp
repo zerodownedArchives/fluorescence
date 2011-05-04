@@ -15,6 +15,10 @@ namespace ui {
 
 namespace net {
 
+namespace packets {
+    class ServerRedirect;
+}
+
 class Manager {
 public:
     static bool create(const Config& config);
@@ -29,6 +33,8 @@ public:
     void disconnect();
 
     bool selectServer(ui::GumpMenu* menu, const std::string& parameter);
+
+    void handleServerRedirect(const packets::ServerRedirect* packet);
 
 private:
     static Manager* singleton_;

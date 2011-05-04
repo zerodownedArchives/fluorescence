@@ -32,6 +32,8 @@ set (PACKETS_HPP
     net/packets/serverlist.hpp
     net/packets/loginreject.hpp
     net/packets/gameserverselect.hpp
+    net/packets/serverredirect.hpp
+    net/packets/gameserverloginrequest.hpp
     )
 
 set (PACKETS_CPP
@@ -41,6 +43,8 @@ set (PACKETS_CPP
     net/packets/serverlist.cpp
     net/packets/loginreject.cpp
     net/packets/gameserverselect.cpp
+    net/packets/serverredirect.cpp
+    net/packets/gameserverloginrequest.cpp
     )
 
 set (MD5

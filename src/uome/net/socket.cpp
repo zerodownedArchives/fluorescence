@@ -36,10 +36,27 @@ void Socket::setEncryption(boost::shared_ptr<Encryption> value) {
 }
 
 bool Socket::connect(const std::string& host, unsigned short port) {
+    hostent* hostent = gethostbyname(host.c_str());
+
+    if (!hostent) {
+        LOGARG_ERROR(LOGTYPE_NETWORK, "Unknown host: %s", host.c_str());
+        close();
+        return false;
+    }
+
+    unsigned int ip = 0;
+    memcpy(&ip, hostent->h_addr_list[0], 4);
+    return connect(ip, port);
+}
+
+bool Socket::connect(unsigned int ip, unsigned short port) {
     if (socketFd_) {
         LOG_ERROR(LOGTYPE_NETWORK, "Trying to reconnect an already connected socket!");
         return false;
     }
+
+    LOGARG_INFO(LOGTYPE_NETWORK, "Trying to connect to %u.%u.%u.%u:%u",
+            (ip & 0x000000FF), (ip & 0x0000FF00) >> 8, (ip & 0x00FF0000) >> 16, (ip & 0xFF000000) >> 24, port);
 
     socketFd_ = socket(AF_INET, SOCK_STREAM, 0);
     if (socketFd_ == -1) {
@@ -52,18 +69,10 @@ bool Socket::connect(const std::string& host, unsigned short port) {
         return false;
     }
 
-    hostent* hostent = gethostbyname(host.c_str());
-
-    if (!hostent) {
-        LOGARG_ERROR(LOGTYPE_NETWORK, "Unknown host: %s", host.c_str());
-        close();
-        return false;
-    }
-
     sockaddr_in dest_addr;
     dest_addr.sin_family = AF_INET;
     dest_addr.sin_port = htons(port);
-    memcpy(&(dest_addr.sin_addr), hostent->h_addr_list[0], 4);
+    dest_addr.sin_addr.s_addr = ip;
 
     if (::connect(socketFd_, (sockaddr*)&dest_addr, sizeof(sockaddr)) == -1) {
         #ifdef WIN32
@@ -94,11 +103,13 @@ bool Socket::connect(const std::string& host, unsigned short port) {
         }
     #endif
 
-    LOGARG_INFO(LOGTYPE_NETWORK, "Socket connected to %s:%u", host.c_str(), port);
+    LOGARG_INFO(LOGTYPE_NETWORK, "Socket connect to %u.%u.%u.%u:%u",
+            (ip & 0x000000FF), (ip & 0x0000FF00) >> 8, (ip & 0x00FF0000) >> 16, (ip & 0xFF000000) >> 24, port);
 
     sendSize_ = 0;
     running_ = true;
     criticalError_ = false;
+    useDecompress_ = false;
 
     receiveThread_ = boost::thread(&Socket::receiveRun, this);
 
@@ -113,6 +124,8 @@ void Socket::close() {
         ::close(socketFd_);
         socketFd_ = 0;
     }
+
+    receiveThread_.join();
 }
 
 void Socket::receiveRun() {
@@ -183,6 +196,9 @@ bool Socket::sendAll() {
         return true;
     }
 
+    //LOG_DEBUG(LOGTYPE_NETWORK, "sock send dump");
+    //dumpBuffer(sendBuffer_, sendSize_);
+
     socketMutex_.lock();
     unsigned int sendLen = ::send(socketFd_, sendBuffer_, sendSize_, 0);
     socketMutex_.unlock();
@@ -220,6 +236,8 @@ void Socket::setUseDecompress(bool value) {
 void Socket::parsePackets() {
     unsigned int idx = 0;
     unsigned int lastPacketStart = 0;
+    LOGARG_DEBUG(LOGTYPE_NETWORK, "Parsing packets bufferSize=%u", decompressedSize_);
+
     while ((lastPacketStart = idx) < decompressedSize_) {
 
         bool readSuccess = true;
@@ -242,29 +260,26 @@ void Socket::parsePackets() {
             packetSize = newPacket->getSize();
         }
 
-        LOGARG_DEBUG(LOGTYPE_NETWORK, "Parsing packet size=%u", packetSize);
+        LOGARG_DEBUG(LOGTYPE_NETWORK, "New packet size=%u", packetSize);
 
-        readSuccess = readSuccess && newPacket->read(decompressedBuffer_, decompressedSize_, idx);
-
-        LOGARG_DEBUG(LOGTYPE_NETWORK, "Parsing packet idx=%x", idx);
-
-        if (readSuccess) {
-            if (idx - lastPacketStart < packetSize) {
-                LOGARG_DEBUG(LOGTYPE_NETWORK, "Not enough bytes read for packet id=%x len=%u read=%u", packetId, packetSize, idx - lastPacketStart);
-            } else {
-                LOGARG_DEBUG(LOGTYPE_NETWORK, "Read of packet id=%x len=%u successful!", packetId, packetSize);
-
-                packetQueueMutex_.lock();
-                packetQueue_.push(newPacket);
-                packetQueueMutex_.unlock();
-            }
-        } else {
-            // not enouth bytes received yet
+        if (decompressedSize_ < lastPacketStart + packetSize) {
+            LOGARG_DEBUG(LOGTYPE_NETWORK, "Packet not received completely id=%x should-be-len=%u received=%u", packetId, packetSize, decompressedSize_ - lastPacketStart);
             break;
         }
 
-        // set idx to start of next packet
-        idx = lastPacketStart + packetSize;
+        readSuccess = readSuccess && newPacket->read(decompressedBuffer_, lastPacketStart + packetSize, idx);
+
+        if (readSuccess && idx - lastPacketStart == packetSize) {
+            LOGARG_DEBUG(LOGTYPE_NETWORK, "Read of packet id=%x len=%u successful!", packetId, packetSize);
+
+            packetQueueMutex_.lock();
+            packetQueue_.push(newPacket);
+            packetQueueMutex_.unlock();
+        } else {
+            LOGARG_DEBUG(LOGTYPE_NETWORK, "Not successful reading packet id=%x len=%u read bytes=%u", packetId, packetSize, idx - lastPacketStart);
+            // set idx to start of next packet
+            idx = lastPacketStart + packetSize;
+        }
     }
 
     if (lastPacketStart != decompressedSize_) { // some bytes left
