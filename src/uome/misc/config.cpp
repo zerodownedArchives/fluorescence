@@ -6,168 +6,170 @@
 
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/program_options.hpp>
 
 #include "logger.hpp"
 
 
 namespace uome {
 
-Config::Config() : consoleDesc_("Console options"), filesDesc_("Files options"), uiDesc_("User interface options") {
-    namespace po = boost::program_options;
-
-    consoleDesc_.add_options()
-    ("help", "Receive this message")
-    ("help-files", "Receive file-related parameter information")
-    ("help-ui", "Receive ui-related parameter information")
-    ("help-shard", "Receive shard-related parameter information")
-    ("shard", po::value<std::string>(), "The shard you want to connect to. If empty, shard selection dialog is shown. Shard name can also be given without --shard prefix")
-    ;
-
+Config::Config() {
     // file paths
-    filesDesc_.add_options()
-    ("files.mul-directory", po::value<std::string>()->default_value("./"), "Directory containing the mul files")
-    ("files.art-idx", po::value<std::string>()->default_value("Artidx.mul"), "Location of artidx.mul")
-    ("files.art-mul", po::value<std::string>()->default_value("Art.mul"), "Location of art.mul")
-    ("files.gumpart-idx", po::value<std::string>()->default_value("Gumpidx.mul"), "Location of gumpidx.mul")
-    ("files.gumpart-mul", po::value<std::string>()->default_value("Gumpart.mul"), "Location of gumpart.mul")
-    ("files.hues-mul", po::value<std::string>()->default_value("Hues.mul"), "Location of hues.mul")
-    ("files.tiledata-mul", po::value<std::string>()->default_value("Tiledata.mul"), "Location of tiledata.mul")
-    ("files.maptex-idx", po::value<std::string>()->default_value("Texidx.mul"), "Location of texidx.mul")
-    ("files.maptex-mul", po::value<std::string>()->default_value("Texmaps.mul"), "Location of texmaps.mul")
-    ("files.animdata-mul", po::value<std::string>()->default_value("Animdata.mul"), "Location of animdata.mul")
+    // TODO: reset path
+    variablesMap_["uome/files/mul-directory@path"].setPath("/home/games/uo2d/", true);
+    variablesMap_["uome/files/art@filename-idx"].setPath("Artidx.mul", true);
+    variablesMap_["uome/files/art@filename-mul"].setPath("Art.mul", true);
+    variablesMap_["uome/files/gumpart@filename-idx"].setPath("Gumpidx.mul", true);
+    variablesMap_["uome/files/gumpart@filename-mul"].setPath("Gumpart.mul", true);
+    variablesMap_["uome/files/hues@filename"].setPath("Hues.mul", true);
+    variablesMap_["uome/files/tiledata@filename"].setPath("Tiledata.mul", true);
+    variablesMap_["uome/files/texmaps@filename-idx"].setPath("Texidx.mul", true);
+    variablesMap_["uome/files/texmaps@filename-mul"].setPath("Texmaps.mul", true);
+    variablesMap_["uome/files/animdata@filename"].setPath("Animdata.mul", true);
 
-    ("files.map0-enabled", po::value<bool>()->default_value(true), "Whether or not map0 is enabled")
-    ("files.map0-mul", po::value<std::string>()->default_value("Map0.mul"), "Location of map0.mul")
-    ("files.map0-dif-enabled", po::value<bool>()->default_value(true), "Whether or not dif files are enabled for map0")
-    ("files.map0-dif-offsets", po::value<std::string>()->default_value("Mapdifl0.mul"), "Location of mapdifl0.mul")
-    ("files.map0-dif-mul", po::value<std::string>()->default_value("Mapdif0.mul"), "Location of mapdif0.mul")
-    ("files.map0-size-x", po::value<unsigned int>()->default_value(768), "Horizontal block count for map0")
-    ("files.map0-size-y", po::value<unsigned int>()->default_value(512), "Vertical block count for map0")
 
-    ("files.map1-enabled", po::value<bool>()->default_value(true), "Whether or not map1 is enabled")
-    ("files.map1-mul", po::value<std::string>()->default_value("Map1.mul"), "Location of map1.mul")
-    ("files.map1-dif-enabled", po::value<bool>()->default_value(true), "Whether or not dif files are enabled for map1")
-    ("files.map1-dif-offsets", po::value<std::string>()->default_value("Mapdifl1.mul"), "Location of mapdifl1.mul")
-    ("files.map1-dif-mul", po::value<std::string>()->default_value("Mapdif1.mul"), "Location of mapdif1.mul")
-    ("files.map1-size-x", po::value<unsigned int>()->default_value(768), "Horizontal block count for map1")
-    ("files.map1-size-y", po::value<unsigned int>()->default_value(512), "Vertical block count for map1")
+    // maps
+    variablesMap_["uome/files/map0@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map0@filename"].setPath("Map0.mul", true);
+    variablesMap_["uome/files/map0/difs@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map0/difs@filename-offsets"].setPath("Mapdifl0.mul", true);
+    variablesMap_["uome/files/map0/difs@filename-mul"].setPath("Mapdif0.mul", true);
+    variablesMap_["uome/files/map0@width"].setUint(768, true);
+    variablesMap_["uome/files/map0@height"].setUint(512, true);
 
-    ("files.map2-enabled", po::value<bool>()->default_value(true), "Whether or not map2 is enabled")
-    ("files.map2-mul", po::value<std::string>()->default_value("Map2.mul"), "Location of map2.mul")
-    ("files.map2-dif-enabled", po::value<bool>()->default_value(true), "Whether or not dif files are enabled for map2")
-    ("files.map2-dif-offsets", po::value<std::string>()->default_value("Mapdifl2.mul"), "Location of mapdifl2.mul")
-    ("files.map2-dif-mul", po::value<std::string>()->default_value("Mapdif2.mul"), "Location of mapdif2.mul")
-    ("files.map2-size-x", po::value<unsigned int>()->default_value(288), "Horizontal block count for map2")
-    ("files.map2-size-y", po::value<unsigned int>()->default_value(200), "Vertical block count for map2")
+    variablesMap_["uome/files/map0/statics@filename-idx"].setPath("Staidx0.mul", true);
+    variablesMap_["uome/files/map0/statics@filename-mul"].setPath("Statics0.mul", true);
+    variablesMap_["uome/files/map0/statics/difs@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map0/statics/difs@filename-offsets"].setPath("Stadifl0.mul", true);
+    variablesMap_["uome/files/map0/statics/difs@filename-idx"].setPath("Stadifi0.mul", true);
+    variablesMap_["uome/files/map0/statics/difs@filename-mul"].setPath("Stadif0.mul", true);
 
-    ("files.map3-enabled", po::value<bool>()->default_value(true), "Whether or not map3 is enabled")
-    ("files.map3-mul", po::value<std::string>()->default_value("Map3.mul"), "Location of map3.mul")
-    ("files.map3-dif-enabled", po::value<bool>()->default_value(false), "Whether or not dif files are enabled for map3")
-    ("files.map3-dif-offsets", po::value<std::string>()->default_value("Mapdifl3.mul"), "Location of mapdifl3.mul")
-    ("files.map3-dif-mul", po::value<std::string>()->default_value("Mapdif3.mul"), "Location of mapdif3.mul")
-    ("files.map3-size-x", po::value<unsigned int>()->default_value(320), "Horizontal block count for map3")
-    ("files.map3-size-y", po::value<unsigned int>()->default_value(256), "Vertical block count for map3")
 
-    ("files.map4-enabled", po::value<bool>()->default_value(true), "Whether or not map4 is enabled")
-    ("files.map4-mul", po::value<std::string>()->default_value("Map4.mul"), "Location of map4.mul")
-    ("files.map4-dif-enabled", po::value<bool>()->default_value(false), "Whether or not dif files are enabled for map4")
-    ("files.map4-dif-offsets", po::value<std::string>()->default_value("Mapdifl4.mul"), "Location of mapdifl4.mul")
-    ("files.map4-dif-mul", po::value<std::string>()->default_value("Mapdif4.mul"), "Location of mapdif4.mul")
-    ("files.map4-size-x", po::value<unsigned int>()->default_value(181), "Horizontal block count for map4")
-    ("files.map4-size-y", po::value<unsigned int>()->default_value(181), "Vertical block count for map4")
+    variablesMap_["uome/files/map1@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map1@filename"].setPath("Map0.mul", true);
+    variablesMap_["uome/files/map1/difs@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map1/difs@filename-offsets"].setPath("Mapdifl1.mul", true);
+    variablesMap_["uome/files/map1/difs@filename-mul"].setPath("Mapdif1.mul", true);
+    variablesMap_["uome/files/map1@width"].setUint(768, true);
+    variablesMap_["uome/files/map1@height"].setUint(512, true);
 
-    ("files.statics0-idx", po::value<std::string>()->default_value("Staidx0.mul"), "Location of staidx0.mul")
-    ("files.statics0-mul", po::value<std::string>()->default_value("Statics0.mul"), "Location of statics0.mul")
-    ("files.statics0-dif-enabled", po::value<bool>()->default_value(true), "Whether or not dif files are enabled for statics0")
-    ("files.statics0-dif-offsets", po::value<std::string>()->default_value("Stadifl0.mul"), "Location of stadifl0.mul")
-    ("files.statics0-dif-idx", po::value<std::string>()->default_value("Stadifi0.mul"), "Location of stadifi0.mul")
-    ("files.statics0-dif-mul", po::value<std::string>()->default_value("Stadif0.mul"), "Location of stadif0.mul")
+    variablesMap_["uome/files/map1/statics@filename-idx"].setPath("Staidx0.mul", true);
+    variablesMap_["uome/files/map1/statics@filename-mul"].setPath("Statics0.mul", true);
+    variablesMap_["uome/files/map1/statics/difs@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map1/statics/difs@filename-offsets"].setPath("Stadifl1.mul", true);
+    variablesMap_["uome/files/map1/statics/difs@filename-idx"].setPath("Stadifi1.mul", true);
+    variablesMap_["uome/files/map1/statics/difs@filename-mul"].setPath("Stadif1.mul", true);
 
-    ("files.statics1-idx", po::value<std::string>()->default_value("Staidx1.mul"), "Location of staidx1.mul")
-    ("files.statics1-mul", po::value<std::string>()->default_value("Statics1.mul"), "Location of statics1.mul")
-    ("files.statics1-dif-enabled", po::value<bool>()->default_value(true), "Whether or not dif files are enabled for statics1")
-    ("files.statics1-dif-offsets", po::value<std::string>()->default_value("Stadifl1.mul"), "Location of stadifl1.mul")
-    ("files.statics1-dif-idx", po::value<std::string>()->default_value("Stadifi1.mul"), "Location of stadifi1.mul")
-    ("files.statics1-dif-mul", po::value<std::string>()->default_value("Stadif1.mul"), "Location of stadif1.mul")
 
-    ("files.statics2-idx", po::value<std::string>()->default_value("Staidx2.mul"), "Location of staidx2.mul")
-    ("files.statics2-mul", po::value<std::string>()->default_value("Statics2.mul"), "Location of statics2.mul")
-    ("files.statics2-dif-enabled", po::value<bool>()->default_value(true), "Whether or not dif files are enabled for statics2")
-    ("files.statics2-dif-offsets", po::value<std::string>()->default_value("Stadifl2.mul"), "Location of stadifl2.mul")
-    ("files.statics2-dif-idx", po::value<std::string>()->default_value("Stadifi2.mul"), "Location of stadifi2.mul")
-    ("files.statics2-dif-mul", po::value<std::string>()->default_value("Stadif2.mul"), "Location of stadif2.mul")
+    variablesMap_["uome/files/map2@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map2@filename"].setPath("Map2.mul", true);
+    variablesMap_["uome/files/map2/difs@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map2/difs@filename-offsets"].setPath("Mapdifl2.mul", true);
+    variablesMap_["uome/files/map2/difs@filename-mul"].setPath("Mapdif2.mul", true);
+    variablesMap_["uome/files/map2@width"].setUint(288, true);
+    variablesMap_["uome/files/map2@height"].setUint(200, true);
 
-    ("files.statics3-idx", po::value<std::string>()->default_value("Staidx3.mul"), "Location of staidx3.mul")
-    ("files.statics3-mul", po::value<std::string>()->default_value("Statics3.mul"), "Location of statics3.mul")
-    ("files.statics3-dif-enabled", po::value<bool>()->default_value(false), "Whether or not dif files are enabled for statics3")
-    ("files.statics3-dif-offsets", po::value<std::string>()->default_value("Stadifl3.mul"), "Location of stadifl3.mul")
-    ("files.statics3-dif-idx", po::value<std::string>()->default_value("Stadifi3.mul"), "Location of stadifi3.mul")
-    ("files.statics3-dif-mul", po::value<std::string>()->default_value("Stadif3.mul"), "Location of stadif3.mul")
+    variablesMap_["uome/files/map2/statics@filename-idx"].setPath("Staidx2.mul", true);
+    variablesMap_["uome/files/map2/statics@filename-mul"].setPath("Statics2.mul", true);
+    variablesMap_["uome/files/map2/statics/difs@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map2/statics/difs@filename-offsets"].setPath("Stadifl2.mul", true);
+    variablesMap_["uome/files/map2/statics/difs@filename-idx"].setPath("Stadifi2.mul", true);
+    variablesMap_["uome/files/map2/statics/difs@filename-mul"].setPath("Stadif2.mul", true);
 
-    ("files.statics4-idx", po::value<std::string>()->default_value("Staidx4.mul"), "Location of staidx4.mul")
-    ("files.statics4-mul", po::value<std::string>()->default_value("Statics4.mul"), "Location of statics4.mul")
-    ("files.statics4-dif-enabled", po::value<bool>()->default_value(false), "Whether or not dif files are enabled for statics4")
-    ("files.statics4-dif-offsets", po::value<std::string>()->default_value("Stadifl4.mul"), "Location of stadifl4.mul")
-    ("files.statics4-dif-idx", po::value<std::string>()->default_value("Stadifi4.mul"), "Location of stadifi4.mul")
-    ("files.statics4-dif-mul", po::value<std::string>()->default_value("Stadif4.mul"), "Location of stadif4.mul")
 
-    ("files.body-def", po::value<std::string>()->default_value("Body.def"), "Location of body.def")
-    ("files.bodyconf-def", po::value<std::string>()->default_value("Bodyconv"), "Location of bodyconv.def")
+    variablesMap_["uome/files/map3@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map3@filename"].setPath("Map3.mul", true);
+    variablesMap_["uome/files/map3/difs@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map3/difs@filename-offsets"].setPath("Mapdifl3.mul", true);
+    variablesMap_["uome/files/map3/difs@filename-mul"].setPath("Mapdif3.mul", true);
+    variablesMap_["uome/files/map3@width"].setUint(320, true);
+    variablesMap_["uome/files/map3@height"].setUint(256, true);
 
-    ("files.anim0-enabled", po::value<bool>()->default_value(true), "Wheter or not anim is enabled")
-    ("files.anim0-idx", po::value<std::string>()->default_value("Anim.idx"), "Location of anim.idx")
-    ("files.anim0-mul", po::value<std::string>()->default_value("Anim.mul"), "Location of anim.mul")
-    ("files.anim0-highdetail", po::value<unsigned int>()->default_value(200), "High detail count")
-    ("files.anim0-lowdetail", po::value<unsigned int>()->default_value(200), "Low detail count")
+    variablesMap_["uome/files/map3/statics@filename-idx"].setPath("Staidx3.mul", true);
+    variablesMap_["uome/files/map3/statics@filename-mul"].setPath("Statics3.mul", true);
+    variablesMap_["uome/files/map3/statics/difs@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map3/statics/difs@filename-offsets"].setPath("Stadifl3.mul", true);
+    variablesMap_["uome/files/map3/statics/difs@filename-idx"].setPath("Stadifi3.mul", true);
+    variablesMap_["uome/files/map3/statics/difs@filename-mul"].setPath("Stadif3.mul", true);
 
-    ("files.anim1-enabled", po::value<bool>()->default_value(true), "Wheter or not anim1 is enabled")
-    ("files.anim1-idx", po::value<std::string>()->default_value("Anim.idx"), "Location of anim1.idx")
-    ("files.anim1-mul", po::value<std::string>()->default_value("Anim.mul"), "Location of anim1.mul")
-    ("files.anim1-highdetail", po::value<unsigned int>()->default_value(200), "High detail count")
-    ("files.anim1-lowdetail", po::value<unsigned int>()->default_value(200), "Low detail count")
 
-    ("files.anim2-enabled", po::value<bool>()->default_value(true), "Wheter or not anim2 is enabled")
-    ("files.anim2-idx", po::value<std::string>()->default_value("Anim2.idx"), "Location of anim2.idx")
-    ("files.anim2-mul", po::value<std::string>()->default_value("Anim2.mul"), "Location of anim2.mul")
-    ("files.anim2-highdetail", po::value<unsigned int>()->default_value(200), "High detail count")
-    ("files.anim2-lowdetail", po::value<unsigned int>()->default_value(200), "Low detail count")
+    variablesMap_["uome/files/map4@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map4@filename"].setPath("Map4.mul", true);
+    variablesMap_["uome/files/map4/difs@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map4/difs@filename-offsets"].setPath("Mapdifl4.mul", true);
+    variablesMap_["uome/files/map4/difs@filename-mul"].setPath("Mapdif4.mul", true);
+    variablesMap_["uome/files/map4@width"].setUint(181, true);
+    variablesMap_["uome/files/map4@height"].setUint(181, true);
 
-    ("files.anim3-enabled", po::value<bool>()->default_value(true), "Wheter or not anim3 is enabled")
-    ("files.anim3-idx", po::value<std::string>()->default_value("Anim3.idx"), "Location of anim3.idx")
-    ("files.anim3-mul", po::value<std::string>()->default_value("Anim3.mul"), "Location of anim3.mul")
-    ("files.anim3-highdetail", po::value<unsigned int>()->default_value(200), "High detail count")
-    ("files.anim3-lowdetail", po::value<unsigned int>()->default_value(200), "Low detail count")
+    variablesMap_["uome/files/map4/statics@filename-idx"].setPath("Staidx4.mul", true);
+    variablesMap_["uome/files/map4/statics@filename-mul"].setPath("Statics4.mul", true);
+    variablesMap_["uome/files/map4/statics/difs@enabled"].setBool(true, true);
+    variablesMap_["uome/files/map4/statics/difs@filename-offsets"].setPath("Stadifl4.mul", true);
+    variablesMap_["uome/files/map4/statics/difs@filename-idx"].setPath("Stadifi4.mul", true);
+    variablesMap_["uome/files/map4/statics/difs@filename-mul"].setPath("Stadif4.mul", true);
 
-    ("files.anim4-enabled", po::value<bool>()->default_value(true), "Wheter or not anim4 is enabled")
-    ("files.anim4-idx", po::value<std::string>()->default_value("Anim4.idx"), "Location of anim4.idx")
-    ("files.anim4-mul", po::value<std::string>()->default_value("Anim4.mul"), "Location of anim4.mul")
-    ("files.anim4-highdetail", po::value<unsigned int>()->default_value(200), "High detail count")
-    ("files.anim4-lowdetail", po::value<unsigned int>()->default_value(200), "Low detail count")
 
-    ("files.anim5-enabled", po::value<bool>()->default_value(true), "Wheter or not anim5 is enabled")
-    ("files.anim5-idx", po::value<std::string>()->default_value("Anim5.idx"), "Location of anim5.idx")
-    ("files.anim5-mul", po::value<std::string>()->default_value("Anim5.mul"), "Location of anim5.mul")
-    ("files.anim5-highdetail", po::value<unsigned int>()->default_value(200), "High detail count")
-    ("files.anim5-lowdetail", po::value<unsigned int>()->default_value(200), "Low detail count")
-    ;
+    // anims
+    variablesMap_["uome/files/anim0@enabled"].setBool(true, true);
+    variablesMap_["uome/files/anim0@filename-idx"].setPath("Anim.idx", true);
+    variablesMap_["uome/files/anim0@filename-mul"].setPath("Anim.mul", true);
+    variablesMap_["uome/files/anim0@highdetail"].setUint(200, true);
+    variablesMap_["uome/files/anim0@lowdetail"].setUint(200, true);
 
-    uiDesc_.add_options()
-    ("ui.theme", po::value<std::string>()->default_value("default"), "Name of the theme to use")
-    ("ui.cursor-artid-start", po::value<unsigned int>()->default_value(0x206A), "Begin art id of cursor sequence")
-    ("ui.cursor-artid-start-warmode", po::value<unsigned int>()->default_value(0x2053), "Begin art id of cursor sequence (warmode)")
-    ("ui.doubleclick-timeout-ms", po::value<unsigned int>()->default_value(300), "Maximum interval between two clicks to be counted as double click")
-    ;
+    variablesMap_["uome/files/anim1@enabled"].setBool(true, true);
+    variablesMap_["uome/files/anim1@filename-idx"].setPath("Anim1.idx", true);
+    variablesMap_["uome/files/anim1@filename-mul"].setPath("Anim1.mul", true);
+    variablesMap_["uome/files/anim1@highdetail"].setUint(200, true);
+    variablesMap_["uome/files/anim1@lowdetail"].setUint(200, true);
 
-    shardDesc_.add_options()
-    ("shard.host", po::value<std::string>(), "Hostname or IP address of the server")
-    ("shard.port", po::value<unsigned short>(), "Port number")
-    ("shard.account", po::value<std::string>(), "Account name")
-    ("shard.password", po::value<std::string>(), "Account password")
-    ("shard.save-password", po::value<bool>()->default_value(false), "Wheter or not to save the password in the cfg file")
-    ;
+    variablesMap_["uome/files/anim2@enabled"].setBool(true, true);
+    variablesMap_["uome/files/anim2@filename-idx"].setPath("Anim2.idx", true);
+    variablesMap_["uome/files/anim2@filename-mul"].setPath("Anim2.mul", true);
+    variablesMap_["uome/files/anim2@highdetail"].setUint(200, true);
+    variablesMap_["uome/files/anim2@lowdetail"].setUint(200, true);
+
+    variablesMap_["uome/files/anim3@enabled"].setBool(true, true);
+    variablesMap_["uome/files/anim3@filename-idx"].setPath("Anim3.idx", true);
+    variablesMap_["uome/files/anim3@filename-mul"].setPath("Anim3.mul", true);
+    variablesMap_["uome/files/anim3@highdetail"].setUint(200, true);
+    variablesMap_["uome/files/anim3@lowdetail"].setUint(200, true);
+
+    variablesMap_["uome/files/anim4@enabled"].setBool(true, true);
+    variablesMap_["uome/files/anim4@filename-idx"].setPath("Anim4.idx", true);
+    variablesMap_["uome/files/anim4@filename-mul"].setPath("Anim4.mul", true);
+    variablesMap_["uome/files/anim4@highdetail"].setUint(200, true);
+    variablesMap_["uome/files/anim4@lowdetail"].setUint(200, true);
+
+    variablesMap_["uome/files/anim5@enabled"].setBool(true, true);
+    variablesMap_["uome/files/anim5@filename-idx"].setPath("Anim5.idx", true);
+    variablesMap_["uome/files/anim5@filename-mul"].setPath("Anim5.mul", true);
+    variablesMap_["uome/files/anim5@highdetail"].setUint(200, true);
+    variablesMap_["uome/files/anim5@lowdetail"].setUint(200, true);
+
+
+    // ui stuff
+    variablesMap_["uome/ui/theme@name"].setPath("default", true);
+    variablesMap_["uome/ui/cursor@normal-artid-start"].setUint(0x206A, true);
+    variablesMap_["uome/ui/cursor@warmode-artid-start"].setUint(0x2053, true);
+
+
+    // input stuff
+    variablesMap_["uome/input/mouse@doubleclick-timeout-ms"].setUint(300, true);
+
+
+    // shard stuff
+    variablesMap_["uome/shard/account@save-password"].setBool(false, true);
 }
 
 bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
+    namespace po = boost::program_options;
+
+    po::options_description consoleDesc;
+    consoleDesc.add_options()
+    ("help,h,?", "Receive this message")
+    ("shard", po::value<std::string>(), "The shard you want to connect to. If empty, shard selection dialog is shown. Shard name can also be given without --shard prefix")
+    ;
+
     // transform vector to default argc, argv
     int argc = args.size();
     char* argv[argc];
@@ -175,37 +177,22 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
         argv[i] = const_cast<char*>(args[i].c_str());
     }
 
-    namespace po = boost::program_options;
-    po::options_description desc("All options");
-
-    desc.add(consoleDesc_);
-    desc.add(filesDesc_);
-    desc.add(uiDesc_);
-    desc.add(shardDesc_);
+    po::variables_map consoleOptions;
 
     try {
         // parse console
         po::positional_options_description p;
         p.add("shard", 1);
-        po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), variablesMap_);
+        po::store(po::command_line_parser(argc, argv).options(consoleDesc).positional(p).run(), consoleOptions);
 
-        if (variablesMap_.count("help")) {
-            std::cout << consoleDesc_ << std::endl;
-            return false;
-        } else if (variablesMap_.count("help-files")) {
-            std::cout << filesDesc_ << std::endl;
-            return false;
-        } else if (variablesMap_.count("help-ui")) {
-            std::cout << uiDesc_ << std::endl;
-            return false;
-        } else if (variablesMap_.count("help-shard")) {
-            std::cout << shardDesc_ << std::endl;
+        if (consoleOptions.count("help")) {
+            std::cout << consoleDesc << std::endl;
             return false;
         }
 
-        po::notify(variablesMap_);
+        po::notify(consoleOptions);
 
-        mutableVariablesMap_.insert(variablesMap_.begin(), variablesMap_.end());
+        //mutableVariablesMap_.insert(variablesMap_.begin(), variablesMap_.end());
 
     } catch (const std::exception& ex) {
         LOGARG_CRITICAL(LOGTYPE_MAIN, "Error parsing command line: %s", ex.what());
@@ -215,57 +202,59 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
     return true;
 }
 
-bool Config::parseShardConfig(const std::string& shardName) {
-    namespace po = boost::program_options;
-    po::options_description desc("All options");
+bool Config::parseShardConfig(const UnicodeString& shardName) {
+    //namespace po = boost::program_options;
+    //po::options_description desc("All options");
 
-    desc.add(filesDesc_);
-    desc.add(uiDesc_);
-    desc.add(shardDesc_);
+    //desc.add(filesDesc_);
+    //desc.add(uiDesc_);
+    //desc.add(shardDesc_);
 
-    boost::filesystem::path cfgPath = "shards";
-    cfgPath = cfgPath / shardName / "uome.cfg";
+    //boost::filesystem::path cfgPath = "shards";
+    //cfgPath = cfgPath / shardName / "uome.cfg";
 
-    if (!boost::filesystem::exists(cfgPath)) {
-        LOGARG_CRITICAL(LOGTYPE_MAIN, "Unable to open config file %s for shard %s", cfgPath.string().c_str(), shardName.c_str());
-        return false;
-    }
+    //if (!boost::filesystem::exists(cfgPath)) {
+        //LOGARG_CRITICAL(LOGTYPE_MAIN, "Unable to open config file %s for shard %s", cfgPath.string().c_str(), shardName.c_str());
+        //return false;
+    //}
 
-    bool success = true;
-    std::ifstream stream(cfgPath.string().c_str());
-    if (!stream.is_open()) {
-        LOGARG_CRITICAL(LOGTYPE_MAIN, "Unable to open config file %s for shard %s", cfgPath.string().c_str(), shardName.c_str());
-        return false;
-    }
+    //bool success = true;
+    //std::ifstream stream(cfgPath.string().c_str());
+    //if (!stream.is_open()) {
+        //LOGARG_CRITICAL(LOGTYPE_MAIN, "Unable to open config file %s for shard %s", cfgPath.string().c_str(), shardName.c_str());
+        //return false;
+    //}
 
-    try {
-        po::store(po::parse_config_file(stream, desc), variablesMap_);
+    //try {
+        //po::store(po::parse_config_file(stream, desc), variablesMap_);
 
-        po::notify(variablesMap_);
-    } catch (const std::exception& ex) {
-        LOGARG_CRITICAL(LOGTYPE_MAIN, "Error parsing config file: %s", ex.what());
-        success = false;
-    }
+        //po::notify(variablesMap_);
+    //} catch (const std::exception& ex) {
+        //LOGARG_CRITICAL(LOGTYPE_MAIN, "Error parsing config file: %s", ex.what());
+        //success = false;
+    //}
 
-    stream.close();
+    //stream.close();
 
-    mutableVariablesMap_.clear();
-    mutableVariablesMap_.insert(variablesMap_.begin(), variablesMap_.end());
-    set("shard", shardName);
+    //mutableVariablesMap_.clear();
+    //mutableVariablesMap_.insert(variablesMap_.begin(), variablesMap_.end());
+    //set("shard", shardName);
 
-    return success;
+    //return success;
+
+    return true;
 }
 
-boost::program_options::variable_value& Config::operator[](const std::string& name) {
+ConfigValue& Config::operator[](const UnicodeString& name) {
     return get(name);
 }
 
-boost::program_options::variable_value& Config::get(const std::string& name) {
-    return mutableVariablesMap_[name];
+ConfigValue& Config::get(const UnicodeString& name) {
+    return variablesMap_[name];
 }
 
-unsigned int Config::count(const std::string& name) const {
-    return mutableVariablesMap_.count(name);
+bool Config::exists(const UnicodeString& name) const {
+    return variablesMap_.count(name) > 0;
 }
 
 }

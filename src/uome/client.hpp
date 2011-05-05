@@ -16,6 +16,9 @@ namespace world {
 
 namespace ui {
     class GumpMenu;
+    namespace components {
+        class LocalButton;
+    }
 }
 
 class Client {
@@ -35,15 +38,15 @@ public:
     static int sMain(const std::vector<CL_String8>& args); ///< static helper to call main
     int main(const std::vector<CL_String8>& args);
 
-    Config* getConfig();
+    Config& getConfig();
 
     void shutdown();
     void setState(unsigned int state);
 
     // gump callbacks
-    bool disconnect(ui::GumpMenu* menu, const std::string& parameter);
-    bool shutdown(ui::GumpMenu* menu, const std::string& parameter);
-    bool selectShard(ui::GumpMenu* menu, const std::string& parameter);
+    bool disconnect(ui::GumpMenu* menu, ui::components::LocalButton* button);
+    bool shutdown(ui::GumpMenu* menu, ui::components::LocalButton* button);
+    bool selectShard(ui::GumpMenu* menu, ui::components::LocalButton* button);
 
 private:
     static Client* singleton_;
@@ -53,7 +56,7 @@ private:
     void cleanUp();
 
     bool initBase(const std::vector<CL_String8>& args);
-    bool initFull(const std::string& selectedShard);
+    bool initFull(const UnicodeString& selectedShard);
 
     float calculateFps(unsigned int elapsedMillis);
 

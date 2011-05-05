@@ -52,7 +52,7 @@ Manager::Manager() {
 }
 
 void Manager::init(Config& config) {
-    boost::filesystem::path mulDirPath = config["files.mul-directory"].as<std::string>();
+    boost::filesystem::path mulDirPath = config["uome/files/mul-directory@path"].asPath();
     if (!boost::filesystem::exists(mulDirPath) || !boost::filesystem::is_directory(mulDirPath)) {
         throw Exception("Invalid mul directory");
     }
@@ -63,108 +63,118 @@ void Manager::init(Config& config) {
     boost::filesystem::path difIdxPath;
     boost::filesystem::path difPath;
 
-    path = getPathFor(config, "files.tiledata-mul");
+    path = getPathFor(config, "uome/files/tiledata@filename");
     LOGARG_INFO(LOGTYPE_DATA, "Opening tiledata from %s", path.string().c_str());
     tileDataLoader_.reset(new TileDataLoader(path));
 
-    path = getPathFor(config, "files.hues-mul");
+    path = getPathFor(config, "uome/files/hues@filename");
     LOGARG_INFO(LOGTYPE_DATA, "Opening hues from %s", path.string().c_str());
     huesLoader_.reset(new HuesLoader(path));
 
-    idxPath = getPathFor(config, "files.maptex-idx");
-    path = getPathFor(config, "files.maptex-mul");
+    idxPath = getPathFor(config, "uome/files/texmaps@filename-idx");
+    path = getPathFor(config, "uome/files/texmaps@filename-mul");
     LOGARG_INFO(LOGTYPE_DATA, "Opening maptex from idx=%s mul=%s", idxPath.string().c_str(), path.string().c_str());
     mapTexLoader_.reset(new MapTexLoader(idxPath, path));
 
-    idxPath = getPathFor(config, "files.art-idx");
-    path = getPathFor(config, "files.art-mul");
+    idxPath = getPathFor(config, "uome/files/art@filename-idx");
+    path = getPathFor(config, "uome/files/art@filename-mul");
     LOGARG_INFO(LOGTYPE_DATA, "Opening art from idx=%s mul=%s", idxPath.string().c_str(), path.string().c_str());
     artLoader_.reset(new ArtLoader(idxPath, path));
 
-    idxPath = getPathFor(config, "files.gumpart-idx");
-    path = getPathFor(config, "files.gumpart-mul");
+    idxPath = getPathFor(config, "uome/files/gumpart@filename-idx");
+    path = getPathFor(config, "uome/files/gumpart@filename-mul");
     LOGARG_INFO(LOGTYPE_DATA, "Opening gump art from idx=%s mul=%s", idxPath.string().c_str(), path.string().c_str());
     gumpArtLoader_.reset(new GumpArtLoader(idxPath, path));
 
-    path = getPathFor(config, "files.animdata-mul");
+    path = getPathFor(config, "uome/files/animdata@filename");
     LOGARG_INFO(LOGTYPE_DATA, "Opening animdata from mul=%s", path.string().c_str());
     animDataLoader_.reset(new AnimDataLoader(path));
 
 
-    char* mapConfigEnabled = strdup("files.map0-enabled");
-    char* mapConfigMulPath = strdup("files.map0-mul");
-    char* mapConfigSizeX = strdup("files.map0-size-x");
-    char* mapConfigSizeY = strdup("files.map0-size-y");
-    char* mapConfigDifEnabled = strdup("files.map0-dif-enabled");
-    char* mapConfigDifOffsetsPath = strdup("files.map0-dif-offsets");
-    char* mapConfigDifMulPath = strdup("files.map0-dif-mul");
+    char* mapConfigEnabled = strdup("uome/files/map0@enabled");
+    char* mapConfigMulPath = strdup("uome/files/map0@filename");
+    char* mapConfigSizeX = strdup("uome/files/map0@width");
+    char* mapConfigSizeY = strdup("uome/files/map0@height");
+    char* mapConfigDifEnabled = strdup("uome/files/map0/difs@enabled");
+    char* mapConfigDifOffsetsPath = strdup("uome/files/map0/difs@filename-offsets");
+    char* mapConfigDifMulPath = strdup("uome/files/map0/difs@filename-mul");
 
-    char* staticsConfigIdxPath = strdup("files.statics0-idx");
-    char* staticsConfigMulPath = strdup("files.statics0-mul");
-    char* staticsConfigDifEnabled = strdup("files.statics0-dif-enabled");
-    char* staticsConfigDifOffsetsPath = strdup("files.statics0-dif-offsets");
-    char* staticsConfigDifIdxPath = strdup("files.statics0-dif-idx");
-    char* staticsConfigDifMulPath = strdup("files.statics0-dif-mul");
+    char* staticsConfigIdxPath = strdup("uome/files/map0/statics@filename-idx");
+    char* staticsConfigMulPath = strdup("uome/files/map0/statics@filename-mul");
+    char* staticsConfigDifEnabled = strdup("uome/files/map0/statics/difs@enabled");
+    char* staticsConfigDifOffsetsPath = strdup("uome/files/map0/statics/difs@filename-offsets");
+    char* staticsConfigDifIdxPath = strdup("uome/files/map0/statics/difs@filename-idx");
+    char* staticsConfigDifMulPath = strdup("uome/files/map0/statics/difs@filename-mul");
 
     unsigned int blockCountX;
     unsigned int blockCountY;
 
     char indexChar = '0';
+    unsigned int digitIndex = 14;
     for (unsigned int index = 0; index < 5; ++index, ++indexChar) {
-        mapConfigEnabled[9] = indexChar;
+        mapConfigEnabled[digitIndex] = indexChar;
 
-        if (!config[mapConfigEnabled].as<bool>()) {
+        if (!config[mapConfigEnabled].asBool()) {
             continue;
         }
 
-        mapConfigMulPath[9] = indexChar;
-        mapConfigSizeX[9] = indexChar;
-        mapConfigSizeY[9] = indexChar;
-        mapConfigDifEnabled[9] = indexChar;
-        mapConfigDifOffsetsPath[9] = indexChar;
-        mapConfigDifMulPath[9] = indexChar;
+        mapConfigMulPath[digitIndex] = indexChar;
+        mapConfigSizeX[digitIndex] = indexChar;
+        mapConfigSizeY[digitIndex] = indexChar;
+        mapConfigDifEnabled[digitIndex] = indexChar;
+        mapConfigDifOffsetsPath[digitIndex] = indexChar;
+        mapConfigDifMulPath[digitIndex] = indexChar;
 
-        staticsConfigIdxPath[13] = indexChar;
-        staticsConfigMulPath[13] = indexChar;
-        staticsConfigDifEnabled[13] = indexChar;
-        staticsConfigDifOffsetsPath[13] = indexChar;
-        staticsConfigDifIdxPath[13] = indexChar;
-        staticsConfigDifMulPath[13] = indexChar;
+        staticsConfigIdxPath[digitIndex] = indexChar;
+        staticsConfigMulPath[digitIndex] = indexChar;
+        staticsConfigDifEnabled[digitIndex] = indexChar;
+        staticsConfigDifOffsetsPath[digitIndex] = indexChar;
+        staticsConfigDifIdxPath[digitIndex] = indexChar;
+        staticsConfigDifMulPath[digitIndex] = indexChar;
 
         path = getPathFor(config, mapConfigMulPath);
-        blockCountX = config[mapConfigSizeX].as<unsigned int>();
-        blockCountY = config[mapConfigSizeY].as<unsigned int>();
-        if (config[mapConfigDifEnabled].as<bool>()) {
-            difOffsetsPath = getPathFor(config, mapConfigDifOffsetsPath);
-            difPath = getPathFor(config, mapConfigDifMulPath);
-            LOGARG_INFO(LOGTYPE_DATA, "Opening map%c from mul=%s, dif-offsets=%s, dif=%s, blockCountX=%u, blockCountY=%u", indexChar, path.string().c_str(), difOffsetsPath.string().c_str(), difPath.string().c_str(), blockCountX, blockCountY);
-            mapLoader_[index].reset(new MapLoader(path, difOffsetsPath, difPath, blockCountX, blockCountY));
-        } else {
-            LOGARG_INFO(LOGTYPE_DATA, "Opening map%c from mul=%s, difs disabled, blockCountX=%u, blockCountY=%u", indexChar, path.string().c_str(), blockCountX, blockCountY);
-            mapLoader_[index].reset(new MapLoader(path, blockCountX, blockCountY));
-        }
+        blockCountX = config[mapConfigSizeX].asUint();
+        blockCountY = config[mapConfigSizeY].asUint();
+        if (boost::filesystem::exists(path)) {
+            if (config[mapConfigDifEnabled].asBool()) {
+                difOffsetsPath = getPathFor(config, mapConfigDifOffsetsPath);
+                difPath = getPathFor(config, mapConfigDifMulPath);
+                LOGARG_INFO(LOGTYPE_DATA, "Opening map%c from mul=%s, dif-offsets=%s, dif=%s, blockCountX=%u, blockCountY=%u", indexChar, path.string().c_str(), difOffsetsPath.string().c_str(), difPath.string().c_str(), blockCountX, blockCountY);
+                mapLoader_[index].reset(new MapLoader(path, difOffsetsPath, difPath, blockCountX, blockCountY));
+            } else {
+                LOGARG_INFO(LOGTYPE_DATA, "Opening map%c from mul=%s, difs disabled, blockCountX=%u, blockCountY=%u", indexChar, path.string().c_str(), blockCountX, blockCountY);
+                mapLoader_[index].reset(new MapLoader(path, blockCountX, blockCountY));
+            }
 
-        if (!fallbackMapLoader_.get()) {
-            fallbackMapLoader_ = mapLoader_[index];
+            if (!fallbackMapLoader_.get()) {
+                fallbackMapLoader_ = mapLoader_[index];
+            }
+        } else {
+            LOGARG_INFO(LOGTYPE_DATA, "Unable to open map%c from mul=%s", indexChar, path.string().c_str());
         }
 
         idxPath = getPathFor(config, staticsConfigIdxPath);
         path = getPathFor(config, staticsConfigMulPath);
-        if (config[staticsConfigDifEnabled].as<bool>()) {
-            difOffsetsPath = getPathFor(config, staticsConfigDifOffsetsPath);
-            difIdxPath = getPathFor(config, staticsConfigDifIdxPath);
-            difPath = getPathFor(config, staticsConfigDifMulPath);
-            LOGARG_INFO(LOGTYPE_DATA, "Opening statics%c from idx=%s, mul=%s, dif-offsets=%s, dif-idx=%s, dif=%s",
-                    indexChar, idxPath.string().c_str(), path.string().c_str(),
-                    difOffsetsPath.string().c_str(), difIdxPath.string().c_str(), difPath.string().c_str());
-            staticsLoader_[index].reset(new StaticsLoader(idxPath, path, difOffsetsPath, difIdxPath, difPath, blockCountX, blockCountY));
-        } else {
-            LOGARG_INFO(LOGTYPE_DATA, "Opening statics%c from idx=%s, mul=%s, difs disabled,", indexChar, idxPath.string().c_str(), path.string().c_str());
-            staticsLoader_[index].reset(new StaticsLoader(idxPath, path, blockCountX, blockCountY));
-        }
 
-        if (!fallbackStaticsLoader_.get()) {
-            fallbackStaticsLoader_ = staticsLoader_[index];
+        if (boost::filesystem::exists(idxPath) && boost::filesystem::exists(path)) {
+            if (config[staticsConfigDifEnabled].asBool()) {
+                difOffsetsPath = getPathFor(config, staticsConfigDifOffsetsPath);
+                difIdxPath = getPathFor(config, staticsConfigDifIdxPath);
+                difPath = getPathFor(config, staticsConfigDifMulPath);
+                LOGARG_INFO(LOGTYPE_DATA, "Opening statics%c from idx=%s, mul=%s, dif-offsets=%s, dif-idx=%s, dif=%s",
+                        indexChar, idxPath.string().c_str(), path.string().c_str(),
+                        difOffsetsPath.string().c_str(), difIdxPath.string().c_str(), difPath.string().c_str());
+                staticsLoader_[index].reset(new StaticsLoader(idxPath, path, difOffsetsPath, difIdxPath, difPath, blockCountX, blockCountY));
+            } else {
+                LOGARG_INFO(LOGTYPE_DATA, "Opening statics%c from idx=%s, mul=%s, difs disabled,", indexChar, idxPath.string().c_str(), path.string().c_str());
+                staticsLoader_[index].reset(new StaticsLoader(idxPath, path, blockCountX, blockCountY));
+            }
+
+            if (!fallbackStaticsLoader_.get()) {
+                fallbackStaticsLoader_ = staticsLoader_[index];
+            }
+        } else {
+            LOGARG_WARN(LOGTYPE_DATA, "Unable to open statics%c from idx=%s, mul=%s", indexChar, idxPath.string().c_str(), path.string().c_str());
         }
     }
 
@@ -184,39 +194,43 @@ void Manager::init(Config& config) {
 
 
 
-
-
-    char* animConfigEnabled = strdup("files.anim0-enabled");
-    char* animConfigIdxPath = strdup("files.anim0-idx");
-    char* animConfigMulPath = strdup("files.anim0-mul");
-    char* animConfigHighDetailCount = strdup("files.anim0-highdetail");
-    char* animConfigLowDetailCount = strdup("files.anim0-lowdetail");
+    char* animConfigEnabled = strdup("uome/files/anim0@enabled");
+    char* animConfigIdxPath = strdup("uome/files/anim0@filename-idx");
+    char* animConfigMulPath = strdup("uome/files/anim0@filename-mul");
+    char* animConfigHighDetailCount = strdup("uome/files/anim0@highdetail");
+    char* animConfigLowDetailCount = strdup("uome/files/anim0@lowdetail");
 
     unsigned int highDetailCount;
     unsigned int lowDetailCount;
 
     indexChar = '0';
+    digitIndex = 15;
     for (unsigned int index = 0; index < 5; ++index, ++indexChar) {
-        animConfigEnabled[10] = indexChar;
+        animConfigEnabled[digitIndex] = indexChar;
 
-        if (!config[animConfigEnabled].as<bool>()) {
+        if (!config[animConfigEnabled].asBool()) {
             continue;
         }
 
-        animConfigIdxPath[10] = indexChar;
-        animConfigMulPath[10] = indexChar;
-        animConfigHighDetailCount[10] = indexChar;
-        animConfigLowDetailCount[10] = indexChar;
+        animConfigIdxPath[digitIndex] = indexChar;
+        animConfigMulPath[digitIndex] = indexChar;
+        animConfigHighDetailCount[digitIndex] = indexChar;
+        animConfigLowDetailCount[digitIndex] = indexChar;
 
         idxPath = getPathFor(config, animConfigIdxPath);
         path = getPathFor(config, animConfigMulPath);
-        highDetailCount = config[animConfigHighDetailCount].as<unsigned int>();
-        lowDetailCount = config[animConfigLowDetailCount].as<unsigned int>();
-        LOGARG_INFO(LOGTYPE_DATA, "Opening anim%c from idx=%s, mul=%s, high detail=%u, low detail=%u", indexChar, idxPath.string().c_str(), path.string().c_str(), highDetailCount, lowDetailCount);
-        animLoader_[index].reset(new AnimLoader(idxPath, path, highDetailCount, lowDetailCount));
+        highDetailCount = config[animConfigHighDetailCount].asUint();
+        lowDetailCount = config[animConfigLowDetailCount].asUint();
 
-        if (!fallbackAnimLoader_.get()) {
-            fallbackAnimLoader_ = animLoader_[index];
+        if (boost::filesystem::exists(idxPath) && boost::filesystem::exists(path)) {
+            LOGARG_INFO(LOGTYPE_DATA, "Opening anim%c from idx=%s, mul=%s, high detail=%u, low detail=%u", indexChar, idxPath.string().c_str(), path.string().c_str(), highDetailCount, lowDetailCount);
+            animLoader_[index].reset(new AnimLoader(idxPath, path, highDetailCount, lowDetailCount));
+
+            if (!fallbackAnimLoader_.get()) {
+                fallbackAnimLoader_ = animLoader_[index];
+            }
+        } else {
+            LOGARG_INFO(LOGTYPE_DATA, "Unable to open anim%c from idx=%s, mul=%s", indexChar, idxPath.string().c_str(), path.string().c_str());
         }
     }
 
@@ -232,12 +246,13 @@ Manager::~Manager() {
 }
 
 boost::filesystem::path Manager::getPathFor(Config& config, const char* configValue) {
-    static boost::filesystem::path mulDirPath = config["files.mul-directory"].as<std::string>();
-    if (config.count(configValue) <= 0) {
+    static boost::filesystem::path mulDirPath = config["uome/files/mul-directory@path"].asPath();
+    if (!config.exists(configValue)) {
         LOGARG_ERROR(LOGTYPE_DATA, "Trying to read unknown config vaule %s", configValue);
         throw Exception("Unknown config key: ", configValue);
     }
-    boost::filesystem::path path = config[configValue].as<std::string>();
+
+    boost::filesystem::path path = config[configValue].asPath();
     if (!boost::filesystem::exists(path)) {
         path = mulDirPath / path;
     }

@@ -2,6 +2,7 @@
 set(MISC_HPP
     misc/logger.hpp
     misc/string.hpp
+    misc/configvalue.hpp
     misc/config.hpp
     misc/exception.hpp
     )
@@ -9,6 +10,7 @@ set(MISC_HPP
 set(MISC_CPP
     misc/logger.cpp
     misc/string.cpp
+    misc/configvalue.cpp
     misc/config.cpp
     )
 

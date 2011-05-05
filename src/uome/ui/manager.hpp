@@ -45,13 +45,9 @@ public:
 
     void step();
 
-    GumpMenu* openXmlGump(const std::string& name);
-    void closeGumpMenu(const std::string& name);
+    GumpMenu* openXmlGump(const UnicodeString& name);
+    void closeGumpMenu(const UnicodeString& name);
     void closeGumpMenu(GumpMenu* menu);
-
-
-    // special gumps
-    bool openMessageBox(const std::string& message);
 
 private:
     static Manager* singleton_;

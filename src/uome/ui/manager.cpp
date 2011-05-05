@@ -71,14 +71,14 @@ Manager::Manager() {
 
 bool Manager::setShardConfig(Config& config) {
     boost::filesystem::path path = "shards";
-    path = path / config["shard"].as<std::string>() / "themes" / config["ui.theme"].as<std::string>();
+    path = path / config["uome/shard@directory"].asPath() / "themes" / config["uome/ui/theme@name"].asPath();
 
     if (!boost::filesystem::exists(path)) {
         path = "themes";
-        path = path / config["ui.theme"].as<std::string>();
+        path = path / config["uome/ui/theme@name"].asPath();
 
         if (!boost::filesystem::exists(path)) {
-            LOGARG_CRITICAL(LOGTYPE_UI, "Unable to load theme %s: directory does not exists", config["ui.theme"].as<std::string>().c_str());
+            LOGARG_CRITICAL(LOGTYPE_UI, "Unable to load theme %s: directory does not exists", config["uome/ui/theme@name"].asPath().string().c_str());
             return false;
         }
     }
@@ -90,7 +90,7 @@ bool Manager::setShardConfig(Config& config) {
     loadFontDirectory(path);
 
     path = "shards";
-    path = path / config["shard"].as<std::string>() / "fonts";
+    path = path / config["uome/shard@directory"].asPath() / "fonts";
     loadFontDirectory(path);
 
     renderQueue_.reset(new RenderQueue());
@@ -157,7 +157,7 @@ void Manager::closeGumpMenu(GumpMenu* menu) {
     closeListMutex_.unlock();
 }
 
-void Manager::closeGumpMenu(const std::string& gumpName) {
+void Manager::closeGumpMenu(const UnicodeString& gumpName) {
     LOG_ERROR(LOGTYPE_UI, "Not yet implemented function closeGumpMenu called");
 }
 
@@ -203,12 +203,8 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
     }
 }
 
-GumpMenu* Manager::openXmlGump(const std::string& name) {
+GumpMenu* Manager::openXmlGump(const UnicodeString& name) {
     return GumpFactory::fromXmlFile(name);
-}
-
-bool Manager::openMessageBox(const std::string& message) {
-    return GumpMenus::openMessageBox(message) != NULL;
 }
 
 }

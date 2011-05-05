@@ -3,6 +3,8 @@
 
 #include <ClanLib/GUI/Components/push_button.h>
 
+#include <misc/string.hpp>
+
 namespace uome {
 namespace ui {
 namespace components {
@@ -10,6 +12,9 @@ namespace components {
 class BaseButton : public CL_PushButton {
 public:
     BaseButton(CL_GUIComponent* parent);
+
+    UnicodeString getText();
+    void setText(const UnicodeString& string);
 
     virtual void onClicked(BaseButton* self) = 0;
 };

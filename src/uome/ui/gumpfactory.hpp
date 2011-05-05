@@ -41,7 +41,7 @@ public:
      * \param menu if the second parameter is NULL, a new gump is created, otherwise, the components are inserted in menu. \
             Top level attributes are not parsed then
      */
-    static GumpMenu* fromXmlFile(const std::string& name, GumpMenu* menu = NULL);
+    static GumpMenu* fromXmlFile(const UnicodeString& name, GumpMenu* menu = NULL);
 
     /**
      * \brief Create a gump menu according to the description in the string
@@ -49,7 +49,7 @@ public:
      * \param menu if the second parameter is NULL, a new gump is created, otherwise, the components are inserted in menu. \
             Top level attributes are not parsed then
      */
-    static GumpMenu* fromXmlString(const std::string& str, GumpMenu* menu = NULL);
+    static GumpMenu* fromXmlString(const UnicodeString& str, GumpMenu* menu = NULL);
 
 private:
     static GumpFactory* singleton_;

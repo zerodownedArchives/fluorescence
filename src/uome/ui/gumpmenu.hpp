@@ -33,39 +33,41 @@ public:
     void setDraggable(bool value);
     bool isDraggable();
 
-    void setName(const std::string& name);
-    const std::string& getName();
+    void setName(const UnicodeString& name);
+    const UnicodeString& getName();
 
 
     template<class ComponentClass>
-    void setComponentTextFromConfig(const std::string& componentName, const std::string& configName, Config* config) {
-        if (config->count(configName) > 0) {
-            setComponentText<ComponentClass>(componentName, config->get(configName).as<std::string>());
+    void setComponentTextFromConfig(const UnicodeString& componentName, const UnicodeString& configName, Config& config) {
+        if (config.exists(configName) > 0) {
+            setComponentText<ComponentClass>(componentName, config[configName].asString());
         }
     }
 
     template<class ComponentClass>
-    void setComponentText(const std::string& componentName, const std::string& text) {
-        ComponentClass* component = dynamic_cast<ComponentClass*>(get_named_item(componentName));
+    void setComponentText(const UnicodeString& componentName, const UnicodeString& text) {
+        std::string utf8CompName = StringConverter::toUtf8String(componentName);
+        ComponentClass* component = dynamic_cast<ComponentClass*>(get_named_item(utf8CompName));
         if (!component) {
-            std::string errorMessage = "Unable to find field \"" + componentName + "\" in gump " + getName();
+            UnicodeString errorMessage = UnicodeString("Unable to find field \"").append(componentName).append("\" in gump ").append(getName());
             GumpMenus::openMessageBox(errorMessage);
         } else {
-            component->set_text(text);
+            component->setText(text);
         }
     }
 
 
 
     template<class ComponentClass>
-    bool getComponentText(const std::string& componentName, std::string& result) {
-        ComponentClass* component = dynamic_cast<ComponentClass*>(get_named_item(componentName));
+    bool getComponentText(const UnicodeString& componentName, UnicodeString& result) {
+        std::string utf8CompName = StringConverter::toUtf8String(componentName);
+        ComponentClass* component = dynamic_cast<ComponentClass*>(get_named_item(utf8CompName));
         if (!component) {
-            std::string errorMessage = "Unable to find field \"" + componentName + "\" in gump " + getName();
+            UnicodeString errorMessage = UnicodeString("Unable to find field \"").append(componentName).append("\" in gump ").append(getName());
             GumpMenus::openMessageBox(errorMessage);
             return false;
         } else {
-            result = component->get_text();
+            result = component->getText();
             return true;
         }
     }
@@ -87,7 +89,7 @@ private:
     bool onInputReleased(const CL_InputEvent& msg);
     bool onPointerMoved(const CL_InputEvent& msg);
 
-    std::string name_;
+    UnicodeString name_;
 };
 
 }

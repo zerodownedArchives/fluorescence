@@ -5,7 +5,7 @@ namespace uome {
 namespace net {
 namespace packets {
 
-GameServerLoginRequest::GameServerLoginRequest(const std::string& name, const std::string& password, uint32_t key) : Packet(0x91, 65),
+GameServerLoginRequest::GameServerLoginRequest(const UnicodeString& name, const UnicodeString& password, uint32_t key) : Packet(0x91, 65),
     name_(name), password_(password), key_(key) {
 }
 

@@ -27,6 +27,7 @@ boost::shared_ptr<ui::Texture> ArtLoader::getMapTexture(unsigned int id) {
 
 boost::shared_ptr<ui::Texture> ArtLoader::getItemTexture(unsigned int id) {
     id += 0x4000;
+
     return cache_.get(id);
 }
 

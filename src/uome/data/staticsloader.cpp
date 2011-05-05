@@ -14,15 +14,26 @@ StaticsLoader::StaticsLoader(const boost::filesystem::path& idxPath, const boost
                              unsigned int blockCountX, unsigned int blockCountY) :
         blockCountX_(blockCountX), blockCountY_(blockCountY), difEnabled_(true) {
 
-    FullFileLoader difOffsetsLoader(difOffsetsPath);
-    difOffsetsLoader.read(boost::bind(&StaticsLoader::readCallbackDifOffsets, this, _1, _2));
+
+    if (boost::filesystem::exists(difOffsetsPath) && boost::filesystem::exists(difIdxPath) && boost::filesystem::exists(difPath)) {
+        FullFileLoader difOffsetsLoader(difOffsetsPath);
+        difOffsetsLoader.read(boost::bind(&StaticsLoader::readCallbackDifOffsets, this, _1, _2));
+
+        boost::shared_ptr<IndexedOnDemandFileLoader<world::StaticBlock> > difStream(new IndexedOnDemandFileLoader<world::StaticBlock>(difIdxPath, difPath,
+            boost::bind(&StaticsLoader::readCallbackMul, this, _1, _2, _3, _4, _5, _6)));
+
+        difCache_.init(difStream);
+    } else {
+        LOG_WARN(LOGTYPE_DATA, "Unable to open dif files");
+        difEnabled_ = false;
+    }
+
+
 
     boost::shared_ptr<IndexedOnDemandFileLoader<world::StaticBlock> > mulStream(new IndexedOnDemandFileLoader<world::StaticBlock>(idxPath, mulPath,
             boost::bind(&StaticsLoader::readCallbackMul, this, _1, _2, _3, _4, _5, _6)));
-    boost::shared_ptr<IndexedOnDemandFileLoader<world::StaticBlock> > difStream(new IndexedOnDemandFileLoader<world::StaticBlock>(difIdxPath, difPath,
-            boost::bind(&StaticsLoader::readCallbackMul, this, _1, _2, _3, _4, _5, _6)));
+
     mulCache_.init(mulStream);
-    difCache_.init(difStream);
 }
 
 StaticsLoader::StaticsLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath,

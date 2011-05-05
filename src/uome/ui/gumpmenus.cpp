@@ -11,42 +11,45 @@
 #include <client.hpp>
 #include <misc/logger.hpp>
 #include <misc/config.hpp>
+#include <misc/exception.hpp>
 
 #include <net/packets/serverlist.hpp>
 
 #include "gumpmenu.hpp"
 #include "gumpfactory.hpp"
 #include "components/localbutton.hpp"
+#include "components/lineedit.hpp"
 
 namespace uome {
 namespace ui {
 
-GumpMenu* GumpMenus::openMessageBox(const std::string& message) {
-    GumpMenu* menu = GumpFactory::fromXmlFile("messagebox");
-    if (menu) {
-        menu->setComponentText<CL_Label>("messagetext", message);
-    }
+GumpMenu* GumpMenus::openMessageBox(const UnicodeString& message) {
+    //GumpMenu* menu = GumpFactory::fromXmlFile("messagebox");
+    //if (menu) {
+        //std::string utf8Str = StringConverter::toUtf8String(message);
+        //menu->setComponentText<CL_Label>("messagetext", utf8Str);
+    //}
 
-    LOGARG_INFO(LOGTYPE_UI, "MessageBox: %s", message.c_str());
+    //LOGARG_INFO(LOGTYPE_UI, "MessageBox: %S", message.getTerminatedBuffer());
 
-    return menu;
+    //return menu;
+    throw Exception("not implemented at the moment");
 }
 
 GumpMenu* GumpMenus::openLoginGump() {
     GumpMenu* menu = GumpFactory::fromXmlFile("login");
 
     if (menu) {
-        Config* config = Client::getSingleton()->getConfig();
-        menu->setComponentTextFromConfig<CL_LineEdit>("loginhost", "shard.host", config);
+        Config& config = Client::getSingleton()->getConfig();
+        menu->setComponentTextFromConfig<components::LineEdit>("loginhost", "shard.host", config);
 
-        if (config->count("shard.port") > 0) {
-            std::stringstream ss;
-            ss << config->get("shard.port").as<unsigned short>();
-            menu->setComponentText<CL_LineEdit>("loginport", ss.str());
+        if (config.exists("shard.port")) {
+            UnicodeString portStr = StringConverter::fromNumber(config["uome/shard/address@port"].asUint());
+            menu->setComponentText<components::LineEdit>("loginport", portStr);
         }
 
-        menu->setComponentTextFromConfig<CL_LineEdit>("loginaccount", "shard.account", config);
-        menu->setComponentTextFromConfig<CL_LineEdit>("loginpassword", "shard.password", config);
+        menu->setComponentTextFromConfig<components::LineEdit>("loginaccount", "shard.account", config);
+        menu->setComponentTextFromConfig<components::LineEdit>("loginpassword", "shard.password", config);
 
     }
 

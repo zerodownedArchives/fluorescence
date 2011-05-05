@@ -13,8 +13,6 @@ public:
 
     static bool writeUtf8Null(int8_t* buf, unsigned int len, unsigned int& index, const UnicodeString& value);
     static bool writeUtf8Fixed(int8_t* buf, unsigned int len, unsigned int& index, const UnicodeString& value, unsigned int fixed);
-    static bool writeUtf8Null(int8_t* buf, unsigned int len, unsigned int& index, const std::string& value);
-    static bool writeUtf8Fixed(int8_t* buf, unsigned int len, unsigned int& index, const std::string& value, unsigned int fixed);
 
     static bool write(int8_t* buf, unsigned int len, unsigned int& index, const uint8_t& value);
     static bool write(int8_t* buf, unsigned int len, unsigned int& index, const uint16_t& value);

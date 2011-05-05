@@ -7,6 +7,7 @@
 
 #include <queue>
 
+#include <misc/string.hpp>
 #include "encryption.hpp"
 #include "decompress.hpp"
 #include "packet.hpp"
@@ -21,7 +22,7 @@ public:
 
     void setEncryption(boost::shared_ptr<Encryption> value);
 
-    bool connect(const std::string& host, unsigned short port);
+    bool connect(const UnicodeString& host, unsigned short port);
     bool connect(unsigned int ip, unsigned short port);
     void close();
 

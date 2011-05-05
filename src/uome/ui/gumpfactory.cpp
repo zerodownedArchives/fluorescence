@@ -18,6 +18,7 @@
 #include "components/serverbutton.hpp"
 #include "components/localbutton.hpp"
 #include "components/scrollarea.hpp"
+#include "components/lineedit.hpp"
 
 namespace uome {
 namespace ui {
@@ -81,21 +82,20 @@ void GumpFactory::removeRepeatContext(const std::string& name) {
     getSingleton()->repeatContexts_.erase(name);
 }
 
-GumpMenu* GumpFactory::fromXmlFile(const std::string& name, GumpMenu* menu) {
+GumpMenu* GumpFactory::fromXmlFile(const UnicodeString& name, GumpMenu* menu) {
     // can be called before a shard is set
     boost::filesystem::path path;
-    std::string fileName = name + ".xml";
-    if (Client::getSingleton()->getConfig()->count("shard")) {
-        path = "shards";
-        path = path / Client::getSingleton()->getConfig()->get("shard").as<std::string>() / "gumps" / fileName;
+    std::string utf8fileName = StringConverter::toUtf8String(name) + ".xml";
+    if (Client::getSingleton()->getConfig().exists("uome/shard@directory")) {
+        path = "shards" / Client::getSingleton()->getConfig()["uome/shard@directory"].asPath() / "gumps" / utf8fileName;
     }
 
     if (!boost::filesystem::exists(path)) {
         path = "gumps";
-        path = path / fileName;
+        path = path / utf8fileName;
 
         if (!boost::filesystem::exists(path)) {
-            LOGARG_CRITICAL(LOGTYPE_UI, "Unable to gump xml %s: file not found", name.c_str());
+            LOGARG_CRITICAL(LOGTYPE_UI, "Unable to gump xml %s: file not found", utf8fileName.c_str());
             return menu;
         }
     }
@@ -122,9 +122,10 @@ GumpMenu* GumpFactory::fromXmlFile(const std::string& name, GumpMenu* menu) {
     }
 }
 
-GumpMenu* GumpFactory::fromXmlString(const std::string& str, GumpMenu* menu) {
+GumpMenu* GumpFactory::fromXmlString(const UnicodeString& str, GumpMenu* menu) {
     pugi::xml_document doc;
-    pugi::xml_parse_result result = doc.load_buffer(str.c_str(), str.length());
+    std::string utf8String = StringConverter::toUtf8String(str);
+    pugi::xml_parse_result result = doc.load_buffer(utf8String.c_str(), utf8String.length());
 
     if (result) {
         GumpMenu* ret = getSingleton()->fromXml(doc, menu);
@@ -229,11 +230,11 @@ bool GumpFactory::parseId(pugi::xml_node& node, CL_GUIComponent* component) {
 
 bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
-    std::string text = node.attribute("text").value();
+    UnicodeString text = StringConverter::fromUtf8(node.attribute("text").value());
     unsigned int buttonId = node.attribute("buttonid").as_uint();
     unsigned int pageId = node.attribute("page").as_uint();
-    std::string action = node.attribute("action").value();
-    std::string param = node.attribute("param").value();
+    UnicodeString action = StringConverter::fromUtf8(node.attribute("action").value());
+    UnicodeString param = StringConverter::fromUtf8(node.attribute("param").value());
 
     components::BaseButton* button;
     if (action.length() > 0) {
@@ -249,7 +250,7 @@ bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, Gu
 
     parseId(node, button);
     button->set_geometry(bounds);
-    button->set_text(text);
+    button->setText(text);
 
     top->addToCurrentPage(button);
     return true;
@@ -300,14 +301,14 @@ bool GumpFactory::parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* paren
 
 bool GumpFactory::parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
-    std::string text = node.attribute("text").value();
+    UnicodeString text = StringConverter::fromUtf8(node.attribute("text").value());
     int numeric = node.attribute("numeric").as_int();
     int password = node.attribute("password").as_int();
     unsigned int maxlength = node.attribute("maxlength").as_uint();
 
-    CL_LineEdit* edit = new CL_LineEdit(parent);
+    components::LineEdit* edit = new components::LineEdit(parent);
     parseId(node, edit);
-    edit->set_text(text);
+    edit->setText(text);
     edit->set_geometry(bounds);
     edit->set_select_all_on_focus_gain(false);
 

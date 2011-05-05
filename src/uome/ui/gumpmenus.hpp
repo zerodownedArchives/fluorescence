@@ -1,8 +1,7 @@
 #ifndef UOME_UI_GUMPMENUS_HPP
 #define UOME_UI_GUMPMENUS_HPP
 
-#include <string>
-#include <boost/shared_ptr.hpp>
+#include <misc/string.hpp>
 
 namespace uome {
 
@@ -20,7 +19,7 @@ class GumpMenu;
 
 class GumpMenus {
 public:
-    static GumpMenu* openMessageBox(const std::string& message);
+    static GumpMenu* openMessageBox(const UnicodeString& message);
     static GumpMenu* openShardSelectionGump();
     static GumpMenu* openLoginGump();
     static GumpMenu* openServerListGump(const net::packets::ServerList* list);

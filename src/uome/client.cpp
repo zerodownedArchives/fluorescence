@@ -42,26 +42,27 @@ int Client::sMain(const std::vector<CL_String8>& args) {
     return ret;
 }
 
-Config* Client::getConfig() {
-    return &config_;
+Config& Client::getConfig() {
+    return config_;
 }
 
 void Client::shutdown() {
     setState(STATE_SHUTDOWN);
 }
 
-bool Client::shutdown(ui::GumpMenu* menu, const std::string& parameter) {
+bool Client::shutdown(ui::GumpMenu* menu, ui::components::LocalButton* button) {
     shutdown();
     return true;
 }
 
-bool Client::selectShard(ui::GumpMenu* menu, const std::string& parameter) {
-    config_.set("shard", parameter);
+bool Client::selectShard(ui::GumpMenu* menu, ui::components::LocalButton* button) {
+    config_["uome/shard@name"].setString(button->getParameter());
+    config_["uome/shard@directory"].setPathFromUString(button->getParameter());
     setState(STATE_PRE_LOGIN);
     return true;
 }
 
-bool Client::disconnect(ui::GumpMenu* menu, const std::string& parameter) {
+bool Client::disconnect(ui::GumpMenu* menu, ui::components::LocalButton* button) {
     net::Manager::getSingleton()->disconnect();
     //setState(STATE_PRE_LOGIN);
     setState(STATE_PLAYING);
@@ -77,8 +78,9 @@ bool Client::handleStateChange() {
     switch (state_) {
     case STATE_SHARD_SELECTION:
         if (requestedState_ != STATE_SHUTDOWN) {
-            std::string selectedShard = config_["shard"].as<std::string>();
-            LOGARG_INFO(LOGTYPE_MAIN, "Selected shard: %s", selectedShard.c_str());
+            UnicodeString selectedShard = config_["uome/shard@name"].asString();
+            config_["uome/shard@directory"].setPathFromUString(selectedShard);
+            //LOGARG_INFO(LOGTYPE_MAIN, "Selected shard: %s", selectedShard.c_str());
 
             if (!initFull(selectedShard)) {
                 return false;
@@ -137,7 +139,7 @@ bool Client::initBase(const std::vector<CL_String8>& args) {
     return true;
 }
 
-bool Client::initFull(const std::string& selectedShard) {
+bool Client::initFull(const UnicodeString& selectedShard) {
     LOG_INFO(LOGTYPE_MAIN, "Parsing shard config");
     if (!config_.parseShardConfig(selectedShard)) {
         return false;
@@ -208,7 +210,7 @@ int Client::main(const std::vector<CL_String8>& args) {
 
     std::string selectedShard;
     // if we already have a command line argument, take it
-    if (config_.count("shard") > 0) {
+    if (config_.exists("uome/shard@name")) {
         setState(STATE_PRE_LOGIN);
     } else {
         if (!ui::GumpMenus::openShardSelectionGump()) {

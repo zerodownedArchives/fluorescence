@@ -21,16 +21,6 @@ bool PacketWriter::writeUtf8Null(int8_t* buf, unsigned int len, unsigned int& in
     }
 }
 
-bool PacketWriter::writeUtf8Null(int8_t* buf, unsigned int len, unsigned int& index, const std::string& value) {
-    if (index + value.length() < len) {
-        memcpy(&buf[index], value.c_str(), value.length());
-        index += value.length();
-        return true;
-    } else {
-        return false;
-    }
-}
-
 bool PacketWriter::writeUtf8Fixed(int8_t* buf, unsigned int len, unsigned int& index, const UnicodeString& value, unsigned int fixed) {
     if (index + fixed < len) {
         int bytes = StringConverter::toUtf8(value, fixedStringBuf_, 0x4000, false);
@@ -46,26 +36,6 @@ bool PacketWriter::writeUtf8Fixed(int8_t* buf, unsigned int len, unsigned int& i
         } else {
             // copy all bytes that fit in the fixed size
             memcpy(&buf[index], fixedStringBuf_, fixed);
-        }
-
-        index += fixed;
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool PacketWriter::writeUtf8Fixed(int8_t* buf, unsigned int len, unsigned int& index, const std::string& value, unsigned int fixed) {
-    if (index + fixed < len) {
-        int bytes = value.length();
-
-        if ((unsigned int)bytes < fixed) {
-            memcpy(&buf[index], value.c_str(), bytes);
-            // set other bytes to zero
-            memset(&buf[index + bytes], 0, fixed - bytes);
-        } else {
-            // copy all bytes that fit in the fixed size
-            memcpy(&buf[index], value.c_str(), fixed);
         }
 
         index += fixed;

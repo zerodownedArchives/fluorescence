@@ -11,6 +11,9 @@
 namespace uome {
 namespace ui {
     class GumpMenu;
+    namespace components {
+        class LocalButton;
+    }
 }
 
 namespace net {
@@ -29,10 +32,10 @@ public:
 
     static boost::shared_ptr<Packet> createPacket(uint8_t id);
 
-    bool connect(ui::GumpMenu* menu, const std::string& parameter);
+    bool connect(ui::GumpMenu* menu, ui::components::LocalButton* button);
     void disconnect();
 
-    bool selectServer(ui::GumpMenu* menu, const std::string& parameter);
+    bool selectServer(ui::GumpMenu* menu, ui::components::LocalButton* button);
 
     void handleServerRedirect(const packets::ServerRedirect* packet);
 

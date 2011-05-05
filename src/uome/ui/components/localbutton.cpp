@@ -16,10 +16,10 @@ namespace components {
 LocalButton::ClickAction::ClickAction() {
 }
 
-LocalButton::ClickAction::ClickAction(bool closeGumpMenu, boost::function<bool (GumpMenu*, const std::string&)> callback) : closeGumpMenu_(closeGumpMenu), callback_(callback) {
+LocalButton::ClickAction::ClickAction(bool closeGumpMenu, boost::function<bool (GumpMenu*, LocalButton*)> callback) : closeGumpMenu_(closeGumpMenu), callback_(callback) {
 }
 
-std::map<std::string, LocalButton::ClickAction> LocalButton::actionTable_ = std::map<std::string, LocalButton::ClickAction>();
+std::map<UnicodeString, LocalButton::ClickAction> LocalButton::actionTable_ = std::map<UnicodeString, LocalButton::ClickAction>();
 
 void LocalButton::buildBasicActionTable() {
     actionTable_["shutdown"] = ClickAction(false, boost::bind(&Client::shutdown, Client::getSingleton(), _1, _2));
@@ -33,27 +33,32 @@ void LocalButton::buildFullActionTable() {
     actionTable_["selectserver"] = ClickAction(false, boost::bind(&net::Manager::selectServer, net::Manager::getSingleton(), _1, _2));
 }
 
-LocalButton::LocalButton(CL_GUIComponent* parent, const std::string& action, const std::string& parameter) : BaseButton(parent),
+LocalButton::LocalButton(CL_GUIComponent* parent, const UnicodeString& action, const UnicodeString& parameter) : BaseButton(parent),
         action_(action), parameter_(parameter) {
 }
 
-void LocalButton::setAction(const std::string& value) {
+void LocalButton::setAction(const UnicodeString& value) {
     action_ = value;
 }
 
-const std::string& LocalButton::getAction() {
+const UnicodeString& LocalButton::getAction() const {
     return action_;
 }
 
-void LocalButton::setParameter(const std::string& value) {
+void LocalButton::setParameter(const UnicodeString& value) {
     parameter_ = value;
 }
 
-const std::string& LocalButton::getParameter() {
+const UnicodeString& LocalButton::getParameter() const {
     return parameter_;
 }
 
-bool LocalButton::closeHelper(GumpMenu* menu, const std::string& param) {
+int LocalButton::getParameterInt() const {
+    std::string utfStr = StringConverter::toUtf8String(parameter_);
+    return atoi(utfStr.c_str());
+}
+
+bool LocalButton::closeHelper(GumpMenu* menu, LocalButton* self) {
     return true;
 }
 
@@ -61,15 +66,15 @@ bool LocalButton::closeHelper(GumpMenu* menu, const std::string& param) {
 void LocalButton::onClicked(BaseButton* self) {
     GumpMenu* gump = dynamic_cast<GumpMenu*>(get_top_level_component());
     if (gump) {
-        std::map<std::string, ClickAction>::iterator it = actionTable_.find(action_);
+        std::map<UnicodeString, ClickAction>::iterator it = actionTable_.find(action_);
 
         if (it != actionTable_.end()) {
-            bool funcRet = (it->second.callback_) (gump, parameter_);
+            bool funcRet = (it->second.callback_) (gump, this);
             if (funcRet && it->second.closeGumpMenu_) { // close gump if callback was successful
                 ui::Manager::getSingleton()->closeGumpMenu(gump);
             }
         } else {
-            LOGARG_ERROR(LOGTYPE_UI, "Unknown button action: %s", action_.c_str());
+            LOGARG_ERROR(LOGTYPE_UI, "Unknown button action: %S", action_.getTerminatedBuffer());
         }
     } else {
         LOG_ERROR(LOGTYPE_UI, "PageButton inside something other than GumpMenu");

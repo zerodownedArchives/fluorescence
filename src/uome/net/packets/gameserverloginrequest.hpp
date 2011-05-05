@@ -3,19 +3,21 @@
 
 #include <net/packet.hpp>
 
+#include <misc/string.hpp>
+
 namespace uome {
 namespace net {
 namespace packets {
 
 class GameServerLoginRequest : public Packet {
 public:
-    GameServerLoginRequest(const std::string& name, const std::string& password, unsigned int key);
+    GameServerLoginRequest(const UnicodeString& name, const UnicodeString& password, unsigned int key);
 
     virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
 
 private:
-    std::string name_;
-    std::string password_;
+    UnicodeString name_;
+    UnicodeString password_;
     uint32_t key_;
 };
 

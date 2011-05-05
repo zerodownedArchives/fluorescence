@@ -17,32 +17,33 @@ public:
     static void buildBasicActionTable();
     static void buildFullActionTable();
 
-    LocalButton(CL_GUIComponent* parent, const std::string& action, const std::string& parameter = "");
+    LocalButton(CL_GUIComponent* parent, const UnicodeString& action, const UnicodeString& parameter);
 
-    void setAction(const std::string& value);
-    const std::string& getAction();
+    void setAction(const UnicodeString& value);
+    const UnicodeString& getAction() const;
 
-    void setParameter(const std::string& value);
-    const std::string& getParameter();
+    void setParameter(const UnicodeString& value);
+    const UnicodeString& getParameter() const;
+    int getParameterInt() const;
 
     virtual void onClicked(BaseButton* self);
 
 private:
-    std::string action_;
-    std::string parameter_;
+    UnicodeString action_;
+    UnicodeString parameter_;
 
     struct ClickAction {
         ClickAction();
 
-        ClickAction(bool closeGumpMenu, boost::function<bool (GumpMenu*, const std::string&)> callback);
+        ClickAction(bool closeGumpMenu, boost::function<bool (GumpMenu*, LocalButton*)> callback);
 
         bool closeGumpMenu_;
-        boost::function<bool (GumpMenu*, const std::string&)> callback_;
+        boost::function<bool (GumpMenu*, LocalButton*)> callback_;
     };
 
-    static std::map<std::string, ClickAction> actionTable_;
+    static std::map<UnicodeString, ClickAction> actionTable_;
 
-    static bool closeHelper(GumpMenu* menu, const std::string& param);
+    static bool closeHelper(GumpMenu* menu, LocalButton* button);
 };
 
 }

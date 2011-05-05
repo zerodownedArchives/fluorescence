@@ -172,11 +172,11 @@ bool GumpMenu::isDraggable() {
     return draggable_;
 }
 
-void GumpMenu::setName(const std::string& name) {
+void GumpMenu::setName(const UnicodeString& name) {
     name_ = name;
 }
 
-const std::string& GumpMenu::getName() {
+const UnicodeString& GumpMenu::getName() {
     return name_;
 }
 

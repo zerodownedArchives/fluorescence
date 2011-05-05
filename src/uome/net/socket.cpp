@@ -35,11 +35,12 @@ void Socket::setEncryption(boost::shared_ptr<Encryption> value) {
     encryption_ = value;
 }
 
-bool Socket::connect(const std::string& host, unsigned short port) {
-    hostent* hostent = gethostbyname(host.c_str());
+bool Socket::connect(const UnicodeString& host, unsigned short port) {
+    std::string stdString = StringConverter::toUtf8String(host);
+    hostent* hostent = gethostbyname(stdString.c_str());
 
     if (!hostent) {
-        LOGARG_ERROR(LOGTYPE_NETWORK, "Unknown host: %s", host.c_str());
+        LOGARG_ERROR(LOGTYPE_NETWORK, "Unknown host: %s", stdString.c_str());
         close();
         return false;
     }

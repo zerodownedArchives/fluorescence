@@ -1,7 +1,7 @@
 
 #include "loginreject.hpp"
 
-#include <ui/manager.hpp>
+#include <ui/gumpmenus.hpp>
 #include <net/manager.hpp>
 
 namespace uome {
@@ -21,23 +21,26 @@ bool LoginReject::read(const int8_t* buf, unsigned int len, unsigned int& index)
 }
 
 void LoginReject::onReceive() {
+    UnicodeString reasonStr;
     switch (reason_) {
     case 0x00:
-        ui::Manager::getSingleton()->openMessageBox("Login denied: unknown user");
+        reasonStr = "Login denied: unknown user";
         break;
     case 0x01:
-        ui::Manager::getSingleton()->openMessageBox("Login denied: account in use");
+        reasonStr = "Login denied: account in use";
         break;
     case 0x02:
-        ui::Manager::getSingleton()->openMessageBox("Login denied: account disabled");
+        reasonStr = "Login denied: account disabled";
         break;
     case 0x03:
-        ui::Manager::getSingleton()->openMessageBox("Login denied: bad password");
+        reasonStr = "Login denied: bad password";
         break;
     default:
-        ui::Manager::getSingleton()->openMessageBox("Login denied: communication error");
+        reasonStr = "Login denied: communication error";
         break;
     }
+
+    ui::GumpMenus::openMessageBox(reasonStr);
 
     net::Manager::getSingleton()->disconnect();
 }

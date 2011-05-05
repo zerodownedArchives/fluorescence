@@ -5,7 +5,7 @@ namespace uome {
 namespace net {
 namespace packets {
 
-LoginRequest::LoginRequest(const std::string& name, const std::string& password) : Packet(0x80, 62),
+LoginRequest::LoginRequest(const UnicodeString& name, const UnicodeString& password) : Packet(0x80, 62),
     name_(name), password_(password) {
 }
 

@@ -5,6 +5,9 @@
 #include <misc/logger.hpp>
 #include <ui/manager.hpp>
 #include <ui/gumpmenu.hpp>
+#include <ui/gumpmenus.hpp>
+#include <ui/components/lineedit.hpp>
+#include <ui/components/localbutton.hpp>
 
 #include "packetlist.hpp"
 #include "twofishencryption.hpp"
@@ -75,46 +78,45 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
     return ret;
 }
 
-bool Manager::connect(ui::GumpMenu* menu, const std::string& parameter) {
-    CL_LineEdit* ipCom = dynamic_cast<CL_LineEdit*>(menu->get_named_item("loginhost"));
-    if (!ipCom) {
-        ui::Manager::getSingleton()->openMessageBox("Unable to find input field for the server host. Did you change the login gump template?");
+bool Manager::connect(ui::GumpMenu* menu, ui::components::LocalButton* button) {
+    UnicodeString host;
+    if (!menu->getComponentText<ui::components::LineEdit>("loginhost", host)) {
+        ui::GumpMenus::openMessageBox("Unable to find input field for the server host. Did you change the login gump template?");
         return false;
     }
 
-    CL_LineEdit* portCom = dynamic_cast<CL_LineEdit*>(menu->get_named_item("loginport"));
-    if (!portCom) {
-        ui::Manager::getSingleton()->openMessageBox("Unable to find input field for the server port. Did you change the login gump template?");
+    ui::components::LineEdit* line = dynamic_cast<ui::components::LineEdit*>(menu->get_named_item("loginport"));
+    if (!line) {
+        ui::GumpMenus::openMessageBox("Unable to find input field for the server port. Did you change the login gump template?");
         return false;
     }
 
-    CL_LineEdit* accCom = dynamic_cast<CL_LineEdit*>(menu->get_named_item("loginaccount"));
-    if (!accCom) {
-        ui::Manager::getSingleton()->openMessageBox("Unable to find input field for the account name. Did you change the login gump template?");
-        return false;
-    }
-
-    CL_LineEdit* pwCom = dynamic_cast<CL_LineEdit*>(menu->get_named_item("loginpassword"));
-    if (!pwCom) {
-        ui::Manager::getSingleton()->openMessageBox("Unable to find input field for the password. Did you change the login gump template?");
-        return false;
-    }
-
-    std::string host = ipCom->get_text();
-    int port = portCom->get_text_int();
+    int port = line->get_text_int();
     if (port <= 0) {
-        ui::Manager::getSingleton()->openMessageBox("Unable to find parse port number");
+        ui::GumpMenus::openMessageBox("Unable to find parse port number");
         return false;
     }
+
+
+    UnicodeString accName;
+    if (!menu->getComponentText<ui::components::LineEdit>("loginaccount", accName)) {
+        ui::GumpMenus::openMessageBox("Unable to find input field for the account name. Did you change the login gump template?");
+        return false;
+    }
+
+    UnicodeString accPw;
+    if (!menu->getComponentText<ui::components::LineEdit>("loginpassword", accPw)) {
+        ui::GumpMenus::openMessageBox("Unable to find input field for the password. Did you change the login gump template?");
+        return false;
+    }
+
 
     if (socket_.connect(host, port)) {
         Client* clientSing = Client::getSingleton();
         clientSing->setState(Client::STATE_LOGIN);
 
-        std::string accName(accCom->get_text());
-        std::string accPw(pwCom->get_text());
-        clientSing->getConfig()->set("shard.account", accName);
-        clientSing->getConfig()->set("shard.password", accPw);
+        clientSing->getConfig()["shard.account"].setString(accName);
+        clientSing->getConfig()["shard.password"].setString(accPw);
 
         socket_.writeSeed(0);
         // send packet
@@ -123,7 +125,7 @@ bool Manager::connect(ui::GumpMenu* menu, const std::string& parameter) {
 
         return true;
     } else {
-        ui::Manager::getSingleton()->openMessageBox("Could not connect to server");
+        ui::GumpMenus::openMessageBox("Could not connect to server");
         return false;
     }
 }
@@ -132,8 +134,8 @@ void Manager::disconnect() {
     socket_.close();
 }
 
-bool Manager::selectServer(ui::GumpMenu* menu, const std::string& parameter) {
-    unsigned int index = atoi(parameter.c_str());
+bool Manager::selectServer(ui::GumpMenu* menu, ui::components::LocalButton* button) {
+    unsigned int index = button->getParameterInt();
 
     packets::GameServerSelect pkt(index);
     socket_.write(pkt);
@@ -151,9 +153,9 @@ void Manager::handleServerRedirect(const packets::ServerRedirect* packet) {
 
     socket_.writeSeed(0);
 
-    Client* clientSing = Client::getSingleton();
-    packets::GameServerLoginRequest loginReq(clientSing->getConfig()->get("shard.account").as<std::string>(),
-            clientSing->getConfig()->get("shard.password").as<std::string>(),
+    Config& config = Client::getSingleton()->getConfig();
+    packets::GameServerLoginRequest loginReq(config["uome/shard/account@name"].asString(),
+            config["uome/shard/account@password"].asString(),
             packet->encryptionKey_);
     socket_.write(loginReq);
 }
