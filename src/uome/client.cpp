@@ -121,6 +121,17 @@ void Client::cleanUp() {
     data::Manager::destroy();
 }
 
+void Client::saveConfig() {
+    if (config_.exists("/uome/shard@name")) {
+        //boost::filesystem::path path = "shards" / config_["/uome/shard@name"].asPath() / "config.xml";
+        boost::filesystem::path path = "tmpConfig.xml";
+        config_.save(path, false);
+
+        path = "fullConfig.xml";
+        config_.save(path, true);
+    }
+}
+
 bool Client::initBase(const std::vector<CL_String8>& args) {
     LOG_INFO(LOGTYPE_MAIN, "Parsing command line");
     if (!config_.parseCommandLine(args)) {
@@ -143,7 +154,7 @@ bool Client::initFull() {
         return false;
     }
 
-    config_.dumpMap();
+    //config_.dumpMap();
 
     LOG_INFO(LOGTYPE_MAIN, "Creating data loaders");
     if (!data::Manager::create(config_)) {
@@ -268,7 +279,10 @@ int Client::main(const std::vector<CL_String8>& args) {
 
     cleanUp();
 
+    saveConfig();
+
     LOG_INFO(LOGTYPE_MAIN, "end of main");
+
     return 0;
 }
 

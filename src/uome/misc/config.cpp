@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <unicode/regex.h>
+
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/program_options.hpp>
@@ -277,6 +279,63 @@ void Config::dumpMap() const {
     for (; iter != end; ++iter) {
         LOGARG_DEBUG(LOGTYPE_MAIN, "Config value type=%u isDefault=%u %s => %s", iter->second.valueType(), iter->second.isDefault(), StringConverter::toUtf8String(iter->first).c_str(), StringConverter::toUtf8String(iter->second.asString()).c_str());
     }
+}
+
+bool Config::save(const boost::filesystem::path& path, bool includeDefaultValues) const {
+    pugi::xml_document rootNode;
+    rootNode.set_name("uome");
+
+    std::map<UnicodeString, ConfigValue>::const_iterator iter = variablesMap_.begin();
+    std::map<UnicodeString, ConfigValue>::const_iterator end = variablesMap_.end();
+
+    for (; iter != end; ++iter) {
+        if (includeDefaultValues || !iter->second.isDefault()) {
+            unsigned int indexOfAt = iter->first.indexOf('@');
+            UnicodeString nodePath(iter->first, 0, indexOfAt);
+
+            std::string utf8NodePath = StringConverter::toUtf8String(nodePath);
+            pugi::xml_node existingNode = rootNode.first_element_by_path(utf8NodePath.c_str(), '/');
+
+            if (!existingNode) {
+                existingNode = buildXmlNode(rootNode, nodePath);
+            }
+
+            UnicodeString attrName(iter->first, indexOfAt + 1);
+            UnicodeString attrValue = iter->second.asString();
+
+            pugi::xml_attribute attr = existingNode.append_attribute(StringConverter::toUtf8String(attrName).c_str());
+            attr.set_value(StringConverter::toUtf8String(attrValue).c_str());
+        }
+    }
+
+    return rootNode.save_file(path.string().c_str(), "    ");
+}
+
+pugi::xml_node Config::buildXmlNode(pugi::xml_node& rootNode, const UnicodeString& path) const {
+    unsigned int indexOfSlash = path.lastIndexOf('/');
+    UnicodeString parentPath(path, 0, indexOfSlash);
+    UnicodeString selfName(path, indexOfSlash + 1);
+
+    LOGARG_DEBUG(LOGTYPE_MAIN, "buildxmlnode parentPath: %s selfName: %s", StringConverter::toUtf8String(parentPath).c_str(), StringConverter::toUtf8String(selfName).c_str());
+
+    pugi::xml_node parentNode;
+    if (indexOfSlash == 0) {
+        parentNode = rootNode;
+    }
+
+    if (!parentNode) {
+        std::string utf8ParentPath = StringConverter::toUtf8String(parentPath);
+        parentNode = rootNode.first_element_by_path(utf8ParentPath.c_str(), '/');
+    }
+
+    if (!parentNode) {
+        parentNode = buildXmlNode(rootNode, parentPath);
+    }
+
+    pugi::xml_node ret = parentNode.append_child(pugi::node_element);
+    ret.set_name(StringConverter::toUtf8String(selfName).c_str());
+
+    return ret;
 }
 
 }

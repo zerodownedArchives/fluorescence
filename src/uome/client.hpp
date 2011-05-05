@@ -54,6 +54,7 @@ private:
     Config config_;
 
     void cleanUp();
+    void saveConfig();
 
     bool initBase(const std::vector<CL_String8>& args);
     bool initFull();

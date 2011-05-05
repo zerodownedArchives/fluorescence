@@ -22,6 +22,7 @@ public:
 
     bool exists(const UnicodeString& name) const;
 
+    bool save(const boost::filesystem::path& path, bool includeDefaultValues) const;
     void dumpMap() const;
 
 private:
@@ -31,6 +32,7 @@ private:
     Config& operator=(const Config& copy) { return *this; }
 
     bool parseNode(const pugi::xml_node& node);
+    pugi::xml_node buildXmlNode(pugi::xml_node& parent, const UnicodeString& path) const;
 };
 
 }
