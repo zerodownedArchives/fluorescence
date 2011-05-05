@@ -123,12 +123,17 @@ void Client::cleanUp() {
 
 void Client::saveConfig() {
     if (config_.exists("/uome/shard@name")) {
-        //boost::filesystem::path path = "shards" / config_["/uome/shard@name"].asPath() / "config.xml";
-        boost::filesystem::path path = "tmpConfig.xml";
-        config_.save(path, false);
+        boost::filesystem::path tempPath = "config.xml.tmp";
+        if (config_.save(tempPath, false)) {
+            boost::filesystem::path path = "shards" / config_["/uome/shard@name"].asPath() / "config.xml";
+            boost::filesystem::rename(tempPath, path);
+        }
 
-        path = "fullConfig.xml";
-        config_.save(path, true);
+        // make sure nothing is left
+        boost::filesystem::remove(tempPath);
+
+        //path = "fullConfig.xml";
+        //config_.save(path, true);
     }
 }
 
