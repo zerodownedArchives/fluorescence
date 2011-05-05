@@ -3,7 +3,7 @@
 
 #include "fullfileloader.hpp"
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 #include <boost/bind.hpp>
 
@@ -29,7 +29,7 @@ TileDataLoader::~TileDataLoader() {
 
 const LandTileInfo* TileDataLoader::getLandTileInfo(unsigned int id) {
     if (id > landTileCount_) {
-        LOGARG_WARN(LOGTYPE_DATA, "Trying to access out of range land tile data index %u", id);
+        LOG_WARN << "Trying to access out of range land tile data index " << id << std::endl;
         id = 0;
     }
 
@@ -38,7 +38,7 @@ const LandTileInfo* TileDataLoader::getLandTileInfo(unsigned int id) {
 
 const StaticTileInfo* TileDataLoader::getStaticTileInfo(unsigned int id) {
     if (id > staticTileCount_) {
-        LOGARG_WARN(LOGTYPE_DATA, "Trying to access out of range static tile data index %u", id);
+        LOG_WARN << "Trying to access out of range static tile data index " << id << std::endl;
         id = 0;
     }
 
@@ -69,7 +69,7 @@ void TileDataLoader::read(int8_t* buf, unsigned int len) {
     // calculate number of static tile blocks
 
     staticTileCount_ = ((len - (ptr - buf)) / 1188) * 32;
-    LOGARG_DEBUG(LOGTYPE_DATA, "Static tile count: %u", staticTileCount_);
+    LOG_DEBUG << "Static tile count: " << staticTileCount_ << std::endl;
 
     staticTileInfos_ = new StaticTileInfo[staticTileCount_];
 
@@ -119,7 +119,7 @@ void TileDataLoader::read(int8_t* buf, unsigned int len) {
         ptr += 20;
     }
 
-    LOGARG_DEBUG(LOGTYPE_DATA, "Total read bytes: %u, len: %u", (ptr - buf), len);
+    LOG_DEBUG << "Total read bytes: " << (ptr-buf) << " len: " << len << std::endl;
 
 }
 

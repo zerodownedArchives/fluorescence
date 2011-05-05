@@ -1,8 +1,6 @@
 #ifndef UOME_STRING_HPP
 #define UOME_STRING_HPP
 
-#include "exception.hpp"
-
 #include <unicode/unistr.h>
 extern "C" {
 #include <unicode/ustdio.h>

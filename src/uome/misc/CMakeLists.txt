@@ -1,6 +1,6 @@
 
 set(MISC_HPP
-    misc/logger.hpp
+    misc/log.hpp
     misc/string.hpp
     misc/configvalue.hpp
     misc/config.hpp
@@ -8,7 +8,7 @@ set(MISC_HPP
     )
 
 set(MISC_CPP
-    misc/logger.cpp
+    misc/log.cpp
     misc/string.cpp
     misc/configvalue.cpp
     misc/config.cpp

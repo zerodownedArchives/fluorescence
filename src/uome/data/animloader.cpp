@@ -5,7 +5,7 @@
 #include <ui/texture.hpp>
 #include <ui/animation.hpp>
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 namespace uome {
 namespace data {

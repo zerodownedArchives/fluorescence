@@ -21,7 +21,7 @@ MapLoader::MapLoader(const boost::filesystem::path& mulPath, const boost::filesy
             boost::bind(&MapLoader::readCallbackMul, this, _1, _2, _3, _4, _5, _6)));
         difCache_.init(difStream);
     } else {
-        LOG_WARN(LOGTYPE_DATA, "Unable to open dif files");
+        LOG_WARN << "Unable to open dif files" << std::endl;
         difEnabled_ = false;
     }
 

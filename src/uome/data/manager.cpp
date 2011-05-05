@@ -25,7 +25,7 @@ bool Manager::create(Config& config) {
             singleton_ = new Manager();
             singleton_->init(config);
         } catch (const std::exception& ex) {
-            LOGARG_CRITICAL(LOGTYPE_DATA, "Error initializing data::Manager: %s", ex.what());
+            LOG_EMERGENCY << "Error initializing data::Manager: " << ex.what();
             return false;
         }
     }
@@ -64,30 +64,30 @@ void Manager::init(Config& config) {
     boost::filesystem::path difPath;
 
     path = getPathFor(config, "/uome/files/tiledata@filename");
-    LOGARG_INFO(LOGTYPE_DATA, "Opening tiledata from %s", path.string().c_str());
+    LOG_INFO << "Opening tiledata from " << path << std::endl;
     tileDataLoader_.reset(new TileDataLoader(path));
 
     path = getPathFor(config, "/uome/files/hues@filename");
-    LOGARG_INFO(LOGTYPE_DATA, "Opening hues from %s", path.string().c_str());
+    LOG_INFO << "Opening hues from " << path << std::endl;
     huesLoader_.reset(new HuesLoader(path));
 
     idxPath = getPathFor(config, "/uome/files/texmaps@filename-idx");
     path = getPathFor(config, "/uome/files/texmaps@filename-mul");
-    LOGARG_INFO(LOGTYPE_DATA, "Opening maptex from idx=%s mul=%s", idxPath.string().c_str(), path.string().c_str());
+    LOG_INFO << "Opening maptex from idx=" << idxPath << " mul=" << path << std::endl;
     mapTexLoader_.reset(new MapTexLoader(idxPath, path));
 
     idxPath = getPathFor(config, "/uome/files/art@filename-idx");
     path = getPathFor(config, "/uome/files/art@filename-mul");
-    LOGARG_INFO(LOGTYPE_DATA, "Opening art from idx=%s mul=%s", idxPath.string().c_str(), path.string().c_str());
+    LOG_INFO << "Opening art from idx=" << idxPath << " mul=" << path << std::endl;
     artLoader_.reset(new ArtLoader(idxPath, path));
 
     idxPath = getPathFor(config, "/uome/files/gumpart@filename-idx");
     path = getPathFor(config, "/uome/files/gumpart@filename-mul");
-    LOGARG_INFO(LOGTYPE_DATA, "Opening gump art from idx=%s mul=%s", idxPath.string().c_str(), path.string().c_str());
+    LOG_INFO << "Opening gump art from idx=" << idxPath << " mul=" << path << std::endl;
     gumpArtLoader_.reset(new GumpArtLoader(idxPath, path));
 
     path = getPathFor(config, "/uome/files/animdata@filename");
-    LOGARG_INFO(LOGTYPE_DATA, "Opening animdata from mul=%s", path.string().c_str());
+    LOG_INFO << "Opening animdata from mul=" << path << std::endl;
     animDataLoader_.reset(new AnimDataLoader(path));
 
 
@@ -139,10 +139,12 @@ void Manager::init(Config& config) {
             if (config[mapConfigDifEnabled].asBool()) {
                 difOffsetsPath = getPathFor(config, mapConfigDifOffsetsPath);
                 difPath = getPathFor(config, mapConfigDifMulPath);
-                LOGARG_INFO(LOGTYPE_DATA, "Opening map%c from mul=%s, dif-offsets=%s, dif=%s, blockCountX=%u, blockCountY=%u", indexChar, path.string().c_str(), difOffsetsPath.string().c_str(), difPath.string().c_str(), blockCountX, blockCountY);
+                LOG_INFO << "Opening map" << indexChar << " from mul=" << path << ", dif-offsets=" << difOffsetsPath <<
+                        ", dif=" << difPath << ", blockCountX=" << blockCountX << ", blockCountY=" << blockCountY << std::endl;
                 mapLoader_[index].reset(new MapLoader(path, difOffsetsPath, difPath, blockCountX, blockCountY));
             } else {
-                LOGARG_INFO(LOGTYPE_DATA, "Opening map%c from mul=%s, difs disabled, blockCountX=%u, blockCountY=%u", indexChar, path.string().c_str(), blockCountX, blockCountY);
+                LOG_INFO << "Opening map" << indexChar << " from mul=" << path << ", difs disabled, blockCountX=" <<
+                        blockCountX << ", blockCountY=" << blockCountY << std::endl;
                 mapLoader_[index].reset(new MapLoader(path, blockCountX, blockCountY));
             }
 
@@ -150,7 +152,7 @@ void Manager::init(Config& config) {
                 fallbackMapLoader_ = mapLoader_[index];
             }
         } else {
-            LOGARG_INFO(LOGTYPE_DATA, "Unable to open map%c from mul=%s", indexChar, path.string().c_str());
+            LOG_WARN << "Unable to open map" << indexChar << " from mul=" << path << std::endl;
         }
 
         idxPath = getPathFor(config, staticsConfigIdxPath);
@@ -161,12 +163,11 @@ void Manager::init(Config& config) {
                 difOffsetsPath = getPathFor(config, staticsConfigDifOffsetsPath);
                 difIdxPath = getPathFor(config, staticsConfigDifIdxPath);
                 difPath = getPathFor(config, staticsConfigDifMulPath);
-                LOGARG_INFO(LOGTYPE_DATA, "Opening statics%c from idx=%s, mul=%s, dif-offsets=%s, dif-idx=%s, dif=%s",
-                        indexChar, idxPath.string().c_str(), path.string().c_str(),
-                        difOffsetsPath.string().c_str(), difIdxPath.string().c_str(), difPath.string().c_str());
+                LOG_INFO << "Opening statics" << indexChar << " from idx=" << idxPath << ", mul=" << path << ", dif-offsets=" << difOffsetsPath <<
+                        ", dif-idx=" << difIdxPath << ", dif=" << difPath << std::endl;
                 staticsLoader_[index].reset(new StaticsLoader(idxPath, path, difOffsetsPath, difIdxPath, difPath, blockCountX, blockCountY));
             } else {
-                LOGARG_INFO(LOGTYPE_DATA, "Opening statics%c from idx=%s, mul=%s, difs disabled,", indexChar, idxPath.string().c_str(), path.string().c_str());
+                LOG_INFO << "Opening statics" << indexChar << " from idx=" << idxPath << ", mul=" << path << ", difs disabled" << std::endl;
                 staticsLoader_[index].reset(new StaticsLoader(idxPath, path, blockCountX, blockCountY));
             }
 
@@ -174,7 +175,7 @@ void Manager::init(Config& config) {
                 fallbackStaticsLoader_ = staticsLoader_[index];
             }
         } else {
-            LOGARG_WARN(LOGTYPE_DATA, "Unable to open statics%c from idx=%s, mul=%s", indexChar, idxPath.string().c_str(), path.string().c_str());
+            LOG_WARN << "Unable to open statics" << indexChar << " from idx=" << idxPath << ", mul=" << path << std::endl;
         }
     }
 
@@ -223,14 +224,15 @@ void Manager::init(Config& config) {
         lowDetailCount = config[animConfigLowDetailCount].asInt();
 
         if (boost::filesystem::exists(idxPath) && boost::filesystem::exists(path)) {
-            LOGARG_INFO(LOGTYPE_DATA, "Opening anim%c from idx=%s, mul=%s, high detail=%u, low detail=%u", indexChar, idxPath.string().c_str(), path.string().c_str(), highDetailCount, lowDetailCount);
+            LOG_WARN << "Unable to open anim" << indexChar << " from idx=" << idxPath << ", mul=" << path << ", high-detail=" <<
+                    highDetailCount << ", low-detail=" << lowDetailCount << std::endl;
             animLoader_[index].reset(new AnimLoader(idxPath, path, highDetailCount, lowDetailCount));
 
             if (!fallbackAnimLoader_.get()) {
                 fallbackAnimLoader_ = animLoader_[index];
             }
         } else {
-            LOGARG_INFO(LOGTYPE_DATA, "Unable to open anim%c from idx=%s, mul=%s", indexChar, idxPath.string().c_str(), path.string().c_str());
+            LOG_WARN << "Unable to open anim" << indexChar << " from idx=" << idxPath << ", mul=" << path << std::endl;
         }
     }
 
@@ -242,13 +244,13 @@ void Manager::init(Config& config) {
 }
 
 Manager::~Manager() {
-    LOG_INFO(LOGTYPE_DATA, "Manager shutdown");
+    LOG_INFO << "data::Manager shutdown" << std::endl;
 }
 
 boost::filesystem::path Manager::getPathFor(Config& config, const char* configValue) {
     static boost::filesystem::path mulDirPath = config["/uome/files/mul-directory@path"].asPath();
     if (!config.exists(configValue)) {
-        LOGARG_ERROR(LOGTYPE_DATA, "Trying to read unknown config vaule %s", configValue);
+        LOG_ERROR << "Trying to read unknown config vaule " << configValue << std::endl;
         throw Exception("Unknown config key: ", configValue);
     }
 
@@ -262,7 +264,7 @@ boost::filesystem::path Manager::getPathFor(Config& config, const char* configVa
 
 MapLoader* Manager::getMapLoader(unsigned int index) {
     if (index > 4) {
-        LOGARG_WARN(LOGTYPE_DATA, "Trying to access map loader for map index %u", index);
+        LOG_WARN << "Trying to access map loader for map index " << index << std::endl;
         index = 0;
     }
 
@@ -272,14 +274,14 @@ MapLoader* Manager::getMapLoader(unsigned int index) {
     if (ret) {
         return ret;
     } else {
-        LOGARG_WARN(LOGTYPE_DATA, "Trying to access uninitialized map index %u", index);
+        LOG_WARN << "Trying to access uninitialized map index " << index << std::endl;
         return sing->fallbackMapLoader_.get();
     }
 }
 
 StaticsLoader* Manager::getStaticsLoader(unsigned int index) {
     if (index > 4) {
-        LOGARG_WARN(LOGTYPE_DATA, "Trying to access statics loader for map index %u", index);
+        LOG_WARN << "Trying to access statics loader for map index " << index << std::endl;
         index = 0;
     }
 
@@ -289,7 +291,7 @@ StaticsLoader* Manager::getStaticsLoader(unsigned int index) {
     if (ret) {
         return ret;
     } else {
-        LOGARG_WARN(LOGTYPE_DATA, "Trying to access uninitialized statics index %u", index);
+        LOG_WARN << "Trying to access uninitialized statics index " << index << std::endl;
         return sing->fallbackStaticsLoader_.get();
     }
 }
@@ -320,7 +322,7 @@ std::vector<boost::shared_ptr<ui::Animation> > Manager::getFullAnim(unsigned int
 
 AnimLoader* Manager::getAnimLoader(unsigned int index) {
     if (index > 5) {
-        LOGARG_WARN(LOGTYPE_DATA, "Trying to access anim loader with index %u", index);
+        LOG_WARN << "Trying to access anim loader with index " << index << std::endl;
         index = 0;
     }
 
@@ -330,7 +332,7 @@ AnimLoader* Manager::getAnimLoader(unsigned int index) {
     if (ret) {
         return ret;
     } else {
-        LOGARG_WARN(LOGTYPE_DATA, "Trying to access uninitialized anim loader index %u", index);
+        LOG_WARN << "Trying to access uninitialized anim loader with index " << index << std::endl;
         return sing->fallbackAnimLoader_.get();
     }
 }

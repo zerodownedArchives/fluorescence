@@ -4,7 +4,7 @@
 #include "util.hpp"
 
 #include <ui/texture.hpp>
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 #include <boost/bind.hpp>
 
@@ -49,7 +49,7 @@ void HuesLoader::readCallback(int8_t* buf, unsigned int len) {
         ptr += 10;
     }
 
-    LOGARG_DEBUG(LOGTYPE_DATA, "Total read bytes: %u, len: %u", (reinterpret_cast<int8_t*>(ptr) - buf), len);
+    LOG_DEBUG << "Total read bytes: " << (reinterpret_cast<int8_t*>(ptr) - buf) << " len: " << len << std::endl;
 }
 
 unsigned int HuesLoader::getHueCount() const {
@@ -58,7 +58,7 @@ unsigned int HuesLoader::getHueCount() const {
 
 const uint32_t* HuesLoader::getColorTable(unsigned int id) const {
     if (id > hueCount_) {
-        LOGARG_WARN(LOGTYPE_DATA, "Trying to read hue with out of bounds id %u", id);
+        LOG_WARN << "Trying to read hue with out of bounds id " << id << std::endl;
         id = 0;
     }
 

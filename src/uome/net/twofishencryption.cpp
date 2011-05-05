@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 namespace uome {
 namespace net {
@@ -26,10 +26,10 @@ TwofishEncryption::TwofishEncryption(uint32_t seed) {
         //*pKey++ = (uint8_t)(seed & 0x000000FF);
     //}
 
-    LOGARG_DEBUG(LOGTYPE_NETWORK, "Twofish-Key: %X (*4)", keyInstance_.key32[0]);
+    LOG_DEBUG << "Twofish-Key: " << std::hex << keyInstace_.key32[0] << std::dec << std::endl;
 
     if (reKey(&keyInstance_) != TRUE) {
-        LOG_ERROR(LOGTYPE_NETWORK, "Error initializing twofish (rekey)");
+        LOG_ERROR << "Error initializing twofish (rekey)" << std::endl;
         throw std::exception();
     }
 

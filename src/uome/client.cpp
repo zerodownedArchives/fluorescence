@@ -5,7 +5,7 @@
 #include <iomanip>
 
 #include <misc/config.hpp>
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/gumpmenus.hpp>
@@ -36,9 +36,13 @@ Client* Client::getSingleton() {
 }
 
 int Client::sMain(const std::vector<CL_String8>& args) {
+    LOG_INIT(0);
+
     singleton_ = new Client();
     int ret = singleton_->main(args);
     delete singleton_;
+
+    LOG_CLOSE;
     return ret;
 }
 
@@ -77,8 +81,7 @@ bool Client::handleStateChange() {
     switch (state_) {
     case STATE_SHARD_SELECTION:
         if (requestedState_ != STATE_SHUTDOWN) {
-            //UnicodeString selectedShard = config_["/uome/shard@name"].asString();
-            //LOGARG_INFO(LOGTYPE_MAIN, "Selected shard: %s", selectedShard.c_str());
+            LOG_INFO << "Selected shard: " << config_["/uome/shard@name"].asString() << std::endl;
 
             if (!initFull()) {
                 return false;
@@ -146,12 +149,12 @@ void Client::saveConfig() {
 }
 
 bool Client::initBase(const std::vector<CL_String8>& args) {
-    LOG_INFO(LOGTYPE_MAIN, "Parsing command line");
+    LOG_INFO << "Parsing command line" << std::endl;
     if (!config_.parseCommandLine(args)) {
         return false;
     }
 
-    LOG_INFO(LOGTYPE_MAIN, "Initializing ui");
+    LOG_INFO << "Initializing ui" << std::endl;
     if (!ui::Manager::create()) {
         cleanUp();
         return false;
@@ -162,36 +165,35 @@ bool Client::initBase(const std::vector<CL_String8>& args) {
 }
 
 bool Client::initFull() {
-    LOG_INFO(LOGTYPE_MAIN, "Parsing shard config");
+    LOG_INFO << "Parsing shard config" << std::endl;
     if (!config_.parseShardConfig()) {
         return false;
     }
 
     //config_.dumpMap();
 
-    LOG_INFO(LOGTYPE_MAIN, "Creating data loaders");
+    LOG_INFO << "Creating data loaders" << std::endl;
     if (!data::Manager::create(config_)) {
         return false;
     }
 
-    LOG_INFO(LOGTYPE_MAIN, "Setting up ui");
+    LOG_INFO << "Setting up ui" << std::endl;
     if (!ui::Manager::getSingleton()->setShardConfig(config_)) {
         return false;
     }
 
-    LOG_INFO(LOGTYPE_MAIN, "Initializing world");
+    LOG_INFO << "Initializing world" << std::endl;
     if (!world::Manager::create(config_)) {
         return false;
     }
 
-    LOG_INFO(LOGTYPE_MAIN, "Initializing network");
+    LOG_INFO << "Initializing network" << std::endl;
     if (!net::Manager::create(config_)) {
         return false;
     }
 
-    LOG_INFO(LOGTYPE_MAIN, "Setting up event handlers");
+    LOG_INFO << "Setting up event handlers" << std::endl;
     ui::components::LocalButton::buildFullActionTable();
-    // init packet handler
 
     return true;
 }
@@ -217,14 +219,14 @@ float Client::calculateFps(unsigned int elapsedMillis) {
 
         fpsSum = 0;
         frameCount = 0;
-        //LOGARG_DEBUG(LOGTYPE_MAIN, "fps: %.1f", fps);
+        //LOGARG_DEBUG << "fps: " <<  fps << std::endl;
     }
 
     return fps;
 }
 
 int Client::main(const std::vector<CL_String8>& args) {
-    LOG_INFO(LOGTYPE_MAIN, "Starting client");
+    LOG_INFO << "Client::main" << std::endl;
     setlocale(LC_ALL, "");
 
     if (!initBase(args)) {
@@ -238,11 +240,11 @@ int Client::main(const std::vector<CL_String8>& args) {
         setState(STATE_PRE_LOGIN);
     } else {
         if (!ui::GumpMenus::openShardSelectionGump()) {
-            LOG_CRITICAL(LOGTYPE_MAIN, "No shard chosen, and unable to select through ui");
+            LOG_EMERGENCY << "No shard chosen, and unable to select through ui" << std::endl;
             cleanUp();
             return 1;
         } else {
-            LOG_INFO(LOGTYPE_MAIN, "Selecting shard through user interface");
+            LOG_INFO << "Selecting shard through user interface" << std::endl;
         }
     }
 
@@ -294,7 +296,7 @@ int Client::main(const std::vector<CL_String8>& args) {
 
     saveConfig();
 
-    LOG_INFO(LOGTYPE_MAIN, "end of main");
+    LOG_INFO << "end of Client::main" << std::endl;
 
     return 0;
 }

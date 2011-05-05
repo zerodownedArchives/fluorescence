@@ -2,7 +2,7 @@
 #include "string.hpp"
 
 #include "exception.hpp"
-#include "logger.hpp"
+#include "log.hpp"
 
 #include <string.h>
 
@@ -12,7 +12,7 @@ UnicodeString StringConverter::fromUtf8(const std::string& string) {
     UnicodeString ret = UnicodeString::fromUTF8(string);
     if (ret.isBogus()) {
         ret = UnicodeString("##UOMEERROR"); // set error string
-        LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert from utf-8 string");
+        LOG_WARN << "Unable to convert from utf-8 string" << std::endl;
     }
     return ret;
 }
@@ -21,7 +21,7 @@ UnicodeString StringConverter::fromUtf8(const char* buffer) {
     UnicodeString ret = UnicodeString::fromUTF8(buffer);
     if (ret.isBogus()) {
         ret = UnicodeString("##UOMEERROR"); // set error string
-        LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert from utf-8 string");
+        LOG_WARN << "Unable to convert from utf-8 string" << std::endl;
     }
     return ret;
 }
@@ -30,7 +30,7 @@ UnicodeString StringConverter::fromUtf8(const char* buffer, int bufferSize) {
     UnicodeString ret = UnicodeString::fromUTF8(StringPiece(buffer, bufferSize));
     if (ret.isBogus()) {
         ret = UnicodeString("##UOMEERROR"); // set error string
-        LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert from utf-8 string");
+        LOG_WARN << "Unable to convert from utf-8 string" << std::endl;
     }
     return ret;
 }
@@ -40,7 +40,7 @@ UnicodeString StringConverter::fromUnicode(const char* buffer, int bufferSize) {
     UnicodeString ret(buffer, bufferSize, getUnicodeConverter(), error);
     if (U_FAILURE(error)) {
         ret = UnicodeString("##UOMEERROR"); // set error string
-        LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert from utf-16be string");
+        LOG_WARN << "Unable to convert from utf-16-be string" << std::endl;
     }
     return ret;
 }
@@ -94,7 +94,7 @@ int StringConverter::toUnicode(const UnicodeString& str, char* buffer, int buffe
     UErrorCode error = U_ZERO_ERROR;
     int ret = str.extract(buffer, bufferSize, getUnicodeConverter(), error);
     if (U_FAILURE(error)) {
-        LOG_WARN(LOGTYPE_UNKNOWN, "Unable to convert to utf-16be string");
+        LOG_WARN << "Unable to convert to utf-16-be string" << std::endl;
         return -1;
     }
 

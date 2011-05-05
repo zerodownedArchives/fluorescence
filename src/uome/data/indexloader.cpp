@@ -2,7 +2,7 @@
 #include "indexloader.hpp"
 #include "fullfileloader.hpp"
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 #include <boost/bind.hpp>
 
@@ -27,7 +27,7 @@ void IndexLoader::read(int8_t* buf, unsigned int len) {
     }
 
     size_ = (len / 12);
-    LOGARG_DEBUG(LOGTYPE_DATA, "Reading index file size %u", size_);
+    LOG_DEBUG << "Reading index file size " << size_ << std::endl;
     indexBlocks_ = new IndexBlock[size_];
 
     int32_t* ptr = reinterpret_cast<int32_t*>(buf);
@@ -45,7 +45,7 @@ void IndexLoader::read(int8_t* buf, unsigned int len) {
 const IndexBlock& IndexLoader::get(unsigned int id) const {
     // if someone tries to load an unknown id, just return the first entry
     if (id > size_) {
-        LOGARG_WARN(LOGTYPE_DATA, "Trying to access out of bounds index %u, size %u", id, size_);
+        LOG_WARN << "Trying to access out of bounds index=" << id << " size=" << size_ << std::endl;
         id = 0;
     }
 

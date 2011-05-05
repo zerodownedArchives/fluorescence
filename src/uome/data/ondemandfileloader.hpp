@@ -3,7 +3,7 @@
 
 #include "indexloader.hpp"
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 #include <misc/exception.hpp>
 
 #include <queue>
@@ -134,7 +134,8 @@ private:
 
             // trying to read out of file bounds
             if (next.offset_ > fileSize_ || (next.offset_ + next.readLen_) > fileSize_) {
-                LOGARG_WARN(LOGTYPE_DATA, "Trying to read out of file bounds in file %s, size=%u start=%u len=%u\n", path_.file_string().c_str(), fileSize_, next.offset_, next.readLen_);
+                LOG_WARN << "Trying to read out of file bounds in file " << path_ << ", size=" << fileSize_ << " start=" << next.offset_
+                        << " len=" << next.readLen_ << std::endl;
                 continue;
             }
 

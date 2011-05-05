@@ -24,7 +24,7 @@ StaticsLoader::StaticsLoader(const boost::filesystem::path& idxPath, const boost
 
         difCache_.init(difStream);
     } else {
-        LOG_WARN(LOGTYPE_DATA, "Unable to open dif files");
+        LOG_WARN << "Unable to open dif files" << std::endl;
         difEnabled_ = false;
     }
 

@@ -4,10 +4,22 @@
 #include <exception>
 #include <string>
 
+#include "string.hpp"
+
 namespace uome {
 
 class Exception : public std::exception {
 public:
+    Exception(const UnicodeString& str) throw() {
+        msg_ = StringConverter::toUtf8String(str);
+    }
+
+    Exception(const UnicodeString& str, const UnicodeString& param) throw() {
+        UnicodeString combined(str);
+        combined.append("  ").append(param);
+        msg_ = StringConverter::toUtf8String(combined);
+    }
+
     Exception(const char* msg) throw() {
         msg_ = msg;
     }
