@@ -22,7 +22,7 @@ public:
 
     bool exists(const UnicodeString& name) const;
 
-    bool save(const boost::filesystem::path& path, bool includeDefaultValues) const;
+    bool save(const boost::filesystem::path& path, bool includeDefaultValues);
     void dumpMap() const;
 
 private:

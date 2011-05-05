@@ -126,11 +126,19 @@ void Client::saveConfig() {
         boost::filesystem::path tempPath = "config.xml.tmp";
         if (config_.save(tempPath, false)) {
             boost::filesystem::path path = "shards" / config_["/uome/shard@name"].asPath() / "config.xml";
+            boost::filesystem::path backupPath = "shards" / config_["/uome/shard@name"].asPath() / "config.xml.backup";
+
+            if (boost::filesystem::exists(backupPath)) {
+                boost::filesystem::remove(backupPath);
+            }
+
+            if (boost::filesystem::exists(path)) {
+                boost::filesystem::rename(path, backupPath);
+            }
+
+
             boost::filesystem::rename(tempPath, path);
         }
-
-        // make sure nothing is left
-        boost::filesystem::remove(tempPath);
 
         //path = "fullConfig.xml";
         //config_.save(path, true);

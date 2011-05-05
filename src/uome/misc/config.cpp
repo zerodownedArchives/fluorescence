@@ -281,7 +281,7 @@ void Config::dumpMap() const {
     }
 }
 
-bool Config::save(const boost::filesystem::path& path, bool includeDefaultValues) const {
+bool Config::save(const boost::filesystem::path& path, bool includeDefaultValues) {
     pugi::xml_document rootNode;
     rootNode.set_name("uome");
 
@@ -308,6 +308,19 @@ bool Config::save(const boost::filesystem::path& path, bool includeDefaultValues
         }
     }
 
+    // take care of some special nodes
+    if (!variablesMap_["/uome/shard/account@save-password"].asBool()) {
+        pugi::xml_node accountNode = rootNode.first_element_by_path("/uome/shard/account");
+        if (accountNode) {
+            accountNode.remove_attribute("password");
+        }
+    }
+
+    pugi::xml_node shardNode = rootNode.first_element_by_path("/uome/shard");
+    if (shardNode) {
+        shardNode.remove_attribute("name");
+    }
+
     return rootNode.save_file(path.string().c_str(), "    ");
 }
 
@@ -316,7 +329,7 @@ pugi::xml_node Config::buildXmlNode(pugi::xml_node& rootNode, const UnicodeStrin
     UnicodeString parentPath(path, 0, indexOfSlash);
     UnicodeString selfName(path, indexOfSlash + 1);
 
-    LOGARG_DEBUG(LOGTYPE_MAIN, "buildxmlnode parentPath: %s selfName: %s", StringConverter::toUtf8String(parentPath).c_str(), StringConverter::toUtf8String(selfName).c_str());
+    //LOGARG_DEBUG(LOGTYPE_MAIN, "buildxmlnode parentPath: %s selfName: %s", StringConverter::toUtf8String(parentPath).c_str(), StringConverter::toUtf8String(selfName).c_str());
 
     pugi::xml_node parentNode;
     if (indexOfSlash == 0) {
