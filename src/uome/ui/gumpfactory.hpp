@@ -8,7 +8,7 @@
 #include <map>
 #include <vector>
 
-#include <misc/pugixml.hpp>
+#include <misc/pugixml/pugixml.hpp>
 
 #include "gumpmenu.hpp"
 
@@ -18,22 +18,22 @@ namespace ui {
 class GumpFactory {
 public:
     struct RepeatKeyword {
-        RepeatKeyword(const std::string& node, const std::string& attribute, const std::string& search);
+        RepeatKeyword(const UnicodeString& node, const UnicodeString& attribute, const UnicodeString& search);
 
         bool operator<(const RepeatKeyword& rhs) const;
 
-        std::string nodeText_;
-        std::string attributeText_;
-        std::string searchText_;
+        UnicodeString nodeText_;
+        UnicodeString attributeText_;
+        UnicodeString searchText_;
     };
 
     struct RepeatContext {
         unsigned int repeatCount_;
-        std::map<RepeatKeyword, std::vector<std::string> > keywordReplacments_;
+        std::map<RepeatKeyword, std::vector<UnicodeString> > keywordReplacments_;
     };
 
-    static void addRepeatContext(const std::string& name, const RepeatContext& context);
-    static void removeRepeatContext(const std::string& name);
+    static void addRepeatContext(const UnicodeString& name, const RepeatContext& context);
+    static void removeRepeatContext(const UnicodeString& name);
 
     /**
      * \brief Create a gump menu according to the description in the xml file
@@ -91,8 +91,8 @@ private:
     // TODO
 
 
-    std::map<std::string, boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> > functionTable_;
-    std::map<std::string, RepeatContext> repeatContexts_;
+    std::map<UnicodeString, boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> > functionTable_;
+    std::map<UnicodeString, RepeatContext> repeatContexts_;
 };
 
 }

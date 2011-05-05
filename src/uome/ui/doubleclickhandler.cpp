@@ -11,7 +11,7 @@ namespace uome {
 namespace ui {
 
 DoubleClickHandler::DoubleClickHandler(Config& config) : running_(true), sema_(0) {
-    timeoutMillis_ = config["uome/input/mouse@doubleclick-timeout-ms"].asUint();
+    timeoutMillis_ = config["/uome/input/mouse@doubleclick-timeout-ms"].asInt();
 }
 
 DoubleClickHandler::~DoubleClickHandler() {

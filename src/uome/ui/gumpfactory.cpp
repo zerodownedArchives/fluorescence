@@ -23,7 +23,7 @@
 namespace uome {
 namespace ui {
 
-GumpFactory::RepeatKeyword::RepeatKeyword(const std::string& node, const std::string& attribute, const std::string& search) :
+GumpFactory::RepeatKeyword::RepeatKeyword(const UnicodeString& node, const UnicodeString& attribute, const UnicodeString& search) :
             nodeText_(node), attributeText_(attribute), searchText_(search) {
 }
 
@@ -74,11 +74,11 @@ GumpFactory::GumpFactory() {
     functionTable_["image"] = boost::bind(&GumpFactory::parseImage, this, _1, _2, _3);
 }
 
-void GumpFactory::addRepeatContext(const std::string& name, const RepeatContext& context) {
+void GumpFactory::addRepeatContext(const UnicodeString& name, const RepeatContext& context) {
     getSingleton()->repeatContexts_[name] = context;
 }
 
-void GumpFactory::removeRepeatContext(const std::string& name) {
+void GumpFactory::removeRepeatContext(const UnicodeString& name) {
     getSingleton()->repeatContexts_.erase(name);
 }
 
@@ -86,8 +86,8 @@ GumpMenu* GumpFactory::fromXmlFile(const UnicodeString& name, GumpMenu* menu) {
     // can be called before a shard is set
     boost::filesystem::path path;
     std::string utf8fileName = StringConverter::toUtf8String(name) + ".xml";
-    if (Client::getSingleton()->getConfig().exists("uome/shard@directory")) {
-        path = "shards" / Client::getSingleton()->getConfig()["uome/shard@directory"].asPath() / "gumps" / utf8fileName;
+    if (Client::getSingleton()->getConfig().exists("/uome/shard@name")) {
+        path = "shards" / Client::getSingleton()->getConfig()["/uome/shard@name"].asPath() / "gumps" / utf8fileName;
     }
 
     if (!boost::filesystem::exists(path)) {
@@ -146,18 +146,11 @@ GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
 
     if (!ret) {
         CL_Rect bounds = getBoundsFromNode(rootNode, ui::Manager::getSingleton()->getMainWindow()->get_viewport());
-        std::string title = rootNode.attribute("title").value();
         bool closable = rootNode.attribute("closable").as_bool();
         bool draggable = rootNode.attribute("draggable").as_bool();
 
         CL_GUITopLevelDescription desc(bounds, false);
-
-        if (title.length() > 0) {
-            desc.set_decorations(true);
-            desc.set_title(title);
-        } else {
-            desc.set_decorations(false);
-        }
+        desc.set_decorations(false);
 
         ret = new GumpMenu(desc);
         ret->setClosable(closable);
@@ -178,7 +171,7 @@ bool GumpFactory::parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* paren
     bool ret = true;
 
     for (; iter != iterEnd && ret; ++iter) {
-        std::map<std::string, boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> >::iterator function = functionTable_.find(iter->name());
+        std::map<UnicodeString, boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> >::iterator function = functionTable_.find(iter->name());
 
         if (function != functionTable_.end()) {
             ret = (function->second)(*iter, parent, top);
@@ -677,10 +670,11 @@ bool GumpFactory::parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent
 }
 
 bool GumpFactory::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    std::string name = node.attribute("name").value();
+    UnicodeString name(node.attribute("name").value());
 
     if (repeatContexts_.count(name) == 0) {
-        LOGARG_ERROR(LOGTYPE_UI, "Trying to access unknown repeat context %s", name.c_str());
+        // TODO: include log msg again
+        //LOGARG_ERROR(LOGTYPE_UI, "Trying to access unknown repeat context %s", name.c_str());
         return false;
     }
 
@@ -700,8 +694,8 @@ bool GumpFactory::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     pugi::xml_node::attribute_iterator attrIter;
     pugi::xml_node::attribute_iterator attrEnd;
 
-    std::map<RepeatKeyword, std::vector<std::string> >::const_iterator contextIter;
-    std::map<RepeatKeyword, std::vector<std::string> >::const_iterator contextEnd = context.keywordReplacments_.end();
+    std::map<RepeatKeyword, std::vector<UnicodeString> >::const_iterator contextIter;
+    std::map<RepeatKeyword, std::vector<UnicodeString> >::const_iterator contextEnd = context.keywordReplacments_.end();
 
     for (unsigned int index = 0; index < context.repeatCount_; ++index) {
 
@@ -722,7 +716,7 @@ bool GumpFactory::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, Gum
                         contextHit = true;
 
                         pugi::xml_attribute newAttr = newNode.append_attribute(attrIter->name());
-                        newAttr.set_value(contextIter->second[index].c_str());
+                        newAttr.set_value(StringConverter::toUtf8String(contextIter->second[index]).c_str());
                     }
                 }
 

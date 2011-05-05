@@ -9,8 +9,8 @@ namespace ui {
 CursorManager::CursorManager(Config& config, boost::shared_ptr<CL_DisplayWindow> window) :
         warMode_(false) {
 
-    unsigned int artIdStart = config["uome/ui/cursor@normal-artid-start"].asUint();
-    unsigned int artIdStartWarMode = config["uome/ui/cursor@warmode-artid-start"].asUint();
+    unsigned int artIdStart = config["/uome/ui/cursor@normal-artid-start"].asInt();
+    unsigned int artIdStartWarMode = config["/uome/ui/cursor@warmode-artid-start"].asInt();
 
     for (unsigned int i = 0; i < CursorType::COUNT; ++i) {
         setCursorImage(i, artIdStart + i, false, window);

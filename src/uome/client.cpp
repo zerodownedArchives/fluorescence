@@ -56,8 +56,7 @@ bool Client::shutdown(ui::GumpMenu* menu, ui::components::LocalButton* button) {
 }
 
 bool Client::selectShard(ui::GumpMenu* menu, ui::components::LocalButton* button) {
-    config_["uome/shard@name"].setString(button->getParameter());
-    config_["uome/shard@directory"].setPathFromUString(button->getParameter());
+    config_["/uome/shard@name"].setString(button->getParameter());
     setState(STATE_PRE_LOGIN);
     return true;
 }
@@ -78,11 +77,10 @@ bool Client::handleStateChange() {
     switch (state_) {
     case STATE_SHARD_SELECTION:
         if (requestedState_ != STATE_SHUTDOWN) {
-            UnicodeString selectedShard = config_["uome/shard@name"].asString();
-            config_["uome/shard@directory"].setPathFromUString(selectedShard);
+            //UnicodeString selectedShard = config_["/uome/shard@name"].asString();
             //LOGARG_INFO(LOGTYPE_MAIN, "Selected shard: %s", selectedShard.c_str());
 
-            if (!initFull(selectedShard)) {
+            if (!initFull()) {
                 return false;
             }
         }
@@ -139,11 +137,13 @@ bool Client::initBase(const std::vector<CL_String8>& args) {
     return true;
 }
 
-bool Client::initFull(const UnicodeString& selectedShard) {
+bool Client::initFull() {
     LOG_INFO(LOGTYPE_MAIN, "Parsing shard config");
-    if (!config_.parseShardConfig(selectedShard)) {
+    if (!config_.parseShardConfig()) {
         return false;
     }
+
+    config_.dumpMap();
 
     LOG_INFO(LOGTYPE_MAIN, "Creating data loaders");
     if (!data::Manager::create(config_)) {
@@ -208,9 +208,9 @@ int Client::main(const std::vector<CL_String8>& args) {
         return 1;
     }
 
-    std::string selectedShard;
+    //UnicodeString selectedShard;
     // if we already have a command line argument, take it
-    if (config_.exists("uome/shard@name")) {
+    if (config_.exists("/uome/shard@name")) {
         setState(STATE_PRE_LOGIN);
     } else {
         if (!ui::GumpMenus::openShardSelectionGump()) {

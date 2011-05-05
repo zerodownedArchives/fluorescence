@@ -154,8 +154,8 @@ void Manager::handleServerRedirect(const packets::ServerRedirect* packet) {
     socket_.writeSeed(0);
 
     Config& config = Client::getSingleton()->getConfig();
-    packets::GameServerLoginRequest loginReq(config["uome/shard/account@name"].asString(),
-            config["uome/shard/account@password"].asString(),
+    packets::GameServerLoginRequest loginReq(config["/uome/shard/account@name"].asString(),
+            config["/uome/shard/account@password"].asString(),
             packet->encryptionKey_);
     socket_.write(loginReq);
 }

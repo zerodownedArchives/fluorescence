@@ -15,9 +15,9 @@ set(MISC_CPP
     )
 
 set(PUGIXML
-    misc/pugixml.hpp
-    misc/pugiconfig.hpp
-    misc/pugixml.cpp)
+    misc/pugixml/pugixml.hpp
+    misc/pugixml/pugiconfig.hpp
+    misc/pugixml/pugixml.cpp)
 
 set(MISC_FILES ${MISC_HPP} ${MISC_CPP} ${PUGIXML} PARENT_SCOPE)
 

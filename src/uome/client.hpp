@@ -56,7 +56,7 @@ private:
     void cleanUp();
 
     bool initBase(const std::vector<CL_String8>& args);
-    bool initFull(const UnicodeString& selectedShard);
+    bool initFull();
 
     float calculateFps(unsigned int elapsedMillis);
 

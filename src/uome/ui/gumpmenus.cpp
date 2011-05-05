@@ -41,15 +41,16 @@ GumpMenu* GumpMenus::openLoginGump() {
 
     if (menu) {
         Config& config = Client::getSingleton()->getConfig();
-        menu->setComponentTextFromConfig<components::LineEdit>("loginhost", "shard.host", config);
+        menu->setComponentTextFromConfig<components::LineEdit>("loginhost", "/uome/shard/address@host", config);
 
-        if (config.exists("shard.port")) {
-            UnicodeString portStr = StringConverter::fromNumber(config["uome/shard/address@port"].asUint());
+        if (config.exists("/uome/shard/address@port")) {
+            UnicodeString portStr = StringConverter::fromNumber(config["/uome/shard/address@port"].asInt());
+
             menu->setComponentText<components::LineEdit>("loginport", portStr);
         }
 
-        menu->setComponentTextFromConfig<components::LineEdit>("loginaccount", "shard.account", config);
-        menu->setComponentTextFromConfig<components::LineEdit>("loginpassword", "shard.password", config);
+        menu->setComponentTextFromConfig<components::LineEdit>("loginaccount", "/uome/shard/account@name", config);
+        menu->setComponentTextFromConfig<components::LineEdit>("loginpassword", "/uome/shard/account@password", config);
 
     }
 
@@ -66,14 +67,14 @@ GumpMenu* GumpMenus::openShardSelectionGump() {
         return NULL;
     }
 
-    std::vector<std::string> nameList;
+    std::vector<UnicodeString> nameList;
 
     bfs::directory_iterator nameIter(path);
     bfs::directory_iterator nameEnd;
 
     for (; nameIter != nameEnd; ++nameIter) {
         if (bfs::is_directory(nameIter->status())) {
-            nameList.push_back(nameIter->path().filename());
+            nameList.push_back(StringConverter::fromUtf8(nameIter->path().filename()));
         }
     }
 
@@ -90,21 +91,17 @@ GumpMenu* GumpMenus::openShardSelectionGump() {
 }
 
 GumpMenu* GumpMenus::openServerListGump(const net::packets::ServerList* list) {
-    std::vector<std::string> nameList;
-    std::vector<std::string> indexList;
+    std::vector<UnicodeString> nameList;
+    std::vector<UnicodeString> indexList;
 
     std::list<net::packets::ServerList::ServerListEntry>::const_iterator entryIter = list->listEntries_.begin();
     std::list<net::packets::ServerList::ServerListEntry>::const_iterator entryEnd = list->listEntries_.end();
 
 
     for (; entryIter != entryEnd; ++entryIter) {
-        std::string serverName;
-        serverName = entryIter->name_.toUTF8String(serverName);
-        nameList.push_back(serverName);
+        nameList.push_back(entryIter->name_);
 
-        std::stringstream ss;
-        ss << entryIter->index_;
-        indexList.push_back(ss.str());
+        indexList.push_back(StringConverter::fromNumber(entryIter->index_));
     }
 
     GumpFactory::RepeatContext context;

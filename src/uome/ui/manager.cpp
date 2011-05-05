@@ -71,14 +71,14 @@ Manager::Manager() {
 
 bool Manager::setShardConfig(Config& config) {
     boost::filesystem::path path = "shards";
-    path = path / config["uome/shard@directory"].asPath() / "themes" / config["uome/ui/theme@name"].asPath();
+    path = path / config["/uome/shard@name"].asPath() / "themes" / config["/uome/ui/theme@name"].asPath();
 
     if (!boost::filesystem::exists(path)) {
         path = "themes";
-        path = path / config["uome/ui/theme@name"].asPath();
+        path = path / config["/uome/ui/theme@name"].asPath();
 
         if (!boost::filesystem::exists(path)) {
-            LOGARG_CRITICAL(LOGTYPE_UI, "Unable to load theme %s: directory does not exists", config["uome/ui/theme@name"].asPath().string().c_str());
+            LOGARG_CRITICAL(LOGTYPE_UI, "Unable to load theme %s: directory does not exists", config["/uome/ui/theme@name"].asPath().string().c_str());
             return false;
         }
     }
@@ -90,7 +90,7 @@ bool Manager::setShardConfig(Config& config) {
     loadFontDirectory(path);
 
     path = "shards";
-    path = path / config["uome/shard@directory"].asPath() / "fonts";
+    path = path / config["/uome/shard@name"].asPath() / "fonts";
     loadFontDirectory(path);
 
     renderQueue_.reset(new RenderQueue());
@@ -191,9 +191,7 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
         if (bfs::is_directory(iter->status())) {
             loadFontDirectory(iter->path());
         } else {
-            std::string ext = iter->path().extension();
-
-            if (ext != ".ttf") {
+            if (iter->path().extension() != ".ttf") {
                 LOGARG_ERROR(LOGTYPE_UI, "Unable to load font %s: only ttf fonts supported", iter->path().string().c_str());
                 continue;
             }
