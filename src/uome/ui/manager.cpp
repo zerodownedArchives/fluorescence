@@ -26,7 +26,7 @@ bool Manager::create() {
         try {
             singleton_ = new Manager();
         } catch (const std::exception& ex) {
-            LOGARG_CRITICAL(LOGTYPE_UI, "Error initializing ui::Manager: %s", ex.what());
+            LOG_EMERGENCY << "Error initializing ui::Manager: " << ex.what() << std::endl;
             return false;
         }
     }
@@ -78,7 +78,7 @@ bool Manager::setShardConfig(Config& config) {
         path = path / config["/uome/ui/theme@name"].asPath();
 
         if (!boost::filesystem::exists(path)) {
-            LOGARG_CRITICAL(LOGTYPE_UI, "Unable to load theme %s: directory does not exists", config["/uome/ui/theme@name"].asPath().string().c_str());
+            LOG_EMERGENCY << "Unable to load theme, directory does not exist: " << config["/uome/ui/theme@name"].asPath() << std::endl;
             return false;
         }
     }
@@ -180,7 +180,7 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
     namespace bfs = boost::filesystem;
 
     if (!bfs::exists(path) || !bfs::is_directory(path)) {
-        LOGARG_ERROR(LOGTYPE_UI, "Unable to load fonts directory %s", path.string().c_str());
+        LOG_ERROR << "Unable to load fonts directory " << path << std::endl;
         return;
     }
 
@@ -192,7 +192,7 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
             loadFontDirectory(iter->path());
         } else {
             if (iter->path().extension() != ".ttf") {
-                LOGARG_ERROR(LOGTYPE_UI, "Unable to load font %s: only ttf fonts supported", iter->path().string().c_str());
+                LOG_ERROR << "Unable to load font, only ttf fonts supported: " << iter->path() << std::endl;
                 continue;
             }
 

@@ -86,8 +86,8 @@ const data::StaticTileInfo* StaticItem::getTileDataInfo() const {
 }
 
 void StaticItem::onClick() {
-    LOGARG_INFO(LOGTYPE_INPUT, "Clicked static, id=%x loc=(%i/%i/%i) name=%S",
-                getArtId(), getLocX(), getLocY(), getLocZ(), const_cast<data::StaticTileInfo*>(getTileDataInfo())->name_.getTerminatedBuffer());
+    LOG_INFO << "Clicked static, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
+            getLocZ() << ") name=" << name_ << std::endl;
 }
 
 

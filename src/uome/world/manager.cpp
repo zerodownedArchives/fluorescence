@@ -23,7 +23,7 @@ bool Manager::create(const Config& config) {
         try {
             singleton_ = new Manager(config);
         } catch (const std::exception& ex) {
-            LOGARG_CRITICAL(LOGTYPE_WORLD, "Error initializing world::Manager: %s", ex.what());
+            LOG_EMERGENCY << "Error initializing world::Manager: " << ex.what() << std::endl;
             return false;
         }
     }

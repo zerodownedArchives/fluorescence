@@ -74,10 +74,10 @@ void LocalButton::onClicked(BaseButton* self) {
                 ui::Manager::getSingleton()->closeGumpMenu(gump);
             }
         } else {
-            LOGARG_ERROR(LOGTYPE_UI, "Unknown button action: %S", action_.getTerminatedBuffer());
+            LOG_ERROR << "Unknown button action: " << action_ << std::endl;
         }
     } else {
-        LOG_ERROR(LOGTYPE_UI, "PageButton inside something other than GumpMenu");
+        LOG_ERROR << "PageButton inside something other than GumpMenu" << std::endl;
     }
 }
 

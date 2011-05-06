@@ -58,7 +58,7 @@ bool RenderQueue::debugIngameCheckSorted() {
 
     for (unsigned int idx = 0; iter != end; ++iter, ++last, ++idx) {
         if (!renderPriorityComparator(*last, *iter)) {
-            LOGARG_ERROR(LOGTYPE_UI, "unsorted list elements at %u", idx);
+            LOG_ERROR << "RenderQueue: unsorted list elements at " << idx << std::endl;
             return false;
         }
     }
@@ -67,13 +67,13 @@ bool RenderQueue::debugIngameCheckSorted() {
 }
 
 bool RenderQueue::debugIngameCheckInList(world::IngameObject* obj) {
-    int idx = 0;
+    unsigned int idx = 0;
     std::list<world::IngameObject*>::const_iterator iter = ingameList_.begin();
     std::list<world::IngameObject*>::const_iterator end = ingameList_.end();
 
     for (; iter != end; ++iter) {
         if (*iter == obj) {
-            LOGARG_ERROR(LOGTYPE_UI, "index in list: %i of %u", idx, ingameList_.size());
+            LOG_ERROR << "RenderQueue: index in list: " << idx << " of " << ingameList_.size() << std::endl;
             return true;
         }
         ++idx;

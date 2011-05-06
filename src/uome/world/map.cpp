@@ -152,8 +152,8 @@ void MapTile::setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const
 }
 
 void MapTile::onClick() {
-    LOGARG_INFO(LOGTYPE_INPUT, "Clicked map, id=%x loc=(%i/%i/%i) name=%S",
-                getArtId(), getLocX(), getLocY(), getLocZ(), const_cast<data::LandTileInfo*>(getTileDataInfo())->name_.getTerminatedBuffer());
+    LOG_INFO << "Clicked map, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
+            getLocZ() << ") name=" << name_ << std::endl;
 }
 
 

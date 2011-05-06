@@ -11,7 +11,7 @@ AnimTextureProvider::AnimTextureProvider(unsigned int animId) : currentAnimId_(0
     animations_ = data::Manager::getFullAnim(animId);
 
     if (animations_.size() == 0) {
-        LOGARG_WARN(LOGTYPE_DATA, "Loading unknown animId: %u", animId);
+        LOG_WARN << "Loading unknown animId: " << animId << "  " << std::hex << animId << std::dec << std::endl;
         AnimationFrame frame;
         frame.texture_ = data::Manager::getArtLoader()->getItemTexture(1);
 

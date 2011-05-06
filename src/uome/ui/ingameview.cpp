@@ -153,12 +153,12 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     case CL_MOUSE_WHEEL_UP:
         lm = world::Manager::getSingleton()->getLightManager();
         lm->setGlobalAngle(lm->getGlobalAngle() + 5);
-        LOGARG_DEBUG(LOGTYPE_UI, "mw up %f", lm->getGlobalAngle());
+        LOG_DEBUG << "mw up " << lm->getGlobalAngle() << std::endl;
         break;
     case CL_MOUSE_WHEEL_DOWN:
         lm = world::Manager::getSingleton()->getLightManager();
         lm->setGlobalAngle(lm->getGlobalAngle() - 5);
-        LOGARG_DEBUG(LOGTYPE_UI, "mw down %f", lm->getGlobalAngle());
+        LOG_DEBUG <<"mw down " << lm->getGlobalAngle() << std::endl;
         break;
 
     case CL_MOUSE_LEFT:
@@ -180,7 +180,7 @@ bool IngameView::onInputReleased(const CL_InputEvent& e) {
     case CL_MOUSE_LEFT:
         clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
         if (!clickedObject) {
-            LOG_DEBUG(LOGTYPE_UI, "Clicked, but found no object");
+            LOG_DEBUG << "Clicked, but found no object" << std::endl;
         } else {
             ui::Manager::getDoubleClickHandler()->notify(clickedObject);
         }
@@ -198,7 +198,7 @@ bool IngameView::onDoubleClick(const CL_InputEvent& e) {
     //if (e.id == CL_MOUSE_LEFT) {
         boost::shared_ptr<world::IngameObject> clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
         if (!clickedObject) {
-            LOG_DEBUG(LOGTYPE_UI, "doublelicked, but found no object");
+            LOG_DEBUG << "doublelicked, but found no object" << std::endl;
         } else {
             clickedObject->onClick();
         }
@@ -210,7 +210,7 @@ bool IngameView::onDoubleClick(const CL_InputEvent& e) {
 }
 
 boost::shared_ptr<world::IngameObject> IngameView::getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) {
-    LOGARG_INFO(LOGTYPE_UI, "IngameView::getFirstObjectAt %u %u", pixelX, pixelY);
+    LOG_INFO << "IngameView::getFirstObjectAt " << pixelX " " << pixelY << std::endl;
     int worldX = getCenterPixelX() - get_width()/2.0;
     worldX += pixelX;
 

@@ -28,13 +28,13 @@ IngameViewRenderer::IngameViewRenderer(IngameView* ingameView) :
     shaderProgram_->bind_attribute_location(1, "TexCoord0");
     shaderProgram_->bind_attribute_location(2, "gl_Normal");
     if (!shaderProgram_->link()) {
-        LOGARG_CRITICAL(LOGTYPE_UI, "Error while linking program:\n%s", shaderProgram_->get_info_log().c_str());
+        LOG_EMERGENCY << "Error while linking program:\n" << shaderProgram_->get_info_log() << std::endl;
         throw CL_Exception("Unable to link program");
     }
 
     const char* linkerMsg = shaderProgram_->get_info_log().c_str();
     if (strlen(linkerMsg) > 0) {
-        LOGARG_INFO(LOGTYPE_UI, "GLSL linking msg:\n%s", linkerMsg);
+        LOG_INFO << "GLSL linking msg:\n" << linkerMsg << std::endl;
     }
 }
 

@@ -198,7 +198,7 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
             variablesMap_["/uome/shard@name"].setString(shard);
         }
     } catch (const std::exception& ex) {
-        LOGARG_CRITICAL(LOGTYPE_MAIN, "Error parsing command line: %s", ex.what());
+        LOG_EMERGENCY << "Error parsing command line: " << ex.what() << std::endl;
         return false;
     }
 
@@ -208,7 +208,7 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
 bool Config::parseShardConfig() {
     boost::filesystem::path path = "shards" / variablesMap_["/uome/shard@name"].asPath() / "config.xml";
     if (!boost::filesystem::exists(path)) {
-        LOGARG_CRITICAL(LOGTYPE_MAIN, "Unable to open config file %s", path.string().c_str());
+        LOG_EMERGENCY << "Unable to open config file " << path << std::endl;
         return false;
     }
 
@@ -216,14 +216,14 @@ bool Config::parseShardConfig() {
     pugi::xml_parse_result result = doc.load_file(path.string().c_str());
 
     if (!result) {
-        LOGARG_CRITICAL(LOGTYPE_MAIN, "Unable to open config file %s", path.string().c_str());
+        LOG_EMERGENCY << "Unable to open config file ", path << std::endl;
         return false;
     }
 
     pugi::xml_node rootNode = doc.child("uome");
 
     if (!rootNode) {
-        LOG_CRITICAL(LOGTYPE_MAIN, "Unable to find root node in config file");
+        LOG_EMERGENCY << "Unable to find root node in config file" << std::endl;
         return false;
     }
 

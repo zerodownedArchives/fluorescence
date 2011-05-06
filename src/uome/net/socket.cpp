@@ -40,7 +40,7 @@ bool Socket::connect(const UnicodeString& host, unsigned short port) {
     hostent* hostent = gethostbyname(stdString.c_str());
 
     if (!hostent) {
-        LOGARG_ERROR(LOGTYPE_NETWORK, "Unknown host: %s", stdString.c_str());
+        LOG_ERROR << "Unknown host: " << host << std::endl;
         close();
         return false;
     }
@@ -52,19 +52,19 @@ bool Socket::connect(const UnicodeString& host, unsigned short port) {
 
 bool Socket::connect(unsigned int ip, unsigned short port) {
     if (socketFd_) {
-        LOG_ERROR(LOGTYPE_NETWORK, "Trying to reconnect an already connected socket!");
+        LOG_ERROR << "Trying to reconnect an already connected socket!" << std::endl;
         return false;
     }
 
-    LOGARG_INFO(LOGTYPE_NETWORK, "Trying to connect to %u.%u.%u.%u:%u",
-            (ip & 0x000000FF), (ip & 0x0000FF00) >> 8, (ip & 0x00FF0000) >> 16, (ip & 0xFF000000) >> 24, port);
+    LOG_INFO << "Trying to connect to " << (ip & 0x000000FF) << "." << ((ip & 0x0000FF00) >> 8) << "." << ((ip & 0x00FF0000) >> 16) <<
+            << ((ip & 0xFF000000) >> 24) << ":" << port << std::endl;
 
     socketFd_ = socket(AF_INET, SOCK_STREAM, 0);
     if (socketFd_ == -1) {
         #ifdef WIN32
-            LOGARG_ERROR(LOGTYPE_NETWORK, "Unable to open socket: %s", strerror(WSAGetLastError()));
+            LOG_ERROR << "Unable to open socket: " << strerror(WSAGetLastError()) << std::endl;
         #else
-            LOGARG_ERROR(LOGTYPE_NETWORK, "Unable to open socket: %s", strerror(errno));
+            LOG_ERROR << "Unable to open socket: " << strerror(errno) << std::endl;
         #endif
 
         return false;
@@ -77,9 +77,9 @@ bool Socket::connect(unsigned int ip, unsigned short port) {
 
     if (::connect(socketFd_, (sockaddr*)&dest_addr, sizeof(sockaddr)) == -1) {
         #ifdef WIN32
-            LOGARG_ERROR(LOGTYPE_NETWORK, "Unable to connect socket: %s", strerror(WSAGetLastError()));
+            LOG_ERROR << "Unable to connect socket: " << strerror(WSAGetLastError()) << std::endl;
         #else
-            LOGARG_ERROR(LOGTYPE_NETWORK, "Unable to connect socket: %s", strerror(errno));
+            LOG_ERROR << "Unable to connect socket: " << strerror(errno) << std::endl;
         #endif
         close();
         return false;
@@ -89,7 +89,7 @@ bool Socket::connect(unsigned int ip, unsigned short port) {
     #ifdef WIN32
         u_long iMode = 1;
         if (ioctlsocket(m_sock, FIONBIO, &iMode) != 0) {
-            LOGARG_ERROR(LOGTYPE_NETWORK, "Unable to set socket to nonblocking: %s", strerror(WSAGetLastError()));
+            LOG_ERROR << "Unable to set socket to nonblocking: " << strerror(WSAGetLastError()) << std::endl;
             close();
             return false;
         }
@@ -98,14 +98,14 @@ bool Socket::connect(unsigned int ip, unsigned short port) {
 
         if ((flags = fcntl(socketFd_, F_GETFL, 0)) < 0 ||
                 fcntl(socketFd_, F_SETFL, flags | O_NONBLOCK) < 0) {
-            LOGARG_ERROR(LOGTYPE_NETWORK, "Unable to set socket to nonblocking: %s", strerror(errno));
+            LOG_ERROR << "Unable to set socket to nonblocking: " << strerror(errno) << std::endl;
             close();
             return false;
         }
     #endif
 
-    LOGARG_INFO(LOGTYPE_NETWORK, "Socket connect to %u.%u.%u.%u:%u",
-            (ip & 0x000000FF), (ip & 0x0000FF00) >> 8, (ip & 0x00FF0000) >> 16, (ip & 0xFF000000) >> 24, port);
+    LOG_INFO << "Socket connected to " << (ip & 0x000000FF) << "." << ((ip & 0x0000FF00) >> 8) << "." << ((ip & 0x00FF0000) >> 16) <<
+            << ((ip & 0xFF000000) >> 24) << ":" << port << std::endl;
 
     sendSize_ = 0;
     running_ = true;
@@ -121,7 +121,7 @@ void Socket::close() {
     running_ = false;
 
     if (socketFd_) {
-        LOG_INFO(LOGTYPE_NETWORK, "Closing socket");
+        LOG_INFO << "Closing socket" << std::endl;
         ::close(socketFd_);
         socketFd_ = 0;
     }
@@ -138,14 +138,14 @@ void Socket::receiveRun() {
         if (recvLen > 0) {
             // decrypt data
             if (encryption_) {
-                LOG_INFO(LOGTYPE_NETWORK, "decrypt");
+                //LOG_INFO(LOGTYPE_NETWORK, "decrypt");
                 encryption_->decrypt(rawBuffer_, rawBuffer_, recvLen);
             }
 
             unsigned int decompLen = recvLen;
             if (useDecompress_) {
                 // decompress data
-                LOG_INFO(LOGTYPE_NETWORK, "decompress");
+                //LOG_INFO(LOGTYPE_NETWORK, "decompress");
                 decompLen = decompress_.huffmanDecompress(decompressedBuffer_ + decompressedSize_, 0x10000 - decompressedSize_, rawBuffer_, recvLen);
             } else {
                 memcpy(decompressedBuffer_ + decompressedSize_, rawBuffer_, recvLen);
@@ -153,7 +153,7 @@ void Socket::receiveRun() {
 
             decompressedSize_ += decompLen;
 
-            LOG_INFO(LOGTYPE_NETWORK, "buffer dump:");
+            LOG_INFO << "decompressed buffer dump:" << std::endl;
             dumpBuffer(decompressedBuffer_, decompLen);
 
             parsePackets();
@@ -162,7 +162,7 @@ void Socket::receiveRun() {
             usleep(10);
 
         } else if (recvLen == 0) { // peer has shut down
-            LOG_INFO(LOGTYPE_NETWORK, "Peer has shut down socket");
+            LOG_INFO << "Peer has shut down socket" << std::endl;
             // set error indicator ?
             break;
         } else if (recvLen == -1 && running_) { // error
@@ -170,9 +170,9 @@ void Socket::receiveRun() {
                 continue;
             } else {
                 #ifdef WIN32
-                    LOGARG_ERROR(LOGTYPE_NETWORK, "Socket error in receiveRun(): %s", strerror(WSAGetLastError()));
+                    LOG_ERROR << "Socket error in receiveRun(): " << strerror(WSAGetLastError()) << std::endl;
                 #else
-                    LOGARG_ERROR(LOGTYPE_NETWORK, "Socket error in receiveRun(): %s", strerror(errno));
+                    LOG_ERROR << "Socket error in receiveRun(): " << strerror(errno) << std::endl;
                 #endif
 
                 criticalError_ = true;
@@ -206,9 +206,9 @@ bool Socket::sendAll() {
 
     if (sendLen < 0) {
         #ifdef WIN32
-            LOGARG_ERROR(LOGTYPE_NETWORK, "Socket error in sendAll(): %s", strerror(WSAGetLastError()));
+            LOG_ERROR << "Socket error in sendAll(): " << strerror(WSAGetLastError()) << std::endl;
         #else
-            LOGARG_ERROR(LOGTYPE_NETWORK, "Socket error in sendAll(): %s", strerror(errno));
+            LOG_ERROR << "Socket error in sendAll(): " << strerror(errno) << std::endl;
         #endif
 
         criticalError_ = true;
@@ -217,7 +217,7 @@ bool Socket::sendAll() {
     }
 
     if (sendLen != sendSize_) {
-        LOG_ERROR(LOGTYPE_NETWORK, "Socket error in sendAll(): Unable to send all bytes");
+        LOG_ERROR << "Socket error in sendAll(): Unable to send all bytes" << std::endl;
         return false;
     }
 
@@ -237,7 +237,7 @@ void Socket::setUseDecompress(bool value) {
 void Socket::parsePackets() {
     unsigned int idx = 0;
     unsigned int lastPacketStart = 0;
-    LOGARG_DEBUG(LOGTYPE_NETWORK, "Parsing packets bufferSize=%u", decompressedSize_);
+    LOG_DEBUG << "Parsing packets bufferSize=" << decompressedSize_ << std::endl;
 
     while ((lastPacketStart = idx) < decompressedSize_) {
 
@@ -245,12 +245,12 @@ void Socket::parsePackets() {
         uint8_t packetId;
         readSuccess = PacketReader::read(decompressedBuffer_, decompressedSize_, idx, packetId);
 
-        LOGARG_DEBUG(LOGTYPE_NETWORK, "Parsing packet id=%x", packetId);
+        LOG_DEBUG << "Parsing packet id=" << std::hex << packetId << std::dec << std::endl;
 
         boost::shared_ptr<Packet> newPacket = Manager::createPacket(packetId);
 
         if (!newPacket) {
-            LOGARG_ERROR(LOGTYPE_NETWORK, "Unable to create packet for id %x", packetId);
+            LOG_ERROR << "Unable to create packet for id " << std::hex << packetId << std::dec << std::endl;
             continue;
         }
 
@@ -261,23 +261,25 @@ void Socket::parsePackets() {
             packetSize = newPacket->getSize();
         }
 
-        LOGARG_DEBUG(LOGTYPE_NETWORK, "New packet size=%u", packetSize);
+        LOG_DEBUG << "New packet size=" << packetSize << std::endl;
 
         if (decompressedSize_ < lastPacketStart + packetSize) {
-            LOGARG_DEBUG(LOGTYPE_NETWORK, "Packet not received completely id=%x should-be-len=%u received=%u", packetId, packetSize, decompressedSize_ - lastPacketStart);
+            LOG_DEBUG << "Packet not received completely id=" << std::hex << packetId << std::dec <<
+                    " should-be-len=" << packetSize << " received=" << (decompressedSize_ - lastPacketStart) << std::endl;
             break;
         }
 
         readSuccess = readSuccess && newPacket->read(decompressedBuffer_, lastPacketStart + packetSize, idx);
 
         if (readSuccess && idx - lastPacketStart == packetSize) {
-            LOGARG_DEBUG(LOGTYPE_NETWORK, "Read of packet id=%x len=%u successful!", packetId, packetSize);
+            LOG_DEBUG << "Read of packet successful: id=" << std::hex << packetId << std::dec << " len=" << packetSize << std::endl;
 
             packetQueueMutex_.lock();
             packetQueue_.push(newPacket);
             packetQueueMutex_.unlock();
         } else {
-            LOGARG_DEBUG(LOGTYPE_NETWORK, "Not successful reading packet id=%x len=%u read bytes=%u", packetId, packetSize, idx - lastPacketStart);
+            LOG_DEBUG << "Not successful reading packet id=" << std::hex << packetId << std::dec << " len=" << packetSize <<
+                    " read bytes=" << (idx - lastPacketStart) << std::endl;
             // set idx to start of next packet
             idx = lastPacketStart + packetSize;
         }

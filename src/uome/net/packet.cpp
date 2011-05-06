@@ -34,7 +34,7 @@ uint16_t Packet::getSize() {
 }
 
 void Packet::onReceive() {
-    LOGARG_ERROR(LOGTYPE_NETWORK, "Received unhandled packet %x", id_);
+    LOG_ERROR << "Received unhandled packet " << std::hex << id_ << std::dec << std::endl;
 }
 
 }

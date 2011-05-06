@@ -22,7 +22,7 @@ bool Manager::create(const Config& config) {
         try {
             singleton_ = new Manager(config);
         } catch (const std::exception& ex) {
-            LOGARG_CRITICAL(LOGTYPE_NETWORK, "Error initializing world::Manager: %s", ex.what());
+            LOG_EMERGENCY << "Error initializing world::Manager: " << ex.what() << std::endl;
             return false;
         }
     }
@@ -49,7 +49,7 @@ Manager::Manager(const Config& config) {
 }
 
 Manager::~Manager() {
-    LOG_INFO(LOGTYPE_NETWORK, "Manager shutdown");
+    LOG_INFO << "net::Manager shutdown" << std::endl;
 }
 
 void Manager::step() {
