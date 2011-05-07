@@ -170,6 +170,18 @@ void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item) {
                 t13 = zValues[x][y+2];
                 t23 = zValues[x+1][y+2];
 
+                //bool enableDebug = (curTile->getLocX() == 1401 || curTile->getLocX() == 1401) && curTile->getLocY() == 1652;
+                //if (enableDebug) {
+                    //LOG_DEBUG << "z calc debug:\n" <<
+                            //"\t\t"                     << (int)t10 << "\t" << (int)t20 << "\n" <<
+                            //"\t"   << (int)t01 << "\t" << (int)cur << "\t" << (int)t21 << "\t" << (int)t31 << "\n" <<
+                            //"\t"   << (int)t02 << "\t" << (int)t12 << "\t" << (int)t22 << "\t" << (int)t31 <<"\n" <<
+                            //"\t\t"                     << (int)t13 << "\t" << (int)t23 <<
+                        //std::endl;
+
+                    //LOG_DEBUG << "normal: cur=" << (int)cur << " top=" << (int)t10 << " right=" << (int)t21 << " bottom=" << (int)t12 << " left=" << (int)t01 << std::endl;
+                //}
+
                 topNormal = calculateNormal(cur, t10, t21, t12, t01);
                 rightNormal = calculateNormal(t21, t20, t31, t22, cur);
                 bottomNormal = calculateNormal(t22, t21, t32, t23, t12);
@@ -189,7 +201,7 @@ void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item) {
  * |     | bot |     |
  * |_____|_____|_____|
  */
-CL_Vec3f MapLoader::calculateNormal(uint8_t tile, uint8_t top, uint8_t right, uint8_t bottom, uint8_t left) {
+CL_Vec3f MapLoader::calculateNormal(int8_t tile, int8_t top, int8_t right, int8_t bottom, int8_t left) {
     if (tile == top && tile == right && tile == bottom && tile == left) {
         return CL_Vec3f(0, 0, 1);
     }

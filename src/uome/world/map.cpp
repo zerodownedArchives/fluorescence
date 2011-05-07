@@ -135,20 +135,13 @@ bool MapTile::isPixelInside(int pixelX, int pixelY, const CL_Vec2f& b, const CL_
 
 void MapTile::setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const CL_Vec3f& bottom, const CL_Vec3f& left) {
     if (isFlat()) {
-        vertexNormals_[0] = top;
-        vertexNormals_[1] = right;
-        vertexNormals_[2] = left;
-        vertexNormals_[3] = right;
-        vertexNormals_[4] = left;
-        vertexNormals_[5] = bottom;
+        vertexNormals_[0] = CL_Vec3f(0, 0, 1);
+        vertexNormals_[1] = CL_Vec3f(0, 0, 1);
+        vertexNormals_[2] = CL_Vec3f(0, 0, 1);
+        vertexNormals_[3] = CL_Vec3f(0, 0, 1);
+        vertexNormals_[4] = CL_Vec3f(0, 0, 1);
+        vertexNormals_[5] = CL_Vec3f(0, 0, 1);
     } else {
-        //vertexNormals_[0] = top;
-        //vertexNormals_[1] = right;
-        //vertexNormals_[2] = left;
-        //vertexNormals_[3] = right;
-        //vertexNormals_[4] = left;
-        //vertexNormals_[5] = bottom;
-
         vertexNormals_[0] = top;
         vertexNormals_[1] = left;
         vertexNormals_[2] = right;
@@ -161,6 +154,14 @@ void MapTile::setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const
 void MapTile::onClick() {
     LOG_INFO << "Clicked map, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
             getLocZ() << ") name=" << tileDataInfo_->name_ << std::endl;
+
+    //LOG_INFO << "Vertex normals \n\ttop =(" << vertexNormals_[0].x << " / " << vertexNormals_[0].y << " / " << vertexNormals_[0].z << ")" <<
+            //"\n\tleft=(" << vertexNormals_[1].x << " / " << vertexNormals_[1].y << " / " << vertexNormals_[1].z << ")" <<
+            //"\n\trigh=(" << vertexNormals_[2].x << " / " << vertexNormals_[2].y << " / " << vertexNormals_[2].z << ")" <<
+            //"\n\tbott=(" << vertexNormals_[5].x << " / " << vertexNormals_[5].y << " / " << vertexNormals_[5].z << ")" <<
+            //std::endl;
+
+    //LOG_INFO << "x value: self=" << getLocZ() << " right=" << zRight_ << " bottom=" << zBottom_ << " left=" << zLeft_ << std::endl;
 }
 
 

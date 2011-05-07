@@ -46,7 +46,7 @@ private:
     bool difEnabled_;
 
     void setSurroundingZ(boost::shared_ptr<world::MapBlock> item);
-    CL_Vec3f calculateNormal(uint8_t tile, uint8_t top, uint8_t right, uint8_t bottom, uint8_t left);
+    CL_Vec3f calculateNormal(int8_t tile, int8_t top, int8_t right, int8_t bottom, int8_t left);
 };
 
 }
