@@ -5,7 +5,7 @@
 
 #include <boost/bind.hpp>
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 #include <client.hpp>
 #include <data/artloader.hpp>
 #include <data/gumpartloader.hpp>
@@ -19,6 +19,7 @@
 #include "components/localbutton.hpp"
 #include "components/scrollarea.hpp"
 #include "components/lineedit.hpp"
+#include "components/label.hpp"
 
 namespace uome {
 namespace ui {
@@ -85,22 +86,22 @@ void GumpFactory::removeRepeatContext(const UnicodeString& name) {
 GumpMenu* GumpFactory::fromXmlFile(const UnicodeString& name, GumpMenu* menu) {
     // can be called before a shard is set
     boost::filesystem::path path;
-    std::string utf8fileName = StringConverter::toUtf8String(name) + ".xml";
+    std::string utf8FileName = StringConverter::toUtf8String(name) + ".xml";
     if (Client::getSingleton()->getConfig().exists("/uome/shard@name")) {
-        path = "shards" / Client::getSingleton()->getConfig()["/uome/shard@name"].asPath() / "gumps" / utf8fileName;
+        path = "shards" / Client::getSingleton()->getConfig()["/uome/shard@name"].asPath() / "gumps" / utf8FileName;
     }
 
     if (!boost::filesystem::exists(path)) {
         path = "gumps";
-        path = path / utf8fileName;
+        path = path / utf8FileName;
 
         if (!boost::filesystem::exists(path)) {
-            LOGARG_CRITICAL(LOGTYPE_UI, "Unable to gump xml %s: file not found", utf8fileName.c_str());
+            LOG_ERROR << "Unable to gump xml, file not found: " << utf8FileName << std::endl;
             return menu;
         }
     }
 
-    LOGARG_DEBUG(LOGTYPE_UI, "Parsing xml gump file: %s", path.string().c_str());
+    LOG_DEBUG << "Parsing xml gump file: " << path << std::endl;
 
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(path.string().c_str());
@@ -117,7 +118,7 @@ GumpMenu* GumpFactory::fromXmlFile(const UnicodeString& name, GumpMenu* menu) {
 
         return ret;
     } else {
-        LOGARG_ERROR(LOGTYPE_UI, "Error parsing file at offset %i: %s", result.offset, result.description());
+        LOG_ERROR << "Error parsing file at offset " << result.offset << ": " << result.description() << std::endl;
         return menu;
     }
 }
@@ -132,7 +133,7 @@ GumpMenu* GumpFactory::fromXmlString(const UnicodeString& str, GumpMenu* menu) {
 
         return ret;
     } else {
-        LOGARG_ERROR(LOGTYPE_UI, "Error parsing string at offset %i: %s", result.offset, result.description());
+        LOG_ERROR << "Error parsing string at offset " << result.offset << ": " << result.description() << std::endl;
         return menu;
     }
 }
@@ -176,7 +177,7 @@ bool GumpFactory::parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* paren
         if (function != functionTable_.end()) {
             ret = (function->second)(*iter, parent, top);
         } else {
-            LOGARG_WARN(LOGTYPE_UI, "Unknown gump tag \"%s\"", iter->name());
+            LOG_WARN << "Unknown gump tag " << iter->name() << std::endl;
         }
     }
 
@@ -237,7 +238,7 @@ bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     } else if (!node.attribute("page").empty()) {
         button = new components::PageButton(parent, pageId);
     } else {
-        LOG_WARN(LOGTYPE_UI, "Button without action, id or page");
+        LOG_WARN << "Button without action, id or page" << std::endl;
         return false;
     }
 
@@ -274,7 +275,7 @@ bool GumpFactory::parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* paren
     int selected = node.attribute("selected").as_int();
 
     if (group.length() == 0) {
-        LOG_ERROR(LOGTYPE_UI, "Adding tradiobutton without group");
+        LOG_ERROR << "Adding tradiobutton without group" << std::endl;
         return false;
     }
 
@@ -337,7 +338,7 @@ bool GumpFactory::parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent, 
 
     for (unsigned int index = 0; iter != iterEnd; ++iter, ++index) {
         if (strcmp(iter->name(), "option") != 0) {
-            LOGARG_WARN(LOGTYPE_UI, "Something different than option in combobox: \"%s\"", iter->name());
+            LOG_WARN << "Something different than option in combobox: " << iter->name() << std::endl;
             return false;
         } else {
             std::string text = iter->attribute("text").value();
@@ -398,7 +399,7 @@ bool GumpFactory::parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent, Gump
         spin->set_step_size_float(stepsize);
         spin->set_value_float(value);
     } else {
-        LOGARG_WARN(LOGTYPE_UI, "Unknown spin type: \"%s\"", type.c_str());
+        LOG_WARN << "Unknown spin type: " << type << std::endl;
         return false;
     }
 
@@ -420,7 +421,7 @@ bool GumpFactory::parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent, Gump
 
     for (; iter != iterEnd; ++iter) {
         if (strcmp(iter->name(), "ttabpage") != 0) {
-            LOGARG_WARN(LOGTYPE_UI, "Something different than ttabpage in ttabs: \"%s\"", iter->name());
+            LOG_WARN << "Something different than ttabpage in ttabs: " << iter->name() << std::endl;
             return false;
         } else {
             std::string tabTitle = iter->attribute("text").value();
@@ -452,7 +453,7 @@ bool GumpFactory::parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     } else if (type == "horizontal") {
         slider->set_horizontal(true);
     } else {
-        LOGARG_WARN(LOGTYPE_UI, "Unknown slider type: \"%s\"", type.c_str());
+        LOG_WARN << "Unknown slider type: " << type << std::endl;
         return false;
     }
 
@@ -472,7 +473,7 @@ bool GumpFactory::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     std::string align = node.attribute("align").value();
     std::string text = node.attribute("text").value();
 
-    CL_Label* label = new CL_Label(parent);
+    components::Label* label = new components::Label(parent);
     parseId(node, label);
 
     if (align.length() == 0 || align == "left") {
@@ -484,7 +485,7 @@ bool GumpFactory::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     } else if (align == "justify") {
         label->set_alignment(CL_Label::align_justify);
     } else {
-        LOGARG_WARN(LOGTYPE_UI, "Unknown label align: \"%s\"", align.c_str());
+        LOG_WARN << "Unknown label align: " << align << std::endl;
         return false;
     }
 
@@ -512,7 +513,7 @@ bool GumpFactory::parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent, 
 
     //return true;
 
-    LOG_WARN(LOGTYPE_UI, "TextEdit is currently not supported, sorry!");
+    LOG_WARN << "TextEdit is currently not supported, sorry!" << std::endl;
     return false;
 }
 
@@ -543,7 +544,7 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
                 height = buf.get_height();
             }
         } catch (const CL_Exception& ex) {
-            LOGARG_ERROR(LOGTYPE_UI, "Unable to load image from path %s: %s", path.c_str(), ex.what());
+            LOG_ERROR << "Unable to load image from path " << path << ": " << ex.what() << std::endl;
             return false;
         }
     } else if (gumpId) {
@@ -579,7 +580,7 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
             height = texture->getPixelBuffer()->get_height();
         }
     } else {
-        LOG_WARN(LOGTYPE_UI, "Image component without image information! Please supply path, gumpid or artid");
+        LOG_WARN << "Image component without image information! Please supply path, gumpid or artid" << std::endl;
         return false;
     }
 
@@ -598,7 +599,7 @@ bool GumpFactory::parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpM
     if (top->getActivePageId() != 0) {
         // check that we add pages only at the top level hierarchy
         // adding a page inside another page
-        LOGARG_ERROR(LOGTYPE_UI, "Adding page %i inside of page %i", top->getActivePageId(), number);
+        LOG_ERROR << "Adding page " << top->getActivePageId() << " inside of page " << number << std::endl;
         return false;
     }
 
@@ -629,7 +630,7 @@ bool GumpFactory::parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent
         } else if (hVisibilityStr == visibilityOnDemand) {
             hVisibility = components::ScrollArea::VISIBLE_ON_DEMAND;
         } else {
-            LOGARG_ERROR(LOGTYPE_UI, "Unknown scrollbar hvisibility: %s. Possible values: always/never/ondemand", hVisibilityStr.c_str());
+            LOG_ERROR << "Unknown scrollbar hvisibility: " << hVisibilityStr << ". Possible values: always/never/ondemand" << std::endl;
             return false;
         }
     }
@@ -643,7 +644,7 @@ bool GumpFactory::parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent
         } else if (vVisibilityStr == visibilityOnDemand) {
             vVisibility = components::ScrollArea::VISIBLE_ON_DEMAND;
         } else {
-            LOGARG_ERROR(LOGTYPE_UI, "Unknown scrollbar vvisibility: %s. Possible values: always/never/ondemand", vVisibilityStr.c_str());
+            LOG_ERROR << "Unknown scrollbar vvisibility: " << vVisibilityStr << ". Possible values: always/never/ondemand" << std::endl;
             return false;
         }
     }

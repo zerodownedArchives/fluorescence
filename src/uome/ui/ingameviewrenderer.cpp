@@ -6,7 +6,7 @@
 #include "texture.hpp"
 #include "ingameview.hpp"
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 #include <world/ingameobject.hpp>
 #include <world/lightmanager.hpp>
@@ -28,7 +28,7 @@ IngameViewRenderer::IngameViewRenderer(IngameView* ingameView) :
     shaderProgram_->bind_attribute_location(1, "TexCoord0");
     shaderProgram_->bind_attribute_location(2, "gl_Normal");
     if (!shaderProgram_->link()) {
-        LOG_EMERGENCY << "Error while linking program:\n" << shaderProgram_->get_info_log() << std::endl;
+        LOG_EMERGENCY << "Error while linking program:\n" << shaderProgram_->get_info_log().c_str() << std::endl;
         throw CL_Exception("Unable to link program");
     }
 

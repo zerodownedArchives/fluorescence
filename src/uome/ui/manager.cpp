@@ -13,7 +13,7 @@
 
 #include <client.hpp>
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 #include <misc/exception.hpp>
 
 namespace uome {
@@ -105,7 +105,7 @@ bool Manager::setShardConfig(Config& config) {
 }
 
 Manager::~Manager() {
-    LOG_INFO(LOGTYPE_UI, "Manager shutdown");
+    LOG_INFO << "ui::Manager shutdown" << std::endl;
     if (renderQueue_) {
         renderQueue_->clear();
     }
@@ -158,7 +158,7 @@ void Manager::closeGumpMenu(GumpMenu* menu) {
 }
 
 void Manager::closeGumpMenu(const UnicodeString& gumpName) {
-    LOG_ERROR(LOGTYPE_UI, "Not yet implemented function closeGumpMenu called");
+    LOG_ERROR << "Not yet implemented function ui::Manager::closeGumpMenu called" << std::endl;
 }
 
 void Manager::processCloseList() {

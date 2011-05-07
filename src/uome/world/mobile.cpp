@@ -1,7 +1,7 @@
 
 #include "mobile.hpp"
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 namespace uome {
 namespace world {
@@ -18,11 +18,11 @@ unsigned int Mobile::getBodyId() const {
 }
 
 void Mobile::onClick() {
-    LOG_DEBUG(LOGTYPE_WORLD, "Clicked on mobile!");
+    LOG_DEBUG << "Clicked on mobile!" << std::endl;
 }
 
 void Mobile::onDoubleClick() {
-    LOG_DEBUG(LOGTYPE_WORLD, "Doubleclicked on mobile!");
+    LOG_DEBUG << "Doubleclicked on mobile!" << std::endl;
 }
 
 void Mobile::setBodyId(unsigned int value) {

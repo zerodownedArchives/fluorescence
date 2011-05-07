@@ -142,6 +142,13 @@ void MapTile::setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const
         vertexNormals_[4] = left;
         vertexNormals_[5] = bottom;
     } else {
+        //vertexNormals_[0] = top;
+        //vertexNormals_[1] = right;
+        //vertexNormals_[2] = left;
+        //vertexNormals_[3] = right;
+        //vertexNormals_[4] = left;
+        //vertexNormals_[5] = bottom;
+
         vertexNormals_[0] = top;
         vertexNormals_[1] = left;
         vertexNormals_[2] = right;
@@ -153,7 +160,7 @@ void MapTile::setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const
 
 void MapTile::onClick() {
     LOG_INFO << "Clicked map, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
-            getLocZ() << ") name=" << name_ << std::endl;
+            getLocZ() << ") name=" << tileDataInfo_->name_ << std::endl;
 }
 
 

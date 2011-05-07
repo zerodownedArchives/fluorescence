@@ -1,7 +1,7 @@
 
 #include "pagebutton.hpp"
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 #include <ui/gumpmenu.hpp>
 
@@ -21,7 +21,7 @@ void PageButton::onClicked(BaseButton* self) {
     if (gump) {
         gump->activatePage(getPageId());
     } else {
-        LOG_ERROR(LOGTYPE_UI, "PageButton inside something other than GumpMenu");
+        LOG_ERROR << "PageButton inside something other than GumpMenu" << std::endl;
     }
 }
 

@@ -2,7 +2,8 @@
 #include "manager.hpp"
 
 #include <client.hpp>
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
+#include <misc/exception.hpp>
 #include <ui/manager.hpp>
 #include <ui/gumpmenu.hpp>
 #include <ui/gumpmenus.hpp>
@@ -32,7 +33,7 @@ bool Manager::create(const Config& config) {
 
 Manager* Manager::getSingleton() {
     if (!singleton_) {
-        throw Exception("uome::net::Manager Singleton not created yet");
+        throw uome::Exception("uome::net::Manager Singleton not created yet");
     }
 
     return singleton_;

@@ -1,7 +1,7 @@
 
 #include "serverlist.hpp"
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/gumpmenus.hpp>

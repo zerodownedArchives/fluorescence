@@ -9,7 +9,7 @@
 #include <boost/filesystem/path.hpp>
 
 #include <client.hpp>
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 #include <misc/config.hpp>
 #include <misc/exception.hpp>
 
@@ -19,21 +19,20 @@
 #include "gumpfactory.hpp"
 #include "components/localbutton.hpp"
 #include "components/lineedit.hpp"
+#include "components/label.hpp"
 
 namespace uome {
 namespace ui {
 
 GumpMenu* GumpMenus::openMessageBox(const UnicodeString& message) {
-    //GumpMenu* menu = GumpFactory::fromXmlFile("messagebox");
-    //if (menu) {
-        //std::string utf8Str = StringConverter::toUtf8String(message);
-        //menu->setComponentText<CL_Label>("messagetext", utf8Str);
-    //}
+    GumpMenu* menu = GumpFactory::fromXmlFile("messagebox");
+    if (menu) {
+        menu->setComponentText<components::Label>("messagetext", message);
+    }
 
-    //LOGARG_INFO(LOGTYPE_UI, "MessageBox: %S", message.getTerminatedBuffer());
+    LOG_INFO << "MessageBox: " << message << std::endl;
 
-    //return menu;
-    throw Exception("not implemented at the moment");
+    return menu;
 }
 
 GumpMenu* GumpMenus::openLoginGump() {
@@ -63,7 +62,7 @@ GumpMenu* GumpMenus::openShardSelectionGump() {
     bfs::path path("shards");
 
     if (!bfs::exists(path) || !bfs::is_directory(path)) {
-        LOG_ERROR(LOGTYPE_UI, "Unable to list shards directory");
+        LOG_EMERGENCY << "Unable to list shards directory" << std::endl;
         return NULL;
     }
 

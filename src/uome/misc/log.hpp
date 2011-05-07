@@ -58,9 +58,9 @@ public:
     Log& prefix(unsigned int lvl);
 
     template<typename T>
-    Log& operator<<(const T& data) {
-        file_ << data;
-        std::cout << data;
+    Log& operator<<(const T& val) {
+        file_ << val;
+        std::cout << val;
 
         return *this;
     }

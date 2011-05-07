@@ -13,7 +13,7 @@ TwofishEncryption::TwofishEncryption(uint32_t seed) {
     memset(&cipherInstance_, 0, sizeof(cipherInstance));
 
     if (makeKey(&keyInstance_, DIR_ENCRYPT, 128, NULL) != TRUE || cipherInit(&cipherInstance_, MODE_ECB, NULL) != TRUE) {
-        LOG_ERROR(LOGTYPE_NETWORK, "Error initializing twofish (makekey)");
+        LOG_EMERGENCY << "Error initializing twofish (makekey)" << std::endl;
         throw std::exception();
     }
 
@@ -26,7 +26,7 @@ TwofishEncryption::TwofishEncryption(uint32_t seed) {
         //*pKey++ = (uint8_t)(seed & 0x000000FF);
     //}
 
-    LOG_DEBUG << "Twofish-Key: " << std::hex << keyInstace_.key32[0] << std::dec << std::endl;
+    LOG_DEBUG << "Twofish-Key: " << std::hex << keyInstance_.key32[0] << std::dec << std::endl;
 
     if (reKey(&keyInstance_) != TRUE) {
         LOG_ERROR << "Error initializing twofish (rekey)" << std::endl;

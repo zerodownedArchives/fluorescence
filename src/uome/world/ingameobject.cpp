@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>

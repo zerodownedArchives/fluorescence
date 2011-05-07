@@ -4,7 +4,8 @@
 #include "sectormanager.hpp"
 #include "lightmanager.hpp"
 
-#include <misc/logger.hpp>
+#include <misc/exception.hpp>
+#include <misc/log.hpp>
 
 namespace uome {
 namespace world {
@@ -44,7 +45,7 @@ Manager::Manager(const Config& config) : currentMapId_(0) {
 }
 
 Manager::~Manager() {
-    LOG_INFO(LOGTYPE_WORLD, "Manager shutdown");
+    LOG_INFO << "world::Manager shutdown" << std::endl;
 }
 
 boost::shared_ptr<SectorManager> Manager::getSectorManager() {

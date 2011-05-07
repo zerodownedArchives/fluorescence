@@ -10,7 +10,7 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/program_options.hpp>
 
-#include "logger.hpp"
+#include "log.hpp"
 
 
 namespace uome {
@@ -216,7 +216,7 @@ bool Config::parseShardConfig() {
     pugi::xml_parse_result result = doc.load_file(path.string().c_str());
 
     if (!result) {
-        LOG_EMERGENCY << "Unable to open config file ", path << std::endl;
+        LOG_EMERGENCY << "Unable to open config file " << path << std::endl;
         return false;
     }
 
@@ -272,12 +272,13 @@ bool Config::exists(const UnicodeString& name) const {
 }
 
 void Config::dumpMap() const {
-    LOG_DEBUG(LOGTYPE_MAIN, "\n\nFull config dump:");
+    LOG_DEBUG << "\n\nFull config dump:" << std::endl;
     std::map<UnicodeString, ConfigValue>::const_iterator iter = variablesMap_.begin();
     std::map<UnicodeString, ConfigValue>::const_iterator end = variablesMap_.end();
 
     for (; iter != end; ++iter) {
-        LOGARG_DEBUG(LOGTYPE_MAIN, "Config value type=%u isDefault=%u %s => %s", iter->second.valueType(), iter->second.isDefault(), StringConverter::toUtf8String(iter->first).c_str(), StringConverter::toUtf8String(iter->second.asString()).c_str());
+        LOG_DEBUG << "Config value type=" << iter->second.valueType() << " isDefault=" << iter->second.isDefault() << "  " <<
+                iter->first << " => " << iter->second.asString() << std::endl;
     }
 }
 

@@ -6,7 +6,7 @@
 #include "manager.hpp"
 #include "sector.hpp"
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
@@ -48,7 +48,7 @@ void SectorManager::addNewSectors(bool force) {
 
     unsigned int mapId = world::Manager::getSingleton()->getCurrentMapId();
     if (mapId != lastMapId_) {
-        LOG_INFO(LOGTYPE_WORLD, "SectorManager: map change detected, clearing sectors");
+        LOG_INFO << "SectorManager: map change detected, clearing sectors" << std::endl;
         clear();
         lastMapId_ = mapId;
     }
@@ -77,7 +77,7 @@ void SectorManager::deleteSectors() {
     unsigned int mapId = world::Manager::getSingleton()->getCurrentMapId();
 
     if (mapId != lastMapId_) {
-        LOG_INFO(LOGTYPE_WORLD, "Map change detected, clearing sectors");
+        LOG_INFO << "Map change detected, clearing sectors" << std::endl;
         clear();
         lastMapId_ = mapId;
         return;

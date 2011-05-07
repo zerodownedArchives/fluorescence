@@ -3,7 +3,7 @@
 
 #include "ingameviewrenderer.hpp"
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 #include <world/manager.hpp>
 #include <world/sectormanager.hpp>
@@ -150,6 +150,23 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         lm->setAmbientIntensity(intensity);
         break;
 
+    case CL_KEY_A:
+        lm = world::Manager::getSingleton()->getLightManager();
+        intensity = lm->getGlobalIntensity();
+        intensity.r += 0.1;
+        intensity.g += 0.1;
+        intensity.b += 0.1;
+        lm->setGlobalIntensity(intensity);
+        break;
+    case CL_KEY_S:
+        lm = world::Manager::getSingleton()->getLightManager();
+        intensity = lm->getGlobalIntensity();
+        intensity.r = std::max(0.0, intensity.r - 0.1);
+        intensity.g = std::max(0.0, intensity.g - 0.1);
+        intensity.b = std::max(0.0, intensity.b - 0.1);
+        lm->setGlobalIntensity(intensity);
+        break;
+
     case CL_MOUSE_WHEEL_UP:
         lm = world::Manager::getSingleton()->getLightManager();
         lm->setGlobalAngle(lm->getGlobalAngle() + 5);
@@ -210,7 +227,7 @@ bool IngameView::onDoubleClick(const CL_InputEvent& e) {
 }
 
 boost::shared_ptr<world::IngameObject> IngameView::getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) {
-    LOG_INFO << "IngameView::getFirstObjectAt " << pixelX " " << pixelY << std::endl;
+    LOG_INFO << "IngameView::getFirstObjectAt " << pixelX << " " << pixelY << std::endl;
     int worldX = getCenterPixelX() - get_width()/2.0;
     worldX += pixelX;
 

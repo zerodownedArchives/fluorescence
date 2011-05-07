@@ -7,7 +7,7 @@
 #include <ui/manager.hpp>
 #include <net/manager.hpp>
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 namespace uome {
 namespace ui {

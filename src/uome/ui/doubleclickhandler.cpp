@@ -5,7 +5,7 @@
 
 #include <world/ingameobject.hpp>
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 namespace uome {
 namespace ui {

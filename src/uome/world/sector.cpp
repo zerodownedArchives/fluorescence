@@ -21,7 +21,7 @@ Sector::Sector(unsigned int mapId, unsigned int sectorId) :
     //LOGARG_DEBUG(LOGTYPE_WORLD, "Sector construct, map=%u x=%u y=%u", mapId_, location_[0u], location_[1u]);
 
     mapBlock_ = data::Manager::getMapLoader(mapId_)->get(location_[0u], location_[1u]);
-    staticBlock_ = data::Manager::getStaticsLoader(mapId_)->get(location_[0u], location_[1u]);
+    staticBlock_ = boost::shared_ptr<StaticBlock>(new StaticBlock());//data::Manager::getStaticsLoader(mapId_)->get(location_[0u], location_[1u]);
 }
 
 Sector::~Sector() {

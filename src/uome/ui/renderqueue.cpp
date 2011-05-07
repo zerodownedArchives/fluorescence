@@ -3,7 +3,7 @@
 
 #include <boost/bind.hpp>
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 #include <world/ingameobject.hpp>
 #include <world/sector.hpp>
@@ -146,7 +146,7 @@ void RenderQueue::processRemoveList() {
     }
 
     if (deleteIter != deleteEnd) {
-        LOG_WARN(LOGTYPE_UI, "RenderQueue::processRemoveList - ingameRemoveList_ end not reached");
+        LOG_WARN << "RenderQueue::processRemoveList - ingameRemoveList_ end not reached" << std::endl;
 
         for (; deleteIter != deleteEnd; ++deleteIter) {
             ingameList_.remove((*deleteIter).get());

@@ -44,6 +44,7 @@ set (GUMPMENU_HPP
     ui/components/pagebutton.hpp
     ui/components/scrollarea.hpp
     ui/components/lineedit.hpp
+    ui/components/label.hpp
     )
 
 set (GUMPMENU_CPP
@@ -58,6 +59,7 @@ set (GUMPMENU_CPP
     ui/components/pagebutton.cpp
     ui/components/scrollarea.cpp
     ui/components/lineedit.cpp
+    ui/components/label.cpp
     )
 
 SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} PARENT_SCOPE)

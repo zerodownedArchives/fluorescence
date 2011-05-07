@@ -1,7 +1,7 @@
 
 #include "scrollarea.hpp"
 
-#include <misc/logger.hpp>
+#include <misc/log.hpp>
 
 namespace uome {
 namespace ui {
