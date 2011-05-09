@@ -28,6 +28,7 @@ boost::shared_ptr<CL_Texture> Texture::getTexture() {
         texture_.reset(ui::Manager::getSingleton()->provideTexture(pixelBuffer_->get_width(), pixelBuffer_->get_height()));
         texture_->set_image(*(pixelBuffer_));
         bitMask_->init(pixelBuffer_);
+        pixelBuffer_.reset();
     }
 
     return texture_;

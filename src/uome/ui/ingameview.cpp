@@ -15,6 +15,9 @@
 #include <ui/renderqueue.hpp>
 #include <ui/doubleclickhandler.hpp>
 
+#include <data/manager.hpp>
+#include <data/artloader.hpp>
+
 #include <ClanLib/Display/Window/keys.h>
 
 namespace uome {
@@ -180,6 +183,11 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
 
     case CL_MOUSE_LEFT:
         set_focus();
+        break;
+
+
+    case CL_KEY_F:
+        data::Manager::getArtLoader()->printStats();
         break;
 
     default:consumed = false;

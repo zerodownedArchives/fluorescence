@@ -7,7 +7,7 @@
 namespace uome {
 namespace ui {
 
-AnimTextureProvider::AnimTextureProvider(unsigned int animId) : currentAnimId_(0), currentIdx_(0), millis_(0), frameMillis_(100) {
+AnimTextureProvider::AnimTextureProvider(unsigned int animId) : currentAnimId_(0), currentIdx_(0), millis_(0), frameMillis_(100), repeatMode_(REPEAT_MODE_LOOP) {
     animations_ = data::Manager::getFullAnim(animId);
 
     if (animations_.size() == 0) {
@@ -42,9 +42,19 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
 
     unsigned int maxMillis = animations_[currentAnimId_]->getFrameCount() * frameMillis_;
     if (newMillis >= maxMillis) {
-        // TODO: different end behaviors (stop at end, loop, goto first
-        currentIdx_ = 0;
-        newMillis %= maxMillis;
+        switch (repeatMode_) {
+            case REPEAT_MODE_LOOP:
+                currentIdx_ = 0;
+                newMillis %= maxMillis;
+                break;
+            case REPEAT_MODE_LAST:
+                // we are already at the last frame here
+                break;
+            case REPEAT_MODE_DEFAULT:
+                // TODO: use meaningful default here
+                currentIdx_ = 4;
+                break;
+        }
     } else {
         currentIdx_ = newMillis / frameMillis_;
     }

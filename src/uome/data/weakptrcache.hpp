@@ -7,6 +7,8 @@
 #include <map>
 #include <list>
 
+#include <misc/log.hpp>
+
 namespace uome {
 namespace data {
 
@@ -78,6 +80,24 @@ public:
             // we need to load it for the first time
             return this->load(id, userData);
         }
+    }
+
+    void printStats() {
+        unsigned int weakCount = cache_.size();
+        unsigned int realCount = 0;
+
+        typename MapType::iterator iter = cache_.begin();
+        typename MapType::iterator end = cache_.end();
+
+        for (; iter != end; ++iter) {
+            // was loaded at some point - is it still valid?
+            boost::shared_ptr<ValueType> smPtr = iter->second.lock();
+            if (smPtr.get() != NULL) {
+                realCount += 1;
+            }
+        }
+
+        LOG_DEBUG << "WeakPtrCache stats: weak=" << weakCount << " real=" << realCount << std::endl;
     }
 
 private:

@@ -88,9 +88,9 @@ void StaticsLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned in
     //animItem->set(cellOffsetX, cellOffsetY, cellZ, 0x371a, 0);
     //item->itemList_.push_back(animItem);
 
-    world::Mobile* mob = new world::Mobile(15);
-    mob->setLocation(cellOffsetX + 7, cellOffsetY + 7, cellZ);
-    mob->setBodyId(59);
+    //world::Mobile* mob = new world::Mobile(15);
+    //mob->setLocation(cellOffsetX + 7, cellOffsetY + 7, cellZ);
+    //mob->setBodyId(59);
 }
 
 void StaticsLoader::readCallbackDifOffsets(int8_t* buf, unsigned int len) {

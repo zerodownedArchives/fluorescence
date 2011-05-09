@@ -674,8 +674,7 @@ bool GumpFactory::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     UnicodeString name(node.attribute("name").value());
 
     if (repeatContexts_.count(name) == 0) {
-        // TODO: include log msg again
-        //LOGARG_ERROR(LOGTYPE_UI, "Trying to access unknown repeat context %s", name.c_str());
+        LOG_ERROR << "Trying to access unknown repeat context " << name << std::endl;
         return false;
     }
 

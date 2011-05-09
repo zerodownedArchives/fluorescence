@@ -24,9 +24,9 @@ public:
     IngameObject();
     virtual ~IngameObject();
 
-    int getLocX() const { return location_[0u]; }
-    int getLocY() const { return location_[1u]; }
-    int getLocZ() const { return location_[2u]; }
+    float getLocX() const { return location_[0u]; }
+    float getLocY() const { return location_[1u]; }
+    float getLocZ() const { return location_[2u]; }
 
     bool isVisible() const;
     void setVisible(bool visible);
@@ -79,7 +79,7 @@ private:
 
     bool renderDataValid_; ///< whether or not the vertex positions and render priorities are correct
 
-    CL_Vec3<int> location_;
+    CL_Vec3f location_;
     bool textureProviderUpdateRequired_;
 
     bool addedToRenderQueue_;

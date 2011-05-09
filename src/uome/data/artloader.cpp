@@ -110,5 +110,10 @@ void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, 
     }
 }
 
+void ArtLoader::printStats() {
+    LOG_DEBUG << "ArtLoader stats:" << std::endl;
+    cache_.printStats();
+}
+
 }
 }
