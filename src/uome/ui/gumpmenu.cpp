@@ -19,6 +19,8 @@ GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
     func_input_pressed().set(this, &GumpMenu::onInputPressed);
     func_input_released().set(this, &GumpMenu::onInputReleased);
     func_input_pointer_moved().set(this, &GumpMenu::onPointerMoved);
+
+    ui::Manager::getSingleton()->registerGumpMenu(this);
 }
 
 void GumpMenu::addPage(unsigned int pageId) {

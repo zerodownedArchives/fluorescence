@@ -158,21 +158,35 @@ void Manager::closeGumpMenu(GumpMenu* menu) {
 }
 
 void Manager::closeGumpMenu(const UnicodeString& gumpName) {
-    LOG_ERROR << "Not yet implemented function ui::Manager::closeGumpMenu called" << std::endl;
+    gumpListMutex_.lock();
+
+    std::list<GumpMenu*>::iterator iter = gumpList_.begin();
+    std::list<GumpMenu*>::iterator end = gumpList_.end();
+
+    for (; iter != end; ++iter) {
+        if ((*iter)->getName() == gumpName) {
+            closeGumpMenu(*iter);
+        }
+    }
+
+    gumpListMutex_.unlock();
 }
 
 void Manager::processCloseList() {
     closeListMutex_.lock();
+    gumpListMutex_.lock();
 
     std::list<GumpMenu*>::iterator iter = closeList_.begin();
     std::list<GumpMenu*>::iterator end = closeList_.end();
 
     for (; iter != end; ++iter) {
         delete (*iter);
+        gumpList_.remove(*iter);
     }
 
     closeList_.clear();
 
+    gumpListMutex_.unlock();
     closeListMutex_.unlock();
 }
 
@@ -203,6 +217,12 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
 
 GumpMenu* Manager::openXmlGump(const UnicodeString& name) {
     return GumpFactory::fromXmlFile(name);
+}
+
+void Manager::registerGumpMenu(GumpMenu* menu) {
+    gumpListMutex_.lock();
+    gumpList_.push_back(menu);
+    gumpListMutex_.unlock();
 }
 
 }

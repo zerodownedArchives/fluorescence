@@ -14,6 +14,7 @@
 #include <misc/exception.hpp>
 
 #include <net/packets/serverlist.hpp>
+#include <net/packets/characterlist.hpp>
 
 #include "gumpmenu.hpp"
 #include "gumpfactory.hpp"
@@ -111,6 +112,27 @@ GumpMenu* GumpMenus::openServerListGump(const net::packets::ServerList* list) {
     GumpFactory::addRepeatContext("serverlist", context);
     GumpMenu* menu = GumpFactory::fromXmlFile("serverlist");
     GumpFactory::removeRepeatContext("serverlist");
+
+    return menu;
+}
+
+GumpMenu* GumpMenus::openCharacterListGump(const net::packets::CharacterList* list) {
+    std::vector<UnicodeString> nameList;
+    std::vector<UnicodeString> indexList;
+
+    for (unsigned int i = 0; i < list->charCount_; ++i) {
+        nameList.push_back(list->charNames_[i]);
+        indexList.push_back(StringConverter::fromNumber(i));
+    }
+
+    GumpFactory::RepeatContext context;
+    context.repeatCount_ = nameList.size();
+    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "param", "characterindex")] = indexList;
+    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "text", "charactername")] = nameList;
+
+    GumpFactory::addRepeatContext("characterlist", context);
+    GumpMenu* menu = GumpFactory::fromXmlFile("characterlist");
+    GumpFactory::removeRepeatContext("characterlist");
 
     return menu;
 }

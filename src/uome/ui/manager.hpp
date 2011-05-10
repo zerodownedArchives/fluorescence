@@ -49,6 +49,8 @@ public:
     void closeGumpMenu(const UnicodeString& name);
     void closeGumpMenu(GumpMenu* menu);
 
+    void registerGumpMenu(GumpMenu* menu);
+
 private:
     static Manager* singleton_;
 
@@ -81,6 +83,9 @@ private:
     CL_Slot slotCloseWindow;
 
     void loadFontDirectory(const boost::filesystem::path& path);
+
+    boost::mutex gumpListMutex_;
+    std::list<GumpMenu*> gumpList_;
 };
 
 }

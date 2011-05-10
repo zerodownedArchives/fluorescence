@@ -27,7 +27,11 @@ UnicodeString StringConverter::fromUtf8(const char* buffer) {
 }
 
 UnicodeString StringConverter::fromUtf8(const char* buffer, int bufferSize) {
-    UnicodeString ret = UnicodeString::fromUTF8(StringPiece(buffer, bufferSize));
+    UnicodeString tmp = UnicodeString::fromUTF8(StringPiece(buffer, bufferSize));
+
+    // a little strange, but otherwise a unicode string might be returned that is just filled with 0x00, but still
+    // has length > 0 and is != "" etc
+    UnicodeString ret(tmp.getBuffer());
     if (ret.isBogus()) {
         ret = UnicodeString("##UOMEERROR"); // set error string
         LOG_WARN << "Unable to convert from utf-8 string" << std::endl;
@@ -37,11 +41,12 @@ UnicodeString StringConverter::fromUtf8(const char* buffer, int bufferSize) {
 
 UnicodeString StringConverter::fromUnicode(const char* buffer, int bufferSize) {
     UErrorCode error = U_ZERO_ERROR;
-    UnicodeString ret(buffer, bufferSize, getUnicodeConverter(), error);
+    UnicodeString tmp(buffer, bufferSize, getUnicodeConverter(), error);
     if (U_FAILURE(error)) {
-        ret = UnicodeString("##UOMEERROR"); // set error string
+        tmp = UnicodeString("##UOMEERROR"); // set error string
         LOG_WARN << "Unable to convert from utf-16-be string" << std::endl;
     }
+    UnicodeString ret(tmp.getBuffer());
     return ret;
 }
 

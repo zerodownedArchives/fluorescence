@@ -2,6 +2,8 @@
 #include "characterlist.hpp"
 
 #include <misc/log.hpp>
+#include <ui/manager.hpp>
+#include <ui/gumpmenus.hpp>
 
 namespace uome {
 namespace net {
@@ -14,14 +16,13 @@ bool CharacterList::read(const int8_t* buf, unsigned int len, unsigned int& inde
     bool ret = true;
 
     ret &= PacketReader::read(buf, len, index, charCount_);
-    LOG_DEBUG << "Char count: " << (unsigned int)charCount_ << std::endl;
     for (unsigned int i = 0; i < charCount_; ++i) {
         ret &= PacketReader::readUtf8Fixed(buf, len, index, charNames_[i], 30);
         ret &= PacketReader::readUtf8Fixed(buf, len, index, charPasswords_[i], 30);
+        LOG_DEBUG << "Read char: " << charNames_[i] << std::endl;
     }
 
     ret &= PacketReader::read(buf, len, index, cityCount_);
-    LOG_DEBUG << "City count: " << (unsigned int)cityCount_ << std::endl;
 
     uint8_t idx;
     UnicodeString tmp;
@@ -41,10 +42,19 @@ bool CharacterList::read(const int8_t* buf, unsigned int len, unsigned int& inde
         PacketReader::read(buf, len, index, flags_);
     }
 
+    // prevent empty char slots from being displayed
+    for (int i = charCount_-1; i >= 0; --i) {
+        if (charNames_[i].isBogus() || charNames_[i].isEmpty()) {// || charNames_[i].getBuffer()[0] == 0) {
+            charCount_--;
+        }
+    }
+
     return ret;
 }
 
 void CharacterList::onReceive() {
+    ui::Manager::getSingleton()->closeGumpMenu("serverlist");
+    ui::GumpMenus::openCharacterListGump(this);
 }
 
 }

@@ -10,6 +10,7 @@ class Config;
 namespace net {
 namespace packets {
 class ServerList;
+class CharacterList;
 }
 }
 
@@ -23,6 +24,7 @@ public:
     static GumpMenu* openShardSelectionGump();
     static GumpMenu* openLoginGump();
     static GumpMenu* openServerListGump(const net::packets::ServerList* list);
+    static GumpMenu* openCharacterListGump(const net::packets::CharacterList* list);
 };
 
 }
