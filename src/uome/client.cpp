@@ -61,8 +61,8 @@ bool Client::shutdown(ui::GumpMenu* menu, ui::components::LocalButton* button) {
 
 bool Client::selectShard(ui::GumpMenu* menu, ui::components::LocalButton* button) {
     config_["/uome/shard@name"].setString(button->getParameter());
-    //setState(STATE_PRE_LOGIN);
-    setState(STATE_PLAYING);
+    setState(STATE_PRE_LOGIN);
+    //setState(STATE_PLAYING);
     return true;
 }
 

@@ -245,18 +245,19 @@ void Socket::parsePackets() {
         uint8_t packetId;
         readSuccess = PacketReader::read(decompressedBuffer_, decompressedSize_, idx, packetId);
 
-        LOG_DEBUG << "Parsing packet id=" << std::hex << packetId << std::dec << std::endl;
+        LOG_DEBUG << "Parsing packet id=" << std::hex << (unsigned int)packetId << std::dec << std::endl;
 
         boost::shared_ptr<Packet> newPacket = Manager::createPacket(packetId);
 
         if (!newPacket) {
-            LOG_ERROR << "Unable to create packet for id " << std::hex << packetId << std::dec << std::endl;
+            LOG_ERROR << "Unable to create packet for id " << std::hex << (unsigned int)packetId << std::dec << std::endl;
             continue;
         }
 
         uint16_t packetSize;
         if (newPacket->hasVariableSize()) {
             readSuccess = readSuccess && PacketReader::read(decompressedBuffer_, decompressedSize_, idx, packetSize);
+            newPacket->setSize(packetSize);
         } else {
             packetSize = newPacket->getSize();
         }
@@ -264,7 +265,7 @@ void Socket::parsePackets() {
         LOG_DEBUG << "New packet size=" << packetSize << std::endl;
 
         if (decompressedSize_ < lastPacketStart + packetSize) {
-            LOG_DEBUG << "Packet not received completely id=" << std::hex << packetId << std::dec <<
+            LOG_DEBUG << "Packet not received completely id=" << std::hex << (unsigned int)packetId << std::dec <<
                     " should-be-len=" << packetSize << " received=" << (decompressedSize_ - lastPacketStart) << std::endl;
             break;
         }
@@ -272,13 +273,13 @@ void Socket::parsePackets() {
         readSuccess = readSuccess && newPacket->read(decompressedBuffer_, lastPacketStart + packetSize, idx);
 
         if (readSuccess && idx - lastPacketStart == packetSize) {
-            LOG_DEBUG << "Read of packet successful: id=" << std::hex << packetId << std::dec << " len=" << packetSize << std::endl;
+            LOG_DEBUG << "Read of packet successful: id=" << std::hex << (unsigned int)packetId << std::dec << " len=" << packetSize << std::endl;
 
             packetQueueMutex_.lock();
             packetQueue_.push(newPacket);
             packetQueueMutex_.unlock();
         } else {
-            LOG_DEBUG << "Not successful reading packet id=" << std::hex << packetId << std::dec << " len=" << packetSize <<
+            LOG_DEBUG << "Not successful reading packet id=" << std::hex << (unsigned int)packetId << std::dec << " len=" << packetSize <<
                     " read bytes=" << (idx - lastPacketStart) << std::endl;
             // set idx to start of next packet
             idx = lastPacketStart + packetSize;

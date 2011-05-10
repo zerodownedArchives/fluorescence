@@ -29,6 +29,10 @@ bool Packet::hasVariableSize() {
     return size_ == 0;
 }
 
+void Packet::setSize(uint16_t val) {
+    size_ = val;
+}
+
 uint16_t Packet::getSize() {
     return size_;
 }

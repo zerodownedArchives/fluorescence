@@ -19,6 +19,7 @@ public:
 
     bool hasVariableSize();
     uint16_t getSize(); ///< for fixed size packets
+    void setSize(uint16_t val);
 
     virtual void onReceive();
 
