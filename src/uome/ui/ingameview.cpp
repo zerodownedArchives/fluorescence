@@ -89,7 +89,8 @@ void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int 
 
     loadInEachDirection += cacheAdd; // some cache
 
-    //LOGARG_DEBUG(LOGTYPE_UI, "getRequiredSectors: diagonalPixel=%lf diagonalTile=%lf diagonalSector=%lf inEachDir=%u", viewDiagonalPixel, viewDiagonalTileCount, viewDiagonalSectorCount, loadInEachDirection);
+    //LOG_DEBUG << "getRequiredSectors: diagonalPixel=" << viewDiagonalPixel << " diagonalTile=" << viewDiagonalTileCount <<
+            //" diagonalSector=" << viewDiagonalSectorCount << " inEachDir=" << loadInEachDirection << std::endl;
 
     int centerSectorX = (int)(getCenterTileX() / 8.0);
     int centerSectorY = (int)(getCenterTileY() / 8.0);
