@@ -7,6 +7,7 @@ add_subdirectory(net)
 
 set(CLIENT_HPP
     client.hpp
+    typedefs.hpp
     )
 
 set(CLIENT_CPP

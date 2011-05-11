@@ -26,6 +26,8 @@ set(DATA_LOADERS_HPP
     data/maptexloader.hpp
     data/animdataloader.hpp
     data/animloader.hpp
+
+    data/mobtypesloader.hpp
     )
 
 set(DATA_LOADERS_CPP
@@ -39,6 +41,8 @@ set(DATA_LOADERS_CPP
     data/maptexloader.cpp
     data/animdataloader.cpp
     data/animloader.cpp
+
+    data/mobtypesloader.cpp
     )
 
 set (DATA_FILES

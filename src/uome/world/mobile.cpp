@@ -80,10 +80,25 @@ void Mobile::updateRenderPriority() {
 
 void Mobile::updateTextureProvider() {
     textureProvider_.reset(new ui::AnimTextureProvider(bodyId_));
+    textureProvider_->setDirection(direction_);
 }
 
 bool Mobile::updateAnimation(unsigned int elapsedMillis) {
     return textureProvider_->update(elapsedMillis);
+}
+
+void Mobile::playAnim(unsigned int animId) {
+    textureProvider_->setAnimId(animId);
+}
+
+void Mobile::setDirection(unsigned int direction) {
+    direction_ = direction;
+
+    if (textureProvider_) {
+        textureProvider_->setDirection(direction);
+    }
+
+    LOG_DEBUG << "mob set direction: " << direction_ << std::endl;
 }
 
 }

@@ -6,6 +6,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include <vector>
+
 #include <ui/textureprovider.hpp>
 #include <ui/animation.hpp>
 
@@ -23,6 +25,7 @@ class StaticsLoader;
 class MapTexLoader;
 class AnimDataLoader;
 class AnimLoader;
+class MobTypesLoader;
 
 class Manager {
 public:
@@ -33,7 +36,7 @@ public:
 
 
     static boost::shared_ptr<ui::TextureProvider> getItemTextureProvider(unsigned int artId);
-    static std::vector<boost::shared_ptr<ui::Animation> > getFullAnim(unsigned int animId);
+    static std::vector<boost::shared_ptr<ui::Animation> > getAnim(unsigned int bodyId, unsigned int animId);
 
     static ArtLoader* getArtLoader() { return getSingleton()->artLoader_.get(); }
     static TileDataLoader* getTileDataLoader() { return getSingleton()->tileDataLoader_.get(); }
@@ -44,6 +47,7 @@ public:
     static MapTexLoader* getMapTexLoader() { return getSingleton()->mapTexLoader_.get(); }
     static AnimDataLoader* getAnimDataLoader() { return getSingleton()->animDataLoader_.get(); }
     static AnimLoader* getAnimLoader(unsigned int index);
+    static MobTypesLoader* getMobTypesLoader() { return getSingleton()->mobTypesLoader_.get(); }
 
 private:
     static Manager* singleton_;
@@ -70,6 +74,8 @@ private:
 
     boost::shared_ptr<AnimLoader> animLoader_[5];
     boost::shared_ptr<AnimLoader> fallbackAnimLoader_;
+
+    boost::shared_ptr<MobTypesLoader> mobTypesLoader_;
 };
 
 }

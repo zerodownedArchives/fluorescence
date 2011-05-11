@@ -10,9 +10,14 @@
 #include "maptexloader.hpp"
 #include "animdataloader.hpp"
 #include "animloader.hpp"
+#include "mobtypesloader.hpp"
 
 #include <ui/singletextureprovider.hpp>
 #include <ui/animdatatextureprovider.hpp>
+
+#include <misc/filenamecaseconverter.hpp>
+
+#include <typedefs.hpp>
 
 namespace uome {
 namespace data {
@@ -25,7 +30,7 @@ bool Manager::create(Config& config) {
             singleton_ = new Manager();
             singleton_->init(config);
         } catch (const std::exception& ex) {
-            LOG_EMERGENCY << "Error initializing data::Manager: " << ex.what();
+            LOG_EMERGENCY << "Error initializing data::Manager: " << ex.what() << std::endl;
             return false;
         }
     }
@@ -56,6 +61,9 @@ void Manager::init(Config& config) {
     if (!boost::filesystem::exists(mulDirPath) || !boost::filesystem::is_directory(mulDirPath)) {
         throw Exception("Invalid mul directory");
     }
+
+    LOG_INFO << "Converting filenames to lower case" << std::endl;
+    misc::FileNameCaseConverter::convert(mulDirPath);
 
     boost::filesystem::path idxPath;
     boost::filesystem::path path;
@@ -241,6 +249,11 @@ void Manager::init(Config& config) {
     free(animConfigMulPath);
     free(animConfigHighDetailCount);
     free(animConfigLowDetailCount);
+
+
+    path = getPathFor(config, "/uome/files/mobtypes@filename");
+    LOG_INFO << "Opening mobtypes.txt from path=" << path << std::endl;
+    mobTypesLoader_.reset(new MobTypesLoader(path));
 }
 
 Manager::~Manager() {
@@ -311,12 +324,29 @@ boost::shared_ptr<ui::TextureProvider> Manager::getItemTextureProvider(unsigned 
     return ret;
 }
 
-std::vector<boost::shared_ptr<ui::Animation> > Manager::getFullAnim(unsigned int animId) {
-    // check .def files for correct anim file
-    // load anim
-
+std::vector<boost::shared_ptr<ui::Animation> > Manager::getAnim(unsigned int bodyId, unsigned int animId) {
+    // TODO check .def files for correct anim file
     std::vector<boost::shared_ptr<ui::Animation> > ret;
-    ret.push_back(getSingleton()->animLoader_[0]->getAnimation(animId));
+    boost::shared_ptr<ui::Animation> tmpNE = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, Direction::NE);
+    ret.push_back(tmpNE);
+
+    boost::shared_ptr<ui::Animation> tmpE = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, Direction::E);
+    ret.push_back(tmpE);
+
+    boost::shared_ptr<ui::Animation> tmpSE = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, Direction::SE);
+    ret.push_back(tmpSE);
+
+    boost::shared_ptr<ui::Animation> tmp = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, Direction::S);
+    ret.push_back(tmp);
+
+    // mirrored
+    ret.push_back(tmpSE);
+    ret.push_back(tmpE);
+    ret.push_back(tmpNE);
+
+    tmp = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, Direction::N);
+    ret.push_back(tmp);
+
     return ret;
 }
 

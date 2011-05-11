@@ -81,7 +81,7 @@ bool IngameObject::updateRenderData(unsigned int elapsedMillis) {
         }
 
         boost::shared_ptr<ui::Texture> tex = getIngameTexture();
-        if (!tex->isReadComplete()) {
+        if (!tex || !tex->isReadComplete()) {
             return false;
         }
 

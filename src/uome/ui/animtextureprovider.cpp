@@ -3,44 +3,84 @@
 
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
+#include <data/mobtypesloader.hpp>
 
 namespace uome {
 namespace ui {
 
-AnimTextureProvider::AnimTextureProvider(unsigned int animId) : currentAnimId_(0), currentIdx_(0), millis_(0), frameMillis_(100), repeatMode_(REPEAT_MODE_LOOP) {
-    animations_ = data::Manager::getFullAnim(animId);
+AnimTextureProvider::AnimTextureProvider(unsigned int bodyId) : bodyId_(bodyId), direction_(0), currentIdx_(0),
+        millis_(0), frameMillis_(100), repeatMode_(REPEAT_MODE_DEFAULT), nextAnimId_(0xFFFFFFFFu) {
+    defaultAnimId_ = data::Manager::getMobTypesLoader()->getIdleAction(bodyId);
+    currentAnimId_ = defaultAnimId_;
 
-    if (animations_.size() == 0) {
-        LOG_WARN << "Loading unknown animId: " << animId << "  " << std::hex << animId << std::dec << std::endl;
-        AnimationFrame frame;
-        frame.texture_ = data::Manager::getArtLoader()->getItemTexture(1);
-
-        boost::shared_ptr<Animation> anim(new Animation());
-        anim->addFrame(frame);
-
-        animations_.push_back(anim);
-    }
+    animations_[defaultAnimId_] = data::Manager::getAnim(bodyId, defaultAnimId_);
 }
 
 boost::shared_ptr<ui::Texture> AnimTextureProvider::getTexture() const {
-    boost::shared_ptr<ui::Texture> ret = animations_[currentAnimId_]->getFrame(currentIdx_).texture_;
-    return ret;
+    std::map<unsigned int, std::vector<boost::shared_ptr<Animation> > >::const_iterator it = animations_.find(currentAnimId_);
+    if (it != animations_.end() && it->second[direction_]->isReadComplete()) {
+        return it->second[direction_]->getFrame(currentIdx_).texture_;
+    } else {
+        boost::shared_ptr<ui::Texture> ret;
+        return ret;
+    }
 }
 
 AnimationFrame AnimTextureProvider::getCurrentFrame() const {
-    return animations_[currentAnimId_]->getFrame(currentIdx_);
+    std::map<unsigned int, std::vector<boost::shared_ptr<Animation> > >::const_iterator it = animations_.find(currentAnimId_);
+    if (it != animations_.end() && it->second[direction_]->isReadComplete()) {
+        return it->second[direction_]->getFrame(currentIdx_);
+    } else {
+        it = animations_.find(defaultAnimId_);
+        if (it != animations_.end() && it->second[direction_]->isReadComplete()) {
+            return it->second[direction_]->getFrame(currentIdx_);
+        } else {
+            return AnimationFrame();
+        }
+    }
+}
+
+void AnimTextureProvider::setAnimId(unsigned int animId) {
+    if (animId != currentAnimId_) {
+        nextAnimId_ = animId;
+    }
 }
 
 bool AnimTextureProvider::update(unsigned int elapsedMillis) {
-    if (animations_.size() == 0 || !animations_[currentAnimId_]->isReadComplete() || elapsedMillis == 0) {
-        return false;
+    bool frameChanged = false;
+    std::map<unsigned int, std::vector<boost::shared_ptr<Animation> > >::const_iterator it;
+    if (nextAnimId_ != 0xFFFFFFFFu) {
+        // change of anim id requested
+        it = animations_.find(nextAnimId_);
+
+        if (it == animations_.end()) {
+            animations_[nextAnimId_] = data::Manager::getAnim(bodyId_, nextAnimId_);
+        }
+
+        it = animations_.find(nextAnimId_);
+
+        if (!it->second.empty() && it->second[direction_]->isReadComplete()) {
+            currentAnimId_ = nextAnimId_;
+            currentIdx_ = 0;
+            millis_ = 0;
+            elapsedMillis = 0;
+
+            nextAnimId_ = 0xFFFFFFFFu;
+
+            frameChanged = true;
+        }
+    }
+
+    it = animations_.find(currentAnimId_);
+    if (it == animations_.end() || animations_.size() == 0 || it->second.empty() || !it->second[direction_]->isReadComplete() || elapsedMillis == 0) {
+        return frameChanged;
     }
 
     unsigned int lastIdx = currentIdx_;
 
     unsigned int newMillis = millis_ + elapsedMillis;
 
-    unsigned int maxMillis = animations_[currentAnimId_]->getFrameCount() * frameMillis_;
+    unsigned int maxMillis = it->second[direction_]->getFrameCount() * frameMillis_;
     if (newMillis >= maxMillis) {
         switch (repeatMode_) {
             case REPEAT_MODE_LOOP:
@@ -51,8 +91,8 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
                 // we are already at the last frame here
                 break;
             case REPEAT_MODE_DEFAULT:
-                // TODO: use meaningful default here
-                currentIdx_ = 4;
+                setAnimId(defaultAnimId_);
+                //frameChanged = true;
                 break;
         }
     } else {
@@ -61,7 +101,14 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
 
     millis_ = newMillis;
 
-    return lastIdx != currentIdx_;
+    frameChanged |= lastIdx != currentIdx_;
+
+    return frameChanged;
+}
+
+void AnimTextureProvider::setDirection(unsigned int direction) {
+    direction &= 0xF; // only last bit is interesting
+    direction_ = direction;
 }
 
 }

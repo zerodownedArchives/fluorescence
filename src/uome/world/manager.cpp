@@ -70,6 +70,7 @@ void Manager::initPlayer(const net::packets::PlayerInit* packet) {
     player_.reset(new Mobile(packet->serial_));
     player_->setLocation(packet->locX_, packet->locY_, packet->locZ_);
     player_->setBodyId(packet->bodyId_);
+    player_->setDirection(packet->direction_);
 
     LOG_DEBUG << "Location after player init: " << player_->getLocX() << "/" << player_->getLocY() << "/" << (unsigned int)player_->getLocZ() << std::endl;
 }

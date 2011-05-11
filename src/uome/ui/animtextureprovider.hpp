@@ -4,6 +4,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <vector>
+#include <map>
 
 #include <data/animdataloader.hpp>
 
@@ -35,13 +36,22 @@ public:
 
     void setRepeatMode(unsigned int mode);
 
+    void setDirection(unsigned int direction);
+    void setAnimId(unsigned int animId);
+
 private:
-    std::vector<boost::shared_ptr<Animation> > animations_;
+    // stores for each anim (walk, run, ...) the frames for all directions
+    std::map<unsigned int, std::vector<boost::shared_ptr<Animation> > > animations_;
+    unsigned int bodyId_;
     unsigned int currentAnimId_;
+    unsigned int direction_;
     unsigned int currentIdx_;
     unsigned long millis_;
     unsigned int frameMillis_;
     unsigned int repeatMode_;
+
+    unsigned int defaultAnimId_;
+    unsigned int nextAnimId_;
 };
 
 }

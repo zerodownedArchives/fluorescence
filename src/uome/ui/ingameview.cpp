@@ -195,9 +195,13 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         set_focus();
         break;
 
-
     case CL_KEY_F:
         data::Manager::getArtLoader()->printStats();
+        break;
+
+    case CL_KEY_G:
+        static unsigned int curAnimId = 20;
+        world::Manager::getSingleton()->getPlayer()->playAnim(curAnimId++);
         break;
 
     default:consumed = false;

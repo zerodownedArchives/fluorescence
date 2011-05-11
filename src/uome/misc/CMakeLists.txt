@@ -5,6 +5,7 @@ set(MISC_HPP
     misc/configvalue.hpp
     misc/config.hpp
     misc/exception.hpp
+    misc/filenamecaseconverter.hpp
     )
 
 set(MISC_CPP
@@ -12,6 +13,7 @@ set(MISC_CPP
     misc/string.cpp
     misc/configvalue.cpp
     misc/config.cpp
+    misc/filenamecaseconverter.cpp
     )
 
 set(PUGIXML

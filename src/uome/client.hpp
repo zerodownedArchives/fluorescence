@@ -42,7 +42,7 @@ public:
 
     void shutdown();
     void setState(unsigned int state);
-    void loginComplete(); /// < called when the game window should be displayed
+    void loginComplete(); /// < called when the game window should be displayed => setState(playing)
 
     // gump callbacks
     bool disconnect(ui::GumpMenu* menu, ui::components::LocalButton* button);

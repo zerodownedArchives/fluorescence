@@ -21,7 +21,7 @@ public:
         const IndexBlock indexBlock = indexLoader_.get(index);
 
         // e.g. static blocks containing no data use an offset of 0xFFFFFFFFu
-        if (indexBlock.offset_ == 0xFFFFFFFFu) {
+        if (indexBlock.offset_ == 0xFFFFFFFFu || indexBlock.length_ == 0xFFFFFFFFu) {
             //LOGARG_WARN(LOGTYPE_DATA, "Trying to read nonexistant entry %u", index);
             return dataLoader_.get(0, indexLoader_.get(0), userData);
          } else {

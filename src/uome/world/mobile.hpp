@@ -29,9 +29,14 @@ public:
     virtual void onClick();
     virtual void onDoubleClick();
 
+    void playAnim(unsigned int animId);
+
+    void setDirection(unsigned int direction);
+
 private:
     unsigned int bodyId_;
     unsigned int hue_;
+    unsigned int direction_;
 
     void updateVertexCoordinates();
     void updateRenderPriority();

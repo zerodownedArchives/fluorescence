@@ -8,7 +8,7 @@ namespace net {
 namespace packets {
 
 PlayerInit::PlayerInit() : Packet(0x1b, 37) {
-
+}
 
 bool PlayerInit::read(const int8_t* buf, unsigned int len, unsigned int& index) {
     bool ret = true;

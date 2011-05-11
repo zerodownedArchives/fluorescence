@@ -18,20 +18,22 @@ AnimLoader::AnimLoader(const boost::filesystem::path& idxPath, const boost::file
     cache_.init(loader);
 }
 
-boost::shared_ptr<ui::Animation> AnimLoader::getAnimation(unsigned int id) {
+boost::shared_ptr<ui::Animation> AnimLoader::getAnimation(unsigned int bodyId, unsigned int animId, unsigned int direction) {
     unsigned int realId = 0;
-    if (id < highDetailCount_) {
-        realId = id*110;
-    } else if (id < highDetailCount_ + lowDetailCount_) {
-        realId = (id - highDetailCount_)*65 + highDetailCount_*110;
+    if (bodyId < highDetailCount_) {
+        realId = bodyId*110;
+    } else if (bodyId < highDetailCount_ + lowDetailCount_) {
+        realId = (bodyId - highDetailCount_)*65 + highDetailCount_*110;
     } else {
-        realId = (id - highDetailCount_ - lowDetailCount_) * 175 + lowDetailCount_*65 + highDetailCount_*110;
+        realId = (bodyId - highDetailCount_ - lowDetailCount_) * 175 + lowDetailCount_*65 + highDetailCount_*110;
     }
 
-
+    realId += 5*animId + direction;
 
     return cache_.get(realId);
 }
+
+
 
 void AnimLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Animation> anim, unsigned int extra, unsigned int userData) {
     //LOGARG_DEBUG(LOGTYPE_DATA, "AnimLoader::readCallback index=%u len=%u", index, len);

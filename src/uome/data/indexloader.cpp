@@ -23,7 +23,7 @@ IndexLoader::~IndexLoader() {
 
 void IndexLoader::read(int8_t* buf, unsigned int len) {
     if ((len % 12) != 0) {
-        throw Exception("File size is not a multiple of IndexBlock");
+        LOG_WARN << "File size is not a multiple of IndexBlock" << std::endl;
     }
 
     size_ = (len / 12);

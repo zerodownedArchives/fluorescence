@@ -18,134 +18,137 @@ namespace uome {
 Config::Config() {
     // file paths
     variablesMap_["/uome/files/mul-directory@path"].setPath("./", true);
-    variablesMap_["/uome/files/art@filename-idx"].setPath("Artidx.mul", true);
-    variablesMap_["/uome/files/art@filename-mul"].setPath("Art.mul", true);
-    variablesMap_["/uome/files/gumpart@filename-idx"].setPath("Gumpidx.mul", true);
-    variablesMap_["/uome/files/gumpart@filename-mul"].setPath("Gumpart.mul", true);
-    variablesMap_["/uome/files/hues@filename"].setPath("Hues.mul", true);
-    variablesMap_["/uome/files/tiledata@filename"].setPath("Tiledata.mul", true);
-    variablesMap_["/uome/files/texmaps@filename-idx"].setPath("Texidx.mul", true);
-    variablesMap_["/uome/files/texmaps@filename-mul"].setPath("Texmaps.mul", true);
-    variablesMap_["/uome/files/animdata@filename"].setPath("Animdata.mul", true);
+    variablesMap_["/uome/files/art@filename-idx"].setPath("artidx.mul", true);
+    variablesMap_["/uome/files/art@filename-mul"].setPath("art.mul", true);
+    variablesMap_["/uome/files/gumpart@filename-idx"].setPath("gumpidx.mul", true);
+    variablesMap_["/uome/files/gumpart@filename-mul"].setPath("gumpart.mul", true);
+    variablesMap_["/uome/files/hues@filename"].setPath("hues.mul", true);
+    variablesMap_["/uome/files/tiledata@filename"].setPath("tiledata.mul", true);
+    variablesMap_["/uome/files/texmaps@filename-idx"].setPath("texidx.mul", true);
+    variablesMap_["/uome/files/texmaps@filename-mul"].setPath("texmaps.mul", true);
+    variablesMap_["/uome/files/animdata@filename"].setPath("animdata.mul", true);
 
 
     // maps
     variablesMap_["/uome/files/map0@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map0@filename"].setPath("Map0.mul", true);
+    variablesMap_["/uome/files/map0@filename"].setPath("map0.mul", true);
     variablesMap_["/uome/files/map0/difs@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map0/difs@filename-offsets"].setPath("Mapdifl0.mul", true);
-    variablesMap_["/uome/files/map0/difs@filename-mul"].setPath("Mapdif0.mul", true);
+    variablesMap_["/uome/files/map0/difs@filename-offsets"].setPath("mapdifl0.mul", true);
+    variablesMap_["/uome/files/map0/difs@filename-mul"].setPath("mapdif0.mul", true);
     variablesMap_["/uome/files/map0@width"].setInt(768, true);
     variablesMap_["/uome/files/map0@height"].setInt(512, true);
 
-    variablesMap_["/uome/files/map0/statics@filename-idx"].setPath("Staidx0.mul", true);
-    variablesMap_["/uome/files/map0/statics@filename-mul"].setPath("Statics0.mul", true);
+    variablesMap_["/uome/files/map0/statics@filename-idx"].setPath("staidx0.mul", true);
+    variablesMap_["/uome/files/map0/statics@filename-mul"].setPath("statics0.mul", true);
     variablesMap_["/uome/files/map0/statics/difs@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map0/statics/difs@filename-offsets"].setPath("Stadifl0.mul", true);
-    variablesMap_["/uome/files/map0/statics/difs@filename-idx"].setPath("Stadifi0.mul", true);
-    variablesMap_["/uome/files/map0/statics/difs@filename-mul"].setPath("Stadif0.mul", true);
+    variablesMap_["/uome/files/map0/statics/difs@filename-offsets"].setPath("stadifl0.mul", true);
+    variablesMap_["/uome/files/map0/statics/difs@filename-idx"].setPath("stadifi0.mul", true);
+    variablesMap_["/uome/files/map0/statics/difs@filename-mul"].setPath("stadif0.mul", true);
 
 
     variablesMap_["/uome/files/map1@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map1@filename"].setPath("Map0.mul", true);
+    variablesMap_["/uome/files/map1@filename"].setPath("map0.mul", true);
     variablesMap_["/uome/files/map1/difs@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map1/difs@filename-offsets"].setPath("Mapdifl1.mul", true);
-    variablesMap_["/uome/files/map1/difs@filename-mul"].setPath("Mapdif1.mul", true);
+    variablesMap_["/uome/files/map1/difs@filename-offsets"].setPath("mapdifl1.mul", true);
+    variablesMap_["/uome/files/map1/difs@filename-mul"].setPath("mapdif1.mul", true);
     variablesMap_["/uome/files/map1@width"].setInt(768, true);
     variablesMap_["/uome/files/map1@height"].setInt(512, true);
 
-    variablesMap_["/uome/files/map1/statics@filename-idx"].setPath("Staidx0.mul", true);
-    variablesMap_["/uome/files/map1/statics@filename-mul"].setPath("Statics0.mul", true);
+    variablesMap_["/uome/files/map1/statics@filename-idx"].setPath("staidx0.mul", true);
+    variablesMap_["/uome/files/map1/statics@filename-mul"].setPath("statics0.mul", true);
     variablesMap_["/uome/files/map1/statics/difs@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map1/statics/difs@filename-offsets"].setPath("Stadifl1.mul", true);
-    variablesMap_["/uome/files/map1/statics/difs@filename-idx"].setPath("Stadifi1.mul", true);
-    variablesMap_["/uome/files/map1/statics/difs@filename-mul"].setPath("Stadif1.mul", true);
+    variablesMap_["/uome/files/map1/statics/difs@filename-offsets"].setPath("stadifl1.mul", true);
+    variablesMap_["/uome/files/map1/statics/difs@filename-idx"].setPath("stadifi1.mul", true);
+    variablesMap_["/uome/files/map1/statics/difs@filename-mul"].setPath("stadif1.mul", true);
 
 
     variablesMap_["/uome/files/map2@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map2@filename"].setPath("Map2.mul", true);
+    variablesMap_["/uome/files/map2@filename"].setPath("map2.mul", true);
     variablesMap_["/uome/files/map2/difs@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map2/difs@filename-offsets"].setPath("Mapdifl2.mul", true);
-    variablesMap_["/uome/files/map2/difs@filename-mul"].setPath("Mapdif2.mul", true);
+    variablesMap_["/uome/files/map2/difs@filename-offsets"].setPath("mapdifl2.mul", true);
+    variablesMap_["/uome/files/map2/difs@filename-mul"].setPath("mapdif2.mul", true);
     variablesMap_["/uome/files/map2@width"].setInt(288, true);
     variablesMap_["/uome/files/map2@height"].setInt(200, true);
 
-    variablesMap_["/uome/files/map2/statics@filename-idx"].setPath("Staidx2.mul", true);
-    variablesMap_["/uome/files/map2/statics@filename-mul"].setPath("Statics2.mul", true);
+    variablesMap_["/uome/files/map2/statics@filename-idx"].setPath("staidx2.mul", true);
+    variablesMap_["/uome/files/map2/statics@filename-mul"].setPath("statics2.mul", true);
     variablesMap_["/uome/files/map2/statics/difs@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map2/statics/difs@filename-offsets"].setPath("Stadifl2.mul", true);
-    variablesMap_["/uome/files/map2/statics/difs@filename-idx"].setPath("Stadifi2.mul", true);
-    variablesMap_["/uome/files/map2/statics/difs@filename-mul"].setPath("Stadif2.mul", true);
+    variablesMap_["/uome/files/map2/statics/difs@filename-offsets"].setPath("stadifl2.mul", true);
+    variablesMap_["/uome/files/map2/statics/difs@filename-idx"].setPath("stadifi2.mul", true);
+    variablesMap_["/uome/files/map2/statics/difs@filename-mul"].setPath("stadif2.mul", true);
 
 
     variablesMap_["/uome/files/map3@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map3@filename"].setPath("Map3.mul", true);
+    variablesMap_["/uome/files/map3@filename"].setPath("map3.mul", true);
     variablesMap_["/uome/files/map3/difs@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map3/difs@filename-offsets"].setPath("Mapdifl3.mul", true);
-    variablesMap_["/uome/files/map3/difs@filename-mul"].setPath("Mapdif3.mul", true);
+    variablesMap_["/uome/files/map3/difs@filename-offsets"].setPath("mapdifl3.mul", true);
+    variablesMap_["/uome/files/map3/difs@filename-mul"].setPath("mapdif3.mul", true);
     variablesMap_["/uome/files/map3@width"].setInt(320, true);
     variablesMap_["/uome/files/map3@height"].setInt(256, true);
 
-    variablesMap_["/uome/files/map3/statics@filename-idx"].setPath("Staidx3.mul", true);
-    variablesMap_["/uome/files/map3/statics@filename-mul"].setPath("Statics3.mul", true);
+    variablesMap_["/uome/files/map3/statics@filename-idx"].setPath("staidx3.mul", true);
+    variablesMap_["/uome/files/map3/statics@filename-mul"].setPath("statics3.mul", true);
     variablesMap_["/uome/files/map3/statics/difs@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map3/statics/difs@filename-offsets"].setPath("Stadifl3.mul", true);
-    variablesMap_["/uome/files/map3/statics/difs@filename-idx"].setPath("Stadifi3.mul", true);
-    variablesMap_["/uome/files/map3/statics/difs@filename-mul"].setPath("Stadif3.mul", true);
+    variablesMap_["/uome/files/map3/statics/difs@filename-offsets"].setPath("stadifl3.mul", true);
+    variablesMap_["/uome/files/map3/statics/difs@filename-idx"].setPath("stadifi3.mul", true);
+    variablesMap_["/uome/files/map3/statics/difs@filename-mul"].setPath("stadif3.mul", true);
 
 
     variablesMap_["/uome/files/map4@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map4@filename"].setPath("Map4.mul", true);
+    variablesMap_["/uome/files/map4@filename"].setPath("map4.mul", true);
     variablesMap_["/uome/files/map4/difs@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map4/difs@filename-offsets"].setPath("Mapdifl4.mul", true);
-    variablesMap_["/uome/files/map4/difs@filename-mul"].setPath("Mapdif4.mul", true);
+    variablesMap_["/uome/files/map4/difs@filename-offsets"].setPath("mapdifl4.mul", true);
+    variablesMap_["/uome/files/map4/difs@filename-mul"].setPath("mapdif4.mul", true);
     variablesMap_["/uome/files/map4@width"].setInt(181, true);
     variablesMap_["/uome/files/map4@height"].setInt(181, true);
 
-    variablesMap_["/uome/files/map4/statics@filename-idx"].setPath("Staidx4.mul", true);
-    variablesMap_["/uome/files/map4/statics@filename-mul"].setPath("Statics4.mul", true);
+    variablesMap_["/uome/files/map4/statics@filename-idx"].setPath("staidx4.mul", true);
+    variablesMap_["/uome/files/map4/statics@filename-mul"].setPath("statics4.mul", true);
     variablesMap_["/uome/files/map4/statics/difs@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/map4/statics/difs@filename-offsets"].setPath("Stadifl4.mul", true);
-    variablesMap_["/uome/files/map4/statics/difs@filename-idx"].setPath("Stadifi4.mul", true);
-    variablesMap_["/uome/files/map4/statics/difs@filename-mul"].setPath("Stadif4.mul", true);
+    variablesMap_["/uome/files/map4/statics/difs@filename-offsets"].setPath("stadifl4.mul", true);
+    variablesMap_["/uome/files/map4/statics/difs@filename-idx"].setPath("stadifi4.mul", true);
+    variablesMap_["/uome/files/map4/statics/difs@filename-mul"].setPath("stadif4.mul", true);
 
 
     // anims
     variablesMap_["/uome/files/anim0@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/anim0@filename-idx"].setPath("Anim.idx", true);
-    variablesMap_["/uome/files/anim0@filename-mul"].setPath("Anim.mul", true);
+    variablesMap_["/uome/files/anim0@filename-idx"].setPath("anim.idx", true);
+    variablesMap_["/uome/files/anim0@filename-mul"].setPath("anim.mul", true);
     variablesMap_["/uome/files/anim0@highdetail"].setInt(200, true);
     variablesMap_["/uome/files/anim0@lowdetail"].setInt(200, true);
 
     variablesMap_["/uome/files/anim1@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/anim1@filename-idx"].setPath("Anim1.idx", true);
-    variablesMap_["/uome/files/anim1@filename-mul"].setPath("Anim1.mul", true);
+    variablesMap_["/uome/files/anim1@filename-idx"].setPath("anim1.idx", true);
+    variablesMap_["/uome/files/anim1@filename-mul"].setPath("anim1.mul", true);
     variablesMap_["/uome/files/anim1@highdetail"].setInt(200, true);
     variablesMap_["/uome/files/anim1@lowdetail"].setInt(200, true);
 
     variablesMap_["/uome/files/anim2@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/anim2@filename-idx"].setPath("Anim2.idx", true);
-    variablesMap_["/uome/files/anim2@filename-mul"].setPath("Anim2.mul", true);
+    variablesMap_["/uome/files/anim2@filename-idx"].setPath("anim2.idx", true);
+    variablesMap_["/uome/files/anim2@filename-mul"].setPath("anim2.mul", true);
     variablesMap_["/uome/files/anim2@highdetail"].setInt(200, true);
     variablesMap_["/uome/files/anim2@lowdetail"].setInt(200, true);
 
     variablesMap_["/uome/files/anim3@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/anim3@filename-idx"].setPath("Anim3.idx", true);
-    variablesMap_["/uome/files/anim3@filename-mul"].setPath("Anim3.mul", true);
+    variablesMap_["/uome/files/anim3@filename-idx"].setPath("anim3.idx", true);
+    variablesMap_["/uome/files/anim3@filename-mul"].setPath("anim3.mul", true);
     variablesMap_["/uome/files/anim3@highdetail"].setInt(200, true);
     variablesMap_["/uome/files/anim3@lowdetail"].setInt(200, true);
 
     variablesMap_["/uome/files/anim4@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/anim4@filename-idx"].setPath("Anim4.idx", true);
-    variablesMap_["/uome/files/anim4@filename-mul"].setPath("Anim4.mul", true);
+    variablesMap_["/uome/files/anim4@filename-idx"].setPath("anim4.idx", true);
+    variablesMap_["/uome/files/anim4@filename-mul"].setPath("anim4.mul", true);
     variablesMap_["/uome/files/anim4@highdetail"].setInt(200, true);
     variablesMap_["/uome/files/anim4@lowdetail"].setInt(200, true);
 
     variablesMap_["/uome/files/anim5@enabled"].setBool(true, true);
-    variablesMap_["/uome/files/anim5@filename-idx"].setPath("Anim5.idx", true);
-    variablesMap_["/uome/files/anim5@filename-mul"].setPath("Anim5.mul", true);
+    variablesMap_["/uome/files/anim5@filename-idx"].setPath("anim5.idx", true);
+    variablesMap_["/uome/files/anim5@filename-mul"].setPath("anim5.mul", true);
     variablesMap_["/uome/files/anim5@highdetail"].setInt(200, true);
     variablesMap_["/uome/files/anim5@lowdetail"].setInt(200, true);
+
+
+    variablesMap_["/uome/files/mobtypes@filename"].setPath("mobtypes.txt", true);
 
 
     // ui stuff
