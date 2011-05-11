@@ -7,7 +7,7 @@ namespace uome {
 namespace world {
 
 LightManager::LightManager() :
-        ambientIntensity_(0.5, 0.5, 0.5), globalIntensity_(0.5, 0.5, 0.5) {
+        ambientIntensity_(0.8, 0.8, 0.8), globalIntensity_(0.4, 0.4, 0.4) {
     setGlobalAngle(45);
 }
 

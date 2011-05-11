@@ -1,9 +1,20 @@
 #ifndef UOME_WORLD_MANAGER_HPP
 #define UOME_WORLD_MANAGER_HPP
 
+#include <boost/shared_ptr.hpp>
+
 #include <misc/config.hpp>
 
+#include "mobile.hpp"
+
 namespace uome {
+
+namespace net {
+namespace packets {
+    class PlayerInit;
+}
+}
+
 namespace world {
 
 class SectorManager;
@@ -23,6 +34,9 @@ public:
 
     boost::shared_ptr<LightManager> getLightManager();
 
+    void initPlayer(const net::packets::PlayerInit* packet);
+    boost::shared_ptr<Mobile> getPlayer();
+
 private:
     static Manager* singleton_;
     Manager(const Config& config);
@@ -33,6 +47,9 @@ private:
     unsigned int currentMapId_;
 
     boost::shared_ptr<LightManager> lightManager_;
+
+    boost::shared_ptr<Mobile> player_;
+    std::map<Serial, boost::shared_ptr<Mobile> > mobiles_;
 };
 
 }

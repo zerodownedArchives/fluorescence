@@ -10,6 +10,7 @@
 #include <world/lightmanager.hpp>
 #include <world/map.hpp>
 #include <world/statics.hpp>
+#include <world/ingameobject.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
@@ -42,15 +43,23 @@ IngameView::~IngameView() {
     world::Manager::getSingleton()->getSectorManager()->unregisterIngameView(this);
 }
 
-unsigned int IngameView::getCenterTileX() {
-    return centerTileX_;
+float IngameView::getCenterTileX() {
+    if (centerObject_) {
+        return centerObject_->getLocX();
+    } else {
+        return centerTileX_;
+    }
 }
 
-unsigned int IngameView::getCenterTileY() {
-    return centerTileY_;
+float IngameView::getCenterTileY() {
+    if (centerObject_) {
+        return centerObject_->getLocY();
+    } else {
+        return centerTileY_;
+    }
 }
 
-void IngameView::setCenterTiles(unsigned int x, unsigned int y) {
+void IngameView::setCenterTiles(float x, float y) {
     centerTileX_ = x;
     centerTileY_ = y;
 }
@@ -125,16 +134,16 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
 
     switch (e.id) {
     case CL_KEY_UP:
-        centerTileY_ -= 1;
+        centerTileY_ -= .1;
         break;
     case CL_KEY_DOWN:
-        centerTileY_ += 1;
+        centerTileY_ += .1;
         break;
     case CL_KEY_LEFT:
-        centerTileX_ -= 1;
+        centerTileX_ -= .1;
         break;
     case CL_KEY_RIGHT:
-        centerTileX_ += 1;
+        centerTileX_ += .1;
         break;
 
     case CL_KEY_ADD:
@@ -244,6 +253,10 @@ boost::shared_ptr<world::IngameObject> IngameView::getFirstIngameObjectAt(unsign
     worldY += pixelY;
 
     return ui::Manager::getSingleton()->getRenderQueue()->getFirstIngameObjectAt(worldX, worldY);
+}
+
+void IngameView::setCenterObject(boost::shared_ptr<world::IngameObject> obj) {
+    centerObject_ = obj;
 }
 
 }

@@ -71,9 +71,11 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
     boost::shared_ptr<Packet> ret;
 
     switch (id) {
+        case 0x55: ret.reset(new packets::LoginComplete()); break;
         case 0xA8: ret.reset(new packets::ServerList()); break;
         case 0x8C: ret.reset(new packets::ServerRedirect()); break;
         case 0xA9: ret.reset(new packets::CharacterList()); break;
+        case 0x1B: ret.reset(new packets::PlayerInit()); break;
         default: ret.reset(new packets::Unknown(id)); break;
     }
 

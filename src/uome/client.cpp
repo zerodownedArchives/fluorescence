@@ -110,7 +110,8 @@ bool Client::handleStateChange() {
         ingameMenu->setClosable(false);
 
         ui::IngameView* ingameView = new ui::IngameView(ingameMenu, CL_Rect(5, 5, CL_Size(800, 600)));
-        ingameView->setCenterTiles(176 * 8, 202 * 8);
+        ingameView->setCenterObject(world::Manager::getSingleton()->getPlayer());
+        //ingameView->setCenterTiles(176 * 8, 202 * 8);
         break;
     }
 
@@ -126,6 +127,7 @@ void Client::cleanUp() {
 
 void Client::saveConfig() {
     if (config_.exists("/uome/shard@name")) {
+        LOG_INFO << "Saving config" << std::endl;
         boost::filesystem::path tempPath = "config.xml.tmp";
         if (config_.save(tempPath, false)) {
             boost::filesystem::path path = "shards" / config_["/uome/shard@name"].asPath() / "config.xml";
@@ -347,6 +349,10 @@ bool Client::selectCharacter(ui::GumpMenu* menu, ui::components::LocalButton* bu
     net::Manager::getSingleton()->send(reply);
 
     return true;
+}
+
+void Client::loginComplete() {
+    setState(STATE_PLAYING);
 }
 
 }

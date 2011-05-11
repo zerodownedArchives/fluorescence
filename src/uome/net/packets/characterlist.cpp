@@ -19,7 +19,6 @@ bool CharacterList::read(const int8_t* buf, unsigned int len, unsigned int& inde
     for (unsigned int i = 0; i < charCount_; ++i) {
         ret &= PacketReader::readUtf8Fixed(buf, len, index, charNames_[i], 30);
         ret &= PacketReader::readUtf8Fixed(buf, len, index, charPasswords_[i], 30);
-        LOG_DEBUG << "Read char: " << charNames_[i] << std::endl;
     }
 
     ret &= PacketReader::read(buf, len, index, cityCount_);

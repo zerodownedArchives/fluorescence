@@ -11,6 +11,7 @@ namespace uome {
 
 namespace world {
 class IngameObject;
+class IngameObject;
 }
 
 namespace ui {
@@ -22,10 +23,9 @@ public:
     IngameView(CL_GUIComponent* parent, const CL_Rect& bounds);
     ~IngameView();
 
-    unsigned int getCenterTileX();
-    unsigned int getCenterTileY();
+    void setCenterObject(boost::shared_ptr<world::IngameObject> obj);
 
-    void setCenterTiles(unsigned int x, unsigned int y);
+    void setCenterTiles(float x, float y);
 
     int getCenterPixelX();
     int getCenterPixelY();
@@ -41,8 +41,13 @@ public:
     boost::shared_ptr<world::IngameObject> getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY);
 
 private:
-    unsigned int centerTileX_;
-    unsigned int centerTileY_;
+    float centerTileX_;
+    float centerTileY_;
+
+    boost::shared_ptr<world::IngameObject> centerObject_;
+
+    float getCenterTileX();
+    float getCenterTileY();
 
     boost::shared_ptr<IngameViewRenderer> renderer_;
 

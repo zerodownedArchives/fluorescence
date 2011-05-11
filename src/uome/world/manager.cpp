@@ -7,6 +7,8 @@
 #include <misc/exception.hpp>
 #include <misc/log.hpp>
 
+#include <net/packets/playerinit.hpp>
+
 namespace uome {
 namespace world {
 
@@ -62,6 +64,18 @@ void Manager::setCurrentMapId(unsigned int id) {
 
 boost::shared_ptr<LightManager> Manager::getLightManager() {
     return lightManager_;
+}
+
+void Manager::initPlayer(const net::packets::PlayerInit* packet) {
+    player_.reset(new Mobile(packet->serial_));
+    player_->setLocation(packet->locX_, packet->locY_, packet->locZ_);
+    player_->setBodyId(packet->bodyId_);
+
+    LOG_DEBUG << "Location after player init: " << player_->getLocX() << "/" << player_->getLocY() << "/" << (unsigned int)player_->getLocZ() << std::endl;
+}
+
+boost::shared_ptr<Mobile> Manager::getPlayer() {
+    return player_;
 }
 
 }
