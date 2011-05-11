@@ -229,10 +229,20 @@ bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     unsigned int pageId = node.attribute("page").as_uint();
     UnicodeString action = StringConverter::fromUtf8(node.attribute("action").value());
     UnicodeString param = StringConverter::fromUtf8(node.attribute("param").value());
+    UnicodeString param2 = StringConverter::fromUtf8(node.attribute("param2").value());
+    UnicodeString param3 = StringConverter::fromUtf8(node.attribute("param3").value());
+    UnicodeString param4 = StringConverter::fromUtf8(node.attribute("param4").value());
+    UnicodeString param5 = StringConverter::fromUtf8(node.attribute("param5").value());
 
     components::BaseButton* button;
     if (action.length() > 0) {
-        button = new components::LocalButton(parent, action, param);
+        components::LocalButton* lb = new components::LocalButton(parent, action);
+        lb->setParameter(param, 0);
+        lb->setParameter(param2, 1);
+        lb->setParameter(param3, 2);
+        lb->setParameter(param4, 3);
+        lb->setParameter(param5, 4);
+        button = lb;
     } else if (!node.attribute("buttonid").empty()) {
         button = new components::ServerButton(parent, buttonId);
     } else if (!node.attribute("page").empty()) {

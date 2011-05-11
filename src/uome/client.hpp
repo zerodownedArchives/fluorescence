@@ -47,6 +47,7 @@ public:
     bool disconnect(ui::GumpMenu* menu, ui::components::LocalButton* button);
     bool shutdown(ui::GumpMenu* menu, ui::components::LocalButton* button);
     bool selectShard(ui::GumpMenu* menu, ui::components::LocalButton* button);
+    bool selectCharacter(ui::GumpMenu* menu, ui::components::LocalButton* button);
 
 private:
     static Client* singleton_;

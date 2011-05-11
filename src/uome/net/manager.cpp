@@ -95,7 +95,7 @@ bool Manager::connect(ui::GumpMenu* menu, ui::components::LocalButton* button) {
 
     int port = line->get_text_int();
     if (port <= 0) {
-        ui::GumpMenus::openMessageBox("Unable to find parse port number");
+        ui::GumpMenus::openMessageBox("Unable to parse port number");
         return false;
     }
 
@@ -160,6 +160,10 @@ void Manager::handleServerRedirect(const packets::ServerRedirect* packet) {
             config["/uome/shard/account@password"].asString(),
             packet->encryptionKey_);
     socket_.write(loginReq);
+}
+
+uint32_t Manager::getSeed() {
+    return socket_.getSeed();
 }
 
 }

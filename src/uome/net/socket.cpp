@@ -57,7 +57,7 @@ bool Socket::connect(unsigned int ip, unsigned short port) {
     }
 
     LOG_INFO << "Trying to connect to " << (ip & 0x000000FF) << "." << ((ip & 0x0000FF00) >> 8) << "." << ((ip & 0x00FF0000) >> 16) <<
-            ((ip & 0xFF000000) >> 24) << ":" << port << std::endl;
+            "." << ((ip & 0xFF000000) >> 24) << ":" << port << std::endl;
 
     socketFd_ = socket(AF_INET, SOCK_STREAM, 0);
     if (socketFd_ == -1) {
@@ -227,7 +227,12 @@ bool Socket::sendAll() {
 }
 
 void Socket::writeSeed(uint32_t seed) {
+    seed_ = seed;
     PacketWriter::write(sendBuffer_, 0x10000, sendSize_, seed);
+}
+
+uint32_t Socket::getSeed() {
+    return seed_;
 }
 
 void Socket::setUseDecompress(bool value) {

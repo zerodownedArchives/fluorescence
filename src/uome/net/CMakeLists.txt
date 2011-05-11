@@ -35,6 +35,7 @@ set (PACKETS_HPP
     net/packets/serverredirect.hpp
     net/packets/gameserverloginrequest.hpp
     net/packets/characterlist.hpp
+    net/packets/characterselect.hpp
     )
 
 set (PACKETS_CPP
@@ -47,6 +48,7 @@ set (PACKETS_CPP
     net/packets/serverredirect.cpp
     net/packets/gameserverloginrequest.cpp
     net/packets/characterlist.cpp
+    net/packets/characterselect.cpp
     )
 
 set (MD5

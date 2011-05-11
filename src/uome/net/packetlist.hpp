@@ -2,6 +2,7 @@
 #define UOME_NET_PACKETLIST_HPP
 
 
+#include "packets/characterselect.hpp" // 0x5d
 #include "packets/loginrequest.hpp" // 0x80
 #include "packets/loginreject.hpp" // 0x82
 #include "packets/serverredirect.hpp" // 0x8c

@@ -39,6 +39,13 @@ public:
 
     void handleServerRedirect(const packets::ServerRedirect* packet);
 
+    template<class P>
+    bool send(const P& packet) {
+        return socket_.write(packet);
+    }
+
+    uint32_t getSeed();
+
 private:
     static Manager* singleton_;
     Manager(const Config& config);

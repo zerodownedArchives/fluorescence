@@ -21,9 +21,7 @@
 #include <world/sector.hpp>
 
 #include <net/manager.hpp>
-
-
-
+#include <net/packets/characterselect.hpp>
 
 namespace uome {
 
@@ -342,6 +340,13 @@ void Client::doStateLogin() {
     uiManager->step();
 
     CL_System::sleep(10);
+}
+
+bool Client::selectCharacter(ui::GumpMenu* menu, ui::components::LocalButton* button) {
+    net::packets::CharacterSelect reply(button->getText(), button->getParameter(1), StringConverter::toInt(button->getParameter(0)), net::Manager::getSingleton()->getSeed());
+    net::Manager::getSingleton()->send(reply);
+
+    return true;
 }
 
 }

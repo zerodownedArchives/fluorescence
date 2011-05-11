@@ -50,17 +50,9 @@ UnicodeString StringConverter::fromUnicode(const char* buffer, int bufferSize) {
     return ret;
 }
 
-UnicodeString StringConverter::fromNumber(unsigned int nr) {
-    UnicodeString ret;
-    unsigned int len = u_sprintf(ret.getBuffer(20), "%u", nr);
-    ret.releaseBuffer(len);
-    return ret;
-}
-
 UnicodeString StringConverter::fromNumber(int nr) {
     UnicodeString ret;
-    unsigned int len = u_sprintf(ret.getBuffer(20), "%i", nr);
-    ret.releaseBuffer(len);
+    getNumberFormat()->format(nr, ret);
     return ret;
 }
 
@@ -117,6 +109,21 @@ int StringConverter::toUnicode(const UnicodeString& str, char* buffer, int buffe
     }
 }
 
+int StringConverter::toInt(const UnicodeString& str) {
+    UErrorCode error = U_ZERO_ERROR;
+    Formattable fmt(-999);
+    getNumberFormat()->parse(str, fmt, error);
+
+    int ret = 0;
+    if (U_FAILURE(error) || !fmt.isNumeric()) {
+        LOG_ERROR << "Error parsing number from string: " << str << std::endl;
+    } else {
+        ret = fmt.getLong();
+    }
+
+    return ret;
+}
+
 UConverter* StringConverter::getUnicodeConverter() {
     static UConverter* conv = NULL;
     if (!conv) {
@@ -128,6 +135,22 @@ UConverter* StringConverter::getUnicodeConverter() {
     }
 
     return conv;
+}
+
+NumberFormat* StringConverter::getNumberFormat() {
+    static NumberFormat* nf = NULL;
+    if (!nf) {
+        UErrorCode errorCode = U_ZERO_ERROR;
+        nf = NumberFormat::createInstance(errorCode);
+
+        if (U_FAILURE(errorCode)) {
+            throw Exception("Error creating unicode number format");
+        }
+
+        nf->setGroupingUsed(false);
+    }
+
+    return nf;
 }
 
 UnicodeString StringConverter::fromUtf8(const int8_t* buffer, int bufferSize) {

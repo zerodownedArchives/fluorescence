@@ -34,6 +34,7 @@ public:
     }
 
     void writeSeed(uint32_t seed);
+    uint32_t getSeed();
 
     bool sendAll();
 
@@ -54,6 +55,7 @@ private:
     int8_t sendBuffer_[0x10000];
     unsigned int sendSize_;
 
+    uint32_t seed_;
     boost::shared_ptr<Encryption> encryption_;
 
     Decompress decompress_;

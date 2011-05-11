@@ -31,10 +31,11 @@ void LocalButton::buildFullActionTable() {
     actionTable_["connect"] = ClickAction(false, boost::bind(&net::Manager::connect, net::Manager::getSingleton(), _1, _2));
     actionTable_["disconnect"] = ClickAction(true, boost::bind(&Client::disconnect, Client::getSingleton(), _1, _2));
     actionTable_["selectserver"] = ClickAction(false, boost::bind(&net::Manager::selectServer, net::Manager::getSingleton(), _1, _2));
+    actionTable_["selectcharacter"] = ClickAction(true, boost::bind(&Client::selectCharacter, Client::getSingleton(), _1, _2));
 }
 
-LocalButton::LocalButton(CL_GUIComponent* parent, const UnicodeString& action, const UnicodeString& parameter) : BaseButton(parent),
-        action_(action), parameter_(parameter) {
+LocalButton::LocalButton(CL_GUIComponent* parent, const UnicodeString& action) : BaseButton(parent),
+        action_(action) {
 }
 
 void LocalButton::setAction(const UnicodeString& value) {
@@ -45,16 +46,28 @@ const UnicodeString& LocalButton::getAction() const {
     return action_;
 }
 
-void LocalButton::setParameter(const UnicodeString& value) {
-    parameter_ = value;
+void LocalButton::setParameter(const UnicodeString& value, unsigned int index) {
+    if (index >= MAX_PARAMETER_COUNT) {
+        LOG_INFO << "LocalButton::setParameter index too high: " << index << std::endl;
+        index = 0;
+    }
+    parameter_[index] = value;
 }
 
-const UnicodeString& LocalButton::getParameter() const {
-    return parameter_;
+const UnicodeString& LocalButton::getParameter(unsigned int index) const {
+    if (index >= MAX_PARAMETER_COUNT) {
+        LOG_INFO << "LocalButton::getParameter index too high: " << index << std::endl;
+        index = 0;
+    }
+    return parameter_[index];
 }
 
-int LocalButton::getParameterInt() const {
-    std::string utfStr = StringConverter::toUtf8String(parameter_);
+int LocalButton::getParameterInt(unsigned int index) const {
+    if (index >= MAX_PARAMETER_COUNT) {
+        LOG_INFO << "LocalButton::getParameterInt index too high: " << index << std::endl;
+        index = 0;
+    }
+    std::string utfStr = StringConverter::toUtf8String(parameter_[index]);
     return atoi(utfStr.c_str());
 }
 

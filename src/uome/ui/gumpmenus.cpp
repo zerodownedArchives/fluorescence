@@ -119,16 +119,19 @@ GumpMenu* GumpMenus::openServerListGump(const net::packets::ServerList* list) {
 GumpMenu* GumpMenus::openCharacterListGump(const net::packets::CharacterList* list) {
     std::vector<UnicodeString> nameList;
     std::vector<UnicodeString> indexList;
+    std::vector<UnicodeString> passwordList;
 
     for (unsigned int i = 0; i < list->charCount_; ++i) {
         nameList.push_back(list->charNames_[i]);
         indexList.push_back(StringConverter::fromNumber(i));
+        passwordList.push_back(list->charPasswords_[i]);
     }
 
     GumpFactory::RepeatContext context;
     context.repeatCount_ = nameList.size();
     context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "param", "characterindex")] = indexList;
     context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "text", "charactername")] = nameList;
+    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "param2", "characterpassword")] = nameList;
 
     GumpFactory::addRepeatContext("characterlist", context);
     GumpMenu* menu = GumpFactory::fromXmlFile("characterlist");
