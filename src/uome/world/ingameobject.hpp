@@ -53,6 +53,8 @@ public:
     /// returns wheter or not the given pixel coordinate is covered by this object's texture
     virtual bool hasPixel(int pixelX, int pixelY) const;
 
+    virtual bool isMirrored() const;
+
 
     virtual void onClick();
     virtual void onDoubleClick();

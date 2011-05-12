@@ -327,25 +327,23 @@ boost::shared_ptr<ui::TextureProvider> Manager::getItemTextureProvider(unsigned 
 std::vector<boost::shared_ptr<ui::Animation> > Manager::getAnim(unsigned int bodyId, unsigned int animId) {
     // TODO check .def files for correct anim file
     std::vector<boost::shared_ptr<ui::Animation> > ret;
-    boost::shared_ptr<ui::Animation> tmpNE = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, Direction::NE);
-    ret.push_back(tmpNE);
 
-    boost::shared_ptr<ui::Animation> tmpE = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, Direction::E);
-    ret.push_back(tmpE);
-
-    boost::shared_ptr<ui::Animation> tmpSE = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, Direction::SE);
-    ret.push_back(tmpSE);
-
-    boost::shared_ptr<ui::Animation> tmp = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, Direction::S);
-    ret.push_back(tmp);
+    boost::shared_ptr<ui::Animation> tmpDown = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, 0);
+    boost::shared_ptr<ui::Animation> tmpDownLeft = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, 1);
+    boost::shared_ptr<ui::Animation> tmpLeft = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, 2);
+    boost::shared_ptr<ui::Animation> tmpUpLeft = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, 3);
+    boost::shared_ptr<ui::Animation> tmpUp = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, 4);
 
     // mirrored
-    ret.push_back(tmpSE);
-    ret.push_back(tmpE);
-    ret.push_back(tmpNE);
+    ret.push_back(tmpUpLeft);
+    ret.push_back(tmpLeft);
+    ret.push_back(tmpDownLeft);
 
-    tmp = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, Direction::N);
-    ret.push_back(tmp);
+    ret.push_back(tmpDown);
+    ret.push_back(tmpDownLeft);
+    ret.push_back(tmpLeft);
+    ret.push_back(tmpUpLeft);
+    ret.push_back(tmpUp);
 
     return ret;
 }

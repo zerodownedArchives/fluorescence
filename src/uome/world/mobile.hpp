@@ -31,12 +31,14 @@ public:
 
     void playAnim(unsigned int animId);
 
+    virtual bool isMirrored() const;
     void setDirection(unsigned int direction);
 
 private:
     unsigned int bodyId_;
     unsigned int hue_;
     unsigned int direction_;
+    bool isRunning_;
 
     void updateVertexCoordinates();
     void updateRenderPriority();

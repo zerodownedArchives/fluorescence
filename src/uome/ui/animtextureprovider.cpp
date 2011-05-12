@@ -107,8 +107,10 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
 }
 
 void AnimTextureProvider::setDirection(unsigned int direction) {
-    direction &= 0xF; // only last bit is interesting
+    direction &= 0x7; // only last 3 bits are interesting
     direction_ = direction;
+
+    LOG_DEBUG << "AnimTexPro: setDirection: " << direction << " : " << (unsigned int)direction_ << std::endl;
 }
 
 }

@@ -58,6 +58,7 @@ void Manager::step() {
         // handle received packets
         boost::shared_ptr<Packet> packet = socket_.getNextPacket();
         while (packet) {
+            LOG_DEBUG << "Calling handler for packet " << std::hex << (unsigned int)packet->getId() << std::dec << std::endl;
             packet->onReceive();
             packet = socket_.getNextPacket();
         }
@@ -71,6 +72,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
     boost::shared_ptr<Packet> ret;
 
     switch (id) {
+        case 0x20: ret.reset(new packets::Teleport()); break;
         case 0x55: ret.reset(new packets::LoginComplete()); break;
         case 0xA8: ret.reset(new packets::ServerList()); break;
         case 0x8C: ret.reset(new packets::ServerRedirect()); break;

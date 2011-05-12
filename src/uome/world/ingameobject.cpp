@@ -160,5 +160,9 @@ void IngameObject::onDoubleClick() {
     setVisible(false);
 }
 
+bool IngameObject::isMirrored() const {
+    return false;
+}
+
 }
 }

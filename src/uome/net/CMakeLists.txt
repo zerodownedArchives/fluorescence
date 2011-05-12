@@ -38,6 +38,7 @@ set (PACKETS_HPP
     net/packets/characterselect.hpp
     net/packets/playerinit.hpp
     net/packets/logincomplete.hpp
+    net/packets/teleport.hpp
     )
 
 set (PACKETS_CPP
@@ -53,6 +54,7 @@ set (PACKETS_CPP
     net/packets/characterselect.cpp
     net/packets/playerinit.cpp
     net/packets/logincomplete.cpp
+    net/packets/teleport.cpp
     )
 
 set (MD5

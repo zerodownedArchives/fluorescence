@@ -1,5 +1,5 @@
-#ifndef UOME_NET_PACKETS_PLAYERINIT_HPP
-#define UOME_NET_PACKETS_PLAYERINIT_HPP
+#ifndef UOME_NET_PACKETS_TELEPORT_HPP
+#define UOME_NET_PACKETS_TELEPORT_HPP
 
 #include <net/packet.hpp>
 
@@ -10,21 +10,23 @@ namespace net {
 
 namespace packets {
 
-class PlayerInit : public Packet {
+class Teleport : public Packet {
 public:
-    PlayerInit();
+    Teleport();
 
     virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
 
     virtual void onReceive();
 
-
     Serial serial_;
     uint16_t bodyId_;
+    uint16_t hue_;
+    uint8_t status_;
     uint16_t locX_;
     uint16_t locY_;
-    int8_t locZ_;
     uint8_t direction_;
+    int8_t locZ_;
+
 };
 
 }

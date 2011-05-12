@@ -26,6 +26,10 @@ void Mobile::onDoubleClick() {
 }
 
 void Mobile::setBodyId(unsigned int value) {
+    if (value != bodyId_) {
+        requestUpdateTextureProvider();
+    }
+
     bodyId_ = value;
 
     addToRenderQueue();
@@ -92,13 +96,20 @@ void Mobile::playAnim(unsigned int animId) {
 }
 
 void Mobile::setDirection(unsigned int direction) {
-    direction_ = direction;
+    isRunning_ = direction_ & Direction::RUNNING;
+    direction_ = direction & 0x7;
 
     if (textureProvider_) {
         textureProvider_->setDirection(direction);
     }
 
+    invalidateRenderData();
+
     LOG_DEBUG << "mob set direction: " << direction_ << std::endl;
+}
+
+bool Mobile::isMirrored() const {
+    return direction_ < 3;
 }
 
 }

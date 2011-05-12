@@ -57,6 +57,15 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
         CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom)
     };
 
+    CL_Vec2f tex1_coords_mirrored[6] = {
+        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
+        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.top),
+        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom),
+        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.top),
+        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom),
+        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom)
+    };
+
     int clippingLeftPixelCoord = ingameView_->getCenterPixelX() - ingameView_->getWidth()/2;
     int clippingRightPixelCoord = ingameView_->getCenterPixelX() + ingameView_->getWidth()/2;
     int clippingTopPixelCoord = ingameView_->getCenterPixelY() - ingameView_->getHeight()/2;
@@ -90,7 +99,7 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
         // check if texture is ready to be drawn
         boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
 
-        if (!tex->isReadComplete()) {
+        if (!tex || !tex->isReadComplete()) {
             continue;
         }
 
@@ -101,7 +110,11 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
 
         CL_PrimitivesArray primarray(gc);
         primarray.set_attributes(0, curObj->getVertexCoordinates());
-        primarray.set_attributes(1, tex1_coords);
+        if (curObj->isMirrored()) {
+            primarray.set_attributes(1, tex1_coords_mirrored);
+        } else {
+            primarray.set_attributes(1, tex1_coords);
+        }
         primarray.set_attributes(2, curObj->getVertexNormals());
 
         gc.set_texture(1, *tex->getTexture());

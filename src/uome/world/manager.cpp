@@ -8,6 +8,7 @@
 #include <misc/log.hpp>
 
 #include <net/packets/playerinit.hpp>
+#include <net/packets/teleport.hpp>
 
 namespace uome {
 namespace world {
@@ -77,6 +78,25 @@ void Manager::initPlayer(const net::packets::PlayerInit* packet) {
 
 boost::shared_ptr<Mobile> Manager::getPlayer() {
     return player_;
+}
+
+void Manager::handleTeleport(const net::packets::Teleport* packet) {
+    if (!player_) {
+        LOG_ERROR << "Received teleport packet before player was initialized" << std::endl;
+        return;
+    }
+
+    if (player_->getSerial() != packet->serial_) {
+        LOG_ERROR << "Received teleport packet for wrong serial" << std::endl;
+        return;
+    }
+
+    player_->setLocation(packet->locX_, packet->locY_, packet->locZ_);
+    player_->setBodyId(packet->bodyId_);
+    player_->setDirection(packet->direction_);
+    player_->setHue(packet->hue_);
+
+    // TODO: handle status
 }
 
 }

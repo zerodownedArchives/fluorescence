@@ -200,8 +200,9 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         break;
 
     case CL_KEY_G:
-        static unsigned int curAnimId = 20;
-        world::Manager::getSingleton()->getPlayer()->playAnim(curAnimId++);
+        static unsigned int curDirection = 0;
+        //world::Manager::getSingleton()->getPlayer()->playAnim(curAnimId++);
+        world::Manager::getSingleton()->getPlayer()->setDirection(curDirection++);
         break;
 
     default:consumed = false;

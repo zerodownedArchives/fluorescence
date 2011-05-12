@@ -23,6 +23,8 @@ public:
 
     virtual void onReceive();
 
+    uint8_t getId();
+
 protected:
     virtual bool writePacketInfo(int8_t* buf, unsigned int len, unsigned int& index) const;
 

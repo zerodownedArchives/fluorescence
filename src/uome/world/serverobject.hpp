@@ -3,10 +3,10 @@
 
 #include "ingameobject.hpp"
 
+#include <typedefs.hpp>
+
 namespace uome {
 namespace world {
-
-typedef unsigned int Serial;
 
 class ServerObject : public IngameObject {
 public:

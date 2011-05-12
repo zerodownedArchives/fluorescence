@@ -2,6 +2,7 @@
 #define UOME_NET_PACKETLIST_HPP
 
 
+#include "packets/teleport.hpp" // 0x20
 #include "packets/logincomplete.hpp" // 0x55
 #include "packets/characterselect.hpp" // 0x5d
 #include "packets/loginrequest.hpp" // 0x80

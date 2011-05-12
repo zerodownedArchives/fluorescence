@@ -12,6 +12,7 @@ namespace uome {
 namespace net {
 namespace packets {
     class PlayerInit;
+    class Teleport;
 }
 }
 
@@ -34,8 +35,10 @@ public:
 
     boost::shared_ptr<LightManager> getLightManager();
 
-    void initPlayer(const net::packets::PlayerInit* packet);
     boost::shared_ptr<Mobile> getPlayer();
+
+    void initPlayer(const net::packets::PlayerInit* packet);
+    void handleTeleport(const net::packets::Teleport* packet);
 
 private:
     static Manager* singleton_;
