@@ -9,6 +9,7 @@
 
 #include <net/packets/playerinit.hpp>
 #include <net/packets/teleport.hpp>
+#include <net/packets/nakedmobile.hpp>
 
 namespace uome {
 namespace world {
@@ -73,6 +74,8 @@ void Manager::initPlayer(const net::packets::PlayerInit* packet) {
     player_->setBodyId(packet->bodyId_);
     player_->setDirection(packet->direction_);
 
+    mobiles_[packet->serial_] = player_;
+
     LOG_DEBUG << "Location after player init: " << player_->getLocX() << "/" << player_->getLocY() << "/" << (unsigned int)player_->getLocZ() << std::endl;
 }
 
@@ -95,6 +98,26 @@ void Manager::handleTeleport(const net::packets::Teleport* packet) {
     player_->setBodyId(packet->bodyId_);
     player_->setDirection(packet->direction_);
     player_->setHue(packet->hue_);
+
+    // TODO: handle status
+}
+
+void Manager::handleNakedMobile(const net::packets::NakedMobile* packet) {
+    boost::shared_ptr<Mobile> mob;
+
+    // check if mobile exists already
+    std::map<Serial, boost::shared_ptr<Mobile> >::iterator iter = mobiles_.find(packet->serial_);
+    if (iter == mobiles_.end()) {
+        mob.reset(new Mobile(packet->serial_));
+        mobiles_[packet->serial_] = mob;
+    } else {
+        mob = iter->second;
+    }
+
+    mob->setLocation(packet->locX_, packet->locY_, packet->locZ_);
+    mob->setBodyId(packet->bodyId_);
+    mob->setDirection(packet->direction_);
+    mob->setHue(packet->hue_);
 
     // TODO: handle status
 }

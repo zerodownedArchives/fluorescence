@@ -5,6 +5,7 @@
 #include "packets/teleport.hpp" // 0x20
 #include "packets/logincomplete.hpp" // 0x55
 #include "packets/characterselect.hpp" // 0x5d
+#include "packets/nakedmobile.hpp" // 0x77
 #include "packets/loginrequest.hpp" // 0x80
 #include "packets/loginreject.hpp" // 0x82
 #include "packets/serverredirect.hpp" // 0x8c

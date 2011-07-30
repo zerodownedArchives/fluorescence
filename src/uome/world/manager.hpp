@@ -13,6 +13,7 @@ namespace net {
 namespace packets {
     class PlayerInit;
     class Teleport;
+    class NakedMobile;
 }
 }
 
@@ -39,6 +40,7 @@ public:
 
     void initPlayer(const net::packets::PlayerInit* packet);
     void handleTeleport(const net::packets::Teleport* packet);
+    void handleNakedMobile(const net::packets::NakedMobile* packet);
 
 private:
     static Manager* singleton_;
