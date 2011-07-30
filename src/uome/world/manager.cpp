@@ -11,6 +11,7 @@
 #include <net/packets/teleport.hpp>
 #include <net/packets/nakedmobile.hpp>
 #include <net/packets/worlditem.hpp>
+#include <net/packets/deleteobject.hpp>
 
 namespace uome {
 namespace world {
@@ -143,6 +144,11 @@ void Manager::handleWorldItem(const net::packets::WorldItem* packet) {
     itm->setHue(packet->hue_);
 
     // TODO: handle status
+}
+
+void Manager::handleDeleteObject(const net::packets::DeleteObject* packet) {
+    mobiles_.erase(packet->serial_);
+    dynamicItems_.erase(packet->serial_);
 }
 
 

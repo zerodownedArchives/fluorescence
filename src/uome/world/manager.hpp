@@ -16,6 +16,7 @@ namespace packets {
     class Teleport;
     class NakedMobile;
     class WorldItem;
+    class DeleteObject;
 }
 }
 
@@ -44,6 +45,7 @@ public:
     void handleTeleport(const net::packets::Teleport* packet);
     void handleNakedMobile(const net::packets::NakedMobile* packet);
     void handleWorldItem(const net::packets::WorldItem* packet);
+    void handleDeleteObject(const net::packets::DeleteObject* packet);
 
 private:
     static Manager* singleton_;

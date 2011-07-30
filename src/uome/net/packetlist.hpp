@@ -4,6 +4,7 @@
 #include "packets/doubleclick.hpp" // 0x06
 #include "packets/singleclick.hpp" // 0x09
 #include "packets/worlditem.hpp" // 0x1a
+#include "packets/deleteobject.hpp" // 0x1d
 #include "packets/teleport.hpp" // 0x20
 #include "packets/logincomplete.hpp" // 0x55
 #include "packets/characterselect.hpp" // 0x5d

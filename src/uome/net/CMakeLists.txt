@@ -43,6 +43,7 @@ set (PACKETS_HPP
     net/packets/worlditem.hpp
     net/packets/singleclick.hpp
     net/packets/doubleclick.hpp
+    net/packets/deleteobject.hpp
     )
 
 set (PACKETS_CPP
@@ -63,6 +64,7 @@ set (PACKETS_CPP
     net/packets/worlditem.cpp
     net/packets/singleclick.cpp
     net/packets/doubleclick.cpp
+    net/packets/deleteobject.cpp
     )
 
 set (MD5
