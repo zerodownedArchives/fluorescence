@@ -3,6 +3,10 @@
 
 #include <misc/log.hpp>
 
+#include <net/manager.hpp>
+#include <net/packets/singleclick.hpp>
+#include <net/packets/doubleclick.hpp>
+
 namespace uome {
 namespace world {
 
@@ -18,11 +22,19 @@ unsigned int Mobile::getBodyId() const {
 }
 
 void Mobile::onClick() {
-    LOG_DEBUG << "Clicked on mobile!" << std::endl;
+    LOG_INFO << "Clicked mobile, id=" << std::hex << getBodyId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
+            getLocZ() << ")" << std::endl;
+
+    net::packets::SingleClick pkt(getSerial());
+    net::Manager::getSingleton()->send(pkt);
 }
 
 void Mobile::onDoubleClick() {
-    LOG_DEBUG << "Doubleclicked on mobile!" << std::endl;
+    LOG_INFO << "Double clicked mobile, id=" << std::hex << getBodyId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
+            getLocZ() << ")" << std::endl;
+
+    net::packets::DoubleClick pkt(getSerial());
+    net::Manager::getSingleton()->send(pkt);
 }
 
 void Mobile::setBodyId(unsigned int value) {

@@ -11,7 +11,7 @@ GameServerSelect::GameServerSelect(uint16_t serverIndex) : Packet(0xA0, 3), serv
 bool GameServerSelect::write(int8_t* buf, unsigned int len, unsigned int& index) const {
     bool ret = true;
 
-    ret = ret && writePacketInfo(buf, len, index);
+    ret = ret && writePacketId(buf, len, index);
     ret = ret && PacketWriter::write(buf, len, index, serverIndex_);
 
     return ret;

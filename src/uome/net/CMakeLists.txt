@@ -41,6 +41,8 @@ set (PACKETS_HPP
     net/packets/teleport.hpp
     net/packets/nakedmobile.hpp
     net/packets/worlditem.hpp
+    net/packets/singleclick.hpp
+    net/packets/doubleclick.hpp
     )
 
 set (PACKETS_CPP
@@ -59,6 +61,8 @@ set (PACKETS_CPP
     net/packets/teleport.cpp
     net/packets/nakedmobile.cpp
     net/packets/worlditem.cpp
+    net/packets/singleclick.cpp
+    net/packets/doubleclick.cpp
     )
 
 set (MD5

@@ -12,7 +12,7 @@ CharacterSelect::CharacterSelect(const UnicodeString& name, const UnicodeString&
 bool CharacterSelect::write(int8_t* buf, unsigned int len, unsigned int& index) const {
     bool ret = true;
 
-    ret &= writePacketInfo(buf, len, index);
+    ret &= writePacketId(buf, len, index);
 
     uint32_t unknown = 0xEDEDEDEDu;
     ret &= PacketWriter::write(buf, len, index, unknown);

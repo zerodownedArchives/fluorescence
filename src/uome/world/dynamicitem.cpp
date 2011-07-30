@@ -7,6 +7,10 @@
 
 #include <ui/texture.hpp>
 
+#include <net/manager.hpp>
+#include <net/packets/singleclick.hpp>
+#include <net/packets/doubleclick.hpp>
+
 namespace uome {
 namespace world {
 
@@ -112,7 +116,19 @@ const data::StaticTileInfo* DynamicItem::getTileDataInfo() const {
 void DynamicItem::onClick() {
     LOG_INFO << "Clicked dynamic, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
             getLocZ() << ") name=" << tileDataInfo_->name_ << std::endl;
+
+    net::packets::SingleClick pkt(getSerial());
+    net::Manager::getSingleton()->send(pkt);
 }
+
+void DynamicItem::onDoubleClick() {
+    LOG_INFO << "Double clicked dynamic, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
+            getLocZ() << ") name=" << tileDataInfo_->name_ << std::endl;
+
+    net::packets::DoubleClick pkt(getSerial());
+    net::Manager::getSingleton()->send(pkt);
+}
+
 
 
 }

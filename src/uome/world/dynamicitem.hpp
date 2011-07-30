@@ -38,6 +38,7 @@ public:
     const data::StaticTileInfo* getTileDataInfo() const;
 
     virtual void onClick();
+    virtual void onDoubleClick();
 
 private:
     unsigned int artId_;

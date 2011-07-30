@@ -26,7 +26,7 @@ public:
     uint8_t getId();
 
 protected:
-    virtual bool writePacketInfo(int8_t* buf, unsigned int len, unsigned int& index) const;
+    virtual bool writePacketId(int8_t* buf, unsigned int len, unsigned int& index) const;
 
     uint8_t id_;
     uint16_t size_;

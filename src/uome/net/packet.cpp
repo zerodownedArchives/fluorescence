@@ -9,7 +9,7 @@ namespace net {
 Packet::Packet(uint8_t id, uint16_t size) : id_(id), size_(size) {
 }
 
-bool Packet::writePacketInfo(int8_t* buf, unsigned int len, unsigned int& index) const {
+bool Packet::writePacketId(int8_t* buf, unsigned int len, unsigned int& index) const {
     bool ret = true;
 
     ret &= PacketWriter::write(buf, len, index, id_);
@@ -18,7 +18,7 @@ bool Packet::writePacketInfo(int8_t* buf, unsigned int len, unsigned int& index)
 }
 
 bool Packet::write(int8_t* buf, unsigned int len, unsigned int& index) const {
-    return writePacketInfo(buf, len, index);
+    return writePacketId(buf, len, index);
 }
 
 bool Packet::read(const int8_t* buf, unsigned int len, unsigned int& index) {
