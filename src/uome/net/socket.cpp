@@ -263,11 +263,11 @@ void Socket::parsePackets() {
         if (newPacket->hasVariableSize()) {
             readSuccess = readSuccess && PacketReader::read(decompressedBuffer_, decompressedSize_, idx, packetSize);
             newPacket->setSize(packetSize);
+            LOG_DEBUG << "Dynamic packet size=" << packetSize << std::endl;
         } else {
             packetSize = newPacket->getSize();
+            LOG_DEBUG << "Fixed packet size=" << packetSize << std::endl;
         }
-
-        LOG_DEBUG << "New packet size=" << packetSize << std::endl;
 
         if (decompressedSize_ < lastPacketStart + packetSize) {
             LOG_DEBUG << "Packet not received completely id=" << std::hex << (unsigned int)packetId << std::dec <<

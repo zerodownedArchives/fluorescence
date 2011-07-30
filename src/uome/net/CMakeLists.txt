@@ -40,6 +40,7 @@ set (PACKETS_HPP
     net/packets/logincomplete.hpp
     net/packets/teleport.hpp
     net/packets/nakedmobile.hpp
+    net/packets/worlditem.hpp
     )
 
 set (PACKETS_CPP
@@ -57,6 +58,7 @@ set (PACKETS_CPP
     net/packets/logincomplete.cpp
     net/packets/teleport.cpp
     net/packets/nakedmobile.cpp
+    net/packets/worlditem.cpp
     )
 
 set (MD5

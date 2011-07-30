@@ -10,6 +10,7 @@
 #include <net/packets/playerinit.hpp>
 #include <net/packets/teleport.hpp>
 #include <net/packets/nakedmobile.hpp>
+#include <net/packets/worlditem.hpp>
 
 namespace uome {
 namespace world {
@@ -121,6 +122,29 @@ void Manager::handleNakedMobile(const net::packets::NakedMobile* packet) {
 
     // TODO: handle status
 }
+
+void Manager::handleWorldItem(const net::packets::WorldItem* packet) {
+    boost::shared_ptr<DynamicItem> itm;
+
+    // check if item already exists
+    std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator iter = dynamicItems_.find(packet->serial_);
+    if (iter == dynamicItems_.end()) {
+        itm.reset(new DynamicItem(packet->serial_));
+        dynamicItems_[packet->serial_] = itm;
+    } else {
+        itm = iter->second;
+    }
+
+    itm->setLocation(packet->locX_, packet->locY_, packet->locZ_);
+    itm->setDirection(packet->direction_);
+    itm->setAmount(packet->amount_);
+    itm->setStackIdOffset(packet->stackIdOffset_);
+    itm->setArtId(packet->artId_);
+    itm->setHue(packet->hue_);
+
+    // TODO: handle status
+}
+
 
 }
 }

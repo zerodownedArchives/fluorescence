@@ -6,6 +6,7 @@
 #include <misc/config.hpp>
 
 #include "mobile.hpp"
+#include "dynamicitem.hpp"
 
 namespace uome {
 
@@ -14,6 +15,7 @@ namespace packets {
     class PlayerInit;
     class Teleport;
     class NakedMobile;
+    class WorldItem;
 }
 }
 
@@ -41,6 +43,7 @@ public:
     void initPlayer(const net::packets::PlayerInit* packet);
     void handleTeleport(const net::packets::Teleport* packet);
     void handleNakedMobile(const net::packets::NakedMobile* packet);
+    void handleWorldItem(const net::packets::WorldItem* packet);
 
 private:
     static Manager* singleton_;
@@ -55,6 +58,8 @@ private:
 
     boost::shared_ptr<Mobile> player_;
     std::map<Serial, boost::shared_ptr<Mobile> > mobiles_;
+
+    std::map<Serial, boost::shared_ptr<DynamicItem> > dynamicItems_;
 };
 
 }

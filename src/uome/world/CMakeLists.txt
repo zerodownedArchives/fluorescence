@@ -9,6 +9,7 @@ set (WORLD_HPP
     world/lightmanager.hpp
     world/serverobject.hpp
     world/mobile.hpp
+    world/dynamicitem.hpp
     )
 
 set (WORLD_CPP
@@ -21,6 +22,7 @@ set (WORLD_CPP
     world/lightmanager.cpp
     world/serverobject.cpp
     world/mobile.cpp
+    world/dynamicitem.cpp
     )
 
 set(WORLD_FILES ${WORLD_HPP} ${WORLD_CPP} PARENT_SCOPE)

@@ -6,7 +6,7 @@
 namespace uome {
 namespace world {
 
-Mobile::Mobile(Serial serial) : ServerObject(serial) {
+Mobile::Mobile(Serial serial) : ServerObject(serial), bodyId_(0) {
 }
 
 boost::shared_ptr<ui::Texture> Mobile::getIngameTexture() const {
@@ -27,10 +27,9 @@ void Mobile::onDoubleClick() {
 
 void Mobile::setBodyId(unsigned int value) {
     if (value != bodyId_) {
-        requestUpdateTextureProvider();
+        bodyId_ = value;
+        invalidateRenderData(true);
     }
-
-    bodyId_ = value;
 
     addToRenderQueue();
 }

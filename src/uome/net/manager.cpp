@@ -72,6 +72,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
     boost::shared_ptr<Packet> ret;
 
     switch (id) {
+        case 0x1A: ret.reset(new packets::WorldItem()); break;
         case 0x20: ret.reset(new packets::Teleport()); break;
         case 0x55: ret.reset(new packets::LoginComplete()); break;
         case 0x77: ret.reset(new packets::NakedMobile()); break;
