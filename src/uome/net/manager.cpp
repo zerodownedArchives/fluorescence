@@ -117,12 +117,16 @@ bool Manager::connect(ui::GumpMenu* menu, ui::components::LocalButton* button) {
     }
 
 
+
+
     if (socket_.connect(host, port)) {
         Client* clientSing = Client::getSingleton();
         clientSing->setState(Client::STATE_LOGIN);
 
-        clientSing->getConfig()["shard.account"].setString(accName);
-        clientSing->getConfig()["shard.password"].setString(accPw);
+        clientSing->getConfig()["/uome/shard/account@name"].setString(accName);
+        clientSing->getConfig()["/uome/shard/account@password"].setString(accPw);
+        clientSing->getConfig()["/uome/shard/address@host"].setString(host);
+        clientSing->getConfig()["/uome/shard/address@port"].setInt(port);
 
         socket_.writeSeed(0);
         // send packet

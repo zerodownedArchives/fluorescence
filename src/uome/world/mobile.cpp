@@ -104,8 +104,6 @@ void Mobile::setDirection(unsigned int direction) {
     }
 
     invalidateRenderData();
-
-    LOG_DEBUG << "mob set direction: " << direction_ << std::endl;
 }
 
 bool Mobile::isMirrored() const {

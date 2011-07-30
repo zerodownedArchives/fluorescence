@@ -1,6 +1,8 @@
 
 #include "bitmask.hpp"
 
+#include <string.h>
+
 namespace uome {
 namespace ui {
 
