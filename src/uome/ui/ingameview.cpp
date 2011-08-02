@@ -235,7 +235,7 @@ bool IngameView::onInputReleased(const CL_InputEvent& e) {
 }
 
 bool IngameView::onDoubleClick(const CL_InputEvent& e) {
-    //if (e.id == CL_MOUSE_LEFT) {
+    if (e.id == CL_MOUSE_LEFT) {
         boost::shared_ptr<world::IngameObject> clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
         if (!clickedObject) {
             LOG_DEBUG << "doublelicked, but found no object" << std::endl;
@@ -244,7 +244,7 @@ bool IngameView::onDoubleClick(const CL_InputEvent& e) {
         }
 
         return true;
-    //}
+    }
 
     return false;
 }

@@ -75,6 +75,8 @@ void Client::setState(unsigned int value) {
 }
 
 bool Client::handleStateChange() {
+    ui::Manager* uiManager = uome::ui::Manager::getSingleton();
+
     // end old state
     switch (state_) {
     case STATE_SHARD_SELECTION:
@@ -86,6 +88,10 @@ bool Client::handleStateChange() {
             }
         }
         break;
+
+    case STATE_PLAYING:
+        uiManager->uninstallMacros();
+        break;
     }
 
 
@@ -96,11 +102,9 @@ bool Client::handleStateChange() {
 
         //ui::Manager::getSingleton()->openXmlGump("simpletest");
 
-
         break;
 
     case STATE_PLAYING:
-        ui::Manager* uiManager = uome::ui::Manager::getSingleton();
         boost::shared_ptr<CL_DisplayWindow> wnd = uiManager->getMainWindow();
 
         CL_GUITopLevelDescription desc(CL_Rect(10, 10, CL_Size(810, 610)), true);
@@ -112,6 +116,9 @@ bool Client::handleStateChange() {
         ui::IngameView* ingameView = new ui::IngameView(ingameMenu, CL_Rect(5, 5, CL_Size(800, 600)));
         ingameView->setCenterObject(world::Manager::getSingleton()->getPlayer());
         //ingameView->setCenterTiles(176 * 8, 202 * 8);
+
+        uiManager->installMacros();
+        //ui::Manager::getSingleton()->openXmlGump("simpletest");
         break;
     }
 

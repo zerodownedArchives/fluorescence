@@ -44,6 +44,9 @@ set (PACKETS_HPP
     net/packets/singleclick.hpp
     net/packets/doubleclick.hpp
     net/packets/deleteobject.hpp
+    net/packets/speechrequest.hpp
+    net/packets/asciitext.hpp
+    net/packets/unicodetext.hpp
     )
 
 set (PACKETS_CPP
@@ -65,6 +68,9 @@ set (PACKETS_CPP
     net/packets/singleclick.cpp
     net/packets/doubleclick.cpp
     net/packets/deleteobject.cpp
+    net/packets/speechrequest.cpp
+    net/packets/asciitext.cpp
+    net/packets/unicodetext.cpp
     )
 
 set (MD5

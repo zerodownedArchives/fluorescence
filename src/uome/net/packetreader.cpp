@@ -16,7 +16,7 @@ bool PacketReader::readUtf8Null(const int8_t* buf, unsigned int len, unsigned in
 
     while (buf[index++] != 0);
 
-    value = StringConverter::fromUtf8(&buf[origIndex], -1);
+    value = StringConverter::fromUtf8(&buf[origIndex], (index - origIndex));
 
     static UnicodeString errorIndicator("##UOMEERROR");
 
@@ -48,10 +48,10 @@ bool PacketReader::readUnicodeNull(const int8_t* buf, unsigned int len, unsigned
     // find 00 bytes, required to set index
     unsigned int origIndex = index;
 
-    while (reinterpret_cast<const uint16_t*>(buf)[index++] != 0);
+    while (*(reinterpret_cast<const uint16_t*>(&buf[index++])) != 0);
     ++index; // two 0 bytes this time
 
-    value = StringConverter::fromUnicode(&buf[origIndex], -1);
+    value = StringConverter::fromUnicode(&buf[origIndex], (index - origIndex));
 
     static UnicodeString errorIndicator("##UOMEERROR");
 

@@ -16,6 +16,10 @@
 #include <misc/log.hpp>
 #include <misc/exception.hpp>
 
+
+#include <net/manager.hpp>
+#include <net/packets/speechrequest.hpp>
+
 namespace uome {
 namespace ui {
 
@@ -223,6 +227,29 @@ void Manager::registerGumpMenu(GumpMenu* menu) {
     gumpListMutex_.lock();
     gumpList_.push_back(menu);
     gumpListMutex_.unlock();
+}
+
+void Manager::installMacros() {
+    CL_AcceleratorKey keyEnter(CL_KEY_ENTER);
+    keyEnter.func_pressed().set(this, &Manager::enterTest);
+    macros_.add_accelerator(keyEnter);
+
+    guiManager_->set_accelerator_table(macros_);
+}
+
+void Manager::uninstallMacros() {
+    CL_AcceleratorTable empty;
+    macros_ = empty;
+
+    guiManager_->set_accelerator_table(macros_);
+}
+
+void Manager::enterTest(CL_GUIMessage msg, CL_AcceleratorKey key) {
+    LOG_DEBUG << "accel Enter pressed" << std::endl;
+
+    UnicodeString speech("sending foobar speech");
+    net::packets::SpeechRequest pkt(speech);
+    net::Manager::getSingleton()->send(pkt);
 }
 
 }

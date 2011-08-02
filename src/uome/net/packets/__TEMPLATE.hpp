@@ -17,8 +17,6 @@ public:
 
     virtual void onReceive();
 
-private:
-
 };
 
 }

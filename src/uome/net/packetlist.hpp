@@ -4,6 +4,7 @@
 #include "packets/doubleclick.hpp" // 0x06
 #include "packets/singleclick.hpp" // 0x09
 #include "packets/worlditem.hpp" // 0x1a
+#include "packets/asciitext.hpp" // 0x1c
 #include "packets/deleteobject.hpp" // 0x1d
 #include "packets/teleport.hpp" // 0x20
 #include "packets/logincomplete.hpp" // 0x55
@@ -16,6 +17,8 @@
 #include "packets/gameserverselect.hpp" // 0xA0
 #include "packets/serverlist.hpp" // 0xA8
 #include "packets/characterlist.hpp" // 0xa9
+#include "packets/speechrequest.hpp" // 0xad
+#include "packets/unicodetext.hpp" // 0xae
 #include "packets/playerinit.hpp" // 0x1b
 
 #include "packets/unknown.hpp"

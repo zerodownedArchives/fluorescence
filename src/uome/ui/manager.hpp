@@ -51,6 +51,9 @@ public:
 
     void registerGumpMenu(GumpMenu* menu);
 
+    void installMacros();
+    void uninstallMacros();
+
 private:
     static Manager* singleton_;
 
@@ -86,6 +89,10 @@ private:
 
     boost::mutex gumpListMutex_;
     std::list<GumpMenu*> gumpList_;
+
+    CL_AcceleratorTable macros_;
+
+    void enterTest(CL_GUIMessage msg, CL_AcceleratorKey key);
 };
 
 }

@@ -73,6 +73,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
 
     switch (id) {
         case 0x1A: ret.reset(new packets::WorldItem()); break;
+        case 0x1C: ret.reset(new packets::AsciiText()); break;
         case 0x1D: ret.reset(new packets::DeleteObject()); break;
         case 0x20: ret.reset(new packets::Teleport()); break;
         case 0x55: ret.reset(new packets::LoginComplete()); break;
@@ -80,6 +81,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0xA8: ret.reset(new packets::ServerList()); break;
         case 0x8C: ret.reset(new packets::ServerRedirect()); break;
         case 0xA9: ret.reset(new packets::CharacterList()); break;
+        case 0xAE: ret.reset(new packets::UnicodeText()); break;
         case 0x1B: ret.reset(new packets::PlayerInit()); break;
         default: ret.reset(new packets::Unknown(id)); break;
     }

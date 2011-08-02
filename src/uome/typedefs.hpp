@@ -23,6 +23,20 @@ enum {
 };
 };
 
+
+struct TextType {
+public:
+enum {
+    NORMAL = 0x00,
+    BROADCAST = 0x01,
+    EMOTE = 0x02,
+    SYSTEM = 0x06,
+    MESSAGE = 0x07,
+    WHISPER = 0x08,
+    YELL = 0x09,
+};
+};
+
 }
 
 

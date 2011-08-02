@@ -28,9 +28,11 @@ public:
 protected:
     virtual bool writePacketId(int8_t* buf, unsigned int len, unsigned int& index) const;
 
+    unsigned preparePacketSize(unsigned int& index) const;
+    bool writePacketSize(int8_t* buf, unsigned int len, unsigned int& index, unsigned int sizeIndex) const;
+
     uint8_t id_;
     uint16_t size_;
-
 };
 
 }

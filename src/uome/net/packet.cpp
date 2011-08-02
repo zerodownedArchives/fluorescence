@@ -45,5 +45,18 @@ uint8_t Packet::getId() {
     return id_;
 }
 
+unsigned Packet::preparePacketSize(unsigned int& index) const {
+    index += 2;
+    return index;
+}
+
+bool Packet::writePacketSize(int8_t* buf, unsigned int len, unsigned int& index, unsigned int sizeOffset) const {
+    uint16_t dataLen = index - sizeOffset;
+    LOG_DEBUG << "writePAcketSize: index=" << index << " sizeOffset=" << sizeOffset << " dataLen=" << dataLen << std::endl;
+    dataLen += 3; // add id and len
+    unsigned int tmpIndex = sizeOffset - 2;
+    return PacketWriter::write(buf, len, tmpIndex, dataLen);
+}
+
 }
 }
