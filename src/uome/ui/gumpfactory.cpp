@@ -20,6 +20,7 @@
 #include "components/scrollarea.hpp"
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
+#include "ingameview.hpp"
 
 namespace uome {
 namespace ui {
@@ -73,6 +74,7 @@ GumpFactory::GumpFactory() {
     functionTable_["page"] = boost::bind(&GumpFactory::parsePage, this, _1, _2, _3);
 
     functionTable_["image"] = boost::bind(&GumpFactory::parseImage, this, _1, _2, _3);
+    functionTable_["ingameview"] = boost::bind(&GumpFactory::parseIngameView, this, _1, _2, _3);
 }
 
 void GumpFactory::addRepeatContext(const UnicodeString& name, const RepeatContext& context) {
@@ -762,6 +764,16 @@ bool GumpFactory::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, Gum
             }
         }
     }
+
+    return true;
+}
+
+bool GumpFactory::parseIngameView(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, parent);
+
+    ui::IngameView* ingameView = new ui::IngameView(parent, bounds);
+
+    parseId(node, ingameView);
 
     return true;
 }

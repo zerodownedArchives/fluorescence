@@ -105,19 +105,9 @@ bool Client::handleStateChange() {
         break;
 
     case STATE_PLAYING:
-        boost::shared_ptr<CL_DisplayWindow> wnd = uiManager->getMainWindow();
-
-        CL_GUITopLevelDescription desc(CL_Rect(10, 10, CL_Size(810, 610)), true);
-        desc.set_decorations(false);
-
-        ui::GumpMenu* ingameMenu = new ui::GumpMenu(desc);
-        ingameMenu->setClosable(false);
-
-        ui::IngameView* ingameView = new ui::IngameView(ingameMenu, CL_Rect(5, 5, CL_Size(800, 600)));
-        ingameView->setCenterObject(world::Manager::getSingleton()->getPlayer());
-        //ingameView->setCenterTiles(176 * 8, 202 * 8);
-
+        uiManager->openXmlGump("gamewindow");
         uiManager->installMacros();
+
         //ui::Manager::getSingleton()->openXmlGump("simpletest");
         break;
     }

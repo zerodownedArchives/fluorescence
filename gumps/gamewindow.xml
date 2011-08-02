@@ -1,0 +1,5 @@
+<gump x="10" y="10" width="810" height="610" closable="0" draggable="1">
+    <page number="0">
+        <ingameview id="ingameview" x="5" y="5" width="800" height="600" />
+    </page>
+</gump>

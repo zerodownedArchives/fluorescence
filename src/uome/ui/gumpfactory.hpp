@@ -88,6 +88,7 @@ private:
     // uo components
     bool parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
+    bool parseIngameView(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     // TODO
 
 

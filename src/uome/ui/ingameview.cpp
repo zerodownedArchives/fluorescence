@@ -30,6 +30,7 @@ IngameView::IngameView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpEle
     renderer_.reset(new IngameViewRenderer(this));
 
     world::Manager::getSingleton()->getSectorManager()->registerIngameView(this);
+    setCenterObject(world::Manager::getSingleton()->getPlayer());
 
     set_constant_repaint(true);
 
