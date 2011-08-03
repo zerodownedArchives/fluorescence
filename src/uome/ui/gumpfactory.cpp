@@ -321,6 +321,7 @@ bool GumpFactory::parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent, 
     int numeric = node.attribute("numeric").as_int();
     int password = node.attribute("password").as_int();
     unsigned int maxlength = node.attribute("maxlength").as_uint();
+    UnicodeString action = StringConverter::fromUtf8(node.attribute("action").value());
 
     components::LineEdit* edit = new components::LineEdit(parent);
     parseId(node, edit);
@@ -338,6 +339,10 @@ bool GumpFactory::parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent, 
 
     if (maxlength) {
         edit->set_max_length(maxlength);
+    }
+
+    if (action.length() > 0) {
+        edit->setAction(action);
     }
 
     top->addToCurrentPage(edit);

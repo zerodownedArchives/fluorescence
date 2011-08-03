@@ -15,6 +15,13 @@ public:
 
     void setText(const UnicodeString& string);
     UnicodeString getText();
+
+    void setAction(const UnicodeString& action);
+    void onEnterPressed();
+
+private:
+    UnicodeString action_;
+
 };
 
 }
