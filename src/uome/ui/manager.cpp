@@ -162,18 +162,27 @@ void Manager::closeGumpMenu(GumpMenu* menu) {
 }
 
 void Manager::closeGumpMenu(const UnicodeString& gumpName) {
-    gumpListMutex_.lock();
+    boost::recursive_mutex::scoped_lock myLock(gumpListMutex_);
+
+    GumpMenu* menu = getGumpMenu(gumpName);
+    if (menu) {
+        closeGumpMenu(menu);
+    }
+}
+
+GumpMenu* Manager::getGumpMenu(const UnicodeString& gumpName) {
+    boost::recursive_mutex::scoped_lock myLock(gumpListMutex_);
 
     std::list<GumpMenu*>::iterator iter = gumpList_.begin();
     std::list<GumpMenu*>::iterator end = gumpList_.end();
 
     for (; iter != end; ++iter) {
         if ((*iter)->getName() == gumpName) {
-            closeGumpMenu(*iter);
+            return *iter;
         }
     }
 
-    gumpListMutex_.unlock();
+    return NULL;
 }
 
 void Manager::processCloseList() {
@@ -247,9 +256,19 @@ void Manager::uninstallMacros() {
 void Manager::enterTest(CL_GUIMessage msg, CL_AcceleratorKey key) {
     LOG_DEBUG << "accel Enter pressed" << std::endl;
 
-    UnicodeString speech("sending foobar speech");
-    net::packets::SpeechRequest pkt(speech);
-    net::Manager::getSingleton()->send(pkt);
+    GumpMenu* gameWindow = getGumpMenu("gamewindow");
+    if (gameWindow) {
+        gameWindow->activatePage(2);
+
+        CL_GUIComponent* lineedit = gameWindow->get_named_item("speechtext");
+        if (lineedit) {
+            lineedit->set_focus();
+        } else {
+            LOG_ERROR << "Unable to find speech lineedit in gamewindow" << std::endl;
+        }
+    } else {
+        LOG_ERROR << "Unable to find gamewindow gump to activate speech lineedit" << std::endl;
+    }
 }
 
 }

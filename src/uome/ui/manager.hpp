@@ -10,7 +10,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options.hpp>
 #include <boost/filesystem/path.hpp>
-#include <boost/thread/mutex.hpp>
+#include <boost/thread/recursive_mutex.hpp>
 
 #include <list>
 
@@ -49,6 +49,8 @@ public:
     void closeGumpMenu(const UnicodeString& name);
     void closeGumpMenu(GumpMenu* menu);
 
+    GumpMenu* getGumpMenu(const UnicodeString& name);
+
     void registerGumpMenu(GumpMenu* menu);
 
     void installMacros();
@@ -79,7 +81,7 @@ private:
 
     boost::shared_ptr<DoubleClickHandler> doubleClickHandler_;
 
-    boost::mutex closeListMutex_;
+    boost::recursive_mutex closeListMutex_;
     std::list<GumpMenu*> closeList_;
     void processCloseList();
 
@@ -87,7 +89,7 @@ private:
 
     void loadFontDirectory(const boost::filesystem::path& path);
 
-    boost::mutex gumpListMutex_;
+    boost::recursive_mutex gumpListMutex_;
     std::list<GumpMenu*> gumpList_;
 
     CL_AcceleratorTable macros_;
