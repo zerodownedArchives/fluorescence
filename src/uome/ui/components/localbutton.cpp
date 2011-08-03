@@ -1,38 +1,13 @@
 
 #include "localbutton.hpp"
 
-#include <boost/bind.hpp>
-
-#include <client.hpp>
-#include <ui/manager.hpp>
-#include <net/manager.hpp>
-
 #include <misc/log.hpp>
+
+#include <ui/gumpactions.hpp>
 
 namespace uome {
 namespace ui {
 namespace components {
-
-LocalButton::ClickAction::ClickAction() {
-}
-
-LocalButton::ClickAction::ClickAction(bool closeGumpMenu, boost::function<bool (GumpMenu*, LocalButton*)> callback) : closeGumpMenu_(closeGumpMenu), callback_(callback) {
-}
-
-std::map<UnicodeString, LocalButton::ClickAction> LocalButton::actionTable_ = std::map<UnicodeString, LocalButton::ClickAction>();
-
-void LocalButton::buildBasicActionTable() {
-    actionTable_["shutdown"] = ClickAction(false, boost::bind(&Client::shutdown, Client::getSingleton(), _1, _2));
-    actionTable_["selectshard"] = ClickAction(true, boost::bind(&Client::selectShard, Client::getSingleton(), _1, _2));
-    actionTable_["close"] = ClickAction(true, boost::bind(&LocalButton::closeHelper, _1, _2));
-}
-
-void LocalButton::buildFullActionTable() {
-    actionTable_["connect"] = ClickAction(false, boost::bind(&net::Manager::connect, net::Manager::getSingleton(), _1, _2));
-    actionTable_["disconnect"] = ClickAction(true, boost::bind(&Client::disconnect, Client::getSingleton(), _1, _2));
-    actionTable_["selectserver"] = ClickAction(false, boost::bind(&net::Manager::selectServer, net::Manager::getSingleton(), _1, _2));
-    actionTable_["selectcharacter"] = ClickAction(true, boost::bind(&Client::selectCharacter, Client::getSingleton(), _1, _2));
-}
 
 LocalButton::LocalButton(CL_GUIComponent* parent, const UnicodeString& action) : BaseButton(parent),
         action_(action) {
@@ -71,27 +46,12 @@ int LocalButton::getParameterInt(unsigned int index) const {
     return atoi(utfStr.c_str());
 }
 
-bool LocalButton::closeHelper(GumpMenu* menu, LocalButton* self) {
-    return true;
+const UnicodeString* LocalButton::getParameterPtr() const {
+    return parameter_;
 }
 
-
 void LocalButton::onClicked(BaseButton* self) {
-    GumpMenu* gump = dynamic_cast<GumpMenu*>(get_top_level_component());
-    if (gump) {
-        std::map<UnicodeString, ClickAction>::iterator it = actionTable_.find(action_);
-
-        if (it != actionTable_.end()) {
-            bool funcRet = (it->second.callback_) (gump, this);
-            if (funcRet && it->second.closeGumpMenu_) { // close gump if callback was successful
-                ui::Manager::getSingleton()->closeGumpMenu(gump);
-            }
-        } else {
-            LOG_ERROR << "Unknown button action: " << action_ << std::endl;
-        }
-    } else {
-        LOG_ERROR << "PageButton inside something other than GumpMenu" << std::endl;
-    }
+    GumpActions::doAction(this);
 }
 
 }

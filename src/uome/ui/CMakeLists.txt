@@ -8,12 +8,12 @@ set (UI_HPP
     ui/animdatatextureprovider.hpp
     ui/animtextureprovider.hpp
     ui/renderqueue.hpp
-    ui/ingameviewrenderer.hpp
     ui/bitmask.hpp
     ui/cursormanager.hpp
     ui/cursorimage.hpp
     ui/doubleclickhandler.hpp
     ui/gumpmenus.hpp
+    ui/gumpactions.hpp
     )
 
 set (UI_CPP
@@ -24,19 +24,18 @@ set (UI_CPP
     ui/animdatatextureprovider.cpp
     ui/animtextureprovider.cpp
     ui/renderqueue.cpp
-    ui/ingameviewrenderer.cpp
     ui/bitmask.cpp
     ui/cursormanager.cpp
     ui/cursorimage.cpp
     ui/doubleclickhandler.cpp
     ui/gumpmenus.cpp
+    ui/gumpactions.cpp
     )
 
 set (GUMPMENU_HPP
     ui/gumpfactory.hpp
     ui/gumpmenu.hpp
     ui/gumpelement.hpp
-    ui/ingameview.hpp
 
     ui/components/basebutton.hpp
     ui/components/serverbutton.hpp
@@ -45,13 +44,14 @@ set (GUMPMENU_HPP
     ui/components/scrollarea.hpp
     ui/components/lineedit.hpp
     ui/components/label.hpp
+    ui/components/ingameviewrenderer.hpp
+    ui/components/ingameview.hpp
     )
 
 set (GUMPMENU_CPP
     ui/gumpfactory.cpp
     ui/gumpmenu.cpp
     ui/gumpelement.cpp
-    ui/ingameview.cpp
 
     ui/components/basebutton.cpp
     ui/components/serverbutton.cpp
@@ -60,6 +60,8 @@ set (GUMPMENU_CPP
     ui/components/scrollarea.cpp
     ui/components/lineedit.cpp
     ui/components/label.cpp
+    ui/components/ingameviewrenderer.cpp
+    ui/components/ingameview.cpp
     )
 
 SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} PARENT_SCOPE)

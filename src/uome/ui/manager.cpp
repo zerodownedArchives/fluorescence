@@ -3,13 +3,13 @@
 
 #include <boost/filesystem/operations.hpp>
 
-#include "ingameview.hpp"
 #include "renderqueue.hpp"
 #include "cursormanager.hpp"
 #include "doubleclickhandler.hpp"
 #include "gumpmenu.hpp"
 #include "gumpfactory.hpp"
 #include "gumpmenus.hpp"
+#include "gumpactions.hpp"
 
 #include <client.hpp>
 

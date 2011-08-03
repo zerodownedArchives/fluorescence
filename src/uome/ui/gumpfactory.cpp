@@ -20,7 +20,7 @@
 #include "components/scrollarea.hpp"
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
-#include "ingameview.hpp"
+#include "components/ingameview.hpp"
 
 namespace uome {
 namespace ui {

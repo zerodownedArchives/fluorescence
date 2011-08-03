@@ -5,7 +5,7 @@
 
 #include <list>
 
-#include "gumpelement.hpp"
+#include <ui/gumpelement.hpp>
 
 namespace uome {
 

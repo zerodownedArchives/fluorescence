@@ -10,9 +10,8 @@
 #include <ui/manager.hpp>
 #include <ui/gumpmenus.hpp>
 #include <ui/renderqueue.hpp>
-#include <ui/ingameview.hpp>
 #include <ui/gumpmenu.hpp>
-#include <ui/components/localbutton.hpp>
+#include <ui/gumpactions.hpp>
 
 #include <data/manager.hpp>
 
@@ -52,19 +51,19 @@ void Client::shutdown() {
     setState(STATE_SHUTDOWN);
 }
 
-bool Client::shutdown(ui::GumpMenu* menu, ui::components::LocalButton* button) {
+bool Client::shutdown(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     shutdown();
     return true;
 }
 
-bool Client::selectShard(ui::GumpMenu* menu, ui::components::LocalButton* button) {
-    config_["/uome/shard@name"].setString(button->getParameter());
+bool Client::selectShard(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    config_["/uome/shard@name"].setString(parameters[0]);
     setState(STATE_PRE_LOGIN);
     //setState(STATE_PLAYING);
     return true;
 }
 
-bool Client::disconnect(ui::GumpMenu* menu, ui::components::LocalButton* button) {
+bool Client::disconnect(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     net::Manager::getSingleton()->disconnect();
     setState(STATE_PRE_LOGIN);
     return true;
@@ -158,7 +157,8 @@ bool Client::initBase(const std::vector<CL_String8>& args) {
         cleanUp();
         return false;
     }
-    ui::components::LocalButton::buildBasicActionTable();
+
+    ui::GumpActions::buildBasicActionTable();
 
     return true;
 }
@@ -191,8 +191,8 @@ bool Client::initFull() {
         return false;
     }
 
-    LOG_INFO << "Setting up event handlers" << std::endl;
-    ui::components::LocalButton::buildFullActionTable();
+    LOG_INFO << "Setting up gump event handlers" << std::endl;
+    ui::GumpActions::buildFullActionTable();
 
     return true;
 }
@@ -341,8 +341,8 @@ void Client::doStateLogin() {
     CL_System::sleep(10);
 }
 
-bool Client::selectCharacter(ui::GumpMenu* menu, ui::components::LocalButton* button) {
-    net::packets::CharacterSelect reply(button->getText(), button->getParameter(1), StringConverter::toInt(button->getParameter(0)), net::Manager::getSingleton()->getSeed());
+bool Client::selectCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    net::packets::CharacterSelect reply(parameters[2], parameters[1], StringConverter::toInt(parameters[0]), net::Manager::getSingleton()->getSeed());
     net::Manager::getSingleton()->send(reply);
 
     return true;

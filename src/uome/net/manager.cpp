@@ -8,7 +8,6 @@
 #include <ui/gumpmenu.hpp>
 #include <ui/gumpmenus.hpp>
 #include <ui/components/lineedit.hpp>
-#include <ui/components/localbutton.hpp>
 
 #include "packetlist.hpp"
 #include "twofishencryption.hpp"
@@ -89,7 +88,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
     return ret;
 }
 
-bool Manager::connect(ui::GumpMenu* menu, ui::components::LocalButton* button) {
+bool Manager::connect(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     UnicodeString host;
     if (!menu->getComponentText<ui::components::LineEdit>("loginhost", host)) {
         ui::GumpMenus::openMessageBox("Unable to find input field for the server host. Did you change the login gump template?");
@@ -149,8 +148,8 @@ void Manager::disconnect() {
     socket_.close();
 }
 
-bool Manager::selectServer(ui::GumpMenu* menu, ui::components::LocalButton* button) {
-    unsigned int index = button->getParameterInt();
+bool Manager::selectServer(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    unsigned int index = StringConverter::toInt(parameters[0]);
 
     packets::GameServerSelect pkt(index);
     socket_.write(pkt);

@@ -10,7 +10,7 @@
 
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
-#include <ui/ingameview.hpp>
+#include <ui/components/ingameview.hpp>
 
 #include <data/maploader.hpp>
 #include <data/manager.hpp>

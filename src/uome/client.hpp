@@ -16,9 +16,6 @@ namespace world {
 
 namespace ui {
     class GumpMenu;
-    namespace components {
-        class LocalButton;
-    }
 }
 
 class Client {
@@ -45,10 +42,10 @@ public:
     void loginComplete(); /// < called when the game window should be displayed => setState(playing)
 
     // gump callbacks
-    bool disconnect(ui::GumpMenu* menu, ui::components::LocalButton* button);
-    bool shutdown(ui::GumpMenu* menu, ui::components::LocalButton* button);
-    bool selectShard(ui::GumpMenu* menu, ui::components::LocalButton* button);
-    bool selectCharacter(ui::GumpMenu* menu, ui::components::LocalButton* button);
+    bool disconnect(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
+    bool shutdown(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
+    bool selectShard(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
+    bool selectCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
 
 private:
     static Client* singleton_;

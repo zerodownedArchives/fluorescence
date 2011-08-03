@@ -1,10 +1,11 @@
 
 #include "ingameviewrenderer.hpp"
 
-#include "manager.hpp"
-#include "renderqueue.hpp"
-#include "texture.hpp"
 #include "ingameview.hpp"
+
+#include <ui/manager.hpp>
+#include <ui/renderqueue.hpp>
+#include <ui/texture.hpp>
 
 #include <misc/log.hpp>
 
