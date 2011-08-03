@@ -106,9 +106,13 @@ void GumpMenu::internalDeactivatePage(unsigned int pageId) {
 
 bool GumpMenu::onInputPressed(const CL_InputEvent& msg) {
     //LOGARG_INFO(LOGTYPE_INPUT, "input pressed gumpmenu: %u", msg.id);
-    if (msg.id == CL_MOUSE_LEFT) {
+    bool consumed = true;
+
+    switch (msg.id) {
+    case CL_MOUSE_LEFT:
         if (!draggable_) {
-            return false;
+            consumed = false;
+            break;
         }
 
         bring_to_front();
@@ -116,11 +120,28 @@ bool GumpMenu::onInputPressed(const CL_InputEvent& msg) {
         lastMousePos_ = msg.mouse_pos;
         isDragged_ = true;
 
-        return true;
-    } else if (msg.id == CL_KEY_ENTER && action_.length() > 0) {
-        GumpActions::doAction(this, action_, 0, NULL);
-    } else if (msg.id == CL_KEY_ESCAPE && cancelAction_.length() > 0) {
-        GumpActions::doAction(this, cancelAction_, 0, NULL);
+        break;
+
+    case CL_KEY_ENTER:
+    case CL_KEY_NUMPAD_ENTER:
+        if (action_.length() > 0) {
+            GumpActions::doAction(this, action_, 0, NULL);
+        } else {
+            consumed = false;
+        }
+        break;
+
+    case CL_KEY_ESCAPE:
+        if (cancelAction_.length() > 0) {
+            GumpActions::doAction(this, cancelAction_, 0, NULL);
+        } else {
+            consumed = false;
+        }
+        break;
+
+    default:
+        consumed = false;
+        break;
     }
 
     return false;
