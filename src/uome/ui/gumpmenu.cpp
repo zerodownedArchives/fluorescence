@@ -2,6 +2,7 @@
 #include "gumpmenu.hpp"
 
 #include "manager.hpp"
+#include "gumpactions.hpp"
 
 #include <misc/log.hpp>
 
@@ -116,6 +117,10 @@ bool GumpMenu::onInputPressed(const CL_InputEvent& msg) {
         isDragged_ = true;
 
         return true;
+    } else if (msg.id == CL_KEY_ENTER && action_.length() > 0) {
+        GumpActions::doAction(this, action_, 0, NULL);
+    } else if (msg.id == CL_KEY_ESCAPE && cancelAction_.length() > 0) {
+        GumpActions::doAction(this, cancelAction_, 0, NULL);
     }
 
     return false;
@@ -180,6 +185,14 @@ void GumpMenu::setName(const UnicodeString& name) {
 
 const UnicodeString& GumpMenu::getName() {
     return name_;
+}
+
+void GumpMenu::setAction(const UnicodeString& action) {
+    action_ = action;
+}
+
+void GumpMenu::setCancelAction(const UnicodeString& action) {
+    cancelAction_ = action;
 }
 
 }

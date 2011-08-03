@@ -23,6 +23,7 @@ std::map<UnicodeString, GumpActions::GumpAction> GumpActions::actionTable_ = std
 void GumpActions::buildBasicActionTable() {
     actionTable_["shutdown"] = GumpAction(false, boost::bind(&Client::shutdown, Client::getSingleton(), _1, _2, _3, _4));
     actionTable_["selectshard"] = GumpAction(true, boost::bind(&Client::selectShard, Client::getSingleton(), _1, _2, _3, _4));
+    actionTable_["selectshard-first"] = GumpAction(true, boost::bind(&GumpActions::selectShardFirst, _1, _2, _3, _4));
     actionTable_["close"] = GumpAction(true, boost::bind(&GumpActions::closeHelper, _1, _2, _3, _4));
 }
 
@@ -30,12 +31,45 @@ void GumpActions::buildFullActionTable() {
     actionTable_["connect"] = GumpAction(false, boost::bind(&net::Manager::connect, net::Manager::getSingleton(), _1, _2, _3, _4));
     actionTable_["disconnect"] = GumpAction(true, boost::bind(&Client::disconnect, Client::getSingleton(), _1, _2, _3, _4));
     actionTable_["selectserver"] = GumpAction(false, boost::bind(&net::Manager::selectServer, net::Manager::getSingleton(), _1, _2, _3, _4));
+    actionTable_["selectserver-first"] = GumpAction(true, boost::bind(&GumpActions::selectServerFirst, _1, _2, _3, _4));
     actionTable_["selectcharacter"] = GumpAction(true, boost::bind(&Client::selectCharacter, Client::getSingleton(), _1, _2, _3, _4));
+    actionTable_["selectcharacter-first"] = GumpAction(true, boost::bind(&GumpActions::selectCharacterFirst, _1, _2, _3, _4));
 }
 
 
 bool GumpActions::closeHelper(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     return true;
+}
+
+bool GumpActions::selectShardFirst(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    components::LocalButton* button = dynamic_cast<components::LocalButton*>(menu->get_named_item("selectshard"));
+    if (!button) {
+        doAction(menu, "createshard", 0, NULL);
+    } else {
+        doAction(button);
+    }
+
+    return false; // because another action is called in sequence
+}
+
+bool GumpActions::selectServerFirst(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    components::LocalButton* button = dynamic_cast<components::LocalButton*>(menu->get_named_item("selectserver"));
+    if (!button) {
+        doAction(menu, "disconnect", 0, NULL);
+    } else {
+        doAction(button);
+    }
+    return false; // because another action is called in sequence
+}
+
+bool GumpActions::selectCharacterFirst(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    components::LocalButton* button = dynamic_cast<components::LocalButton*>(menu->get_named_item("selectcharacter"));
+    if (!button) {
+        doAction(menu, "disconnect", 0, NULL);
+    } else {
+        doAction(button);
+    }
+    return false; // because another action is called in sequence
 }
 
 void GumpActions::doAction(GumpMenu* gump, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {

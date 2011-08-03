@@ -151,6 +151,8 @@ GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
         CL_Rect bounds = getBoundsFromNode(rootNode, ui::Manager::getSingleton()->getMainWindow()->get_viewport());
         bool closable = rootNode.attribute("closable").as_bool();
         bool draggable = rootNode.attribute("draggable").as_bool();
+        UnicodeString action = StringConverter::fromUtf8(rootNode.attribute("action").value());
+        UnicodeString cancelAction = StringConverter::fromUtf8(rootNode.attribute("cancelaction").value());
 
         CL_GUITopLevelDescription desc(bounds, false);
         desc.set_decorations(false);
@@ -158,6 +160,14 @@ GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
         ret = new GumpMenu(desc);
         ret->setClosable(closable);
         ret->setDraggable(draggable);
+
+        if (action.length() > 0) {
+            ret->setAction(action);
+        }
+
+        if (cancelAction.length() > 0) {
+            ret->setCancelAction(cancelAction);
+        }
     }
 
     parseChildren(rootNode, ret, ret);

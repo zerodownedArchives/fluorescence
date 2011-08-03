@@ -36,6 +36,9 @@ public:
     void setName(const UnicodeString& name);
     const UnicodeString& getName();
 
+    void setAction(const UnicodeString& action);
+    void setCancelAction(const UnicodeString& action);
+
 
     template<class ComponentClass>
     void setComponentTextFromConfig(const UnicodeString& componentName, const UnicodeString& configName, Config& config) {
@@ -55,8 +58,6 @@ public:
             component->setText(text);
         }
     }
-
-
 
     template<class ComponentClass>
     bool getComponentText(const UnicodeString& componentName, UnicodeString& result) {
@@ -90,6 +91,9 @@ private:
     bool onPointerMoved(const CL_InputEvent& msg);
 
     UnicodeString name_;
+
+    UnicodeString action_;
+    UnicodeString cancelAction_;
 };
 
 }
