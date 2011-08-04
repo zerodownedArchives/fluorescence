@@ -2,6 +2,7 @@
 #include "nakedmobile.hpp"
 
 #include <world/manager.hpp>
+#include <world/mobile.hpp>
 
 namespace uome {
 namespace net {
@@ -27,7 +28,14 @@ bool NakedMobile::read(const int8_t* buf, unsigned int len, unsigned int& index)
 }
 
 void NakedMobile::onReceive() {
-    world::Manager::getSingleton()->handleNakedMobile(this);
+    boost::shared_ptr<world::Mobile> mob = world::Manager::getSingleton()->getMobile(serial_);
+
+    mob->setLocation(locX_, locY_, locZ_);
+    mob->setBodyId(bodyId_);
+    mob->setDirection(direction_);
+    mob->setHue(hue_);
+
+    // TODO: handle status
 }
 
 }

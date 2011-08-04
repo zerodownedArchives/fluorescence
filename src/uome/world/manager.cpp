@@ -7,12 +7,6 @@
 #include <misc/exception.hpp>
 #include <misc/log.hpp>
 
-#include <net/packets/playerinit.hpp>
-#include <net/packets/teleport.hpp>
-#include <net/packets/nakedmobile.hpp>
-#include <net/packets/worlditem.hpp>
-#include <net/packets/deleteobject.hpp>
-
 namespace uome {
 namespace world {
 
@@ -70,85 +64,48 @@ boost::shared_ptr<LightManager> Manager::getLightManager() {
     return lightManager_;
 }
 
-void Manager::initPlayer(const net::packets::PlayerInit* packet) {
-    player_.reset(new Mobile(packet->serial_));
-    player_->setLocation(packet->locX_, packet->locY_, packet->locZ_);
-    player_->setBodyId(packet->bodyId_);
-    player_->setDirection(packet->direction_);
+boost::shared_ptr<Mobile> Manager::initPlayer(Serial serial) {
+    player_.reset(new Mobile(serial));
+    mobiles_[serial] = player_;
 
-    mobiles_[packet->serial_] = player_;
-
-    LOG_DEBUG << "Location after player init: " << player_->getLocX() << "/" << player_->getLocY() << "/" << (unsigned int)player_->getLocZ() << std::endl;
+    return player_;
 }
 
 boost::shared_ptr<Mobile> Manager::getPlayer() {
     return player_;
 }
 
-void Manager::handleTeleport(const net::packets::Teleport* packet) {
-    if (!player_) {
-        LOG_ERROR << "Received teleport packet before player was initialized" << std::endl;
-        return;
-    }
-
-    if (player_->getSerial() != packet->serial_) {
-        LOG_ERROR << "Received teleport packet for wrong serial" << std::endl;
-        return;
-    }
-
-    player_->setLocation(packet->locX_, packet->locY_, packet->locZ_);
-    player_->setBodyId(packet->bodyId_);
-    player_->setDirection(packet->direction_);
-    player_->setHue(packet->hue_);
-
-    // TODO: handle status
+void Manager::deleteObject(Serial serial) {
+    mobiles_.erase(serial);
+    dynamicItems_.erase(serial);
 }
 
-void Manager::handleNakedMobile(const net::packets::NakedMobile* packet) {
-    boost::shared_ptr<Mobile> mob;
+boost::shared_ptr<Mobile> Manager::getMobile(Serial serial, bool createIfNotExists) {
+    boost::shared_ptr<Mobile> itm;
 
-    // check if mobile exists already
-    std::map<Serial, boost::shared_ptr<Mobile> >::iterator iter = mobiles_.find(packet->serial_);
-    if (iter == mobiles_.end()) {
-        mob.reset(new Mobile(packet->serial_));
-        mobiles_[packet->serial_] = mob;
-    } else {
-        mob = iter->second;
-    }
-
-    mob->setLocation(packet->locX_, packet->locY_, packet->locZ_);
-    mob->setBodyId(packet->bodyId_);
-    mob->setDirection(packet->direction_);
-    mob->setHue(packet->hue_);
-
-    // TODO: handle status
-}
-
-void Manager::handleWorldItem(const net::packets::WorldItem* packet) {
-    boost::shared_ptr<DynamicItem> itm;
-
-    // check if item already exists
-    std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator iter = dynamicItems_.find(packet->serial_);
-    if (iter == dynamicItems_.end()) {
-        itm.reset(new DynamicItem(packet->serial_));
-        dynamicItems_[packet->serial_] = itm;
+    std::map<Serial, boost::shared_ptr<Mobile> >::iterator iter = mobiles_.find(serial);
+    if (iter == mobiles_.end() && createIfNotExists) {
+        itm.reset(new Mobile(serial));
+        mobiles_[serial] = itm;
     } else {
         itm = iter->second;
     }
 
-    itm->setLocation(packet->locX_, packet->locY_, packet->locZ_);
-    itm->setDirection(packet->direction_);
-    itm->setAmount(packet->amount_);
-    itm->setStackIdOffset(packet->stackIdOffset_);
-    itm->setArtId(packet->artId_);
-    itm->setHue(packet->hue_);
-
-    // TODO: handle status
+    return itm;
 }
 
-void Manager::handleDeleteObject(const net::packets::DeleteObject* packet) {
-    mobiles_.erase(packet->serial_);
-    dynamicItems_.erase(packet->serial_);
+boost::shared_ptr<DynamicItem> Manager::getDynamicItem(Serial serial, bool createIfNotExists) {
+    boost::shared_ptr<DynamicItem> itm;
+
+    std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator iter = dynamicItems_.find(serial);
+    if (iter == dynamicItems_.end() && createIfNotExists) {
+        itm.reset(new DynamicItem(serial));
+        dynamicItems_[serial] = itm;
+    } else {
+        itm = iter->second;
+    }
+
+    return itm;
 }
 
 

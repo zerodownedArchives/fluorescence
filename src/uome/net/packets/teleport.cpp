@@ -28,7 +28,16 @@ bool Teleport::read(const int8_t* buf, unsigned int len, unsigned int& index) {
 }
 
 void Teleport::onReceive() {
-    world::Manager::getSingleton()->handleTeleport(this);
+    boost::shared_ptr<world::Mobile> player = world::Manager::getSingleton()->getPlayer();
+
+    if (player && player->getSerial() == serial_) {
+        player->setLocation(locX_, locY_, locZ_);
+        player->setBodyId(bodyId_);
+        player->setDirection(direction_);
+        player->setHue(hue_);
+
+        // TODO: handle status
+    }
 }
 
 }

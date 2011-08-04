@@ -2,6 +2,7 @@
 #include "worlditem.hpp"
 
 #include <world/manager.hpp>
+#include <world/dynamicitem.hpp>
 
 namespace uome {
 namespace net {
@@ -83,7 +84,16 @@ bool WorldItem::read(const int8_t* buf, unsigned int len, unsigned int& index) {
 }
 
 void WorldItem::onReceive() {
-    world::Manager::getSingleton()->handleWorldItem(this);
+    boost::shared_ptr<world::DynamicItem> itm = world::Manager::getSingleton()->getDynamicItem(serial_);
+
+    itm->setLocation(locX_, locY_, locZ_);
+    itm->setDirection(direction_);
+    itm->setAmount(amount_);
+    itm->setStackIdOffset(stackIdOffset_);
+    itm->setArtId(artId_);
+    itm->setHue(hue_);
+
+    // TODO: handle status
 }
 
 }

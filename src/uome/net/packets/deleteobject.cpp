@@ -19,7 +19,7 @@ bool DeleteObject::read(const int8_t* buf, unsigned int len, unsigned int& index
 }
 
 void DeleteObject::onReceive() {
-    world::Manager::getSingleton()->handleDeleteObject(this);
+    world::Manager::getSingleton()->deleteObject(serial_);
 }
 
 }

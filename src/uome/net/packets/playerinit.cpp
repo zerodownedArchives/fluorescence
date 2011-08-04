@@ -2,6 +2,7 @@
 #include "playerinit.hpp"
 
 #include <world/manager.hpp>
+#include <world/mobile.hpp>
 
 namespace uome {
 namespace net {
@@ -27,7 +28,11 @@ bool PlayerInit::read(const int8_t* buf, unsigned int len, unsigned int& index) 
 }
 
 void PlayerInit::onReceive() {
-    world::Manager::getSingleton()->initPlayer(this);
+    boost::shared_ptr<world::Mobile> player = world::Manager::getSingleton()->initPlayer(serial_);
+
+    player->setLocation(locX_, locY_, locZ_);
+    player->setBodyId(bodyId_);
+    player->setDirection(direction_);
 }
 
 }

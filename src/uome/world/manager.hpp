@@ -10,16 +10,6 @@
 
 namespace uome {
 
-namespace net {
-namespace packets {
-    class PlayerInit;
-    class Teleport;
-    class NakedMobile;
-    class WorldItem;
-    class DeleteObject;
-}
-}
-
 namespace world {
 
 class SectorManager;
@@ -41,11 +31,12 @@ public:
 
     boost::shared_ptr<Mobile> getPlayer();
 
-    void initPlayer(const net::packets::PlayerInit* packet);
-    void handleTeleport(const net::packets::Teleport* packet);
-    void handleNakedMobile(const net::packets::NakedMobile* packet);
-    void handleWorldItem(const net::packets::WorldItem* packet);
-    void handleDeleteObject(const net::packets::DeleteObject* packet);
+    boost::shared_ptr<Mobile> getMobile(Serial serial, bool createIfNotExists = true);
+    boost::shared_ptr<DynamicItem> getDynamicItem(Serial serial, bool createIfNotExists = true);
+
+    boost::shared_ptr<Mobile> initPlayer(Serial serial);
+
+    void deleteObject(Serial serial);
 
 private:
     static Manager* singleton_;
