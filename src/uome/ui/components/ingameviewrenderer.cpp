@@ -121,10 +121,11 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
             primarray.set_attributes(1, tex1_coords);
         }
         primarray.set_attributes(2, curObj->getVertexNormals());
-        primarray.set_attributes(3, curObj->getHueInfo());
 
-        if (curObj->getHueInfo()->y != 0.0f) {
-            //LOG_DEBUG << "drawing something with hue, partial=" << curObj->getHueInfo()->x " hue=" << curObj->getHueInfo()->y << std::endl;
+        primarray.set_attribute(3, curObj->getHueInfo());
+
+        if (curObj->getHueInfo().y != 0.0f) {
+            LOG_DEBUG << "drawing something with hue, partial=" << curObj->getHueInfo().x << " hue=" << (unsigned int)curObj->getHueInfo().y << std::endl;
         }
 
         gc.set_texture(1, *tex->getTexture());

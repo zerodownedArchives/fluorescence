@@ -60,8 +60,8 @@ const CL_Vec2f* IngameObject::getVertexCoordinates() const {
     return vertexCoordinates_;
 }
 
-const CL_Vec2f* IngameObject::getHueInfo() const {
-    return &hueInfo_;
+const CL_Vec2f& IngameObject::getHueInfo() const {
+    return hueInfo_;
 }
 
 int IngameObject::getRenderPriority(unsigned int lvl) const {

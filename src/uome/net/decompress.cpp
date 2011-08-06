@@ -1,8 +1,6 @@
 
 #include "decompress.hpp"
 
-#include <misc/log.hpp>
-
 namespace uome {
 namespace net {
 

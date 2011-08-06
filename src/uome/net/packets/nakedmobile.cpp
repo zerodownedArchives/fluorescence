@@ -4,6 +4,8 @@
 #include <world/manager.hpp>
 #include <world/mobile.hpp>
 
+#include <misc/log.hpp>
+
 namespace uome {
 namespace net {
 namespace packets {
