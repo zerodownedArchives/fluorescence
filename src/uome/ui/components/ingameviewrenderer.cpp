@@ -28,14 +28,18 @@ IngameViewRenderer::IngameViewRenderer(IngameView* ingameView) :
     shaderProgram_->bind_attribute_location(0, "gl_Vertex");
     shaderProgram_->bind_attribute_location(1, "TexCoord0");
     shaderProgram_->bind_attribute_location(2, "gl_Normal");
+    shaderProgram_->bind_attribute_location(3, "HueInfo0");
+
     if (!shaderProgram_->link()) {
         LOG_EMERGENCY << "Error while linking program:\n" << shaderProgram_->get_info_log().c_str() << std::endl;
         throw CL_Exception("Unable to link program");
     }
 
     const char* linkerMsg = shaderProgram_->get_info_log().c_str();
+    std::string msg(linkerMsg);
     if (strlen(linkerMsg) > 0) {
         LOG_INFO << "GLSL linking msg:\n" << linkerMsg << std::endl;
+        LOG_INFO << "GLSL linking msg:\n" << msg << std::endl;
     }
 }
 
@@ -117,6 +121,11 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
             primarray.set_attributes(1, tex1_coords);
         }
         primarray.set_attributes(2, curObj->getVertexNormals());
+        primarray.set_attributes(3, curObj->getHueInfo());
+
+        if (curObj->getHueInfo()->y != 0.0f) {
+            //LOG_DEBUG << "drawing something with hue, partial=" << curObj->getHueInfo()->x " hue=" << curObj->getHueInfo()->y << std::endl;
+        }
 
         gc.set_texture(1, *tex->getTexture());
         gc.draw_primitives(cl_triangles, 6, primarray);

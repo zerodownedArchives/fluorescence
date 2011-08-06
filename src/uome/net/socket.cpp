@@ -153,8 +153,8 @@ void Socket::receiveRun() {
 
             decompressedSize_ += decompLen;
 
-            //LOG_INFO << "decompressed buffer dump:" << std::endl;
-            //dumpBuffer(decompressedBuffer_, decompLen);
+            LOG_INFO << "decompressed buffer dump:" << std::endl;
+            dumpBuffer(decompressedBuffer_, decompLen);
 
             parsePackets();
 

@@ -17,6 +17,7 @@ IngameObject::IngameObject() : visible_(true), renderDataValid_(false), textureP
         renderPriority_[i] = 0;
         vertexNormals_[i] = CL_Vec3f(0, 0, 1);
     }
+    hueInfo_ = CL_Vec2f(0.0f, 0.0f);
 }
 
 IngameObject::~IngameObject() {
@@ -57,6 +58,10 @@ void IngameObject::invalidateRenderData(bool updateTextureProvider) {
 
 const CL_Vec2f* IngameObject::getVertexCoordinates() const {
     return vertexCoordinates_;
+}
+
+const CL_Vec2f* IngameObject::getHueInfo() const {
+    return &hueInfo_;
 }
 
 int IngameObject::getRenderPriority(unsigned int lvl) const {

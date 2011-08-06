@@ -48,6 +48,7 @@ void Mobile::setBodyId(unsigned int value) {
 
 void Mobile::setHue(unsigned int value) {
     hue_ = value;
+    hueInfo_[1] = hue_;
 }
 
 void Mobile::updateVertexCoordinates() {

@@ -44,6 +44,8 @@ public:
     const CL_Vec3f* getVertexNormals() const;
     void setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const CL_Vec3f& bottom, const CL_Vec3f& left);
 
+    const CL_Vec2f* getHueInfo() const;
+
     int getRenderPriority(unsigned int lvl) const;
     const int* getRenderPriorities() const;
 
@@ -63,6 +65,7 @@ protected:
     CL_Vec2f vertexCoordinates_[6];
     CL_Vec3f vertexNormals_[6];
     int renderPriority_[6];
+    CL_Vec2f hueInfo_;
 
     void addToRenderQueue();
     void removeFromRenderQueueImmediately();

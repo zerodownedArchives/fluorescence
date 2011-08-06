@@ -29,6 +29,7 @@ void DynamicItem::setArtId(unsigned int artId) {
     if (artId_ != artId) {
         artId_ = artId;
         tileDataInfo_ = data::Manager::getTileDataLoader()->getStaticTileInfo(artId_);
+        hueInfo_[0] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
 
         invalidateRenderData(true);
     }
@@ -60,6 +61,7 @@ void DynamicItem::setStackIdOffset(unsigned int offset) {
 
 void DynamicItem::setHue(unsigned int hue) {
     hue_ = hue;
+    hueInfo_[1] = hue_;
 }
 
 void DynamicItem::updateVertexCoordinates() {

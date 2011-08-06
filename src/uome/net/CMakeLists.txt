@@ -47,6 +47,7 @@ set (PACKETS_HPP
     net/packets/speechrequest.hpp
     net/packets/asciitext.hpp
     net/packets/unicodetext.hpp
+    net/packets/clientversion.hpp
     )
 
 set (PACKETS_CPP
@@ -71,6 +72,7 @@ set (PACKETS_CPP
     net/packets/speechrequest.cpp
     net/packets/asciitext.cpp
     net/packets/unicodetext.cpp
+    net/packets/clientversion.cpp
     )
 
 set (MD5

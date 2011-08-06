@@ -72,6 +72,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
 
     switch (id) {
         case 0x1A: ret.reset(new packets::WorldItem()); break;
+        case 0x1B: ret.reset(new packets::PlayerInit()); break;
         case 0x1C: ret.reset(new packets::AsciiText()); break;
         case 0x1D: ret.reset(new packets::DeleteObject()); break;
         case 0x20: ret.reset(new packets::Teleport()); break;
@@ -81,7 +82,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0x8C: ret.reset(new packets::ServerRedirect()); break;
         case 0xA9: ret.reset(new packets::CharacterList()); break;
         case 0xAE: ret.reset(new packets::UnicodeText()); break;
-        case 0x1B: ret.reset(new packets::PlayerInit()); break;
+        case 0xBD: ret.reset(new packets::ClientVersion()); break;
         default: ret.reset(new packets::Unknown(id)); break;
     }
 
@@ -132,7 +133,7 @@ bool Manager::connect(ui::GumpMenu* menu, const UnicodeString& action, unsigned 
         clientSing->getConfig()["/uome/shard/address@host"].setString(host);
         clientSing->getConfig()["/uome/shard/address@port"].setInt(port);
 
-        socket_.writeSeed(0);
+        socket_.writeSeed(0xDEADBEEF);
         // send packet
         packets::LoginRequest req(accName, accPw);
         socket_.write(req);
@@ -165,7 +166,7 @@ void Manager::handleServerRedirect(const packets::ServerRedirect* packet) {
     socket_.connect(packet->ipaddr_, packet->port_);
     socket_.setUseDecompress(true);
 
-    socket_.writeSeed(0);
+    socket_.writeSeed(packet->encryptionKey_);
 
     Config& config = Client::getSingleton()->getConfig();
     packets::GameServerLoginRequest loginReq(config["/uome/shard/account@name"].asString(),

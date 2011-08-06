@@ -21,8 +21,8 @@ public:
 
 
     uint8_t charCount_;
-    UnicodeString charNames_[6];
-    UnicodeString charPasswords_[6];
+    UnicodeString charNames_[7];
+    UnicodeString charPasswords_[7];
 
     uint8_t cityCount_;
     std::vector<uint8_t> cityIndices_;
