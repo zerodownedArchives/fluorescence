@@ -51,6 +51,7 @@ bool PacketReader::readUnicodeNull(const int8_t* buf, unsigned int len, unsigned
     while (*(reinterpret_cast<const uint16_t*>(&buf[index])) != 0) {
         index += 2;
     }
+    index += 2;
 
     value = StringConverter::fromUnicode(&buf[origIndex], (index - origIndex));
 

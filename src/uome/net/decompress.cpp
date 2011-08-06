@@ -1,6 +1,8 @@
 
 #include "decompress.hpp"
 
+#include <misc/log.hpp>
+
 namespace uome {
 namespace net {
 
@@ -136,7 +138,7 @@ unsigned int Decompress::huffmanDecompress(int8_t* dst, unsigned int dstLen, int
 
     uint8_t readValue;
 
-    BinaryTree* curTree = huffmanTree_;
+    static BinaryTree* curTree = huffmanTree_;
 
     while (srcIndex < srcLen && dstIndex < dstLen) {
         if (readBits <= 0) {
