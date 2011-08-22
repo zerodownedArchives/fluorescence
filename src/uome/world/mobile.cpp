@@ -7,6 +7,9 @@
 #include <net/packets/singleclick.hpp>
 #include <net/packets/doubleclick.hpp>
 
+#include <data/manager.hpp>
+#include <data/huesloader.hpp>
+
 namespace uome {
 namespace world {
 
@@ -48,7 +51,7 @@ void Mobile::setBodyId(unsigned int value) {
 
 void Mobile::setHue(unsigned int value) {
     hue_ = value;
-    hueInfo_[1] = hue_;
+    hueInfo_[1] = data::Manager::getHuesLoader()->translateHue(hue_);
 }
 
 void Mobile::updateVertexCoordinates() {

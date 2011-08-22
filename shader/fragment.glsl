@@ -12,6 +12,11 @@ varying vec2 HueInfo;
 void main(void) {
     // sample actual pixel color
     vec4 rgba = texture2D(ObjectTexture, gl_TexCoord[0].xy);
+
+    if (rgba.a == 0) {
+        discard;
+    }
+
     gl_FragColor.a = rgba.a;
 
     if (HueInfo[1] != 0.0) {

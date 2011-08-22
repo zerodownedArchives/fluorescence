@@ -4,6 +4,7 @@
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
 #include <data/tiledataloader.hpp>
+#include <data/huesloader.hpp>
 
 #include <ui/texture.hpp>
 
@@ -61,7 +62,7 @@ void DynamicItem::setStackIdOffset(unsigned int offset) {
 
 void DynamicItem::setHue(unsigned int hue) {
     hue_ = hue;
-    hueInfo_[1] = hue_;
+    hueInfo_[1] = data::Manager::getHuesLoader()->translateHue(hue_);
 }
 
 void DynamicItem::updateVertexCoordinates() {

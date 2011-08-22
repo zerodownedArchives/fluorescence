@@ -35,6 +35,8 @@ public:
 
     boost::shared_ptr<ui::Texture> getHuesTexture();
 
+    unsigned int translateHue(unsigned int hue) const;
+
 private:
     unsigned int hueCount_;
     Hue* hues_;

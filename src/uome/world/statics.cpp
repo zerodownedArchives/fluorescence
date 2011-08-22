@@ -4,6 +4,7 @@
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
 #include <data/tiledataloader.hpp>
+#include <data/huesloader.hpp>
 
 #include <ui/texture.hpp>
 
@@ -24,6 +25,9 @@ void StaticItem::set(int locX, int locY, int locZ, unsigned int artId, unsigned 
     tileDataInfo_ = data::Manager::getTileDataLoader()->getStaticTileInfo(artId_);
 
     setLocation(locX, locY, locZ);
+
+    hueInfo_[0] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
+    hueInfo_[1] = data::Manager::getHuesLoader()->translateHue(hue_);
 
     addToRenderQueue();
 }

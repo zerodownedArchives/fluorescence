@@ -57,24 +57,39 @@ unsigned int HuesLoader::getHueCount() const {
 }
 
 const uint32_t* HuesLoader::getColorTable(unsigned int id) const {
-    if (id > hueCount_) {
+    static unsigned int hueCountPlusOne = hueCount_ + 1;
+    if (id == 0 || id > hueCountPlusOne) {
         LOG_WARN << "Trying to read hue with out of bounds id " << id << std::endl;
-        id = 0;
+        id = 1;
     }
 
-    return hues_[id].colorTable_;
+    return hues_[id-1].colorTable_;
 }
 
 boost::shared_ptr<ui::Texture> HuesLoader::getHuesTexture() {
     if (!huesTexture_) {
         huesTexture_.reset(new ui::Texture());
-        huesTexture_->initPixelBuffer(32, hueCount_);
+        huesTexture_->initPixelBuffer(32, hueCount_ + 4);
 
         uint32_t* pxBuf = huesTexture_->getPixelBufferData();
 
+        // set hue 0 to black
+        for (unsigned int pxIdx = 0; pxIdx < 32; ++pxIdx) {
+            *pxBuf++ = 0;
+        }
+        for (unsigned int pxIdx = 0; pxIdx < 32; ++pxIdx) {
+            *pxBuf++ = 0;
+        }
+        //for (unsigned int pxIdx = 0; pxIdx < 32; ++pxIdx) {
+            //*pxBuf++ = 0;
+        //}
+        //for (unsigned int pxIdx = 0; pxIdx < 32; ++pxIdx) {
+            //*pxBuf++ = 0;
+        //}
+
         for (unsigned int hueIdx = 0; hueIdx < hueCount_; ++hueIdx) {
             for (unsigned int pxIdx = 0; pxIdx < 32; ++pxIdx) {
-                *pxBuf++ = hues_[hueIdx].colorTable_[pxIdx];
+                *pxBuf++ = hues_[hueIdx + 0].colorTable_[pxIdx];
             }
         }
 
@@ -82,6 +97,17 @@ boost::shared_ptr<ui::Texture> HuesLoader::getHuesTexture() {
     }
 
     return huesTexture_;
+}
+
+unsigned int HuesLoader::translateHue(unsigned int hue) const {
+    unsigned int ret = hue;
+
+    // skin colors use strange magic values
+    if (hue >= 33770) {
+        ret -= 32768;
+    }
+
+    return ret;
 }
 
 }
