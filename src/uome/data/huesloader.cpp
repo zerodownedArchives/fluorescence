@@ -56,20 +56,10 @@ unsigned int HuesLoader::getHueCount() const {
     return hueCount_;
 }
 
-const uint32_t* HuesLoader::getColorTable(unsigned int id) const {
-    static unsigned int hueCountPlusOne = hueCount_ + 1;
-    if (id == 0 || id > hueCountPlusOne) {
-        LOG_WARN << "Trying to read hue with out of bounds id " << id << std::endl;
-        id = 1;
-    }
-
-    return hues_[id-1].colorTable_;
-}
-
 boost::shared_ptr<ui::Texture> HuesLoader::getHuesTexture() {
     if (!huesTexture_) {
         huesTexture_.reset(new ui::Texture());
-        huesTexture_->initPixelBuffer(32, hueCount_ + 4);
+        huesTexture_->initPixelBuffer(32, hueCount_ + 1);
 
         uint32_t* pxBuf = huesTexture_->getPixelBufferData();
 
@@ -77,19 +67,10 @@ boost::shared_ptr<ui::Texture> HuesLoader::getHuesTexture() {
         for (unsigned int pxIdx = 0; pxIdx < 32; ++pxIdx) {
             *pxBuf++ = 0;
         }
-        for (unsigned int pxIdx = 0; pxIdx < 32; ++pxIdx) {
-            *pxBuf++ = 0;
-        }
-        //for (unsigned int pxIdx = 0; pxIdx < 32; ++pxIdx) {
-            //*pxBuf++ = 0;
-        //}
-        //for (unsigned int pxIdx = 0; pxIdx < 32; ++pxIdx) {
-            //*pxBuf++ = 0;
-        //}
 
         for (unsigned int hueIdx = 0; hueIdx < hueCount_; ++hueIdx) {
             for (unsigned int pxIdx = 0; pxIdx < 32; ++pxIdx) {
-                *pxBuf++ = hues_[hueIdx + 0].colorTable_[pxIdx];
+                *pxBuf++ = hues_[hueIdx].colorTable_[pxIdx];
             }
         }
 

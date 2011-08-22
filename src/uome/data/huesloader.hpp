@@ -31,8 +31,6 @@ public:
 
     unsigned int getHueCount() const;
 
-    const uint32_t* getColorTable(unsigned int id) const;
-
     boost::shared_ptr<ui::Texture> getHuesTexture();
 
     unsigned int translateHue(unsigned int hue) const;
