@@ -132,6 +132,8 @@ void DynamicItem::onDoubleClick() {
     net::Manager::getSingleton()->send(pkt);
 }
 
+void DynamicItem::onStartDrag() {
+}
 
 
 }

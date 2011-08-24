@@ -4,6 +4,7 @@
 #include "manager.hpp"
 #include "gumpactions.hpp"
 
+#include <ui/cursormanager.hpp>
 #include <misc/log.hpp>
 
 namespace uome {
@@ -174,6 +175,9 @@ bool GumpMenu::onPointerMoved(const CL_InputEvent& msg) {
         //last_mouse_pos = e.mouse_pos;
         set_window_geometry(geometry);
 
+        return true;
+    } else {
+        ui::Manager::getSingleton()->getCursorManager()->onCursorMove(msg.mouse_pos.x, msg.mouse_pos.y);
         return true;
     }
     return false;

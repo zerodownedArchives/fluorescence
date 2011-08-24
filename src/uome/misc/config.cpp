@@ -159,6 +159,7 @@ Config::Config() {
 
     // input stuff
     variablesMap_["/uome/input/mouse@doubleclick-timeout-ms"].setInt(300, true);
+    variablesMap_["/uome/input/mouse@drag-start-distance"].setInt(40, true); // pixel difference to start dragging
 
 
     // shard stuff

@@ -7,6 +7,8 @@
 
 #include "cursorimage.hpp"
 
+#include <world/ingameobject.hpp>
+
 class CL_DisplayWindow;
 
 namespace uome {
@@ -42,6 +44,12 @@ public:
     void setWarMode(bool value);
     void setCursor(unsigned int id);
 
+    bool isDragging() const;
+    void setDragCandidate(boost::shared_ptr<world::IngameObject> itm, int mouseX, int mouseY);
+    boost::shared_ptr<world::IngameObject> stopDragging();
+
+    void onCursorMove(int mouseX, int mouseY);
+
 private:
     bool warMode_;
     unsigned int warmodeArtOffset_;
@@ -52,6 +60,12 @@ private:
     void setCursorImage(unsigned int id, unsigned int artId, bool warMode, boost::shared_ptr<CL_DisplayWindow> window);
 
     void updateCursor();
+
+    void startDragging();
+    bool isDragging_;
+    int dragStartMouseX_;
+    int dragStartMouseY_;
+    boost::shared_ptr<world::IngameObject> dragCandidate_;
 };
 
 }

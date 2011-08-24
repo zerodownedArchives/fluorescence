@@ -22,6 +22,11 @@ void MapTile::set(int locX, int locY, int locZ, unsigned int artId) {
     artId_ = artId;
     tileDataInfo_ = data::Manager::getTileDataLoader()->getLandTileInfo(artId_);
 
+    // set surrounding z to safety values until they arrive
+    zLeft_ = locZ;
+    zRight_ = locZ;
+    zBottom_ = locZ;
+
     // texture is not set here, but in updateTexture
 
     setLocation(locX, locY, locZ);
@@ -60,7 +65,7 @@ void MapTile::updateVertexCoordinates() {
 }
 
 bool MapTile::isFlat() const {
-    return (zLeft_ == zRight_ && zLeft_ == zBottom_ && zLeft_ == getLocZ()) || tileDataInfo_->textureId_ < 0;
+    return (zLeft_ == zRight_ && zLeft_ == zBottom_ && zLeft_ == getLocZ()) || tileDataInfo_->textureId_ <= 0;
 }
 
 void MapTile::updateRenderPriority() {
@@ -155,13 +160,7 @@ void MapTile::onClick() {
     LOG_INFO << "Clicked map, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
             getLocZ() << ") name=" << tileDataInfo_->name_ << std::endl;
 
-    //LOG_INFO << "Vertex normals \n\ttop =(" << vertexNormals_[0].x << " / " << vertexNormals_[0].y << " / " << vertexNormals_[0].z << ")" <<
-            //"\n\tleft=(" << vertexNormals_[1].x << " / " << vertexNormals_[1].y << " / " << vertexNormals_[1].z << ")" <<
-            //"\n\trigh=(" << vertexNormals_[2].x << " / " << vertexNormals_[2].y << " / " << vertexNormals_[2].z << ")" <<
-            //"\n\tbott=(" << vertexNormals_[5].x << " / " << vertexNormals_[5].y << " / " << vertexNormals_[5].z << ")" <<
-            //std::endl;
-
-    //LOG_INFO << "x value: self=" << getLocZ() << " right=" << zRight_ << " bottom=" << zBottom_ << " left=" << zLeft_ << std::endl;
+    //LOG_INFO << "z value: self=" << getLocZ() << " right=" << zRight_ << " bottom=" << zBottom_ << " left=" << zLeft_ << std::endl;
 }
 
 

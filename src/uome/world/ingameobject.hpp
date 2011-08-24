@@ -57,6 +57,10 @@ public:
 
     virtual bool isMirrored() const;
 
+    bool isDraggable() const;
+    virtual void onDraggedOnto(boost::shared_ptr<IngameObject> obj);
+    virtual void onDraggedToVoid();
+    virtual void onStartDrag();
 
     virtual void onClick();
     virtual void onDoubleClick();
@@ -66,6 +70,7 @@ protected:
     CL_Vec3f vertexNormals_[6];
     int renderPriority_[6];
     CL_Vec2f hueInfo_;
+    bool draggable_;
 
     void addToRenderQueue();
     void removeFromRenderQueueImmediately();

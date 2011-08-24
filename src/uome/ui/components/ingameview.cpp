@@ -15,6 +15,7 @@
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
 #include <ui/doubleclickhandler.hpp>
+#include <ui/cursormanager.hpp>
 
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
@@ -130,6 +131,7 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     boost::shared_ptr<world::LightManager> lm;
     CL_Vec3f intensity;
     CL_Vec3f direction;
+    boost::shared_ptr<world::IngameObject> clickedObject;
 
     //LOGARG_INFO(LOGTYPE_INPUT, "input pressed ingameview: %u", e.id);
 
@@ -192,10 +194,6 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         LOG_DEBUG <<"mw down " << lm->getGlobalAngle() << std::endl;
         break;
 
-    case CL_MOUSE_LEFT:
-        set_focus();
-        break;
-
     case CL_KEY_F:
         data::Manager::getArtLoader()->printStats();
         break;
@@ -206,7 +204,18 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         world::Manager::getSingleton()->getPlayer()->setDirection(curDirection++);
         break;
 
-    default:consumed = false;
+
+    case CL_MOUSE_LEFT:
+        set_focus();
+        clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
+        if (clickedObject && clickedObject->isDraggable()) {
+            ui::Manager::getSingleton()->getCursorManager()->setDragCandidate(clickedObject, e.mouse_pos.x, e.mouse_pos.y);
+        }
+        break;
+
+    default:
+        consumed = false;
+        break;
     }
 
     return consumed;
@@ -216,14 +225,22 @@ bool IngameView::onInputReleased(const CL_InputEvent& e) {
     bool consumed = true;
 
     boost::shared_ptr<world::IngameObject> clickedObject;
+    boost::shared_ptr<world::IngameObject> draggedObject;
 
     switch (e.id) {
     case CL_MOUSE_LEFT:
         clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
-        if (!clickedObject) {
-            LOG_DEBUG << "Clicked, but found no object" << std::endl;
-        } else {
-            ui::Manager::getDoubleClickHandler()->notify(clickedObject);
+        draggedObject = ui::Manager::getSingleton()->getCursorManager()->stopDragging();
+
+        if (clickedObject) {
+            if (draggedObject) {
+                draggedObject->onDraggedOnto(clickedObject);
+            } else {
+                ui::Manager::getDoubleClickHandler()->notify(clickedObject);
+            }
+        } else if (draggedObject) {
+            // dragged to void
+            draggedObject->onDraggedToVoid();
         }
         break;
 

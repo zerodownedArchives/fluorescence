@@ -12,7 +12,7 @@
 namespace uome {
 namespace world {
 
-IngameObject::IngameObject() : visible_(true), renderDataValid_(false), textureProviderUpdateRequired_(true), addedToRenderQueue_(false) {
+IngameObject::IngameObject() : draggable_(false), visible_(true), renderDataValid_(false), textureProviderUpdateRequired_(true), addedToRenderQueue_(false) {
     for (unsigned int i = 0; i < 6; ++i) {
         renderPriority_[i] = 0;
         vertexNormals_[i] = CL_Vec3f(0, 0, 1);
@@ -167,6 +167,22 @@ void IngameObject::onDoubleClick() {
 
 bool IngameObject::isMirrored() const {
     return false;
+}
+
+bool IngameObject::isDraggable() const {
+    return draggable_;
+}
+
+void IngameObject::onDraggedOnto(boost::shared_ptr<IngameObject> obj) {
+    LOG_DEBUG << "Object dragged on something else x=" << obj->getLocX() << " y=" << obj->getLocY() << std::endl;
+}
+
+void IngameObject::onDraggedToVoid() {
+    LOG_DEBUG << "Object dragged on void" << std::endl;
+}
+
+void IngameObject::onStartDrag() {
+    LOG_DEBUG << "Object start drag" << std::endl;
 }
 
 }

@@ -1,13 +1,15 @@
 
 #include "cursormanager.hpp"
 
+#include <client.hpp>
+#include <misc/config.hpp>
 #include <misc/log.hpp>
 
 namespace uome {
 namespace ui {
 
 CursorManager::CursorManager(Config& config, boost::shared_ptr<CL_DisplayWindow> window) :
-        warMode_(false) {
+        warMode_(false), isDragging_(false) {
 
     unsigned int artIdStart = config["/uome/ui/cursor@normal-artid-start"].asInt();
     unsigned int artIdStartWarMode = config["/uome/ui/cursor@warmode-artid-start"].asInt();
@@ -42,6 +44,46 @@ void CursorManager::updateCursor() {
     }
 
     cursorImages_[cursorIndex].activate();
+}
+
+void CursorManager::setDragCandidate(boost::shared_ptr<world::IngameObject> itm, int mouseX, int mouseY) {
+    if (!isDragging_) {
+        dragCandidate_ = itm;
+        dragStartMouseX_ = mouseX;
+        dragStartMouseY_ = mouseY;
+    }
+}
+
+void CursorManager::startDragging() {
+    if (dragCandidate_ && !isDragging_) {
+        isDragging_ = true;
+        LOG_DEBUG << "start dragging" << std::endl;
+    }
+}
+
+boost::shared_ptr<world::IngameObject> CursorManager::stopDragging() {
+    boost::shared_ptr<world::IngameObject> ret;
+    if (isDragging_ && dragCandidate_) {
+        ret = dragCandidate_;
+    }
+    isDragging_ = false;
+    dragCandidate_.reset();
+    return ret;
+}
+
+bool CursorManager::isDragging() const {
+    return isDragging_;
+}
+
+void CursorManager::onCursorMove(int mouseX, int mouseY) {
+    if (dragCandidate_ && !isDragging_) {
+        int pixelDiffDrag = Client::getSingleton()->getConfig()["/uome/input/mouse@drag-start-distance"].asInt();
+
+        if (abs(mouseX - dragStartMouseX_) + abs(mouseY - dragStartMouseY_) >= pixelDiffDrag) {
+            startDragging();
+            dragCandidate_->onStartDrag();
+        }
+    }
 }
 
 }

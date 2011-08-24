@@ -40,6 +40,8 @@ public:
     virtual void onClick();
     virtual void onDoubleClick();
 
+    virtual void onStartDrag();
+
 private:
     unsigned int artId_;
     unsigned int hue_;
