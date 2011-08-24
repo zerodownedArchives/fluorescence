@@ -2,6 +2,8 @@
 #define UOME_NET_PACKETLIST_HPP
 
 #include "packets/doubleclick.hpp" // 0x06
+#include "packets/pickupitem.hpp" // 0x07
+#include "packets/dropitem.hpp" // 0x08
 #include "packets/singleclick.hpp" // 0x09
 #include "packets/worlditem.hpp" // 0x1a
 #include "packets/playerinit.hpp" // 0x1b

@@ -71,7 +71,7 @@ bool MapTile::isFlat() const {
 void MapTile::updateRenderPriority() {
     renderPriority_[0] = getLocX() + getLocY();
 
-    renderPriority_[1] = getLocZ();
+    renderPriority_[1] = (getLocZ() + zLeft_ + zRight_ + zBottom_)/4;
 }
 
 void MapTile::updateTextureProvider() {

@@ -1,6 +1,10 @@
 
 #include "dynamicitem.hpp"
 
+#include "map.hpp"
+#include "statics.hpp"
+#include "mobile.hpp"
+
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
 #include <data/tiledataloader.hpp>
@@ -11,6 +15,8 @@
 #include <net/manager.hpp>
 #include <net/packets/singleclick.hpp>
 #include <net/packets/doubleclick.hpp>
+#include <net/packets/pickupitem.hpp>
+#include <net/packets/dropitem.hpp>
 
 namespace uome {
 namespace world {
@@ -50,6 +56,10 @@ void DynamicItem::setAmount(unsigned int amount) {
     }
 
     // TODO: display change when stacked
+}
+
+unsigned int DynamicItem::getAmount() const {
+    return amount_;
 }
 
 void DynamicItem::setStackIdOffset(unsigned int offset) {
@@ -133,8 +143,35 @@ void DynamicItem::onDoubleClick() {
 }
 
 void DynamicItem::onStartDrag() {
+    net::packets::PickUpItem pkt(this, getAmount());
+    net::Manager::getSingleton()->send(pkt);
 }
 
+void DynamicItem::onDraggedOnto(boost::shared_ptr<IngameObject> obj) {
+    const IngameObject* rawPtr = obj.get();
+
+    const MapTile* mapTile = dynamic_cast<const MapTile*>(rawPtr);
+    if (mapTile) {
+        net::packets::DropItem pkt(this, mapTile->getLocX(), mapTile->getLocY(), mapTile->getLocZ());
+        net::Manager::getSingleton()->send(pkt);
+        return;
+    }
+
+    const StaticItem* sItem = dynamic_cast<const StaticItem*>(rawPtr);
+    if (sItem) {
+        net::packets::DropItem pkt(this, sItem->getLocX(), sItem->getLocY(), sItem->getLocZ());
+        net::Manager::getSingleton()->send(pkt);
+        return;
+    }
+
+    const DynamicItem* dItem = dynamic_cast<const DynamicItem*>(rawPtr);
+    if (dItem) {
+    }
+
+    const Mobile* mobile = dynamic_cast<const Mobile*>(rawPtr);
+    if (mobile) {
+    }
+}
 
 }
 }

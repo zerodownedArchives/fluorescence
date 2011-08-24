@@ -31,6 +31,7 @@ public:
     void setDirection(unsigned int direction);
 
     void setAmount(unsigned int amount);
+    unsigned int getAmount() const;
     void setStackIdOffset(unsigned int offset);
 
     void setHue(unsigned int hue);
@@ -41,6 +42,7 @@ public:
     virtual void onDoubleClick();
 
     virtual void onStartDrag();
+    virtual void onDraggedOnto(boost::shared_ptr<IngameObject> obj);
 
 private:
     unsigned int artId_;

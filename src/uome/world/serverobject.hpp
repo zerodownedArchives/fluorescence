@@ -12,7 +12,7 @@ class ServerObject : public IngameObject {
 public:
     ServerObject(Serial serial);
 
-    Serial getSerial();
+    Serial getSerial() const;
 
 private:
     Serial serial_;

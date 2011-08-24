@@ -64,13 +64,15 @@ void Mobile::updateVertexCoordinates() {
     //int py = (getLocX() + getLocY()) * 22 - texHeight + 44;
     //py -= getLocZ() * 4;
 
-    int px = (getLocX() - getLocY()) * 22;
-    int py = (getLocX() + getLocY()) * 22;
-    py -= getLocZ() * 4;
+    int px = (getLocX() - getLocY()) * 22 + 22;
+    int py = (getLocX() + getLocY()) * 22 - getLocZ() * 4 - 22;
+    py = py - frame.centerY_ - texHeight;
 
-    px -= frame.centerX_;
-    py = py - texHeight - frame.centerY_;
-    //py -= frame.centerY_;
+    if (isMirrored()) {
+        px = px - texWidth + frame.centerX_;
+    } else {
+        px -= frame.centerX_;
+    }
 
     CL_Rectf rect(px, py, px + texWidth, py + texHeight);
 

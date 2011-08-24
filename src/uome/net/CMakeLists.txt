@@ -48,6 +48,8 @@ set (PACKETS_HPP
     net/packets/asciitext.hpp
     net/packets/unicodetext.hpp
     net/packets/clientversion.hpp
+    net/packets/pickupitem.hpp
+    net/packets/dropitem.hpp
     )
 
 set (PACKETS_CPP
@@ -73,6 +75,8 @@ set (PACKETS_CPP
     net/packets/asciitext.cpp
     net/packets/unicodetext.cpp
     net/packets/clientversion.cpp
+    net/packets/pickupitem.cpp
+    net/packets/dropitem.cpp
     )
 
 set (MD5
