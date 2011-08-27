@@ -1,71 +1,71 @@
 
-#include "configvalue.hpp"
+#include "variable.hpp"
 
 #include <sstream>
 
 namespace uome {
 
-ConfigValue::ConfigValue() : isDefault_(true), valueType_(TYPE_UNKNOWN) {
+Variable::Variable() : isDefault_(true), valueType_(TYPE_UNKNOWN) {
 }
 
-bool ConfigValue::isInt() const {
+bool Variable::isInt() const {
     return valueType_ == TYPE_INT;
 }
 
-bool ConfigValue::isBool() const {
+bool Variable::isBool() const {
     return valueType_ == TYPE_BOOL;
 }
 
-bool ConfigValue::isString() const {
+bool Variable::isString() const {
     return valueType_ == TYPE_STRING;
 }
 
-bool ConfigValue::isPath() const {
+bool Variable::isPath() const {
     return valueType_ == TYPE_PATH;
 }
 
 
-bool ConfigValue::isDefault() const {
+bool Variable::isDefault() const {
     return isDefault_;
 }
 
 
-const bool ConfigValue::asBool() const {
+const bool Variable::asBool() const {
     if (isBool() || isInt()) {
         return valueBool_;
     }
     throw BadCastException();
 }
 
-const int ConfigValue::asInt() const {
+const int Variable::asInt() const {
     if (isInt() || isBool()) {
         return valueInt_;
     }
     throw BadCastException();
 }
 
-const UnicodeString& ConfigValue::asString() const {
+const UnicodeString& Variable::asString() const {
     if (isString() || isInt() || isPath() || isBool()) {
         return valueString_;
     }
     throw BadCastException();
 }
 
-std::string ConfigValue::asUtf8() const {
+std::string Variable::asUtf8() const {
     if (isString() || isPath()) {
         return StringConverter::toUtf8String(valueString_);
     }
     throw BadCastException();
 }
 
-const boost::filesystem::path& ConfigValue::asPath() const {
+const boost::filesystem::path& Variable::asPath() const {
     if (isPath() || isString()) {
         return valuePath_;
     }
     throw BadCastException();
 }
 
-void ConfigValue::setBool(bool val, bool isDefault) {
+void Variable::setBool(bool val, bool isDefault) {
     valueBool_ = val;
     isDefault_ = isDefault;
     valueType_ = TYPE_BOOL;
@@ -74,7 +74,7 @@ void ConfigValue::setBool(bool val, bool isDefault) {
     valueInt_ = val;
 }
 
-void ConfigValue::setInt(int val, bool isDefault) {
+void Variable::setInt(int val, bool isDefault) {
     valueInt_ = val;
     isDefault_ = isDefault;
     valueType_ = TYPE_INT;
@@ -83,7 +83,7 @@ void ConfigValue::setInt(int val, bool isDefault) {
     valueBool_ = val != 0;
 }
 
-void ConfigValue::setString(const UnicodeString& val, bool isDefault) {
+void Variable::setString(const UnicodeString& val, bool isDefault) {
     valueString_ = val;
     isDefault_ = isDefault;
     valueType_ = TYPE_STRING;
@@ -92,7 +92,7 @@ void ConfigValue::setString(const UnicodeString& val, bool isDefault) {
     valuePath_ = utf8Str;
 }
 
-void ConfigValue::setPath(const boost::filesystem::path& val, bool isDefault) {
+void Variable::setPath(const boost::filesystem::path& val, bool isDefault) {
     valuePath_ = val;
     isDefault_ = isDefault;
     valueType_ = TYPE_PATH;
@@ -100,7 +100,7 @@ void ConfigValue::setPath(const boost::filesystem::path& val, bool isDefault) {
     valueString_ = StringConverter::fromUtf8(valuePath_.string());
 }
 
-bool ConfigValue::parse(const char* str) {
+bool Variable::parse(const char* str) {
     std::istringstream iss(str);
 
     int nr;
@@ -127,7 +127,7 @@ bool ConfigValue::parse(const char* str) {
     return true;
 }
 
-unsigned int ConfigValue::valueType() const {
+unsigned int Variable::valueType() const {
     return valueType_;
 }
 

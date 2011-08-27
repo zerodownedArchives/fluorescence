@@ -21,6 +21,7 @@
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
 #include "components/ingameview.hpp"
+#include "components/propertylabel.hpp"
 
 namespace uome {
 namespace ui {
@@ -70,6 +71,7 @@ GumpFactory::GumpFactory() {
     functionTable_["ttextedit"] = boost::bind(&GumpFactory::parseTTextEdit, this, _1, _2, _3);
     functionTable_["tscrollarea"] = boost::bind(&GumpFactory::parseTScrollArea, this, _1, _2, _3);
     functionTable_["repeat"] = boost::bind(&GumpFactory::parseRepeat, this, _1, _2, _3);
+    functionTable_["propertylabel"] = boost::bind(&GumpFactory::parsePropertyLabel, this, _1, _2, _3);
 
     functionTable_["page"] = boost::bind(&GumpFactory::parsePage, this, _1, _2, _3);
 
@@ -517,6 +519,38 @@ bool GumpFactory::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     }
 
     label->set_text(text);
+    label->set_geometry(bounds);
+
+    top->addToCurrentPage(label);
+    return true;
+}
+
+bool GumpFactory::parsePropertyLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, parent);
+    std::string align = node.attribute("align").value();
+    UnicodeString link = StringConverter::fromUtf8(node.attribute("link").value());
+
+    if (link.length() == 0) {
+        LOG_WARN << "PropertyLabel without link" << std::endl;
+        return false;
+    }
+
+    components::PropertyLabel* label = new components::PropertyLabel(parent, link);
+    parseId(node, label);
+
+    if (align.length() == 0 || align == "left") {
+        label->set_alignment(CL_Label::align_left);
+    } else if (align == "right") {
+        label->set_alignment(CL_Label::align_right);
+    } else if (align == "center") {
+        label->set_alignment(CL_Label::align_center);
+    } else if (align == "justify") {
+        label->set_alignment(CL_Label::align_justify);
+    } else {
+        LOG_WARN << "Unknown label align: " << align << std::endl;
+        return false;
+    }
+
     label->set_geometry(bounds);
 
     top->addToCurrentPage(label);

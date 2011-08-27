@@ -81,6 +81,7 @@ private:
     bool parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
     bool parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parsePropertyLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
     // supports both themed and uo images
     bool parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);

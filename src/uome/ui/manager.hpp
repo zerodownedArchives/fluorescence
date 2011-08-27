@@ -13,10 +13,15 @@
 #include <boost/thread/recursive_mutex.hpp>
 
 #include <list>
+#include <queue>
 
 #include <misc/config.hpp>
 
 namespace uome {
+namespace world {
+    class IngameObject;
+}
+
 namespace ui {
 
 class IngameView;
@@ -58,6 +63,9 @@ public:
 
     void systemMessage(const UnicodeString& msg);
 
+    void queueSingleClick(boost::shared_ptr<world::IngameObject> obj);
+    void queueDoubleClick(boost::shared_ptr<world::IngameObject> obj);
+
 private:
     static Manager* singleton_;
 
@@ -97,6 +105,9 @@ private:
     CL_AcceleratorTable macros_;
 
     void enterTest(CL_GUIMessage msg, CL_AcceleratorKey key);
+
+    std::queue<boost::shared_ptr<world::IngameObject> > singleClickQueue_;
+    std::queue<boost::shared_ptr<world::IngameObject> > doubleClickQueue_;
 };
 
 }

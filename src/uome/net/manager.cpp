@@ -81,6 +81,9 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0x77: ret.reset(new packets::NakedMobile()); break;
         case 0xA8: ret.reset(new packets::ServerList()); break;
         case 0x8C: ret.reset(new packets::ServerRedirect()); break;
+        case 0xA1: ret.reset(new packets::StatUpdateHitpoints()); break;
+        case 0xA2: ret.reset(new packets::StatUpdateMana()); break;
+        case 0xA3: ret.reset(new packets::StatUpdateFatigue()); break;
         case 0xA9: ret.reset(new packets::CharacterList()); break;
         case 0xAE: ret.reset(new packets::UnicodeText()); break;
         case 0xBD: ret.reset(new packets::ClientVersion()); break;

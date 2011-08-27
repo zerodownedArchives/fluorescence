@@ -3,6 +3,7 @@
 
 #include <ClanLib/Core/Math/vec2.h>
 #include <ClanLib/Core/Math/vec3.h>
+#include <ClanLib/Core/Math/point.h>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -60,7 +61,7 @@ public:
     bool isDraggable() const;
     virtual void onDraggedOnto(boost::shared_ptr<IngameObject> obj);
     virtual void onDraggedToVoid();
-    virtual void onStartDrag();
+    virtual void onStartDrag(const CL_Point& mousePos);
 
     virtual void onClick();
     virtual void onDoubleClick();

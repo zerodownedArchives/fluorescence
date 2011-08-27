@@ -2,7 +2,7 @@
 set(MISC_HPP
     misc/log.hpp
     misc/string.hpp
-    misc/configvalue.hpp
+    misc/variable.hpp
     misc/config.hpp
     misc/exception.hpp
     misc/filenamecaseconverter.hpp
@@ -11,7 +11,7 @@ set(MISC_HPP
 set(MISC_CPP
     misc/log.cpp
     misc/string.cpp
-    misc/configvalue.cpp
+    misc/variable.cpp
     misc/config.cpp
     misc/filenamecaseconverter.cpp
     )

@@ -3,9 +3,9 @@
 
 #include <boost/thread.hpp>
 
-#include <world/ingameobject.hpp>
-
 #include <misc/log.hpp>
+
+#include "manager.hpp"
 
 namespace uome {
 namespace ui {
@@ -37,6 +37,8 @@ void DoubleClickHandler::kill() {
 }
 
 void DoubleClickHandler::run() {
+    ui::Manager* uiMan = ui::Manager::getSingleton();
+
     while (running_) {
         sema_.wait();
         if (!running_) {
@@ -55,10 +57,10 @@ void DoubleClickHandler::run() {
 
         if (doubleClick) {
             //LOG_DEBUG(LOGTYPE_INPUT, "dch doubleclick");
-            lastObject_->onDoubleClick();
+            uiMan->queueDoubleClick(lastObject_);
         } else {
             //LOG_DEBUG(LOGTYPE_INPUT, "dch click");
-            lastObject_->onClick();
+            uiMan->queueSingleClick(lastObject_);
         }
 
         lastObject_.reset();

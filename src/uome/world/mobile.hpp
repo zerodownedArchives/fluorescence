@@ -1,15 +1,18 @@
 #ifndef UOME_WORLD_MOBILE_HPP
 #define UOME_WORLD_MOBILE_HPP
 
+#include <list>
 
 #include "serverobject.hpp"
 
+#include <misc/variable.hpp>
 #include <ui/animtextureprovider.hpp>
 
 namespace uome {
 
 namespace ui {
     class Texture;
+    class GumpMenu;
 }
 
 
@@ -34,6 +37,14 @@ public:
     virtual bool isMirrored() const;
     void setDirection(unsigned int direction);
 
+    Variable& getProperty(const UnicodeString& name);
+    void onPropertyUpdate();
+
+    void addLinkedGump(ui::GumpMenu* menu);
+    void removeLinkedGump(ui::GumpMenu* menu);
+
+    virtual void onStartDrag(const CL_Point& mousePos);
+
 private:
     unsigned int bodyId_;
     unsigned int hue_;
@@ -46,6 +57,10 @@ private:
     bool updateAnimation(unsigned int elapsedMillis);
 
     boost::shared_ptr<ui::AnimTextureProvider> textureProvider_;
+
+    std::map<UnicodeString, Variable> propertyMap_;
+
+    std::list<ui::GumpMenu*> linkedGumps_;
 };
 
 }

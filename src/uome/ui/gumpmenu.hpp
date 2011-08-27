@@ -11,6 +11,10 @@
 #include "gumpmenus.hpp"
 
 namespace uome {
+namespace world {
+    class Mobile;
+}
+
 namespace ui {
 
 class GumpMenu : public CL_Window, public boost::enable_shared_from_this<GumpMenu> {
@@ -73,6 +77,13 @@ public:
         }
     }
 
+    void updateMobileProperties();
+    void setLinkedMobile(world::Mobile* mob);
+
+    void onClose();
+
+    void startDragging(const CL_Point& mousePos);
+
 private:
     unsigned int activePageId_;
     std::map<unsigned int, std::vector<CL_GUIComponent*> > pages_;
@@ -94,6 +105,8 @@ private:
 
     UnicodeString action_;
     UnicodeString cancelAction_;
+
+    world::Mobile* linkedMobile_;
 };
 
 }

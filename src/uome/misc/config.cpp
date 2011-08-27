@@ -263,11 +263,11 @@ bool Config::parseNode(const pugi::xml_node& node) {
     return true;
 }
 
-ConfigValue& Config::operator[](const UnicodeString& name) {
+Variable& Config::operator[](const UnicodeString& name) {
     return get(name);
 }
 
-ConfigValue& Config::get(const UnicodeString& name) {
+Variable& Config::get(const UnicodeString& name) {
     return variablesMap_[name];
 }
 
@@ -277,8 +277,8 @@ bool Config::exists(const UnicodeString& name) const {
 
 void Config::dumpMap() const {
     LOG_DEBUG << "\n\nFull config dump:" << std::endl;
-    std::map<UnicodeString, ConfigValue>::const_iterator iter = variablesMap_.begin();
-    std::map<UnicodeString, ConfigValue>::const_iterator end = variablesMap_.end();
+    std::map<UnicodeString, Variable>::const_iterator iter = variablesMap_.begin();
+    std::map<UnicodeString, Variable>::const_iterator end = variablesMap_.end();
 
     for (; iter != end; ++iter) {
         LOG_DEBUG << "Config value type=" << iter->second.valueType() << " isDefault=" << iter->second.isDefault() << "  " <<
@@ -290,8 +290,8 @@ bool Config::save(const boost::filesystem::path& path, bool includeDefaultValues
     pugi::xml_document rootNode;
     rootNode.set_name("uome");
 
-    std::map<UnicodeString, ConfigValue>::const_iterator iter = variablesMap_.begin();
-    std::map<UnicodeString, ConfigValue>::const_iterator end = variablesMap_.end();
+    std::map<UnicodeString, Variable>::const_iterator iter = variablesMap_.begin();
+    std::map<UnicodeString, Variable>::const_iterator end = variablesMap_.end();
 
     for (; iter != end; ++iter) {
         if (includeDefaultValues || !iter->second.isDefault()) {

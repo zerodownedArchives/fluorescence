@@ -75,13 +75,13 @@ bool CursorManager::isDragging() const {
     return isDragging_;
 }
 
-void CursorManager::onCursorMove(int mouseX, int mouseY) {
+void CursorManager::onCursorMove(const CL_Point& mousePos) {
     if (dragCandidate_ && !isDragging_) {
         int pixelDiffDrag = Client::getSingleton()->getConfig()["/uome/input/mouse@drag-start-distance"].asInt();
 
-        if (abs(mouseX - dragStartMouseX_) + abs(mouseY - dragStartMouseY_) >= pixelDiffDrag) {
+        if (abs(mousePos.x - dragStartMouseX_) + abs(mousePos.y - dragStartMouseY_) >= pixelDiffDrag) {
             startDragging();
-            dragCandidate_->onStartDrag();
+            dragCandidate_->onStartDrag(mousePos);
         }
     }
 }

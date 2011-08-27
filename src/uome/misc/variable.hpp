@@ -1,12 +1,12 @@
-#ifndef UOME_MISC_CONFIGVALUE_HPP
-#define UOME_MISC_CONFIGVALUE_HPP
+#ifndef UOME_MISC_VARIABLE_HPP
+#define UOME_MISC_VARIABLE_HPP
 
 #include <boost/filesystem/path.hpp>
 #include <misc/string.hpp>
 
 namespace uome {
 
-class ConfigValue {
+class Variable {
 public:
     class BadCastException : public std::exception {
     public:
@@ -21,7 +21,7 @@ public:
     static const unsigned int TYPE_STRING = 3;
     static const unsigned int TYPE_PATH = 4;
 
-    ConfigValue();
+    Variable();
 
     bool isInt() const;
     bool isBool() const;

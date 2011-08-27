@@ -3,9 +3,12 @@
 
 #include "manager.hpp"
 #include "gumpactions.hpp"
+#include "cursormanager.hpp"
+#include "components/propertylabel.hpp"
 
-#include <ui/cursormanager.hpp>
 #include <misc/log.hpp>
+
+#include <world/mobile.hpp>
 
 namespace uome {
 namespace ui {
@@ -14,7 +17,8 @@ GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
     CL_Window(ui::Manager::getSingleton()->getGuiManager().get(), desc),
     activePageId_(0), firstPageId_(0),
     closable_(true),
-    draggable_(true), isDragged_(false) {
+    draggable_(true), isDragged_(false),
+    linkedMobile_(NULL) {
 
     addPage(0);
 
@@ -116,10 +120,7 @@ bool GumpMenu::onInputPressed(const CL_InputEvent& msg) {
             break;
         }
 
-        bring_to_front();
-        capture_mouse(true);
-        lastMousePos_ = msg.mouse_pos;
-        isDragged_ = true;
+        startDragging(msg.mouse_pos);
 
         break;
 
@@ -172,12 +173,11 @@ bool GumpMenu::onPointerMoved(const CL_InputEvent& msg) {
     if (isDragged_) {
         CL_Rect geometry = get_window_geometry();
         geometry.translate(msg.mouse_pos.x - lastMousePos_.x, msg.mouse_pos.y - lastMousePos_.y);
-        //last_mouse_pos = e.mouse_pos;
         set_window_geometry(geometry);
 
         return true;
     } else {
-        ui::Manager::getSingleton()->getCursorManager()->onCursorMove(msg.mouse_pos.x, msg.mouse_pos.y);
+        ui::Manager::getSingleton()->getCursorManager()->onCursorMove(component_to_screen_coords(msg.mouse_pos));
         return true;
     }
     return false;
@@ -218,6 +218,44 @@ void GumpMenu::setAction(const UnicodeString& action) {
 
 void GumpMenu::setCancelAction(const UnicodeString& action) {
     cancelAction_ = action;
+}
+
+void GumpMenu::updateMobileProperties() {
+    if (!linkedMobile_) {
+        LOG_WARN << "Calling updateMobileProperties on gump without linked mobile " << name_ << std::endl;
+        ui::Manager::getSingleton()->closeGumpMenu(this);
+        return;
+    }
+
+    std::vector<CL_GUIComponent*> children = get_child_components();
+
+    std::vector<CL_GUIComponent*>::iterator iter = children.begin();
+    std::vector<CL_GUIComponent*>::iterator end = children.end();
+
+    components::PropertyLabel* lbl;
+    for (; iter != end; ++iter) {
+        lbl = dynamic_cast<components::PropertyLabel*>(*iter);
+        if (lbl) {
+            lbl->update(linkedMobile_);
+        }
+    }
+}
+
+void GumpMenu::setLinkedMobile(world::Mobile* mob) {
+    linkedMobile_ = mob;
+}
+
+void GumpMenu::onClose() {
+    if (linkedMobile_) {
+        linkedMobile_->removeLinkedGump(this);
+    }
+}
+
+void GumpMenu::startDragging(const CL_Point& mousePos) {
+    bring_to_front();
+    capture_mouse(true);
+    lastMousePos_ = mousePos;
+    isDragged_ = true;
 }
 
 }

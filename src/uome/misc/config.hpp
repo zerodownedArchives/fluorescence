@@ -7,7 +7,7 @@
 
 #include <misc/pugixml/pugixml.hpp>
 #include <misc/string.hpp>
-#include "configvalue.hpp"
+#include "variable.hpp"
 
 namespace uome {
 class Config {
@@ -17,8 +17,8 @@ public:
     bool parseCommandLine(const std::vector<CL_String8>& args);
     bool parseShardConfig();
 
-    ConfigValue& operator[](const UnicodeString& name);
-    ConfigValue& get(const UnicodeString& name);
+    Variable& operator[](const UnicodeString& name);
+    Variable& get(const UnicodeString& name);
 
     bool exists(const UnicodeString& name) const;
 
@@ -26,7 +26,7 @@ public:
     void dumpMap() const;
 
 private:
-    std::map<UnicodeString, ConfigValue> variablesMap_;
+    std::map<UnicodeString, Variable> variablesMap_;
 
     Config(const Config& copy) { }
     Config& operator=(const Config& copy) { return *this; }

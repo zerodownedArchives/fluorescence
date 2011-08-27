@@ -16,6 +16,7 @@
 #include <misc/log.hpp>
 #include <misc/exception.hpp>
 
+#include <world/ingameobject.hpp>
 
 #include <net/manager.hpp>
 #include <net/packets/speechrequest.hpp>
@@ -118,6 +119,18 @@ Manager::~Manager() {
 void Manager::step() {
     windowManager_->process();
 
+    while (!singleClickQueue_.empty()) {
+        boost::shared_ptr<world::IngameObject> obj = singleClickQueue_.front();
+        singleClickQueue_.pop();
+        obj->onClick();
+    }
+
+    while (!doubleClickQueue_.empty()) {
+        boost::shared_ptr<world::IngameObject> obj = doubleClickQueue_.front();
+        doubleClickQueue_.pop();
+        obj->onDoubleClick();
+    }
+
     getGraphicsContext().clear();
     windowManager_->draw_windows(getGraphicsContext());
     mainWindow_->flip(); // use parameter 1 here for vsync
@@ -193,6 +206,7 @@ void Manager::processCloseList() {
     std::list<GumpMenu*>::iterator end = closeList_.end();
 
     for (; iter != end; ++iter) {
+        (*iter)->onClose();
         delete (*iter);
         gumpList_.remove(*iter);
     }
@@ -274,6 +288,14 @@ void Manager::enterTest(CL_GUIMessage msg, CL_AcceleratorKey key) {
 void Manager::systemMessage(const UnicodeString& msg) {
     // TODO: display, add to journal
     LOG_INFO << "SysMsg: " << msg << std::endl;
+}
+
+void Manager::queueSingleClick(boost::shared_ptr<world::IngameObject> obj) {
+    singleClickQueue_.push(obj);
+}
+
+void Manager::queueDoubleClick(boost::shared_ptr<world::IngameObject> obj) {
+    doubleClickQueue_.push(obj);
 }
 
 }

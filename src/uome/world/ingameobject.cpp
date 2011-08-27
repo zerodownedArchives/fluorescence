@@ -174,15 +174,15 @@ bool IngameObject::isDraggable() const {
 }
 
 void IngameObject::onDraggedOnto(boost::shared_ptr<IngameObject> obj) {
-    LOG_DEBUG << "Object dragged on something else x=" << obj->getLocX() << " y=" << obj->getLocY() << std::endl;
+    LOG_ERROR << "Undraggable object dragged on other object" << std::endl;
 }
 
 void IngameObject::onDraggedToVoid() {
-    LOG_DEBUG << "Object dragged on void" << std::endl;
+    LOG_ERROR << "Undraggable object dragged on void" << std::endl;
 }
 
-void IngameObject::onStartDrag() {
-    LOG_DEBUG << "Object start drag" << std::endl;
+void IngameObject::onStartDrag(const CL_Point& mousePos) {
+    LOG_ERROR << "Starting to drag object other than DynamicItem or Mobile" << std::endl;
 }
 
 }

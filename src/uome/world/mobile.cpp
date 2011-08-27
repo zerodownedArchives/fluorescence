@@ -10,6 +10,11 @@
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
 
+#include <ui/manager.hpp>
+#include <ui/gumpmenu.hpp>
+#include <ui/gumpfactory.hpp>
+#include <ui/cursormanager.hpp>
+
 namespace uome {
 namespace world {
 
@@ -125,6 +130,44 @@ void Mobile::setDirection(unsigned int direction) {
 
 bool Mobile::isMirrored() const {
     return direction_ < 3;
+}
+
+Variable& Mobile::getProperty(const UnicodeString& name) {
+    return propertyMap_[name];
+}
+
+void Mobile::onPropertyUpdate() {
+    // iterate over all gumps related to this mobile and call updateproperty on all property related components
+    std::list<ui::GumpMenu*>::iterator iter = linkedGumps_.begin();
+    std::list<ui::GumpMenu*>::iterator end = linkedGumps_.end();
+
+    for (; iter != end; ++iter) {
+        (*iter)->updateMobileProperties();
+    }
+}
+
+void Mobile::addLinkedGump(ui::GumpMenu* menu) {
+    linkedGumps_.push_back(menu);
+    menu->setLinkedMobile(this);
+}
+
+void Mobile::removeLinkedGump(ui::GumpMenu* menu) {
+    menu->setLinkedMobile(NULL);
+    linkedGumps_.remove(menu);
+}
+
+void Mobile::onStartDrag(const CL_Point& mousePos) {
+    ui::Manager::getSingleton()->getCursorManager()->stopDragging();
+
+    ui::GumpMenu* statsMenu = ui::Manager::getSingleton()->openXmlGump("smallstatus");
+    addLinkedGump(statsMenu);
+
+    CL_Size size = statsMenu->get_size();
+    statsMenu->set_window_geometry(CL_Rect(mousePos.x - 10, mousePos.y - 10, size));
+
+    if (statsMenu->isDraggable()) {
+        statsMenu->startDragging(statsMenu->screen_to_component_coords(mousePos));
+    }
 }
 
 }

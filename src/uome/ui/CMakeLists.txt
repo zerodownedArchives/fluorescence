@@ -46,6 +46,7 @@ set (GUMPMENU_HPP
     ui/components/label.hpp
     ui/components/ingameviewrenderer.hpp
     ui/components/ingameview.hpp
+    ui/components/propertylabel.hpp
     )
 
 set (GUMPMENU_CPP
@@ -62,6 +63,7 @@ set (GUMPMENU_CPP
     ui/components/label.cpp
     ui/components/ingameviewrenderer.cpp
     ui/components/ingameview.cpp
+    ui/components/propertylabel.cpp
     )
 
 SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} PARENT_SCOPE)

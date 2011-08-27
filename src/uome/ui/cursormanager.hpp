@@ -48,7 +48,7 @@ public:
     void setDragCandidate(boost::shared_ptr<world::IngameObject> itm, int mouseX, int mouseY);
     boost::shared_ptr<world::IngameObject> stopDragging();
 
-    void onCursorMove(int mouseX, int mouseY);
+    void onCursorMove(const CL_Point& mousePos);
 
 private:
     bool warMode_;
