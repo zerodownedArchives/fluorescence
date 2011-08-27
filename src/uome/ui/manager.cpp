@@ -271,5 +271,10 @@ void Manager::enterTest(CL_GUIMessage msg, CL_AcceleratorKey key) {
     }
 }
 
+void Manager::systemMessage(const UnicodeString& msg) {
+    // TODO: display, add to journal
+    LOG_INFO << "SysMsg: " << msg << std::endl;
+}
+
 }
 }

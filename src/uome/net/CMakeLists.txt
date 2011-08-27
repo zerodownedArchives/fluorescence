@@ -50,6 +50,7 @@ set (PACKETS_HPP
     net/packets/clientversion.hpp
     net/packets/pickupitem.hpp
     net/packets/dropitem.hpp
+    net/packets/pickupreject.hpp
     )
 
 set (PACKETS_CPP
@@ -77,6 +78,7 @@ set (PACKETS_CPP
     net/packets/clientversion.cpp
     net/packets/pickupitem.cpp
     net/packets/dropitem.cpp
+    net/packets/pickupreject.cpp
     )
 
 set (MD5

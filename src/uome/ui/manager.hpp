@@ -56,6 +56,8 @@ public:
     void installMacros();
     void uninstallMacros();
 
+    void systemMessage(const UnicodeString& msg);
+
 private:
     static Manager* singleton_;
 
