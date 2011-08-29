@@ -45,6 +45,7 @@ set (PACKETS_HPP
     net/packets/doubleclick.hpp
     net/packets/deleteobject.hpp
     net/packets/speechrequest.hpp
+    net/packets/basetext.hpp
     net/packets/asciitext.hpp
     net/packets/unicodetext.hpp
     net/packets/clientversion.hpp
@@ -76,6 +77,7 @@ set (PACKETS_CPP
     net/packets/doubleclick.cpp
     net/packets/deleteobject.cpp
     net/packets/speechrequest.cpp
+    net/packets/basetext.cpp
     net/packets/asciitext.cpp
     net/packets/unicodetext.cpp
     net/packets/clientversion.cpp

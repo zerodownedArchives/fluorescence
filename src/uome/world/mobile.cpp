@@ -136,6 +136,10 @@ Variable& Mobile::getProperty(const UnicodeString& name) {
     return propertyMap_[name];
 }
 
+bool Mobile::hasProperty(const UnicodeString& name) const {
+    return propertyMap_.find(name) != propertyMap_.end();
+}
+
 void Mobile::onPropertyUpdate() {
     // iterate over all gumps related to this mobile and call updateproperty on all property related components
     std::list<ui::GumpMenu*>::iterator iter = linkedGumps_.begin();

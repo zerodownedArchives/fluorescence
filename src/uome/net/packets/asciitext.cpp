@@ -1,14 +1,16 @@
 
 #include "asciitext.hpp"
 
-
+#include <ui/manager.hpp>
 #include <misc/log.hpp>
+#include <world/manager.hpp>
+#include <world/mobile.hpp>
 
 namespace uome {
 namespace net {
 namespace packets {
 
-AsciiText::AsciiText() : Packet(0x1c) {
+AsciiText::AsciiText() : BaseText(0x1c) {
 }
 
 bool AsciiText::read(const int8_t* buf, unsigned int len, unsigned int& index) {
@@ -22,11 +24,12 @@ bool AsciiText::read(const int8_t* buf, unsigned int len, unsigned int& index) {
     ret = ret && PacketReader::readUtf8Fixed(buf, len, index, speaker_, 30);
     ret = ret && PacketReader::readUtf8Null(buf, len, index, text_);
 
-    return ret;
-}
+    language_[0] = 'E';
+    language_[1] = 'N';
+    language_[2] = 'U';
+    language_[3] = '\0';
 
-void AsciiText::onReceive() {
-    LOG_INFO << "Ascii msg from " << speaker_ << ": " << text_ << std::endl;
+    return ret;
 }
 
 }

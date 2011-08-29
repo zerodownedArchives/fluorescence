@@ -268,7 +268,7 @@ bool IngameView::onDoubleClick(const CL_InputEvent& e) {
 }
 
 boost::shared_ptr<world::IngameObject> IngameView::getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) {
-    LOG_INFO << "IngameView::getFirstObjectAt " << pixelX << " " << pixelY << std::endl;
+    //LOG_INFO << "IngameView::getFirstObjectAt " << pixelX << " " << pixelY << std::endl;
     int worldX = getCenterPixelX() - get_width()/2.0;
     worldX += pixelX;
 

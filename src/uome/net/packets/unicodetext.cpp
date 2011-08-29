@@ -1,14 +1,11 @@
 
 #include "unicodetext.hpp"
 
-
-#include <misc/log.hpp>
-
 namespace uome {
 namespace net {
 namespace packets {
 
-UnicodeText::UnicodeText() : Packet(0xae) {
+UnicodeText::UnicodeText() : BaseText(0xae) {
 }
 
 bool UnicodeText::read(const int8_t* buf, unsigned int len, unsigned int& index) {
@@ -27,10 +24,6 @@ bool UnicodeText::read(const int8_t* buf, unsigned int len, unsigned int& index)
     ret = ret && PacketReader::readUnicodeNull(buf, len, index, text_);
 
     return ret;
-}
-
-void UnicodeText::onReceive() {
-    LOG_INFO << "Unicode msg from " << speaker_ << ": " << text_ << std::endl;
 }
 
 }
