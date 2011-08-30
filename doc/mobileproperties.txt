@@ -1,0 +1,6 @@
+hitpoints-current
+hitpoints-max
+mana-current
+mana-max
+stamina-current
+stamina-max

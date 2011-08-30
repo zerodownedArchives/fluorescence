@@ -6,6 +6,7 @@
 #include <net/manager.hpp>
 #include <net/packets/singleclick.hpp>
 #include <net/packets/doubleclick.hpp>
+#include <net/packets/statskillquery.hpp>
 
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
@@ -172,6 +173,9 @@ void Mobile::onStartDrag(const CL_Point& mousePos) {
     if (statsMenu->isDraggable()) {
         statsMenu->startDragging(statsMenu->screen_to_component_coords(mousePos));
     }
+
+    net::packets::StatSkillQuery queryPacket(getSerial(), net::packets::StatSkillQuery::QUERY_STATS);
+    net::Manager::getSingleton()->send(queryPacket);
 }
 
 }

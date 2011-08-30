@@ -53,8 +53,10 @@ set (PACKETS_HPP
     net/packets/dropitem.hpp
     net/packets/pickupreject.hpp
     net/packets/statupdatehitpoints.hpp
-    net/packets/statupdatefatigue.hpp
+    net/packets/statupdatestamina.hpp
     net/packets/statupdatemana.hpp
+    net/packets/statskillquery.hpp
+    net/packets/statupdatefull.hpp
     )
 
 set (PACKETS_CPP
@@ -85,8 +87,10 @@ set (PACKETS_CPP
     net/packets/dropitem.cpp
     net/packets/pickupreject.cpp
     net/packets/statupdatehitpoints.cpp
-    net/packets/statupdatefatigue.cpp
+    net/packets/statupdatestamina.cpp
     net/packets/statupdatemana.cpp
+    net/packets/statskillquery.cpp
+    net/packets/statupdatefull.cpp
     )
 
 set (MD5

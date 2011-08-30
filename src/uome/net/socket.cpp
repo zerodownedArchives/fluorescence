@@ -283,6 +283,11 @@ void Socket::parsePackets() {
             packetQueueMutex_.lock();
             packetQueue_.push(newPacket);
             packetQueueMutex_.unlock();
+        } else if (!readSuccess) {
+            LOG_DEBUG << "Not successful reading packet id=" << std::hex << (unsigned int)packetId << std::dec << " len=" << packetSize <<
+                    " trying to read more bytes than received" << std::endl;
+            // set idx to start of next packet
+            idx = lastPacketStart + packetSize;
         } else {
             LOG_DEBUG << "Not successful reading packet id=" << std::hex << (unsigned int)packetId << std::dec << " len=" << packetSize <<
                     " read bytes=" << (idx - lastPacketStart) << std::endl;

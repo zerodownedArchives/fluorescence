@@ -1,5 +1,5 @@
-#ifndef UOME_NET_PACKETS_STATUPDATEFATIGUE_HPP
-#define UOME_NET_PACKETS_STATUPDATEFATIGUE_HPP
+#ifndef UOME_NET_PACKETS_STATUPDATESTAMINA_HPP
+#define UOME_NET_PACKETS_STATUPDATESTAMINA_HPP
 
 #include <typedefs.hpp>
 #include <net/packet.hpp>
@@ -9,9 +9,9 @@ namespace net {
 
 namespace packets {
 
-class StatUpdateFatigue : public Packet {
+class StatUpdateStamina : public Packet {
 public:
-    StatUpdateFatigue();
+    StatUpdateStamina();
 
     virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
 
