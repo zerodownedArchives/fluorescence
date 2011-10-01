@@ -73,6 +73,10 @@ void Client::setState(unsigned int value) {
     requestedState_ = value;
 }
 
+unsigned int Client::getState() {
+    return state_;
+}
+
 bool Client::handleStateChange() {
     ui::Manager* uiManager = uome::ui::Manager::getSingleton();
 

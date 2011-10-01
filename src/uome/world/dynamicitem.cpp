@@ -11,6 +11,8 @@
 #include <data/huesloader.hpp>
 
 #include <ui/texture.hpp>
+#include <ui/textureprovider.hpp>
+#include <ui/animtextureprovider.hpp>
 
 #include <net/manager.hpp>
 #include <net/packets/singleclick.hpp>
@@ -21,11 +23,15 @@
 namespace uome {
 namespace world {
 
-DynamicItem::DynamicItem(Serial serial) : ServerObject(serial), artId_(0) {
+DynamicItem::DynamicItem(Serial serial) : ServerObject(serial), artId_(0), equipped_(false), parentMobile_(NULL) {
 }
 
 boost::shared_ptr<ui::Texture> DynamicItem::getIngameTexture() const {
-    return textureProvider_->getTexture();
+    if (equipped_) {
+        return animTextureProvider_->getTexture();
+    } else {
+        return textureProvider_->getTexture();
+    }
 }
 
 unsigned int DynamicItem::getArtId() const {
@@ -47,7 +53,9 @@ void DynamicItem::setArtId(unsigned int artId) {
 void DynamicItem::setDirection(unsigned int direction) {
     direction_ = direction;
 
-    // TODO: what do we need this for?
+    if (equipped_ && animTextureProvider_) {
+        animTextureProvider_->setDirection(direction_);
+    }
 }
 
 void DynamicItem::setAmount(unsigned int amount) {
@@ -76,50 +84,95 @@ void DynamicItem::setHue(unsigned int hue) {
 }
 
 void DynamicItem::updateVertexCoordinates() {
-    int texWidth = getIngameTexture()->getWidth();
-    int texHeight = getIngameTexture()->getHeight();
+    if (equipped_) {
+        ui::AnimationFrame frame = animTextureProvider_->getCurrentFrame();
+        int texWidth = frame.texture_->getWidth();
+        int texHeight = frame.texture_->getHeight();
 
-    int px = (getLocX() - getLocY()) * 22 - texWidth/2 + 22;
-    int py = (getLocX() + getLocY()) * 22 - texHeight + 44;
-    py -= getLocZ() * 4;
 
-    CL_Rectf rect(px, py, px + texWidth, py + texHeight);
+        //int px = (getLocX() - getLocY()) * 22 - texWidth/2 + 22;
+        //int py = (getLocX() + getLocY()) * 22 - texHeight + 44;
+        //py -= getLocZ() * 4;
 
-    vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
-    vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
-    vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
-    vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
-    vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
-    vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+        int px = (parentMobile_->getLocX() - parentMobile_->getLocY()) * 22 + 22;
+        int py = (parentMobile_->getLocX() + parentMobile_->getLocY()) * 22 - parentMobile_->getLocZ() * 4 - 22;
+        py = py - frame.centerY_ - texHeight;
+
+        if (isMirrored()) {
+            px = px - texWidth + frame.centerX_;
+        } else {
+            px -= frame.centerX_;
+        }
+
+        CL_Rectf rect(px, py, px + texWidth, py + texHeight);
+
+        vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
+        vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
+        vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
+        vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
+        vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
+        vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+    } else {
+        int texWidth = getIngameTexture()->getWidth();
+        int texHeight = getIngameTexture()->getHeight();
+
+        int px = (getLocX() - getLocY()) * 22 - texWidth/2 + 22;
+        int py = (getLocX() + getLocY()) * 22 - texHeight + 44;
+        py -= getLocZ() * 4;
+
+        CL_Rectf rect(px, py, px + texWidth, py + texHeight);
+
+        vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
+        vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
+        vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
+        vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
+        vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
+        vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+    }
 }
 
 void DynamicItem::updateRenderPriority() {
-    // render prio
-    // level 0 x+y
-    renderPriority_[0] = getLocX() + getLocY();
-
-    // level 1 z and tiledata flags
-    renderPriority_[1] = getLocZ();
-    if (tileDataInfo_->background() && tileDataInfo_->surface()) {
-        renderPriority_[1] += 2;
-    } else if (tileDataInfo_->background()) {
-        renderPriority_[1] += 3;
-    } else if (tileDataInfo_->surface()) {
-        renderPriority_[1] += 4;
+    if (equipped_) {
+        renderPriority_[0] = 0xFFFFFFF;
+        renderPriority_[1] = getSerial();
     } else {
-        renderPriority_[1] += 6;
-    }
+        // level 0 x+y
+        renderPriority_[0] = getLocX() + getLocY();
 
-    // level 2 serial
-    renderPriority_[2] = getSerial();
+        // level 1 z and tiledata flags
+        renderPriority_[1] = getLocZ();
+        if (tileDataInfo_->background() && tileDataInfo_->surface()) {
+            renderPriority_[1] += 2;
+        } else if (tileDataInfo_->background()) {
+            renderPriority_[1] += 3;
+        } else if (tileDataInfo_->surface()) {
+            renderPriority_[1] += 4;
+        } else {
+            renderPriority_[1] += 6;
+        }
+
+        // level 2 serial
+        renderPriority_[2] = getSerial();
+    }
 }
 
 void DynamicItem::updateTextureProvider() {
-    textureProvider_ = data::Manager::getItemTextureProvider(artId_);
+    if (equipped_) {
+        animTextureProvider_.reset(new ui::AnimTextureProvider(tileDataInfo_->animId_));
+        setDirection(parentMobile_->getDirection());
+    } else {
+        textureProvider_ = data::Manager::getItemTextureProvider(artId_);
+
+        animTextureProvider_.reset(); // remove anim tex provider if not equipped
+    }
 }
 
 bool DynamicItem::updateAnimation(unsigned int elapsedMillis) {
-    return textureProvider_->update(elapsedMillis);
+    if (equipped_) {
+        return animTextureProvider_->update(elapsedMillis);
+    } else {
+        return textureProvider_->update(elapsedMillis);
+    }
 }
 
 const data::StaticTileInfo* DynamicItem::getTileDataInfo() const {
@@ -164,12 +217,39 @@ void DynamicItem::onDraggedOnto(boost::shared_ptr<IngameObject> obj) {
         return;
     }
 
+    // TODO
     const DynamicItem* dItem = dynamic_cast<const DynamicItem*>(rawPtr);
     if (dItem) {
     }
 
     const Mobile* mobile = dynamic_cast<const Mobile*>(rawPtr);
     if (mobile) {
+    }
+}
+
+void DynamicItem::equipOn(Mobile* mob) {
+    parentMobile_ = mob;
+    equipped_ = true;
+    invalidateRenderData(true);
+}
+
+void DynamicItem::unequip() {
+    equipped_ = false;
+    parentMobile_ = NULL;
+    invalidateRenderData(true);
+}
+
+void DynamicItem::setLayer(unsigned int layer) {
+    layer_ = layer;
+}
+
+bool DynamicItem::isMirrored() const {
+    return direction_ < 3;
+}
+
+void DynamicItem::onDelete(boost::shared_ptr<DynamicItem> sharedThis) {
+    if (equipped_) {
+        parentMobile_->unequip(sharedThis);
     }
 }
 

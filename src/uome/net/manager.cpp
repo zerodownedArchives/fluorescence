@@ -78,8 +78,10 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0x1D: ret.reset(new packets::DeleteObject()); break;
         case 0x20: ret.reset(new packets::Teleport()); break;
         case 0x27: ret.reset(new packets::PickUpReject()); break;
+        case 0x2E: ret.reset(new packets::EquippedItem()); break;
         case 0x55: ret.reset(new packets::LoginComplete()); break;
         case 0x77: ret.reset(new packets::NakedMobile()); break;
+        case 0x78: ret.reset(new packets::EquippedMobile()); break;
         case 0xA8: ret.reset(new packets::ServerList()); break;
         case 0x8C: ret.reset(new packets::ServerRedirect()); break;
         case 0xA1: ret.reset(new packets::StatUpdateHitpoints()); break;

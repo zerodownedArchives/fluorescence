@@ -26,10 +26,12 @@ bool StatUpdateHitpoints::read(const int8_t* buf, unsigned int len, unsigned int
 void StatUpdateHitpoints::onReceive() {
     boost::shared_ptr<world::Mobile> mob = world::Manager::getSingleton()->getMobile(serial_, false);
     if (mob) {
-        mob->getProperty("hitpoints-current").setInt(current_);
+        mob->getProperty("hitpoints").setInt(current_);
         mob->getProperty("hitpoints-max").setInt(maximum_);
 
         mob->onPropertyUpdate();
+    } else {
+        LOG_WARN << "Received full stat update for unknown mobile serial=" << serial_ << std::endl;
     }
 }
 

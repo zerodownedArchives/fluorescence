@@ -12,10 +12,12 @@
 #include "packets/deleteobject.hpp" // 0x1d
 #include "packets/teleport.hpp" // 0x20
 #include "packets/pickupreject.hpp" // 0x27
+#include "packets/equippeditem.hpp" // 0x2e
 #include "packets/statskillquery.hpp" //0x34
 #include "packets/logincomplete.hpp" // 0x55
 #include "packets/characterselect.hpp" // 0x5d
 #include "packets/nakedmobile.hpp" // 0x77
+#include "packets/equippedmobile.hpp" // 0x78
 #include "packets/loginrequest.hpp" // 0x80
 #include "packets/loginreject.hpp" // 0x82
 #include "packets/serverredirect.hpp" // 0x8c

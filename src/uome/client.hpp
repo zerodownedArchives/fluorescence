@@ -39,6 +39,7 @@ public:
 
     void shutdown();
     void setState(unsigned int state);
+    unsigned int getState();
     void loginComplete(); /// < called when the game window should be displayed => setState(playing)
 
     // gump callbacks

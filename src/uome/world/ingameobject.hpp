@@ -37,7 +37,7 @@ public:
     void setLocation(int locX, int locY, int locZ);
 
     bool isRenderDataValid() const;
-    void invalidateRenderData(bool updateTextureProvider = false);
+    virtual void invalidateRenderData(bool updateTextureProvider = false);
     bool updateRenderData(unsigned int elapsedMillis); ///< calls updateVertexCoordinates, updateRenderPriority, updateTextureProvider and updateAnimation
 
     const CL_Vec2f* getVertexCoordinates() const;

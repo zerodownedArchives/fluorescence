@@ -6,6 +6,8 @@
 #include "cursormanager.hpp"
 #include "components/propertylabel.hpp"
 
+#include <client.hpp>
+
 #include <misc/log.hpp>
 
 #include <world/mobile.hpp>
@@ -176,7 +178,7 @@ bool GumpMenu::onPointerMoved(const CL_InputEvent& msg) {
         set_window_geometry(geometry);
 
         return true;
-    } else {
+    } else if (Client::getSingleton()->getState() != Client::STATE_SHARD_SELECTION) {
         ui::Manager::getSingleton()->getCursorManager()->onCursorMove(component_to_screen_coords(msg.mouse_pos));
         return true;
     }

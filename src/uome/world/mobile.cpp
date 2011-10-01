@@ -1,6 +1,8 @@
 
 #include "mobile.hpp"
 
+#include "dynamicitem.hpp"
+
 #include <misc/log.hpp>
 
 #include <net/manager.hpp>
@@ -126,7 +128,18 @@ void Mobile::setDirection(unsigned int direction) {
         textureProvider_->setDirection(direction);
     }
 
+    std::list<boost::shared_ptr<DynamicItem> >::iterator iter = equippedItems_.begin();
+    std::list<boost::shared_ptr<DynamicItem> >::iterator end = equippedItems_.end();
+
+    for (; iter != end; ++iter) {
+        (*iter)->setDirection(direction_);
+    }
+
     invalidateRenderData();
+}
+
+unsigned int Mobile::getDirection() const {
+    return direction_;
 }
 
 bool Mobile::isMirrored() const {
@@ -176,6 +189,32 @@ void Mobile::onStartDrag(const CL_Point& mousePos) {
 
     net::packets::StatSkillQuery queryPacket(getSerial(), net::packets::StatSkillQuery::QUERY_STATS);
     net::Manager::getSingleton()->send(queryPacket);
+}
+
+void Mobile::equip(boost::shared_ptr<DynamicItem> itm) {
+    itm->equipOn(this);
+
+    equippedItems_.push_back(itm);
+}
+
+void Mobile::unequip(boost::shared_ptr<DynamicItem> itm) {
+    itm->unequip();
+    equippedItems_.remove(itm);
+}
+
+void Mobile::invalidateRenderData(bool updateTextureProvider) {
+    IngameObject::invalidateRenderData(updateTextureProvider);
+
+    std::list<boost::shared_ptr<DynamicItem> >::iterator iter = equippedItems_.begin();
+    std::list<boost::shared_ptr<DynamicItem> >::iterator end = equippedItems_.end();
+
+    for (; iter != end; ++iter) {
+        (*iter)->invalidateRenderData(updateTextureProvider);
+    }
+}
+
+void Mobile::onDelete(boost::shared_ptr<Mobile> sharedThis) {
+    // TODO
 }
 
 }

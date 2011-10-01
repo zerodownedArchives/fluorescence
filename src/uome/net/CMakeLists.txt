@@ -57,6 +57,8 @@ set (PACKETS_HPP
     net/packets/statupdatemana.hpp
     net/packets/statskillquery.hpp
     net/packets/statupdatefull.hpp
+    net/packets/equippedmobile.hpp
+    net/packets/equippeditem.hpp
     )
 
 set (PACKETS_CPP
@@ -91,6 +93,8 @@ set (PACKETS_CPP
     net/packets/statupdatemana.cpp
     net/packets/statskillquery.cpp
     net/packets/statupdatefull.cpp
+    net/packets/equippedmobile.cpp
+    net/packets/equippeditem.cpp
     )
 
 set (MD5

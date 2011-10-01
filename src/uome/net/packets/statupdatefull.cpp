@@ -1,6 +1,11 @@
 
 #include "statupdatefull.hpp"
 
+#include <misc/log.hpp>
+
+#include <world/manager.hpp>
+#include <world/mobile.hpp>
+
 namespace uome {
 namespace net {
 namespace packets {
@@ -84,6 +89,84 @@ bool StatUpdateFull::read(const int8_t* buf, unsigned int len, unsigned int& ind
 }
 
 void StatUpdateFull::onReceive() {
+    boost::shared_ptr<world::Mobile> mob = world::Manager::getSingleton()->getMobile(serial_, false);
+    if (!mob) {
+        LOG_WARN << "Received full stat update for unknown mobile serial=" << serial_ << std::endl;
+        return;
+    }
+
+    mob->getProperty("name").setString(name_);
+    mob->getProperty("hitpoints").setInt(hitpointsCurrent_);
+    mob->getProperty("hitpoints-max").setInt(hitpointsMax_);
+
+    // TODO: handle name change
+    //mob->getProperty().setInt("", nameFlag_);
+
+    if (packetContents_ > 0) {
+        mob->getProperty("gender").setInt(gender_);
+        mob->getProperty("strength").setInt(str_);
+        mob->getProperty("dexterity").setInt(dex_);
+        mob->getProperty("intelligence").setInt(int_);
+        mob->getProperty("stamina").setInt(staminaCurrent_);
+        mob->getProperty("stamina-max").setInt(staminaMax_);
+        mob->getProperty("mana").setInt(manaCurrent_);
+        mob->getProperty("mana-max").setInt(manaMax_);
+        mob->getProperty("gold").setInt(gold_);
+        mob->getProperty("resist-physical").setInt(resistPhysical_);
+        mob->getProperty("armor-rating").setInt(resistPhysical_);
+        mob->getProperty("weight").setInt(weight_);
+    }
+
+    if (packetContents_ >= 5) {
+        mob->getProperty("weight-max").setInt( weightMax_);
+        mob->getProperty("race").setInt(race_);
+    }
+
+    if (packetContents_ >= 3) {
+        mob->getProperty("statcap").setInt(statCap_);
+        mob->getProperty("followers").setInt(followersCurrent_);
+        mob->getProperty("followers-max").setInt(followersMax_);
+    }
+
+    if (packetContents_ >= 4) {
+        mob->getProperty("resist-fire").setInt(resistFire_);
+        mob->getProperty("resist-cold").setInt(resistCold_);
+        mob->getProperty("resist-poison").setInt(resistPoison_);
+        mob->getProperty("resist-energy").setInt(resistEnergy_);
+        mob->getProperty("luck").setInt(luck_);
+        mob->getProperty("damage-min").setInt(damageMin_);
+        mob->getProperty("damage-max").setInt(damageMax_);
+        mob->getProperty("tithing-points").setInt(tithingPoints_);
+    }
+
+    if (packetContents_ >= 6) {
+        LOG_WARN << "Received KR info in packet 0x11, unable to handle that" << std::endl;
+        //mob->getProperty("").setInt(hitChanceIncrease_);
+        //mob->getProperty("").setInt(swingSpeedIncrease_);
+        //mob->getProperty("").setInt(damageChanceIncrease_);
+        //mob->getProperty("").setInt(lowerReagentCost_);
+        //mob->getProperty("").setInt(hitPointsRegeneration_);
+        //mob->getProperty("").setInt(staminaRegeneration_);
+        //mob->getProperty("").setInt(manaRegeneration_);
+        //mob->getProperty("").setInt(reflectPhysicalDamage_);
+        //mob->getProperty("").setInt(enhancePotions_);
+        //mob->getProperty("").setInt(defenseChanceIncrease_);
+        //mob->getProperty("").setInt(spellDamageIncrease_);
+        //mob->getProperty("").setInt(fasterCastRecovery_);
+        //mob->getProperty("").setInt(fasterCasting_);
+        //mob->getProperty("").setInt(lowerManaCost_);
+        //mob->getProperty("").setInt(strengthIncrease_);
+        //mob->getProperty("").setInt(dexterityIncrease_);
+        //mob->getProperty("").setInt(intelligenceIncrease_);
+        //mob->getProperty("").setInt(hitPointsIncrease_);
+        //mob->getProperty("").setInt(staminaIncrease_);
+        //mob->getProperty("").setInt(manaIncrease_);
+        //mob->getProperty("").setInt(maxHitpointsIncrease_);
+        //mob->getProperty("").setInt(maxStaminaIncrease_);
+        //mob->getProperty("").setInt(maxManaIncrease_);
+    }
+
+    mob->onPropertyUpdate();
 }
 
 }

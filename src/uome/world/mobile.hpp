@@ -17,6 +17,7 @@ namespace ui {
 
 
 namespace world {
+class DynamicItem;
 
 class Mobile : public ServerObject {
 public:
@@ -36,6 +37,7 @@ public:
 
     virtual bool isMirrored() const;
     void setDirection(unsigned int direction);
+    unsigned int getDirection() const;
 
     bool hasProperty(const UnicodeString& name) const;
     Variable& getProperty(const UnicodeString& name);
@@ -45,6 +47,11 @@ public:
     void removeLinkedGump(ui::GumpMenu* menu);
 
     virtual void onStartDrag(const CL_Point& mousePos);
+
+    void equip(boost::shared_ptr<DynamicItem> itm);
+    void unequip(boost::shared_ptr<DynamicItem> itm);
+
+    void onDelete(boost::shared_ptr<Mobile> sharedThis);
 
 private:
     unsigned int bodyId_;
@@ -62,6 +69,10 @@ private:
     std::map<UnicodeString, Variable> propertyMap_;
 
     std::list<ui::GumpMenu*> linkedGumps_;
+
+    std::list<boost::shared_ptr<DynamicItem> > equippedItems_;
+
+    virtual void invalidateRenderData(bool updateTextureProvider = false);
 };
 
 }

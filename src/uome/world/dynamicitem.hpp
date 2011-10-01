@@ -6,19 +6,20 @@
 
 #include <data/tiledataloader.hpp>
 
-#include <ui/textureprovider.hpp>
-
 #include "serverobject.hpp"
 
 namespace uome {
 
 namespace ui {
     class Texture;
+    class TextureProvider;
+    class AnimTextureProvider;
 }
 
 namespace world {
+class Mobile;
 
-class DynamicItem : public ServerObject {
+class DynamicItem : public ServerObject, boost::enable_shared_from_this<DynamicItem> {
 
 public:
     DynamicItem(Serial serial);
@@ -28,6 +29,7 @@ public:
     void setArtId(unsigned int artId);
     unsigned int getArtId() const;
 
+    virtual bool isMirrored() const;
     void setDirection(unsigned int direction);
 
     void setAmount(unsigned int amount);
@@ -44,6 +46,13 @@ public:
     virtual void onStartDrag();
     virtual void onDraggedOnto(boost::shared_ptr<IngameObject> obj);
 
+    void equipOn(Mobile* mob);
+    void unequip();
+
+    void setLayer(unsigned int layer);
+
+    void onDelete(boost::shared_ptr<DynamicItem> sharedThis);
+
 private:
     unsigned int artId_;
     unsigned int hue_;
@@ -59,6 +68,11 @@ private:
     void updateRenderPriority();
     void updateTextureProvider();
     bool updateAnimation(unsigned int elapsedMillis);
+
+    bool equipped_;
+    unsigned int layer_;
+    world::Mobile* parentMobile_;
+    boost::shared_ptr<ui::AnimTextureProvider> animTextureProvider_;
 };
 
 }
