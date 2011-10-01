@@ -38,6 +38,8 @@ public:
 
     void deleteObject(Serial serial);
 
+    void printItemSerials();
+
 private:
     static Manager* singleton_;
     Manager(const Config& config);

@@ -19,7 +19,7 @@ namespace ui {
 namespace world {
 class Mobile;
 
-class DynamicItem : public ServerObject, boost::enable_shared_from_this<DynamicItem> {
+class DynamicItem : public ServerObject {
 
 public:
     DynamicItem(Serial serial);
@@ -52,6 +52,8 @@ public:
     void setLayer(unsigned int layer);
 
     void onDelete(boost::shared_ptr<DynamicItem> sharedThis);
+
+    virtual IngameObject* getTopParent();
 
 private:
     unsigned int artId_;

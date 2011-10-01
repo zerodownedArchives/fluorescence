@@ -253,5 +253,13 @@ void DynamicItem::onDelete(boost::shared_ptr<DynamicItem> sharedThis) {
     }
 }
 
+IngameObject* DynamicItem::getTopParent() {
+    if (equipped_) {
+        return parentMobile_;
+    } else {
+        return this;
+    }
+}
+
 }
 }

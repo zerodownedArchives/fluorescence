@@ -44,7 +44,7 @@ public:
 
     void clear();
 
-    boost::shared_ptr<world::IngameObject> getFirstIngameObjectAt(int worldX, int worldY);
+    boost::shared_ptr<world::IngameObject> getFirstIngameObjectAt(int worldX, int worldY, bool getTopParent);
 
 private:
     /* I'm aware of the fact that, according to good programming standards, this should be a list of weak_ptr

@@ -185,5 +185,9 @@ void IngameObject::onStartDrag(const CL_Point& mousePos) {
     LOG_ERROR << "Starting to drag object other than DynamicItem or Mobile" << std::endl;
 }
 
+IngameObject* IngameObject::getTopParent() {
+    return this;
+}
+
 }
 }

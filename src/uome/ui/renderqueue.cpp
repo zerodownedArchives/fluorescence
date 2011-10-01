@@ -8,6 +8,9 @@
 #include <world/ingameobject.hpp>
 #include <world/sector.hpp>
 
+#include <world/manager.hpp>
+#include <world/dynamicitem.hpp>
+
 namespace uome {
 namespace ui {
 
@@ -215,7 +218,9 @@ void RenderQueue::clear() {
     ingameList_.clear();
 }
 
-boost::shared_ptr<world::IngameObject> RenderQueue::getFirstIngameObjectAt(int worldX, int worldY) {
+boost::shared_ptr<world::IngameObject> RenderQueue::getFirstIngameObjectAt(int worldX, int worldY, bool getTopParent) {
+    //world::Manager::getSingleton()->printItemSerials();
+
     std::list<world::IngameObject*>::reverse_iterator igIter = ingameList_.rbegin();
     std::list<world::IngameObject*>::reverse_iterator igEnd = ingameList_.rend();
 
@@ -224,7 +229,12 @@ boost::shared_ptr<world::IngameObject> RenderQueue::getFirstIngameObjectAt(int w
     for (; igIter != igEnd; ++igIter) {
         world::IngameObject* curObj = *igIter;
         if (curObj->isVisible() && curObj->hasPixel(worldX, worldY)) {
-            ret = (*igIter)->shared_from_this();
+
+            if (getTopParent) {
+                curObj = curObj->getTopParent();
+            }
+
+            ret = curObj->shared_from_this();
             break;
         }
     }

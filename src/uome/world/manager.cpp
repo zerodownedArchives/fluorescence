@@ -76,15 +76,6 @@ boost::shared_ptr<Mobile> Manager::getPlayer() {
 }
 
 void Manager::deleteObject(Serial serial) {
-    //LOG_DEBUG << "delete object serial=" << serial << std::endl;
-
-    //std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator iter = dynamicItems_.begin();
-    //std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator end = dynamicItems_.end();
-
-    //for (; iter != end; ++iter) {
-        //LOG_DEBUG << "\titm serial=" << iter->second->getSerial() << std::endl;
-    //}
-
     boost::shared_ptr<Mobile> mob = getMobile(serial, false);
     if (mob) {
         mob->onDelete(mob);
@@ -113,17 +104,33 @@ boost::shared_ptr<Mobile> Manager::getMobile(Serial serial, bool createIfNotExis
 }
 
 boost::shared_ptr<DynamicItem> Manager::getDynamicItem(Serial serial, bool createIfNotExists) {
+    LOG_DEBUG << "getDynamicItem serial=" << serial << std::endl;
     boost::shared_ptr<DynamicItem> itm;
 
     std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator iter = dynamicItems_.find(serial);
     if (iter != dynamicItems_.end()) {
+        LOG_DEBUG << "\talready exists!" << std::endl;
         itm = iter->second;
     } else if(createIfNotExists) {
         itm.reset(new DynamicItem(serial));
         dynamicItems_[serial] = itm;
+        LOG_DEBUG << "\tnewly created!" << std::endl;
+    } else {
+        LOG_DEBUG << "\tunknown, and not created!" << std::endl;
     }
 
     return itm;
+}
+
+void Manager::printItemSerials() {
+    LOG_DEBUG << "all item serials:" << std::endl;
+
+    std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator iter = dynamicItems_.begin();
+    std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator end = dynamicItems_.end();
+
+    for (; iter != end; ++iter) {
+        LOG_DEBUG << "\titm serial=" << iter->second->getSerial() << std::endl;
+    }
 }
 
 
