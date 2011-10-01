@@ -95,7 +95,7 @@ void DynamicItem::updateVertexCoordinates() {
         //py -= getLocZ() * 4;
 
         int px = (parentMobile_->getLocX() - parentMobile_->getLocY()) * 22 + 22;
-        int py = (parentMobile_->getLocX() + parentMobile_->getLocY()) * 22 - parentMobile_->getLocZ() * 4 - 22;
+        int py = (parentMobile_->getLocX() + parentMobile_->getLocY()) * 22 - parentMobile_->getLocZ() * 4 + 22;
         py = py - frame.centerY_ - texHeight;
 
         if (isMirrored()) {

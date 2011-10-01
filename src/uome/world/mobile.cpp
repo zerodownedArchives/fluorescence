@@ -73,7 +73,7 @@ void Mobile::updateVertexCoordinates() {
     //py -= getLocZ() * 4;
 
     int px = (getLocX() - getLocY()) * 22 + 22;
-    int py = (getLocX() + getLocY()) * 22 - getLocZ() * 4 - 22;
+    int py = (getLocX() + getLocY()) * 22 - getLocZ() * 4 + 22;
     py = py - frame.centerY_ - texHeight;
 
     if (isMirrored()) {
