@@ -71,7 +71,10 @@ bool MapTile::isFlat() const {
 void MapTile::updateRenderPriority() {
     renderPriority_[0] = getLocX() + getLocY();
 
-    renderPriority_[1] = (getLocZ() + zLeft_ + zRight_ + zBottom_)/4;
+    renderPriority_[1] = getLocZ(); //(getLocZ() + zLeft_ + zRight_ + zBottom_)/4;
+
+    // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
+    renderPriority_[2] = 0;
 }
 
 void MapTile::updateTextureProvider() {

@@ -189,5 +189,14 @@ IngameObject* IngameObject::getTopParent() {
     return this;
 }
 
+void IngameObject::printRenderPriority() {
+    LOG_DEBUG << "Render priority: " << renderPriority_[0] << " - "
+            << renderPriority_[1] << " - "
+            << renderPriority_[2] << " - "
+            << renderPriority_[3] << " - "
+            << renderPriority_[4] << " - "
+            << renderPriority_[5] << " - " << std::endl;
+}
+
 }
 }

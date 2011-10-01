@@ -133,8 +133,20 @@ void DynamicItem::updateVertexCoordinates() {
 
 void DynamicItem::updateRenderPriority() {
     if (equipped_) {
-        renderPriority_[0] = 0xFFFFFFF;
-        renderPriority_[1] = getSerial();
+        // level 0 x+y
+        renderPriority_[0] = parentMobile_->getLocX() + parentMobile_->getLocY();
+
+        // level 1 z
+        renderPriority_[1] = parentMobile_->getLocZ();
+
+        // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
+        renderPriority_[2] = 40;
+
+        // level 2 layer priority
+        renderPriority_[3] = layer_;
+
+        // level 5 serial
+        renderPriority_[5] = getSerial();
     } else {
         // level 0 x+y
         renderPriority_[0] = getLocX() + getLocY();
@@ -147,12 +159,21 @@ void DynamicItem::updateRenderPriority() {
             renderPriority_[1] += 3;
         } else if (tileDataInfo_->surface()) {
             renderPriority_[1] += 4;
-        } else {
-            renderPriority_[1] += 6;
+        //} else {
+            //renderPriority_[1] += 6;
         }
 
-        // level 2 serial
-        renderPriority_[2] = getSerial();
+        // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
+        renderPriority_[2] = 20;
+
+        // level 3 tiledata value height
+        renderPriority_[3] = tileDataInfo_->height_;
+
+        // level 4 if hue is set => higher value
+        renderPriority_[4] = (hue_ != 0) ? 1 : 0;
+
+        // level 5 serial
+        renderPriority_[5] = getSerial();
     }
 }
 
@@ -182,6 +203,8 @@ const data::StaticTileInfo* DynamicItem::getTileDataInfo() const {
 void DynamicItem::onClick() {
     LOG_INFO << "Clicked dynamic, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
             getLocZ() << ") name=" << tileDataInfo_->name_ << std::endl;
+
+    printRenderPriority();
 
     net::packets::SingleClick pkt(getSerial());
     net::Manager::getSingleton()->send(pkt);

@@ -22,24 +22,24 @@ bool RenderQueue::renderPriorityComparator(const world::IngameObject* a, const w
     const int* aPrio = a->getRenderPriorities();
     const int* bPrio = b->getRenderPriorities();
 
-    if (aPrio[0] < bPrio[0]) {
-        return true;
+    if (aPrio[0] > bPrio[0]) {
+        return false;
     }
 
     for (int i=1; i < 6; ++i) {
         if (aPrio[i-1] == bPrio[i-1]) {
-            if (aPrio[i] < bPrio[i]) {
-                return true;
+            if (aPrio[i] > bPrio[i]) {
+                return false;
             }
         } else {
-            return false;
+            return true;
         }
     }
 
     /* None of the priorities differs. To make sure this function sorts the list exactly the same, no matter how the
      * list elements were in the list before, we use the memory address of the objects as a last resort
      */
-    return (unsigned long)a < (unsigned long)b;
+    return (unsigned long)a <= (unsigned long)b;
 }
 
 RenderQueue::RenderQueue() {

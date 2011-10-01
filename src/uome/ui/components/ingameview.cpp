@@ -169,17 +169,17 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     case CL_KEY_A:
         lm = world::Manager::getSingleton()->getLightManager();
         intensity = lm->getGlobalIntensity();
-        intensity.r += 0.1;
-        intensity.g += 0.1;
-        intensity.b += 0.1;
+        intensity.r += 0.03;
+        intensity.g += 0.03;
+        intensity.b += 0.03;
         lm->setGlobalIntensity(intensity);
         break;
     case CL_KEY_S:
         lm = world::Manager::getSingleton()->getLightManager();
         intensity = lm->getGlobalIntensity();
-        intensity.r = std::max(0.0, intensity.r - 0.1);
-        intensity.g = std::max(0.0, intensity.g - 0.1);
-        intensity.b = std::max(0.0, intensity.b - 0.1);
+        intensity.r = std::max(0.0, intensity.r - 0.03);
+        intensity.g = std::max(0.0, intensity.g - 0.03);
+        intensity.b = std::max(0.0, intensity.b - 0.03);
         lm->setGlobalIntensity(intensity);
         break;
 

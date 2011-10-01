@@ -68,6 +68,9 @@ public:
 
     virtual IngameObject* getTopParent();
 
+
+    void printRenderPriority();
+
 protected:
     CL_Vec2f vertexCoordinates_[6];
     CL_Vec3f vertexNormals_[6];

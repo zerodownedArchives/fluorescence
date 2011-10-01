@@ -63,18 +63,21 @@ void StaticItem::updateRenderPriority() {
         renderPriority_[1] += 3;
     } else if (tileDataInfo_->surface()) {
         renderPriority_[1] += 4;
-    } else {
-        renderPriority_[1] += 6;
+    //} else {
+        //renderPriority_[1] += 6;
     }
 
-    // level 2 tiledata value height
-    renderPriority_[2] = tileDataInfo_->height_;
+    // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
+    renderPriority_[2] = 10;
 
-    // level 3 if hue is set => higher value
-    renderPriority_[3] = (hue_ != 0) ? 1 : 0;
+    // level 3 tiledata value height
+    renderPriority_[3] = tileDataInfo_->height_;
 
-    // level 4 index in statics file
-    renderPriority_[4] = indexInBlock_;
+    // level 4 if hue is set => higher value
+    renderPriority_[4] = (hue_ != 0) ? 1 : 0;
+
+    // level 5 index in statics file
+    renderPriority_[5] = indexInBlock_;
 }
 
 void StaticItem::updateTextureProvider() {

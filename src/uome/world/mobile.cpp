@@ -36,6 +36,8 @@ void Mobile::onClick() {
     LOG_INFO << "Clicked mobile, id=" << std::hex << getBodyId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
             getLocZ() << ")" << std::endl;
 
+    printRenderPriority();
+
     net::packets::SingleClick pkt(getSerial());
     net::Manager::getSingleton()->send(pkt);
 }
@@ -100,11 +102,14 @@ void Mobile::updateRenderPriority() {
     // level 1 z
     renderPriority_[1] = getLocZ();
 
-    // level 2 layer
-    renderPriority_[2] = 0;
+    // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
+    renderPriority_[2] = 30;
 
-    // level 3 serial
-    renderPriority_[3] = getSerial();
+    // level 2 layer
+    renderPriority_[3] = 0;
+
+    // level 5 serial
+    renderPriority_[5] = getSerial();
 }
 
 void Mobile::updateTextureProvider() {
