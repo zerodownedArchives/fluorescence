@@ -9,7 +9,7 @@ namespace uome {
 namespace ui {
 
 AnimTextureProvider::AnimTextureProvider(unsigned int bodyId) : bodyId_(bodyId), direction_(0), currentIdx_(0),
-        millis_(0), frameMillis_(100), repeatMode_(REPEAT_MODE_DEFAULT), nextAnimId_(0xFFFFFFFFu) {
+        millis_(0), frameMillis_(150), repeatMode_(REPEAT_MODE_DEFAULT), nextAnimId_(0xFFFFFFFFu) {
     defaultAnimId_ = data::Manager::getMobTypesLoader()->getIdleAction(bodyId);
     currentAnimId_ = defaultAnimId_;
 

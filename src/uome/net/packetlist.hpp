@@ -16,6 +16,7 @@
 #include "packets/statskillquery.hpp" //0x34
 #include "packets/logincomplete.hpp" // 0x55
 #include "packets/characterselect.hpp" // 0x5d
+#include "packets/mobileanimation.hpp" // 0x6e
 #include "packets/nakedmobile.hpp" // 0x77
 #include "packets/equippedmobile.hpp" // 0x78
 #include "packets/loginrequest.hpp" // 0x80

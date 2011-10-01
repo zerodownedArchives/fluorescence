@@ -59,6 +59,7 @@ set (PACKETS_HPP
     net/packets/statupdatefull.hpp
     net/packets/equippedmobile.hpp
     net/packets/equippeditem.hpp
+    net/packets/mobileanimation.hpp
     )
 
 set (PACKETS_CPP
@@ -95,6 +96,7 @@ set (PACKETS_CPP
     net/packets/statupdatefull.cpp
     net/packets/equippedmobile.cpp
     net/packets/equippeditem.cpp
+    net/packets/mobileanimation.cpp
     )
 
 set (MD5

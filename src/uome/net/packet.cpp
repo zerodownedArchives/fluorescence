@@ -38,7 +38,7 @@ uint16_t Packet::getSize() {
 }
 
 void Packet::onReceive() {
-    LOG_ERROR << "Packet handler for packet not implemented: " << std::hex << (unsigned int)id_ << std::dec << std::endl;
+    LOG_ERROR << "Packet handler not implemented: " << std::hex << (unsigned int)id_ << std::dec << std::endl;
 }
 
 uint8_t Packet::getId() {

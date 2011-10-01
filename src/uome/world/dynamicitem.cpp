@@ -261,5 +261,11 @@ IngameObject* DynamicItem::getTopParent() {
     }
 }
 
+void DynamicItem::playAnim(unsigned int animId) {
+    if (equipped_) {
+        animTextureProvider_->setAnimId(animId);
+    }
+}
+
 }
 }

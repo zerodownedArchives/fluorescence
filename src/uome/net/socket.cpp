@@ -242,7 +242,7 @@ void Socket::setUseDecompress(bool value) {
 void Socket::parsePackets() {
     unsigned int idx = 0;
     unsigned int lastPacketStart = 0;
-    LOG_DEBUG << "Parsing packets bufferSize=" << decompressedSize_ << std::endl;
+    //LOG_DEBUG << "Parsing packets bufferSize=" << decompressedSize_ << std::endl;
 
     while ((lastPacketStart = idx) < decompressedSize_) {
 
@@ -250,7 +250,7 @@ void Socket::parsePackets() {
         uint8_t packetId;
         readSuccess = PacketReader::read(decompressedBuffer_, decompressedSize_, idx, packetId);
 
-        LOG_DEBUG << "Parsing packet id=" << std::hex << (unsigned int)packetId << std::dec << std::endl;
+        //LOG_DEBUG << "Parsing packet id=" << std::hex << (unsigned int)packetId << std::dec << std::endl;
 
         boost::shared_ptr<Packet> newPacket = Manager::createPacket(packetId);
 
@@ -263,10 +263,10 @@ void Socket::parsePackets() {
         if (newPacket->hasVariableSize()) {
             readSuccess = readSuccess && PacketReader::read(decompressedBuffer_, decompressedSize_, idx, packetSize);
             newPacket->setSize(packetSize);
-            LOG_DEBUG << "Dynamic packet size=" << packetSize << std::endl;
+            //LOG_DEBUG << "Dynamic packet size=" << packetSize << std::endl;
         } else {
             packetSize = newPacket->getSize();
-            LOG_DEBUG << "Fixed packet size=" << packetSize << std::endl;
+            //LOG_DEBUG << "Fixed packet size=" << packetSize << std::endl;
         }
 
         if (decompressedSize_ < lastPacketStart + packetSize) {

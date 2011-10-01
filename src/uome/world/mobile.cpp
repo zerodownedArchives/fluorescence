@@ -118,6 +118,13 @@ bool Mobile::updateAnimation(unsigned int elapsedMillis) {
 
 void Mobile::playAnim(unsigned int animId) {
     textureProvider_->setAnimId(animId);
+
+    std::list<boost::shared_ptr<DynamicItem> >::iterator iter = equippedItems_.begin();
+    std::list<boost::shared_ptr<DynamicItem> >::iterator end = equippedItems_.end();
+
+    for (; iter != end; ++iter) {
+        (*iter)->playAnim(animId);
+    }
 }
 
 void Mobile::setDirection(unsigned int direction) {

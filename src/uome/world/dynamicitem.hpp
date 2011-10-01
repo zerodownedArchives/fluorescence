@@ -55,6 +55,8 @@ public:
 
     virtual IngameObject* getTopParent();
 
+    void playAnim(unsigned int animId);
+
 private:
     unsigned int artId_;
     unsigned int hue_;
