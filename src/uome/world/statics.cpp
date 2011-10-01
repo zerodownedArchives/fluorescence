@@ -63,8 +63,8 @@ void StaticItem::updateRenderPriority() {
         renderPriority_[1] += 3;
     } else if (tileDataInfo_->surface()) {
         renderPriority_[1] += 4;
-    //} else {
-        //renderPriority_[1] += 6;
+    } else {
+        renderPriority_[1] += 6;
     }
 
     // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)

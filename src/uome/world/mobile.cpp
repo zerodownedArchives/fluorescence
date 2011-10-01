@@ -100,7 +100,7 @@ void Mobile::updateRenderPriority() {
     renderPriority_[0] = getLocX() + getLocY();
 
     // level 1 z
-    renderPriority_[1] = getLocZ();
+    renderPriority_[1] = getLocZ() + 7;
 
     // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
     renderPriority_[2] = 30;

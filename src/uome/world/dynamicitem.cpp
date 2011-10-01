@@ -137,7 +137,7 @@ void DynamicItem::updateRenderPriority() {
         renderPriority_[0] = parentMobile_->getLocX() + parentMobile_->getLocY();
 
         // level 1 z
-        renderPriority_[1] = parentMobile_->getLocZ();
+        renderPriority_[1] = parentMobile_->getLocZ() + 7;
 
         // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
         renderPriority_[2] = 40;
@@ -159,8 +159,8 @@ void DynamicItem::updateRenderPriority() {
             renderPriority_[1] += 3;
         } else if (tileDataInfo_->surface()) {
             renderPriority_[1] += 4;
-        //} else {
-            //renderPriority_[1] += 6;
+        } else {
+            renderPriority_[1] += 6;
         }
 
         // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
