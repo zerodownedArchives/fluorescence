@@ -156,6 +156,16 @@ Config::Config() {
     variablesMap_["/uome/ui/cursor@normal-artid-start"].setInt(0x206A, true);
     variablesMap_["/uome/ui/cursor@warmode-artid-start"].setInt(0x2053, true);
 
+    // layer priorities for animations
+    variablesMap_["/uome/ui/layer-priorities@north"].setString      ("21, 22,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 23, 24, 16, 12,  4", true);
+    variablesMap_["/uome/ui/layer-priorities@northeast"].setString  ("21, 23,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 22, 24, 16, 12,  4", true);
+    variablesMap_["/uome/ui/layer-priorities@east"].setString       ("21, 23,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 22, 24, 16, 12,  4", true);
+    variablesMap_["/uome/ui/layer-priorities@southeast"].setString  ("22, 23,  4,  3,  2, 21, 12,  7,  8, 15, 16, 18,  6,  9, 10, 19, 14, 20, 11,  1, 24, 17, 13,  5", true);
+    variablesMap_["/uome/ui/layer-priorities@south"].setString      ("21, 23,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 22, 24, 16, 12,  4", true);
+    variablesMap_["/uome/ui/layer-priorities@southwest"].setString  ("21, 23,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 22, 24, 16, 12,  4", true);
+    variablesMap_["/uome/ui/layer-priorities@west"].setString       ("21, 22,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 23, 24, 16, 12,  4", true);
+    variablesMap_["/uome/ui/layer-priorities@northwest"].setString  ("21, 22,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 23, 24, 16, 12,  4", true);
+
 
     // input stuff
     variablesMap_["/uome/input/mouse@doubleclick-timeout-ms"].setInt(300, true);

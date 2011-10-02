@@ -3,6 +3,8 @@
 
 #include <sstream>
 
+#include <misc/log.hpp>
+
 namespace uome {
 
 Variable::Variable() : isDefault_(true), valueType_(TYPE_UNKNOWN) {
@@ -129,6 +131,29 @@ bool Variable::parse(const char* str) {
 
 unsigned int Variable::valueType() const {
     return valueType_;
+}
+
+std::vector<int> Variable::asIntList() const {
+    if (!isString()) {
+        throw BadCastException();
+    }
+
+    std::string str = StringConverter::toUtf8String(valueString_);
+    std::vector<int> vect;
+
+    std::stringstream ss(str);
+
+    int i;
+
+    while (ss >> i) {
+        vect.push_back(i);
+
+        while (ss.peek() == ',' || ss.peek() == ' ') {
+            ss.ignore();
+        }
+    }
+
+    return vect;
 }
 
 }

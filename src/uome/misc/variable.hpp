@@ -1,6 +1,7 @@
 #ifndef UOME_MISC_VARIABLE_HPP
 #define UOME_MISC_VARIABLE_HPP
 
+#include <vector>
 #include <boost/filesystem/path.hpp>
 #include <misc/string.hpp>
 
@@ -44,6 +45,8 @@ public:
     void setPath(const boost::filesystem::path& val, bool isDefault = false);
 
     unsigned int valueType() const;
+
+    std::vector<int> asIntList() const;
 
 private:
     bool isDefault_;

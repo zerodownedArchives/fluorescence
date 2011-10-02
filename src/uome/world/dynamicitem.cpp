@@ -5,6 +5,10 @@
 #include "statics.hpp"
 #include "mobile.hpp"
 
+#include <typedefs.hpp>
+#include <client.hpp>
+#include <misc/config.hpp>
+
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
 #include <data/tiledataloader.hpp>
@@ -132,6 +136,22 @@ void DynamicItem::updateVertexCoordinates() {
 }
 
 void DynamicItem::updateRenderPriority() {
+    static bool initialized = false;
+    static std::vector<int> layerPriorities[8];
+    if (!initialized) {
+        Config& cfg = Client::getSingleton()->getConfig();
+        layerPriorities[Direction::N] = cfg["/uome/ui/layer-priorities@north"].asIntList();
+        layerPriorities[Direction::NE] = cfg["/uome/ui/layer-priorities@northeast"].asIntList();
+        layerPriorities[Direction::E] = cfg["/uome/ui/layer-priorities@east"].asIntList();
+        layerPriorities[Direction::SE] = cfg["/uome/ui/layer-priorities@southeast"].asIntList();
+        layerPriorities[Direction::S] = cfg["/uome/ui/layer-priorities@south"].asIntList();
+        layerPriorities[Direction::SW] = cfg["/uome/ui/layer-priorities@southwest"].asIntList();
+        layerPriorities[Direction::W] = cfg["/uome/ui/layer-priorities@west"].asIntList();
+        layerPriorities[Direction::NW] = cfg["/uome/ui/layer-priorities@northwest"].asIntList();
+
+        initialized = true;
+    }
+
     if (equipped_) {
         // level 0 x+y
         renderPriority_[0] = parentMobile_->getLocX() + parentMobile_->getLocY();
@@ -143,7 +163,7 @@ void DynamicItem::updateRenderPriority() {
         renderPriority_[2] = 40;
 
         // level 2 layer priority
-        renderPriority_[3] = layer_;
+        renderPriority_[3] = layerPriorities[parentMobile_->getDirection()][layer_ - 1];
 
         // level 5 serial
         renderPriority_[5] = getSerial();

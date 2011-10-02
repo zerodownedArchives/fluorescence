@@ -47,6 +47,20 @@ void AnimLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len,
 
 
     for (unsigned int frameIdx = 0; frameIdx < frameCount; ++frameIdx) {
+        if (frameOffsets[frameIdx] == 0) { // some animations are buggy, e.g. 0x13e3 (smithhammer) action 5
+            // try to use the last texture
+            if (frameIdx > 0) {
+                anim->addFrame(anim->getFrame(frameIdx - 1));
+            } else {
+                ui::AnimationFrame curFrame;
+                curFrame.centerX_ = 0;
+                curFrame.centerY_ = 0;
+                curFrame.texture_->initPixelBuffer(1, 1);
+                memset(curFrame.texture_->getPixelBufferData(), 0, 1 * sizeof(uint32_t));
+            }
+
+            continue;
+        }
         uint8_t* ptr = reinterpret_cast<uint8_t*>(buf) + 0x200 + frameOffsets[frameIdx];
         //int8_t* frameStart = ptr;
 
