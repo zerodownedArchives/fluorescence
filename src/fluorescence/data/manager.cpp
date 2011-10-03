@@ -63,7 +63,10 @@ void Manager::init(Config& config) {
     }
 
     LOG_INFO << "Converting filenames to lower case" << std::endl;
-    misc::FileNameCaseConverter::convert(mulDirPath);
+    if (!misc::FileNameCaseConverter::convert(mulDirPath)) {
+        LOG_EMERGENCY << "Invalid mul directory" << std::endl;
+        throw std::exception();
+    }
 
     boost::filesystem::path idxPath;
     boost::filesystem::path path;

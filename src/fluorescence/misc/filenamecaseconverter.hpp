@@ -8,7 +8,10 @@ namespace misc {
 
 class FileNameCaseConverter {
 public:
-    static void convert(const boost::filesystem::path& directory);
+    static bool convert(const boost::filesystem::path& directory);
+
+private:
+    static void convertRec(const boost::filesystem::path& directory);
 };
 
 }

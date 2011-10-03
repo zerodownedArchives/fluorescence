@@ -7,7 +7,18 @@
 namespace fluo {
 namespace misc {
 
-void FileNameCaseConverter::convert(const boost::filesystem::path& directory) {
+bool FileNameCaseConverter::convert(const boost::filesystem::path& directory) {
+    namespace bfs = boost::filesystem;
+
+    if (!bfs::exists(directory / "art.mul")) {
+        return false;
+    } else {
+        convertRec(directory);
+        return true;
+    }
+}
+
+void FileNameCaseConverter::convertRec(const boost::filesystem::path& directory) {
     namespace bfs = boost::filesystem;
 
     if (!bfs::exists(directory) || !bfs::is_directory(directory)) {
