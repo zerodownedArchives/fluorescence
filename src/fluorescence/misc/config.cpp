@@ -147,6 +147,20 @@ Config::Config() {
     variablesMap_["/fluo/files/anim5@highdetail"].setInt(200, true);
     variablesMap_["/fluo/files/anim5@lowdetail"].setInt(200, true);
 
+    variablesMap_["/fluo/files/unifont@filename"].setPath("unifont.mul", true);
+    variablesMap_["/fluo/files/unifont1@filename"].setPath("unifont1.mul", true);
+    variablesMap_["/fluo/files/unifont2@filename"].setPath("unifont2.mul", true);
+    variablesMap_["/fluo/files/unifont3@filename"].setPath("unifont3.mul", true);
+    variablesMap_["/fluo/files/unifont4@filename"].setPath("unifont4.mul", true);
+    variablesMap_["/fluo/files/unifont5@filename"].setPath("unifont5.mul", true);
+    variablesMap_["/fluo/files/unifont6@filename"].setPath("unifont6.mul", true);
+    variablesMap_["/fluo/files/unifont7@filename"].setPath("unifont7.mul", true);
+    variablesMap_["/fluo/files/unifont8@filename"].setPath("unifont8.mul", true);
+    variablesMap_["/fluo/files/unifont9@filename"].setPath("unifont9.mul", true);
+    variablesMap_["/fluo/files/unifont10@filename"].setPath("unifont10.mul", true);
+    variablesMap_["/fluo/files/unifont11@filename"].setPath("unifont11.mul", true);
+    variablesMap_["/fluo/files/unifont12@filename"].setPath("unifont12.mul", true);
+
 
     variablesMap_["/fluo/files/mobtypes@filename"].setPath("mobtypes.txt", true);
 

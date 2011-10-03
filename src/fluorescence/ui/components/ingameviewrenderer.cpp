@@ -126,6 +126,12 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
 
 
 
+    boost::shared_ptr<ui::Texture> testText = data::Manager::getUnicodeText(2, "foobar omg mäh", false, 300, 0xFF0000FF);
+    CL_Draw::texture(gc, *testText->getTexture(), CL_Rectf(0, 0, CL_Sizef(testText->getWidth(), testText->getHeight())));
+
+    boost::shared_ptr<ui::Texture> testText2 = data::Manager::getUnicodeText(2, "foobar omg mäh", true, 300, 0xFF0000FF);
+    CL_Draw::texture(gc, *testText2->getTexture(), CL_Rectf(0, 50, CL_Sizef(testText->getWidth(), testText->getHeight())));
+
     //CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 
 

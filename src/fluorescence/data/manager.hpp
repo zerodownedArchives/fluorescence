@@ -26,6 +26,7 @@ class MapTexLoader;
 class AnimDataLoader;
 class AnimLoader;
 class MobTypesLoader;
+class UniFontLoader;
 
 class Manager {
 public:
@@ -37,6 +38,8 @@ public:
 
     static boost::shared_ptr<ui::TextureProvider> getItemTextureProvider(unsigned int artId);
     static std::vector<boost::shared_ptr<ui::Animation> > getAnim(unsigned int bodyId, unsigned int animId);
+
+    static boost::shared_ptr<ui::Texture> getUnicodeText(unsigned int font, const UnicodeString& text, bool border, unsigned int maxWidth, uint32_t color);
 
     static ArtLoader* getArtLoader() { return getSingleton()->artLoader_.get(); }
     static TileDataLoader* getTileDataLoader() { return getSingleton()->tileDataLoader_.get(); }
@@ -74,6 +77,8 @@ private:
 
     boost::shared_ptr<AnimLoader> animLoader_[5];
     boost::shared_ptr<AnimLoader> fallbackAnimLoader_;
+
+    boost::shared_ptr<UniFontLoader> uniFontLoader_[13];
 
     boost::shared_ptr<MobTypesLoader> mobTypesLoader_;
 };

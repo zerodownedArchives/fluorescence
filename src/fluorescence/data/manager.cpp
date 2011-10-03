@@ -11,6 +11,7 @@
 #include "animdataloader.hpp"
 #include "animloader.hpp"
 #include "mobtypesloader.hpp"
+#include "unifontloader.hpp"
 
 #include <ui/singletextureprovider.hpp>
 #include <ui/animdatatextureprovider.hpp>
@@ -235,11 +236,13 @@ void Manager::init(Config& config) {
         lowDetailCount = config[animConfigLowDetailCount].asInt();
 
         if (boost::filesystem::exists(idxPath) && boost::filesystem::exists(path)) {
-            LOG_WARN << "Unable to open anim" << indexChar << " from idx=" << idxPath << ", mul=" << path << ", high-detail=" <<
+            LOG_INFO << "Opening anim" << indexChar << " from idx=" << idxPath << ", mul=" << path << ", high-detail=" <<
                     highDetailCount << ", low-detail=" << lowDetailCount << std::endl;
             animLoader_[index].reset(new AnimLoader(idxPath, path, highDetailCount, lowDetailCount));
 
             if (!fallbackAnimLoader_.get()) {
+                LOG_WARN << "Unable to open anim" << indexChar << " from idx=" << idxPath << ", mul=" << path << ", high-detail=" <<
+                        highDetailCount << ", low-detail=" << lowDetailCount << std::endl;
                 fallbackAnimLoader_ = animLoader_[index];
             }
         } else {
@@ -257,6 +260,35 @@ void Manager::init(Config& config) {
     path = getPathFor(config, "/fluo/files/mobtypes@filename");
     LOG_INFO << "Opening mobtypes.txt from path=" << path << std::endl;
     mobTypesLoader_.reset(new MobTypesLoader(path));
+
+
+    path = getPathFor(config, "/fluo/files/unifont@filename");
+    LOG_INFO << "Opening unifont.mul from path=" << path << std::endl;
+    uniFontLoader_[0].reset(new UniFontLoader(path));
+
+
+    char* uniFontPath = strdup("/fluo/files/unifont0@filename");
+    indexChar = '1';
+    digitIndex = 19;
+
+    for (unsigned int index = 1; index < 10; ++index, ++indexChar) {
+        uniFontPath[digitIndex] = indexChar;
+        path = getPathFor(config, uniFontPath);
+        LOG_INFO << "Opening unifont" << index << ".mul from path=" << path << std::endl;
+        uniFontLoader_[index].reset(new UniFontLoader(path));
+    }
+
+    path = getPathFor(config, "/fluo/files/unifont10@filename");
+    LOG_INFO << "Opening unifont10.mul from path=" << path << std::endl;
+    uniFontLoader_[10].reset(new UniFontLoader(path));
+
+    path = getPathFor(config, "/fluo/files/unifont11@filename");
+    LOG_INFO << "Opening unifont11.mul from path=" << path << std::endl;
+    uniFontLoader_[11].reset(new UniFontLoader(path));
+
+    path = getPathFor(config, "/fluo/files/unifont12@filename");
+    LOG_INFO << "Opening unifont12.mul from path=" << path << std::endl;
+    uniFontLoader_[12].reset(new UniFontLoader(path));
 }
 
 Manager::~Manager() {
@@ -366,6 +398,15 @@ AnimLoader* Manager::getAnimLoader(unsigned int index) {
         LOG_WARN << "Trying to access uninitialized anim loader with index " << index << std::endl;
         return sing->fallbackAnimLoader_.get();
     }
+}
+
+boost::shared_ptr<ui::Texture> Manager::getUnicodeText(unsigned int font, const UnicodeString& text, bool border, unsigned int maxWidth, uint32_t color) {
+    if (font > 12) {
+        LOG_WARN << "Trying to access unifont loader with index " << font << std::endl;
+        font = 0;
+    }
+
+    return getSingleton()->uniFontLoader_[font]->getText(text, border, maxWidth, color);
 }
 
 
