@@ -123,6 +123,38 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
 
     gc.reset_textures();
     gc.reset_program_object();
+
+
+
+    //CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
+
+
+    //CL_Texture fontTexture(gc, 400, 100, cl_rgba);
+    //CL_FrameBuffer fb(gc);
+    //fb.attach_color_buffer(0, fontTexture);
+
+    //gc.set_frame_buffer(fb);
+    //gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
+    ////gc.clear();
+
+    //CL_FontDescription font_desc;
+    //font_desc.set_typeface_name("DevinneSwash");
+    //font_desc.set_height(18);
+    //CL_Font_System sys_font_wo(gc, font_desc);
+    //font_desc.set_subpixel(false);
+    //CL_Font_System sys_font(gc, font_desc);
+
+    ////CL_Font sys_font(gc, "arial", 24);
+
+    //sys_font_wo.draw_text(gc, 20, 20, "The quick brown fox jumps over the lazy dog ", CL_Colorf(0.f, 0.f, 0.f, 1.f));
+    //sys_font.draw_text(gc, 20, 50, "The quick brown fox jumps over the lazy dog ", CL_Colorf(0.f, 0.f, 0.f, 1.f));
+
+    ////CL_Draw::fill(gc, 50.f, 50.f, 80.f, 80.f, CL_Colorf::blue);
+
+    //gc.set_frame_buffer(origBuffer);
+    ////gc.clear();
+
+    //CL_Draw::texture(gc, fontTexture, CL_Quadf(CL_Rectf(0, 0, 400, 100)));
 }
 
 }
