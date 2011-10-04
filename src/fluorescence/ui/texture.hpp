@@ -7,14 +7,11 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include "bitmask.hpp"
 #include <data/ondemandreadable.hpp>
-
-#include <stdint.h>
 
 namespace fluo {
 namespace ui {
-
-class BitMask;
 
 class Texture : public fluo::data::OnDemandReadable {
 public:
@@ -36,7 +33,7 @@ public:
 private:
     boost::shared_ptr<CL_PixelBuffer> pixelBuffer_;
     boost::shared_ptr<CL_Texture> texture_;
-    boost::shared_ptr<BitMask> bitMask_;
+    BitMask bitMask_;
 };
 }
 }

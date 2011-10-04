@@ -113,8 +113,8 @@ void FontEngine::calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeSt
     height = lineCount * (fontLoader->getMaxHeight() + uniLineSpacing_) + borderWidth*2;
     width = std::max(width, curWidth);
 
-    LOG_DEBUG << "calculated width=" << width << "  height=" << height << std::endl;
-    LOG_DEBUG << "line breaks: " << lineBreakIndices.front() << std::endl;
+    //LOG_DEBUG << "calculated width=" << width << "  height=" << height << std::endl;
+    //LOG_DEBUG << "line breaks: " << lineBreakIndices.front() << std::endl;
 }
 
 boost::shared_ptr<ui::Texture> FontEngine::getUniFontTexture(unsigned int uniFontId, const UnicodeString& text, unsigned int maxWidth, uint32_t color, unsigned int borderWidth, uint32_t borderColor) {

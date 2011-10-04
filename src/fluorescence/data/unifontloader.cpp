@@ -28,6 +28,13 @@ UnicodeCharacter::UnicodeCharacter(unsigned int charCode, unsigned int xOffset, 
     memset(data_, UnicodeCharacter::TRANSPARENT, width_ * height_);
 }
 
+UnicodeCharacter::~UnicodeCharacter() {
+    if (data_) {
+        free(data_);
+        data_ = NULL;
+    }
+}
+
 unsigned int UnicodeCharacter::getTotalWidth() const {
     return xOffset_ + width_;
 }

@@ -12,7 +12,7 @@ namespace ui {
 /// This class is used to store pixel visibility for a texture
 class BitMask {
 public:
-    BitMask(unsigned int width, unsigned int height);
+    BitMask();
     ~BitMask();
 
     void init(boost::shared_ptr<CL_PixelBuffer> pixBuf);

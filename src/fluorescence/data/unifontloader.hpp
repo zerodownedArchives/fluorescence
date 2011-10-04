@@ -27,6 +27,8 @@ public:
     UnicodeCharacter();
     UnicodeCharacter(unsigned int charCode, unsigned int xOffset, unsigned int yOffset, unsigned int width, unsigned int height);
 
+    ~UnicodeCharacter();
+
     unsigned int charCode_;
     unsigned int xOffset_;
     unsigned int yOffset_;

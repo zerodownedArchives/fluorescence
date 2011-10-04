@@ -6,14 +6,15 @@
 namespace fluo {
 namespace ui {
 
-BitMask::BitMask(unsigned int width, unsigned int height) : width_(width), height_(height) {
-    bitStoreSize_ = ((width * height) / 8) + 1;
-    bitStore_ = reinterpret_cast<uint8_t*>(malloc(bitStoreSize_));
-    memset(bitStore_, 0, bitStoreSize_);
+BitMask::BitMask() : width_(0), height_(0), bitStoreSize_(0), bitStore_(NULL) {
+
 }
 
 BitMask::~BitMask() {
-    free(bitStore_);
+    if (bitStore_) {
+        free(bitStore_);
+        bitStore_ = NULL;
+    }
 }
 
 bool BitMask::hasPixel(unsigned int pixelX, unsigned int pixelY) {
@@ -37,6 +38,12 @@ void BitMask::setPixel(unsigned int pixelX, unsigned int pixelY) {
 }
 
 void BitMask::init(boost::shared_ptr<CL_PixelBuffer> pixBuf) {
+    width_ = pixBuf->get_width();
+    height_ = pixBuf->get_height();
+    bitStoreSize_ = ((width_ * height_) / 8) + 1;
+    bitStore_ = reinterpret_cast<uint8_t*>(malloc(bitStoreSize_));
+    memset(bitStore_, 0, bitStoreSize_);
+
     uint32_t* bufPtr = reinterpret_cast<uint32_t*>(pixBuf->get_data());
 
     for (unsigned int y = 0; y < height_; ++y) {
