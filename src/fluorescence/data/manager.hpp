@@ -39,17 +39,17 @@ public:
     static boost::shared_ptr<ui::TextureProvider> getItemTextureProvider(unsigned int artId);
     static std::vector<boost::shared_ptr<ui::Animation> > getAnim(unsigned int bodyId, unsigned int animId);
 
-    static ArtLoader* getArtLoader() { return getSingleton()->artLoader_.get(); }
-    static TileDataLoader* getTileDataLoader() { return getSingleton()->tileDataLoader_.get(); }
-    static HuesLoader* getHuesLoader() { return getSingleton()->huesLoader_.get(); }
-    static GumpArtLoader* getGumpArtLoader() { return getSingleton()->gumpArtLoader_.get(); }
-    static MapLoader* getMapLoader(unsigned int index);
-    static StaticsLoader* getStaticsLoader(unsigned int index);
-    static MapTexLoader* getMapTexLoader() { return getSingleton()->mapTexLoader_.get(); }
-    static AnimDataLoader* getAnimDataLoader() { return getSingleton()->animDataLoader_.get(); }
-    static AnimLoader* getAnimLoader(unsigned int index);
-    static MobTypesLoader* getMobTypesLoader() { return getSingleton()->mobTypesLoader_.get(); }
-    static UniFontLoader* getUniFontLoader(unsigned int index);
+    static boost::shared_ptr<ArtLoader> getArtLoader() { return getSingleton()->artLoader_; }
+    static boost::shared_ptr<TileDataLoader> getTileDataLoader() { return getSingleton()->tileDataLoader_; }
+    static boost::shared_ptr<HuesLoader> getHuesLoader() { return getSingleton()->huesLoader_; }
+    static boost::shared_ptr<GumpArtLoader> getGumpArtLoader() { return getSingleton()->gumpArtLoader_; }
+    static boost::shared_ptr<MapLoader> getMapLoader(unsigned int index);
+    static boost::shared_ptr<StaticsLoader> getStaticsLoader(unsigned int index);
+    static boost::shared_ptr<MapTexLoader> getMapTexLoader() { return getSingleton()->mapTexLoader_; }
+    static boost::shared_ptr<AnimDataLoader> getAnimDataLoader() { return getSingleton()->animDataLoader_; }
+    static boost::shared_ptr<AnimLoader> getAnimLoader(unsigned int index);
+    static boost::shared_ptr<MobTypesLoader> getMobTypesLoader() { return getSingleton()->mobTypesLoader_; }
+    static boost::shared_ptr<UniFontLoader> getUniFontLoader(unsigned int index);
 
 private:
     static Manager* singleton_;

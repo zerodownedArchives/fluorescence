@@ -332,7 +332,7 @@ boost::filesystem::path Manager::getPathFor(Config& config, const char* configVa
     return path;
 }
 
-MapLoader* Manager::getMapLoader(unsigned int index) {
+boost::shared_ptr<MapLoader> Manager::getMapLoader(unsigned int index) {
     if (index > 4) {
         LOG_WARN << "Trying to access map loader for map index " << index << std::endl;
         index = 0;
@@ -340,16 +340,16 @@ MapLoader* Manager::getMapLoader(unsigned int index) {
 
     Manager* sing = getSingleton();
 
-    MapLoader* ret = sing->mapLoader_[index].get();
+    boost::shared_ptr<MapLoader> ret = sing->mapLoader_[index];
     if (ret) {
         return ret;
     } else {
         LOG_WARN << "Trying to access uninitialized map index " << index << std::endl;
-        return sing->fallbackMapLoader_.get();
+        return sing->fallbackMapLoader_;
     }
 }
 
-StaticsLoader* Manager::getStaticsLoader(unsigned int index) {
+boost::shared_ptr<StaticsLoader> Manager::getStaticsLoader(unsigned int index) {
     if (index > 4) {
         LOG_WARN << "Trying to access statics loader for map index " << index << std::endl;
         index = 0;
@@ -357,12 +357,12 @@ StaticsLoader* Manager::getStaticsLoader(unsigned int index) {
 
     Manager* sing = getSingleton();
 
-    StaticsLoader* ret = sing->staticsLoader_[index].get();
+    boost::shared_ptr<StaticsLoader> ret = sing->staticsLoader_[index];
     if (ret) {
         return ret;
     } else {
         LOG_WARN << "Trying to access uninitialized statics index " << index << std::endl;
-        return sing->fallbackStaticsLoader_.get();
+        return sing->fallbackStaticsLoader_;
     }
 }
 
@@ -405,7 +405,7 @@ std::vector<boost::shared_ptr<ui::Animation> > Manager::getAnim(unsigned int bod
     return ret;
 }
 
-AnimLoader* Manager::getAnimLoader(unsigned int index) {
+boost::shared_ptr<AnimLoader> Manager::getAnimLoader(unsigned int index) {
     if (index > 5) {
         LOG_WARN << "Trying to access anim loader with index " << index << std::endl;
         index = 0;
@@ -413,16 +413,16 @@ AnimLoader* Manager::getAnimLoader(unsigned int index) {
 
     Manager* sing = getSingleton();
 
-    AnimLoader* ret = sing->animLoader_[index].get();
+    boost::shared_ptr<AnimLoader> ret = sing->animLoader_[index];
     if (ret) {
         return ret;
     } else {
         LOG_WARN << "Trying to access uninitialized anim loader with index " << index << std::endl;
-        return sing->fallbackAnimLoader_.get();
+        return sing->fallbackAnimLoader_;
     }
 }
 
-UniFontLoader* Manager::getUniFontLoader(unsigned int index) {
+boost::shared_ptr<UniFontLoader> Manager::getUniFontLoader(unsigned int index) {
     if (index > 12) {
         LOG_WARN << "Trying to access unifont loader with index " << index << std::endl;
         index = 0;
@@ -430,12 +430,12 @@ UniFontLoader* Manager::getUniFontLoader(unsigned int index) {
 
     Manager* sing = getSingleton();
 
-    UniFontLoader* ret = sing->uniFontLoader_[index].get();
+    boost::shared_ptr<UniFontLoader> ret = sing->uniFontLoader_[index];
     if (ret) {
         return ret;
     } else {
         LOG_WARN << "Trying to access uninitialized unifont loader with index " << index << std::endl;
-        return sing->fallbackUniFontLoader_.get();
+        return sing->fallbackUniFontLoader_;
     }
 }
 

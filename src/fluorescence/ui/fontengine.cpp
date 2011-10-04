@@ -54,7 +54,7 @@ boost::shared_ptr<ui::Texture> FontEngine::getDefaultTexture(const UnicodeString
 
 void FontEngine::calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeString& text, unsigned int maxWidth, unsigned int borderWidth,
         unsigned int& width, unsigned int& height, std::list<unsigned int>& lineBreakIndices) {
-    data::UniFontLoader* fontLoader = data::Manager::getUniFontLoader(fontId);
+    boost::shared_ptr<data::UniFontLoader> fontLoader = data::Manager::getUniFontLoader(fontId);
 
     maxWidth -= borderWidth * 2;
 
@@ -125,7 +125,7 @@ boost::shared_ptr<ui::Texture> FontEngine::getUniFontTexture(unsigned int uniFon
     calculateSizeAndLinebreaks(uniFontId, text, maxWidth, borderWidth, width, height, lineBreakIndices);
 
 
-    data::UniFontLoader* fontLoader = data::Manager::getUniFontLoader(uniFontId);
+    boost::shared_ptr<data::UniFontLoader> fontLoader = data::Manager::getUniFontLoader(uniFontId);
 
     boost::shared_ptr<ui::Texture> tex(new ui::Texture);
     tex->initPixelBuffer(width, height);
