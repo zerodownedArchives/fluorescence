@@ -21,13 +21,8 @@ UnicodeCharacter::UnicodeCharacter() :
         xOffset_(0), yOffset_(0), width_(0), height_(0), data_(NULL) {
 }
 
-UnicodeCharacter::UnicodeCharacter(unsigned int xOffset, unsigned int yOffset, unsigned int width, unsigned int height, bool border) :
+UnicodeCharacter::UnicodeCharacter(unsigned int xOffset, unsigned int yOffset, unsigned int width, unsigned int height) :
         xOffset_(xOffset), yOffset_(yOffset), width_(width), height_(height) {
-
-    if (border) {
-        width_ += BORDER_WIDTH * 2;
-        height_ += BORDER_WIDTH * 2;
-    }
 
     data_ = reinterpret_cast<uint8_t*>(malloc(width_ * height_));
     memset(data_, UnicodeCharacter::TRANSPARENT, width_ * height_);
@@ -56,20 +51,18 @@ UniFontLoader::UniFontLoader(const boost::filesystem::path& path) : maxHeight_(0
     stream_.read(reinterpret_cast<char*>(offsets_), 0x40000);
 
     // load a few characters to get an estimated font height
-    //getCharacter('M', true);
-    //getCharacter('W', true);
-    getCharacter('M', false);
-    getCharacter('W', false);
+    getCharacter('M');
+    getCharacter('W');
 }
 
-boost::shared_ptr<UnicodeCharacter> UniFontLoader::getCharacter(unsigned int character, bool border) {
+boost::shared_ptr<UnicodeCharacter> UniFontLoader::getCharacter(unsigned int character) {
     if (character >= 0x40000 || offsets_[character] == 0) {
         boost::shared_ptr<UnicodeCharacter> ret;
         return ret;
     }
 
-    UniFontLoader::MapType::iterator iter = border ? cacheBorder_.find(character) : cache_.find(character);
-    if (iter != (border ? cacheBorder_.end() : cache_.end())) {
+    UniFontLoader::MapType::iterator iter = cache_.find(character);
+    if (iter != cache_.end()) {
         boost::shared_ptr<UnicodeCharacter> ret = iter->second;
         return ret;
     }
@@ -78,7 +71,7 @@ boost::shared_ptr<UnicodeCharacter> UniFontLoader::getCharacter(unsigned int cha
     uint8_t charHeader[4];
     stream_.read(reinterpret_cast<char*>(charHeader), 4);
 
-    boost::shared_ptr<UnicodeCharacter> ret(new UnicodeCharacter(charHeader[0], charHeader[1], charHeader[2], charHeader[3], border));
+    boost::shared_ptr<UnicodeCharacter> ret(new UnicodeCharacter(charHeader[0], charHeader[1], charHeader[2], charHeader[3]));
 
     if (ret->getTotalHeight() > maxHeight_) {
         maxHeight_ = ret->getTotalHeight();
@@ -110,32 +103,7 @@ boost::shared_ptr<UnicodeCharacter> UniFontLoader::getCharacter(unsigned int cha
         }
     }
 
-    if (border) {
-        for (unsigned int y = BORDER_WIDTH; y < ret->height_ - BORDER_WIDTH; ++y) {
-            for (unsigned int x = BORDER_WIDTH; x < ret->width_ -BORDER_WIDTH; ++x) {
-                if (ret->data_[y * ret->width_ + x] == UnicodeCharacter::LETTER) {
-
-                    for (int i = -BORDER_WIDTH; i <= BORDER_WIDTH; ++i) {
-                        for (int j = -BORDER_WIDTH; j <= BORDER_WIDTH; ++j) {
-                            int idx = i;
-                            idx += y;
-                            idx *= ret->width_;
-                            idx += j;
-                            idx += x;
-                            if (ret->data_[idx] != UnicodeCharacter::LETTER) {
-                                ret->data_[idx] = UnicodeCharacter::BORDER;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        cacheBorder_[character] = ret;
-    } else {
-        cache_[character] = ret;
-    }
-
+    cache_[character] = ret;
 
     //LOG_DEBUG << "read char" << std::endl;
     //for (unsigned int y = 0; y < ret->height_; ++y) {
@@ -173,7 +141,7 @@ boost::shared_ptr<ui::Texture> UniFontLoader::getText(const UnicodeString& text,
     while (iter.hasNext()) {
         unsigned int charCode = iter.nextPostInc();
         //LOG_DEBUG << "iter char=" << charCode << " (" << (char)charCode << ")" << std::endl;
-        boost::shared_ptr<UnicodeCharacter> curChar = getCharacter(charCode, border);
+        boost::shared_ptr<UnicodeCharacter> curChar = getCharacter(charCode);
 
         unsigned int curCharWidth;
 
@@ -230,6 +198,11 @@ boost::shared_ptr<ui::Texture> UniFontLoader::getText(const UnicodeString& text,
     unsigned int curY = 0;
     curIndex = 0;
 
+    if (border) {
+        curX += BORDER_WIDTH;
+        curY += BORDER_WIDTH;
+    }
+
     while (iter2.hasNext()) {
         if (!lineBreakIndices.empty() && lineBreakIndices.front() == curIndex) {
             curX = 0;
@@ -238,7 +211,7 @@ boost::shared_ptr<ui::Texture> UniFontLoader::getText(const UnicodeString& text,
         }
 
         unsigned int charCode = iter2.nextPostInc();
-        boost::shared_ptr<UnicodeCharacter> curChar = getCharacter(charCode, border);
+        boost::shared_ptr<UnicodeCharacter> curChar = getCharacter(charCode);
 
         if (!curChar) {
             //LOG_DEBUG << "Trying to render invalid char code (second) " << charCode << std::endl;
@@ -259,6 +232,30 @@ boost::shared_ptr<ui::Texture> UniFontLoader::getText(const UnicodeString& text,
         }
 
         curX += curChar->getTotalWidth() + 2;
+    }
+
+
+    // apply border
+    if (border) {
+        for (unsigned int y = BORDER_WIDTH; y < height - BORDER_WIDTH; ++y) {
+            for (unsigned int x = BORDER_WIDTH; x < width -BORDER_WIDTH; ++x) {
+                if (pixBufPtr[y * width + x] == color) {
+
+                    for (int i = -BORDER_WIDTH; i <= BORDER_WIDTH; ++i) {
+                        for (int j = -BORDER_WIDTH; j <= BORDER_WIDTH; ++j) {
+                            int idx = i;
+                            idx += y;
+                            idx *= width;
+                            idx += j;
+                            idx += x;
+                            if (pixBufPtr[idx] != color) {
+                                pixBufPtr[idx] = 0x000000FF;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     tex->setReadComplete();

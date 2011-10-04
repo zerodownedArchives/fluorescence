@@ -26,7 +26,7 @@ public:
     };
 
     UnicodeCharacter();
-    UnicodeCharacter(unsigned int xOffset, unsigned int yOffset, unsigned int width, unsigned int height, bool border);
+    UnicodeCharacter(unsigned int xOffset, unsigned int yOffset, unsigned int width, unsigned int height);
 
     unsigned int xOffset_;
     unsigned int yOffset_;
@@ -51,13 +51,12 @@ private:
     boost::filesystem::ifstream stream_;
 
     MapType cache_;
-    MapType cacheBorder_;
 
     unsigned int offsets_[0x10000];
 
     unsigned int maxHeight_;
 
-    boost::shared_ptr<UnicodeCharacter> getCharacter(unsigned int character, bool border);
+    boost::shared_ptr<UnicodeCharacter> getCharacter(unsigned int character);
 };
 
 }
