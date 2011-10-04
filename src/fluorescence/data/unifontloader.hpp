@@ -21,13 +21,13 @@ class UnicodeCharacter {
 public:
     enum {
         TRANSPARENT = 0,
-        BORDER = 1,
-        LETTER = 2,
+        LETTER = 1,
     };
 
     UnicodeCharacter();
-    UnicodeCharacter(unsigned int xOffset, unsigned int yOffset, unsigned int width, unsigned int height);
+    UnicodeCharacter(unsigned int charCode, unsigned int xOffset, unsigned int yOffset, unsigned int width, unsigned int height);
 
+    unsigned int charCode_;
     unsigned int xOffset_;
     unsigned int yOffset_;
     unsigned int width_;
@@ -36,6 +36,8 @@ public:
 
     unsigned int getTotalWidth() const;
     unsigned int getTotalHeight() const;
+
+    void debugPrintToConsole() const;
 };
 
 class UniFontLoader {
@@ -45,7 +47,9 @@ private:
 public:
     UniFontLoader(const boost::filesystem::path& mulPath);
 
-    boost::shared_ptr<ui::Texture> getText(const UnicodeString& text, bool border, unsigned int maxWidth, uint32_t color);
+    boost::shared_ptr<UnicodeCharacter> getCharacter(unsigned int character);
+
+    unsigned int getMaxHeight();
 
 private:
     boost::filesystem::ifstream stream_;
@@ -55,8 +59,6 @@ private:
     unsigned int offsets_[0x10000];
 
     unsigned int maxHeight_;
-
-    boost::shared_ptr<UnicodeCharacter> getCharacter(unsigned int character);
 };
 
 }

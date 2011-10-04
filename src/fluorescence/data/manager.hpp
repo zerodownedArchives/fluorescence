@@ -39,8 +39,6 @@ public:
     static boost::shared_ptr<ui::TextureProvider> getItemTextureProvider(unsigned int artId);
     static std::vector<boost::shared_ptr<ui::Animation> > getAnim(unsigned int bodyId, unsigned int animId);
 
-    static boost::shared_ptr<ui::Texture> getUnicodeText(unsigned int font, const UnicodeString& text, bool border, unsigned int maxWidth, uint32_t color);
-
     static ArtLoader* getArtLoader() { return getSingleton()->artLoader_.get(); }
     static TileDataLoader* getTileDataLoader() { return getSingleton()->tileDataLoader_.get(); }
     static HuesLoader* getHuesLoader() { return getSingleton()->huesLoader_.get(); }
@@ -51,6 +49,7 @@ public:
     static AnimDataLoader* getAnimDataLoader() { return getSingleton()->animDataLoader_.get(); }
     static AnimLoader* getAnimLoader(unsigned int index);
     static MobTypesLoader* getMobTypesLoader() { return getSingleton()->mobTypesLoader_.get(); }
+    static UniFontLoader* getUniFontLoader(unsigned int index);
 
 private:
     static Manager* singleton_;
@@ -79,6 +78,7 @@ private:
     boost::shared_ptr<AnimLoader> fallbackAnimLoader_;
 
     boost::shared_ptr<UniFontLoader> uniFontLoader_[13];
+    boost::shared_ptr<UniFontLoader> fallbackUniFontLoader_;
 
     boost::shared_ptr<MobTypesLoader> mobTypesLoader_;
 };

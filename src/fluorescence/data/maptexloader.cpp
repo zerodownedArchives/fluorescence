@@ -26,7 +26,6 @@ void MapTexLoader::readCallback(unsigned int index, int8_t* buf, unsigned int le
 
     tex->initPixelBuffer(width, width);
     uint32_t* pixBufPtr = tex->getPixelBufferData();
-    memset(pixBufPtr, 0, width * width * sizeof(uint32_t));
 
     uint16_t* inputPtr = reinterpret_cast<uint16_t*>(buf);
 

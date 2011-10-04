@@ -6,6 +6,7 @@
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
 #include <ui/texture.hpp>
+#include <ui/fontengine.hpp>
 
 #include <misc/log.hpp>
 
@@ -22,7 +23,7 @@ namespace ui {
 IngameViewRenderer::IngameViewRenderer(IngameView* ingameView) :
         ingameView_(ingameView) {
 
-    CL_GraphicContext gc = fluo::ui::Manager::getSingleton()->getGraphicsContext();
+    CL_GraphicContext gc = fluo::ui::Manager::getSingleton()->getGraphicContext();
 
     shaderProgram_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/vertex.glsl", "shader/fragment.glsl")));
     shaderProgram_->bind_attribute_location(0, "gl_Vertex");
@@ -126,41 +127,18 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
 
 
 
-    boost::shared_ptr<ui::Texture> testText = data::Manager::getUnicodeText(2, "foobar omg mäh superlanger text", false, 140, 0xFF0000FF);
-    CL_Draw::texture(gc, *testText->getTexture(), CL_Rectf(0, 0, CL_Sizef(testText->getWidth(), testText->getHeight())));
+    //boost::shared_ptr<ui::Texture> testText = data::Manager::getUnicodeText(0, "abcdefghijklmnopqrstuvwxyz1234567890", true, 140, 0xFF0000FF);
+    //CL_Draw::texture(gc, *testText->getTexture(), CL_Rectf(0, 0, CL_Sizef(testText->getWidth(), testText->getHeight())));
 
-    boost::shared_ptr<ui::Texture> testText2 = data::Manager::getUnicodeText(2, "foobar omg mäh superlanger text", true, 140, 0xFF0000FF);
-    CL_Draw::texture(gc, *testText2->getTexture(), CL_Rectf(0, 50, CL_Sizef(testText->getWidth(), testText->getHeight())));
+    //boost::shared_ptr<ui::Texture> testText2 = data::Manager::getUnicodeText(1, "foobar omg mäh superlanger text", true, 140, 0xFF0000FF);
+    //CL_Draw::texture(gc, *testText2->getTexture(), CL_Rectf(0, 40, CL_Sizef(testText2->getWidth(), testText2->getHeight())));
 
-    //CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
+    //boost::shared_ptr<ui::Texture> testText3 = data::Manager::getUnicodeText(2, "foobar omg mäh superlanger text", true, 140, 0xFF0000FF);
+    //CL_Draw::texture(gc, *testText3->getTexture(), CL_Rectf(0, 80, CL_Sizef(testText3->getWidth(), testText3->getHeight())));
 
 
-    //CL_Texture fontTexture(gc, 400, 100, cl_rgba);
-    //CL_FrameBuffer fb(gc);
-    //fb.attach_color_buffer(0, fontTexture);
-
-    //gc.set_frame_buffer(fb);
-    //gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
-    ////gc.clear();
-
-    //CL_FontDescription font_desc;
-    //font_desc.set_typeface_name("DevinneSwash");
-    //font_desc.set_height(18);
-    //CL_Font_System sys_font_wo(gc, font_desc);
-    //font_desc.set_subpixel(false);
-    //CL_Font_System sys_font(gc, font_desc);
-
-    ////CL_Font sys_font(gc, "arial", 24);
-
-    //sys_font_wo.draw_text(gc, 20, 20, "The quick brown fox jumps over the lazy dog ", CL_Colorf(0.f, 0.f, 0.f, 1.f));
-    //sys_font.draw_text(gc, 20, 50, "The quick brown fox jumps over the lazy dog ", CL_Colorf(0.f, 0.f, 0.f, 1.f));
-
-    ////CL_Draw::fill(gc, 50.f, 50.f, 80.f, 80.f, CL_Colorf::blue);
-
-    //gc.set_frame_buffer(origBuffer);
-    ////gc.clear();
-
-    //CL_Draw::texture(gc, fontTexture, CL_Quadf(CL_Rectf(0, 0, 400, 100)));
+    boost::shared_ptr<ui::Texture> textTexture = ui::Manager::getFontEngine()->getDefaultTexture("The quick brown fox jumps over the lazy dog", 270, 0xFF0000FF, 1);
+    CL_Draw::texture(gc, *textTexture->getTexture(), CL_Rectf(30, 30, CL_Sizef(textTexture->getWidth(), textTexture->getHeight())));
 }
 
 }

@@ -10,6 +10,7 @@
 #include "gumpfactory.hpp"
 #include "gumpmenus.hpp"
 #include "gumpactions.hpp"
+#include "fontengine.hpp"
 
 #include <client.hpp>
 
@@ -106,6 +107,8 @@ bool Manager::setShardConfig(Config& config) {
     doubleClickHandler_.reset(new DoubleClickHandler(config));
     doubleClickHandler_->start();
 
+    fontEngine_.reset(new FontEngine(config, getGraphicContext()));
+
     return true;
 }
 
@@ -131,8 +134,8 @@ void Manager::step() {
         obj->onDoubleClick();
     }
 
-    getGraphicsContext().clear();
-    windowManager_->draw_windows(getGraphicsContext());
+    getGraphicContext().clear();
+    windowManager_->draw_windows(getGraphicContext());
     mainWindow_->flip(); // use parameter 1 here for vsync
 
     CL_KeepAlive::process();
@@ -144,12 +147,12 @@ boost::shared_ptr<CL_DisplayWindow> Manager::getMainWindow() {
     return singleton_->mainWindow_;
 }
 
-CL_GraphicContext& Manager::getGraphicsContext() {
+CL_GraphicContext& Manager::getGraphicContext() {
     return singleton_->mainWindow_->get_gc();
 }
 
 CL_Texture* Manager::provideTexture(unsigned int width, unsigned int height) {
-    return new CL_Texture(singleton_->getGraphicsContext(), width, height, cl_rgb8);
+    return new CL_Texture(singleton_->getGraphicContext(), width, height, cl_rgb8);
 }
 
 boost::shared_ptr<RenderQueue> Manager::getRenderQueue() {
@@ -166,6 +169,10 @@ boost::shared_ptr<CursorManager> Manager::getCursorManager() {
 
 boost::shared_ptr<DoubleClickHandler> Manager::getDoubleClickHandler() {
     return singleton_->doubleClickHandler_;
+}
+
+boost::shared_ptr<FontEngine> Manager::getFontEngine() {
+    return singleton_->fontEngine_;
 }
 
 void Manager::closeGumpMenu(GumpMenu* menu) {

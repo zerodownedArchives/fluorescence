@@ -169,6 +169,9 @@ Config::Config() {
     variablesMap_["/fluo/ui/theme@name"].setPath("default", true);
     variablesMap_["/fluo/ui/cursor@normal-artid-start"].setInt(0x206A, true);
     variablesMap_["/fluo/ui/cursor@warmode-artid-start"].setInt(0x2053, true);
+    variablesMap_["/fluo/ui/gameview/font@name"].setString("Arial", true);
+    variablesMap_["/fluo/ui/gameview/font@size"].setInt(12, true);
+
 
     // layer priorities for animations
     variablesMap_["/fluo/ui/layer-priorities@north"].setString      ("21, 22,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 23, 24, 16, 12,  4", true);

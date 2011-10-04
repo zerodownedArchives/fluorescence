@@ -13,6 +13,8 @@ Texture::Texture() {
 void Texture::initPixelBuffer(unsigned int width, unsigned int height) {
     pixelBuffer_.reset(new CL_PixelBuffer(width, height, cl_rgba8));
     bitMask_.reset(new BitMask(width, height));
+
+    memset(getPixelBufferData(), 0, width * height * sizeof(uint32_t));
 }
 
 uint32_t* Texture::getPixelBufferData() {
@@ -23,15 +25,22 @@ boost::shared_ptr<CL_PixelBuffer> Texture::getPixelBuffer() {
     return pixelBuffer_;
 }
 
-boost::shared_ptr<CL_Texture> Texture::getTexture() {
+boost::shared_ptr<CL_Texture> Texture::getTexture(bool releasePixelBuffer) {
     if (!texture_.get()) {
         texture_.reset(ui::Manager::getSingleton()->provideTexture(pixelBuffer_->get_width(), pixelBuffer_->get_height()));
         texture_->set_image(*(pixelBuffer_));
         bitMask_->init(pixelBuffer_);
-        pixelBuffer_.reset();
+
+        if (releasePixelBuffer) {
+            this->releasePixelBuffer();
+        }
     }
 
     return texture_;
+}
+
+void Texture::releasePixelBuffer() {
+    pixelBuffer_.reset();
 }
 
 unsigned int Texture::getWidth() {

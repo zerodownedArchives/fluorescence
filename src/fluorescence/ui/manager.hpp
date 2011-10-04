@@ -29,6 +29,7 @@ class RenderQueue;
 class CursorManager;
 class DoubleClickHandler;
 class GumpMenu;
+class FontEngine;
 
 class Manager {
 public:
@@ -38,7 +39,7 @@ public:
 
     bool setShardConfig(Config& config);
 
-    static CL_GraphicContext& getGraphicsContext();
+    static CL_GraphicContext& getGraphicContext();
     static boost::shared_ptr<CL_DisplayWindow> getMainWindow();
 
     static CL_Texture* provideTexture(unsigned int width, unsigned int height);
@@ -47,6 +48,7 @@ public:
     static boost::shared_ptr<CL_GUIManager> getGuiManager();
     static boost::shared_ptr<CursorManager> getCursorManager();
     static boost::shared_ptr<DoubleClickHandler> getDoubleClickHandler();
+    static boost::shared_ptr<FontEngine> getFontEngine();
 
     void step();
 
@@ -108,6 +110,8 @@ private:
 
     std::queue<boost::shared_ptr<world::IngameObject> > singleClickQueue_;
     std::queue<boost::shared_ptr<world::IngameObject> > doubleClickQueue_;
+
+    boost::shared_ptr<FontEngine> fontEngine_;
 };
 
 }

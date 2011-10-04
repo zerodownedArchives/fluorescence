@@ -56,7 +56,6 @@ void AnimLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len,
                 curFrame.centerX_ = 0;
                 curFrame.centerY_ = 0;
                 curFrame.texture_->initPixelBuffer(1, 1);
-                memset(curFrame.texture_->getPixelBufferData(), 0, 1 * sizeof(uint32_t));
             }
 
             continue;
@@ -81,7 +80,6 @@ void AnimLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len,
 
         curFrame.texture_->initPixelBuffer(width, height);
         uint32_t* pixBufPtr = curFrame.texture_->getPixelBufferData();
-        memset(pixBufPtr, 0, width* height * sizeof(uint32_t));
 
         uint32_t header = *reinterpret_cast<uint32_t*>(ptr);
         ptr += 4;

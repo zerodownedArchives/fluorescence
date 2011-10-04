@@ -14,6 +14,7 @@ set (UI_HPP
     ui/doubleclickhandler.hpp
     ui/gumpmenus.hpp
     ui/gumpactions.hpp
+    ui/fontengine.hpp
     )
 
 set (UI_CPP
@@ -30,6 +31,7 @@ set (UI_CPP
     ui/doubleclickhandler.cpp
     ui/gumpmenus.cpp
     ui/gumpactions.cpp
+    ui/fontengine.cpp
     )
 
 set (GUMPMENU_HPP

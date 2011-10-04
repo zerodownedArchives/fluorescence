@@ -26,7 +26,6 @@ void GumpArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int l
 
     tex->initPixelBuffer(width, height);
     uint32_t* pixBufPtr = tex->getPixelBufferData();
-    memset(pixBufPtr, 0, width * height * sizeof(uint32_t));
 
 
     // LOG_INFO("start decode loop", etc::LOGTYPE_DATA);
