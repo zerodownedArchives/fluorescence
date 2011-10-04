@@ -266,6 +266,7 @@ void Manager::init(Config& config) {
     if (boost::filesystem::exists(path)) {
         LOG_INFO << "Opening unifont.mul from path=" << path << std::endl;
         uniFontLoader_[0].reset(new UniFontLoader(path));
+        fallbackUniFontLoader_ = uniFontLoader_[0];
     } else {
         LOG_WARN << "Unable to open unifont.mul from path=" << path << std::endl;
     }
@@ -281,6 +282,9 @@ void Manager::init(Config& config) {
         if (boost::filesystem::exists(path)) {
             LOG_INFO << "Opening unifont" << index << ".mul from path=" << path << std::endl;
             uniFontLoader_[index].reset(new UniFontLoader(path));
+            if (!fallbackUniFontLoader_) {
+                fallbackUniFontLoader_ = uniFontLoader_[index];
+            }
         } else {
             LOG_WARN << "Unable to open unifont" << index << ".mul from path=" << path << std::endl;
         }
@@ -288,29 +292,25 @@ void Manager::init(Config& config) {
 
     free(uniFontPath);
 
-    path = getPathFor(config, "/fluo/files/unifont10@filename");
-    if (boost::filesystem::exists(path)) {
-        LOG_INFO << "Opening unifont10.mul from path=" << path << std::endl;
-        uniFontLoader_[10].reset(new UniFontLoader(path));
-    } else {
-        LOG_WARN << "Unable to open unifont10.mul from path=" << path << std::endl;
+    uniFontPath = strdup("/fluo/files/unifont10@filename");
+    indexChar = '0';
+    digitIndex = 20;
+
+    for (unsigned int index = 10; index < 13; ++index, ++indexChar) {
+        uniFontPath[digitIndex] = indexChar;
+        path = getPathFor(config, uniFontPath);
+        if (boost::filesystem::exists(path)) {
+            LOG_INFO << "Opening unifont1" << index << ".mul from path=" << path << std::endl;
+            uniFontLoader_[index].reset(new UniFontLoader(path));
+            if (!fallbackUniFontLoader_) {
+                fallbackUniFontLoader_ = uniFontLoader_[index];
+            }
+        } else {
+            LOG_WARN << "Unable to open unifont1" << index << ".mul from path=" << path << std::endl;
+        }
     }
 
-    path = getPathFor(config, "/fluo/files/unifont11@filename");
-    if (boost::filesystem::exists(path)) {
-        LOG_INFO << "Opening unifont11.mul from path=" << path << std::endl;
-        uniFontLoader_[11].reset(new UniFontLoader(path));
-    } else {
-        LOG_WARN << "Unable to open unifont11.mul from path=" << path << std::endl;
-    }
-
-    path = getPathFor(config, "/fluo/files/unifont12@filename");
-    if (boost::filesystem::exists(path)) {
-        LOG_INFO << "Opening unifont12.mul from path=" << path << std::endl;
-        uniFontLoader_[12].reset(new UniFontLoader(path));
-    } else {
-        LOG_WARN << "Unable to open unifont12.mul from path=" << path << std::endl;
-    }
+    free(uniFontPath);
 }
 
 Manager::~Manager() {
