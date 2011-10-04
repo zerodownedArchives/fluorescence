@@ -300,13 +300,13 @@ void Manager::init(Config& config) {
         uniFontPath[digitIndex] = indexChar;
         path = getPathFor(config, uniFontPath);
         if (boost::filesystem::exists(path)) {
-            LOG_INFO << "Opening unifont1" << index << ".mul from path=" << path << std::endl;
+            LOG_INFO << "Opening unifont" << index << ".mul from path=" << path << std::endl;
             uniFontLoader_[index].reset(new UniFontLoader(path));
             if (!fallbackUniFontLoader_) {
                 fallbackUniFontLoader_ = uniFontLoader_[index];
             }
         } else {
-            LOG_WARN << "Unable to open unifont1" << index << ".mul from path=" << path << std::endl;
+            LOG_WARN << "Unable to open unifont" << index << ".mul from path=" << path << std::endl;
         }
     }
 
