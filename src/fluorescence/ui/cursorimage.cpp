@@ -7,7 +7,10 @@
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
 
+#ifndef WIN32
 #include <X11/Xcursor/Xcursor.h>
+#endif
+
 #include <boost/shared_ptr.hpp>
 
 namespace fluo {
@@ -58,7 +61,7 @@ void CursorImage::set(unsigned int cursorId, unsigned int artId, boost::shared_p
 void CursorImage::setHotspotFromTexture(boost::shared_ptr<ui::Texture> tex) {
     // TODO: find something better than busy waiting here
     while (!tex->isReadComplete()) {
-        usleep(1);
+        fluo::sleepMs(1);
     }
 
     hotspotX_ = 0;

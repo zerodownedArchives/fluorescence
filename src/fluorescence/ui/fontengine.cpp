@@ -80,13 +80,13 @@ void FontEngine::calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeSt
         } else if (!curChar) {
             LOG_DEBUG << "Trying to render invalid char code " << charCode << std::endl;
             continue;
-        } else {
-            curCharWidth = curChar->getTotalWidth();
         }
+
+        curCharWidth = curChar->getTotalWidth();
 
         if (curWidth + curCharWidth >= maxWidth) {
             // word exceeds line width
-            width = std::max(width, curWidth);
+            width = (std::min)(width, curWidth);
 
             if (lastBlank != 0) {
                 // move word to next line
@@ -111,7 +111,7 @@ void FontEngine::calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeSt
     }
 
     height = lineCount * (fontLoader->getMaxHeight() + uniLineSpacing_) + borderWidth*2;
-    width = std::max(width, curWidth);
+    width = (std::max)(width, curWidth);
 
     //LOG_DEBUG << "calculated width=" << width << "  height=" << height << std::endl;
     //LOG_DEBUG << "line breaks: " << lineBreakIndices.front() << std::endl;
@@ -165,7 +165,7 @@ boost::shared_ptr<ui::Texture> FontEngine::getUniFontTexture(unsigned int uniFon
 
         for (unsigned int y = 0; y < curChar->height_; ++y) {
             for (unsigned int x = 0; x < curChar->width_; ++x) {
-                if (curChar->data_[y * curChar->width_ + x] == data::UnicodeCharacter::LETTER) {
+                if (curChar->data_[y * curChar->width_ + x] == 1) {
                     pixBufPtr[(curY + curChar->yOffset_ + y) * width + (curX + curChar->xOffset_ + x)] = color;
                 }
             }

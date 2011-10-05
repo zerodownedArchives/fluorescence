@@ -88,7 +88,7 @@ bool Socket::connect(unsigned int ip, unsigned short port) {
     // set socket nonblocking
     #ifdef WIN32
         u_long iMode = 1;
-        if (ioctlsocket(m_sock, FIONBIO, &iMode) != 0) {
+        if (ioctlsocket(socketFd_, FIONBIO, &iMode) != 0) {
             LOG_ERROR << "Unable to set socket to nonblocking: " << strerror(WSAGetLastError()) << std::endl;
             close();
             return false;
@@ -122,7 +122,12 @@ void Socket::close() {
 
     if (socketFd_) {
         LOG_INFO << "Closing socket" << std::endl;
+
+#ifdef WIN32
+		closesocket(socketFd_);
+#else
         ::close(socketFd_);
+#endif
         socketFd_ = 0;
     }
 
@@ -132,7 +137,7 @@ void Socket::close() {
 void Socket::receiveRun() {
     while (running_ && !criticalError_) {
         socketMutex_.lock();
-        int recvLen = recv(socketFd_, rawBuffer_, 0x4000, 0);
+        int recvLen = recv(socketFd_, reinterpret_cast<char*>(rawBuffer_), 0x4000, 0);
         socketMutex_.unlock();
 
         if (recvLen > 0) {
@@ -159,7 +164,7 @@ void Socket::receiveRun() {
             parsePackets();
 
             // sleep a little
-            usleep(10);
+            fluo::sleepMs(10);
 
         } else if (recvLen == 0) { // peer has shut down
             LOG_INFO << "Peer has shut down socket" << std::endl;
@@ -201,7 +206,7 @@ bool Socket::sendAll() {
     //dumpBuffer(sendBuffer_, sendSize_);
 
     socketMutex_.lock();
-    unsigned int sendLen = ::send(socketFd_, sendBuffer_, sendSize_, 0);
+    unsigned int sendLen = ::send(socketFd_, reinterpret_cast<char*>(sendBuffer_), sendSize_, 0);
     socketMutex_.unlock();
 
     if (sendLen < 0) {

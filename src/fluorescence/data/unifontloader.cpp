@@ -25,7 +25,8 @@ UnicodeCharacter::UnicodeCharacter(unsigned int charCode, unsigned int xOffset, 
         charCode_(charCode), xOffset_(xOffset), yOffset_(yOffset), width_(width), height_(height) {
 
     data_ = reinterpret_cast<uint8_t*>(malloc(width_ * height_));
-    memset(data_, UnicodeCharacter::TRANSPARENT, width_ * height_);
+
+	memset(data_, 0, width_ * height_);
 }
 
 UnicodeCharacter::~UnicodeCharacter() {
@@ -47,7 +48,7 @@ void UnicodeCharacter::debugPrintToConsole() const {
     LOG_DEBUG << "UnicodeCharacter code=" << charCode_ << " xOff=" << xOffset_ << " yOff=" << yOffset_ << " width=" << width_ << " height=" << height_ << std::endl;
     for (unsigned int y = 0; y < height_; ++y) {
         for (unsigned int x = 0; x < width_; ++x) {
-            if (data_[y * width_ + x] == UnicodeCharacter::LETTER) {
+            if (data_[y * width_ + x] == 1) {
                 printf("o");
             } else {
                 printf(" ");
@@ -119,7 +120,7 @@ boost::shared_ptr<UnicodeCharacter> UniFontLoader::getCharacter(unsigned int cha
 
         for (unsigned int x = 0; x < ret->width_; ++x) {
             if ((*scanlinePtr & pow2[bitIndex]) != 0) {
-                ret->data_[y * ret->width_ + x] = UnicodeCharacter::LETTER;
+                ret->data_[y * ret->width_ + x] = 1;
             }
 
             if (bitIndex == 0) {

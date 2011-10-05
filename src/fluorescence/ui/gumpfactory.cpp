@@ -5,6 +5,7 @@
 
 #include <boost/bind.hpp>
 
+#include <platform.hpp>
 #include <misc/log.hpp>
 #include <client.hpp>
 #include <data/artloader.hpp>
@@ -612,7 +613,7 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
         boost::shared_ptr<ui::Texture> texture = data::Manager::getGumpArtLoader()->getTexture(gumpId);
         // TODO: find something better than busy waiting here
         while(!texture->isReadComplete()) {
-            usleep(1);
+            fluo::sleepMs(1);
         }
 
         img->set_image(*(texture->getPixelBuffer()));
@@ -628,7 +629,7 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
         boost::shared_ptr<ui::Texture> texture = data::Manager::getArtLoader()->getItemTexture(artId);
         // TODO: find something better than busy waiting here
         while(!texture->isReadComplete()) {
-            usleep(1);
+            fluo::sleepMs(1);
         }
 
         img->set_image(*(texture->getPixelBuffer()));

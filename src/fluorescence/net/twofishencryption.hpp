@@ -1,10 +1,11 @@
 #ifndef FLUO_NET_TWOFISHENCRYPTION_HPP
 #define FLUO_NET_TWOFISHENCRYPTION_HPP
 
-#include "encryption.hpp"
-
 #include "twofish/aes.h"
 #include "md5/md5.h"
+
+#include "encryption.hpp"
+
 
 namespace fluo {
 namespace net {

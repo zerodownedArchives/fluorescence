@@ -26,8 +26,8 @@ void StaticItem::set(int locX, int locY, int locZ, unsigned int artId, unsigned 
 
     setLocation(locX, locY, locZ);
 
-    hueInfo_[0] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
-    hueInfo_[1] = data::Manager::getHuesLoader()->translateHue(hue_);
+    hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
+    hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
 
     addToRenderQueue();
 }

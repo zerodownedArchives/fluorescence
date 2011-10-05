@@ -142,7 +142,7 @@ void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int 
         verticalScrollBar_->set_line_step(verticalLineStep);
     } else {
         int lineStep = verticalScrollBar_->get_page_step() / 10;
-        lineStep = std::max(1, lineStep);
+        lineStep = (std::max)(1, lineStep);
         verticalScrollBar_->set_line_step(lineStep);
     }
 
@@ -150,7 +150,7 @@ void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int 
         horizontalScrollBar_->set_line_step(horizontalLineStep);
     } else {
         int lineStep = horizontalScrollBar_->get_page_step() / 10;
-        lineStep = std::max(1, lineStep);
+        lineStep = (std::max)(1, lineStep);
         horizontalScrollBar_->set_line_step(lineStep);
     }
 

@@ -49,10 +49,10 @@
 #endif
 #endif
 
-#define		LittleEndian		1		/* e.g., 1 for Pentium, 0 for 68K */
+#define		LittleEndianAES		1		/* e.g., 1 for Pentium, 0 for 68K */
 #define		ALIGN32				0		/* need dword alignment? (no for Pentium) */
 
-#if LittleEndian
+#if LittleEndianAES
 #define		Bswap(x)			(x)		/* NOP for little-endian machines */
 #define		ADDR_XOR			0		/* NOP for little-endian machines */
 #else

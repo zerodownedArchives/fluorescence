@@ -3,8 +3,6 @@
 
 #include "exception.hpp"
 
-#include <unistd.h>
-
 namespace fluo {
 
 Log* Log::singleton_ = NULL;
@@ -16,7 +14,7 @@ Log* Log::getSingleton() {
     return singleton_;
 }
 
-Log::Log() : reportingLevel_(0) {
+Log::Log() : std::ostream(std::_Uninitialized()), file_("fluorescence.log"), reportingLevel_(0) {
     gettimeofday(&startTime_, NULL);
 
     levelStrings_[0] = " [DEBUG]: ";
@@ -24,8 +22,6 @@ Log::Log() : reportingLevel_(0) {
     levelStrings_[2] = " [WARN ]: ";
     levelStrings_[3] = " [ERROR]: ";
     levelStrings_[4] = " [EMERG]: ";
-
-    file_.open("fluorescence.log");
 
     if (!file_.is_open()) {
         throw Exception("Unable to create log file");
@@ -81,7 +77,7 @@ const char* Log::getCurrentRelativeTime() const {
 }
 
 Log& Log::operator<<(const struct timeval& v) {
-    struct tm* ptm = localtime (&v.tv_sec);
+    struct tm* ptm = localtime (reinterpret_cast<const time_t*>(&v.tv_sec));
 
     char buf[10];
     strftime(buf, 10, "%H:%M:%S", ptm);

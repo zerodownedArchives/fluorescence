@@ -955,7 +955,7 @@ int blockEncrypt(cipherInstance *cipher, keyInstance *key,CONST BYTE *input,
 #endif
 
 		/* need to do (or undo, depending on your point of view) final swap */
-#if LittleEndian
+#if LittleEndianAES
 #define	StoreBlockE(N)	((DWORD *)outBuffer)[N]=x[N^2] ^ sk[OUTPUT_WHITEN+N]
 #else
 #define	StoreBlockE(N)	{ t0=x[N^2] ^ sk[OUTPUT_WHITEN+N]; ((DWORD *)outBuffer)[N]=Bswap(t0); }
@@ -1124,7 +1124,7 @@ int blockDecrypt(cipherInstance *cipher, keyInstance *key,CONST BYTE *input,
 		DebugDump(x,"",0,0,0,0,0);
 		if (cipher->mode == MODE_ECB)
 			{
-#if LittleEndian
+#if LittleEndianAES
 #define	StoreBlockD(N)	((DWORD *)outBuffer)[N] = x[N] ^ sk[INPUT_WHITEN+N]
 #else
 #define	StoreBlockD(N)	{ t0=x[N]^sk[INPUT_WHITEN+N]; ((DWORD *)outBuffer)[N] = Bswap(t0); }

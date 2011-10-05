@@ -2,6 +2,8 @@
 #include "lightmanager.hpp"
 
 #include <stdlib.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 namespace fluo {
 namespace world {

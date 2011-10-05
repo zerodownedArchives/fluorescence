@@ -20,6 +20,7 @@
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
 
+#include <algorithm>
 #include <ClanLib/Display/Window/keys.h>
 
 namespace fluo {
@@ -92,7 +93,7 @@ void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int 
     // at least, we need to load as much tiles as the diagonal of the view is long
     // we load this amount of tiles (plus a little cache) in each direction of the center tile
 
-    double viewDiagonalPixel = sqrt(pow(getWidth(), 2) + pow(getHeight(), 2));
+    double viewDiagonalPixel = sqrt(pow((float)getWidth(), 2) + pow((float)getHeight(), 2));
     double viewDiagonalTileCount = viewDiagonalPixel / 31;
 
     double viewDiagonalSectorCount = viewDiagonalTileCount / 8;
@@ -116,8 +117,8 @@ void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int 
     for (int x = -loadInEachDirection; x <= loadInEachDirection; ++x) {
         diff = loadInEachDirection - abs(x);
         for (int y = -diff; y <= diff; ++y) {
-            sectorX = std::max(centerSectorX + x, 0);
-            sectorY = std::max(centerSectorY + y, 0);
+            sectorX = (std::max)(centerSectorX + x, 0);
+            sectorY = (std::max)(centerSectorY + y, 0);
             sectorId = sectorX * mapHeight + sectorY;
             list.push_back(sectorId);
 
@@ -132,6 +133,8 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     CL_Vec3f intensity;
     CL_Vec3f direction;
     boost::shared_ptr<world::IngameObject> clickedObject;
+
+	static unsigned int curDirection = 0;
 
     //LOGARG_INFO(LOGTYPE_INPUT, "input pressed ingameview: %u", e.id);
 
@@ -160,9 +163,9 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     case CL_KEY_SUBTRACT:
         lm = world::Manager::getSingleton()->getLightManager();
         intensity = lm->getAmbientIntensity();
-        intensity.r = std::max(0.0, intensity.r - 0.1);
-        intensity.g = std::max(0.0, intensity.g - 0.1);
-        intensity.b = std::max(0.0, intensity.b - 0.1);
+        intensity.r = (std::max)(0.0, intensity.r - 0.1);
+        intensity.g = (std::max)(0.0, intensity.g - 0.1);
+        intensity.b = (std::max)(0.0, intensity.b - 0.1);
         lm->setAmbientIntensity(intensity);
         break;
 
@@ -177,9 +180,9 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     case CL_KEY_S:
         lm = world::Manager::getSingleton()->getLightManager();
         intensity = lm->getGlobalIntensity();
-        intensity.r = std::max(0.0, intensity.r - 0.03);
-        intensity.g = std::max(0.0, intensity.g - 0.03);
-        intensity.b = std::max(0.0, intensity.b - 0.03);
+        intensity.r = (std::max)(0.0, intensity.r - 0.03);
+        intensity.g = (std::max)(0.0, intensity.g - 0.03);
+        intensity.b = (std::max)(0.0, intensity.b - 0.03);
         lm->setGlobalIntensity(intensity);
         break;
 
@@ -199,7 +202,6 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         break;
 
     case CL_KEY_G:
-        static unsigned int curDirection = 0;
         //world::Manager::getSingleton()->getPlayer()->playAnim(curAnimId++);
         world::Manager::getSingleton()->getPlayer()->setDirection(curDirection++);
         break;

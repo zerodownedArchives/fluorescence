@@ -19,11 +19,6 @@ namespace data {
 
 class UnicodeCharacter {
 public:
-    enum {
-        TRANSPARENT = 0,
-        LETTER = 1,
-    };
-
     UnicodeCharacter();
     UnicodeCharacter(unsigned int charCode, unsigned int xOffset, unsigned int yOffset, unsigned int width, unsigned int height);
 

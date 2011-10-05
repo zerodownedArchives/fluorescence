@@ -244,7 +244,7 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
                 continue;
             }
 
-            CL_Font_System::register_font(iter->path().string(), iter->path().stem());
+            CL_Font_System::register_font(iter->path().string(), iter->path().stem().string());
         }
     }
 }

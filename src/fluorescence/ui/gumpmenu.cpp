@@ -127,7 +127,6 @@ bool GumpMenu::onInputPressed(const CL_InputEvent& msg) {
         break;
 
     case CL_KEY_ENTER:
-    case CL_KEY_NUMPAD_ENTER:
         if (action_.length() > 0) {
             GumpActions::doAction(this, action_, 0, NULL);
         } else {

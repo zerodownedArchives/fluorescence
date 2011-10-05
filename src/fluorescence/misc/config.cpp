@@ -204,7 +204,11 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
 
     // transform vector to default argc, argv
     int argc = args.size();
+#ifdef WIN32
+	char** argv = new char*[argc];
+#else
     char* argv[argc];
+#endif
     for (int i = 0; i < argc; ++i) {
         argv[i] = const_cast<char*>(args[i].c_str());
     }
@@ -232,6 +236,10 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
         LOG_EMERGENCY << "Error parsing command line: " << ex.what() << std::endl;
         return false;
     }
+
+#ifdef WIN32
+	free(argv);
+#endif
 
     return true;
 }

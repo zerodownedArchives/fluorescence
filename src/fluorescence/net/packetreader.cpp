@@ -3,7 +3,12 @@
 
 #include <string.h>
 #include <stdlib.h>
+
+#ifdef WIN32
+#include <WinSock2.h>
+#else
 #include <netinet/in.h>
+#endif
 
 namespace fluo {
 namespace net {

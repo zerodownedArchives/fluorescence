@@ -1,13 +1,14 @@
 #ifndef FLUO_MISC_LOG_HPP
 #define FLUO_MISC_LOG_HPP
 
-#include <sys/time.h>
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <unicode/ustream.h>
 
 #include <boost/thread/mutex.hpp>
+
+#include "../platform.hpp"
 
 
 #define LOG_DEBUG \
@@ -73,7 +74,11 @@ public:
 
 private:
     Log();
+
+	// not overly proper, but otherwise visual studio cries about having no default ctor for ostream
+#ifndef WIN32
     Log(const Log& copy) { }
+#endif
     Log& operator=(const Log& copy) { return *this; }
 
     static Log* singleton_;
