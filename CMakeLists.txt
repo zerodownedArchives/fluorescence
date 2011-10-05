@@ -9,6 +9,8 @@ IF (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 ENDIF (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_FILESYSTEM_VERSION=2")
+
 
 # platform specific stuff
 IF (CMAKE_COMPILER_IS_GNUCXX)
@@ -30,10 +32,10 @@ IF (CMAKE_COMPILER_IS_GNUCXX)
 
     include_directories(${ClanLib_INCLUDE_DIRS})
 
-	set(Boost_USE_MULTITHREADED ON)
-	find_package(Boost 1.40.0 REQUIRED COMPONENTS filesystem thread program_options)
+    set(Boost_USE_MULTITHREADED ON)
+    find_package(Boost 1.42.0 REQUIRED COMPONENTS filesystem thread program_options)
 
-	set(FLUO_LIBRARIES ${ClanLib_LIBRARIES} ${Boost_LIBRARIES} ${ICU_LIBRARIES} -lXcursor)
+    set(FLUO_LIBRARIES ${ClanLib_LIBRARIES} ${Boost_LIBRARIES} ${ICU_LIBRARIES} -lXcursor)
 
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
@@ -48,25 +50,25 @@ IF (WIN32)
     #set(BOOST_LIBRARYDIR ${MYLIBDIR})
     #set(BOOST_INCLUDEDIR ${CMAKE_SOURCE_DIR}/winbuild/include)
 
-	#MESSAGE(STATUS ${CMAKE_SOURCE_DIR})
+    #MESSAGE(STATUS ${CMAKE_SOURCE_DIR})
 
-    set(FLUO_LIBRARIES		${MYLIBDIR}clanApp-static-mt.lib 
-							${MYLIBDIR}clanCore-static-mt.lib 
-							${MYLIBDIR}clanDisplay-static-mt.lib 
-							${MYLIBDIR}clanGL-static-mt.lib 
-							${MYLIBDIR}clanGUI-static-mt.lib
-							
-							 ${MYLIBDIR}icuin.lib
-							 ${MYLIBDIR}icuuc.lib 
-							 ${MYLIBDIR}icudt.lib 
-							 ${MYLIBDIR}icuio.lib
+    set(FLUO_LIBRARIES      ${MYLIBDIR}clanApp-static-mt.lib
+                            ${MYLIBDIR}clanCore-static-mt.lib
+                            ${MYLIBDIR}clanDisplay-static-mt.lib
+                            ${MYLIBDIR}clanGL-static-mt.lib
+                            ${MYLIBDIR}clanGUI-static-mt.lib
 
-							 ${MYLIBDIR}libboost_filesystem-vc100-mt-s-1_47.lib
-							 ${MYLIBDIR}libboost_program_options-vc100-mt-s-1_47.lib
-							 ${MYLIBDIR}libboost_thread-vc100-mt-s-1_47.lib
-	)
+                             ${MYLIBDIR}icuin.lib
+                             ${MYLIBDIR}icuuc.lib
+                             ${MYLIBDIR}icudt.lib
+                             ${MYLIBDIR}icuio.lib
 
-	MESSAGE(STATUS ${ClanLib_LIBRARIES})
+                             ${MYLIBDIR}libboost_filesystem-vc100-mt-s-1_47.lib
+                             ${MYLIBDIR}libboost_program_options-vc100-mt-s-1_47.lib
+                             ${MYLIBDIR}libboost_thread-vc100-mt-s-1_47.lib
+    )
+
+    MESSAGE(STATUS ${ClanLib_LIBRARIES})
 
     set(ICU_LIBRARIES ${MYLIBDIR}icuin.lib ${MYLIBDIR}icuuc.lib ${MYLIBDIR}icudt.lib ${MYLIBDIR}icuio.lib)
 

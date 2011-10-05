@@ -74,7 +74,7 @@ GumpMenu* GumpMenus::openShardSelectionGump() {
 
     for (; nameIter != nameEnd; ++nameIter) {
         if (bfs::is_directory(nameIter->status())) {
-            nameList.push_back(StringConverter::fromUtf8(nameIter->path().filename().string()));
+            nameList.push_back(StringConverter::fromUtf8(nameIter->path().filename()));
         }
     }
 

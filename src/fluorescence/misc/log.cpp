@@ -14,7 +14,11 @@ Log* Log::getSingleton() {
     return singleton_;
 }
 
-Log::Log() : std::ostream(std::_Uninitialized()), file_("fluorescence.log"), reportingLevel_(0) {
+Log::Log() :
+#ifdef WIN32
+std::ostream(std::_Uninitialized()),
+#endif
+file_("fluorescence.log"), reportingLevel_(0) {
     gettimeofday(&startTime_, NULL);
 
     levelStrings_[0] = " [DEBUG]: ";

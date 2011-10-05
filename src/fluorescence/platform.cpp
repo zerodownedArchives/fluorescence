@@ -60,12 +60,17 @@ int gettimeofday(struct timeval *tv, struct timezone *tz) {
 #endif
 
 
-namespace fluo {
-	void sleepMs(unsigned int ms) {
-#ifdef WIN32
-		Sleep(ms);
-#else
-		usleep(ms * 1000);
+#ifndef WIN32
+#include <unistd.h>
 #endif
-	}
+
+
+namespace fluo {
+    void sleepMs(unsigned int ms) {
+#ifdef WIN32
+        Sleep(ms);
+#else
+        usleep(ms * 1000);
+#endif
+    }
 }

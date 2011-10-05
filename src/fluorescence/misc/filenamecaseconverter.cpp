@@ -33,7 +33,7 @@ void FileNameCaseConverter::convertRec(const boost::filesystem::path& directory)
             convert(nameIter->path());
         }
 
-		UnicodeString str = StringConverter::fromUtf8(nameIter->path().filename().string());
+        UnicodeString str = StringConverter::fromUtf8(nameIter->path().filename());
         str.toLower();
         bfs::path toPath = nameIter->path().parent_path() / StringConverter::toUtf8String(str);
 
