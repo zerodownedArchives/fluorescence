@@ -80,9 +80,9 @@ void FontEngine::calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeSt
         } else if (!curChar) {
             LOG_DEBUG << "Trying to render invalid char code " << charCode << std::endl;
             continue;
-        } else {
-            curCharWidth = curChar->getTotalWidth();
         }
+
+        curCharWidth = curChar->getTotalWidth();
 
         if (curWidth + curCharWidth >= maxWidth) {
             // word exceeds line width
