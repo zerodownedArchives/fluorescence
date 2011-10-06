@@ -5,6 +5,7 @@
 #include <string.h>
 #ifdef WIN32
 #include <winsock2.h>
+#include <WS2tcpip.h>
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -42,14 +43,14 @@ bool Socket::connect(const UnicodeString& host, unsigned short port) {
 
 #ifdef WIN32
     addrinfo* result;
-    int error = getaddrinfo(stdString, NULL, NULL, &result);
+    int error = getaddrinfo(stdString.c_str(), NULL, NULL, &result);
     if (error != 0) {
-        LOG_ERROR << "Unknown host " << host << ": " << strerror(WSAGetLastError()) << std::endl;
+        LOG_ERROR << "Unknown host " << host << ": " << error << " - " << gai_strerror(error) << std::endl;
         close();
         return false;
     }
 
-    ip = ((struct sockaddr_in *)(res->ai_addr))->sin_addr.S_un;
+    ip = ((struct sockaddr_in *)(result->ai_addr))->sin_addr.s_addr;
 
     freeaddrinfo(result);
 #else
@@ -187,14 +188,19 @@ void Socket::receiveRun() {
             LOG_INFO << "Peer has shut down socket" << std::endl;
             // set error indicator ?
             break;
-        } else if (recvLen == -1 && running_) { // error
-            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        } else if (recvLen < 0 && running_) { // error
+#ifdef WIN32
+			int err = WSAGetLastError();
+            if (err == EAGAIN || err == WSAEWOULDBLOCK) {
+#else
+			if (errno == EAGAIN || errno == EWOULDBLOCK) {
+#endif
                 continue;
             } else {
                 #ifdef WIN32
-                    LOG_ERROR << "Socket error in receiveRun(): " << strerror(WSAGetLastError()) << std::endl;
+                    LOG_ERROR << "Socket error in receiveRun(): " << err << " - " << strerror(err) << std::endl;
                 #else
-                    LOG_ERROR << "Socket error in receiveRun(): " << strerror(errno) << std::endl;
+                    LOG_ERROR << "Socket error in receiveRun(): " << errno << " - " strerror(errno) << std::endl;
                 #endif
 
                 criticalError_ = true;

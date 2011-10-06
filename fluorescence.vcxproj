@@ -73,7 +73,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <OutputFile>$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>libboost_filesystem-vc100-mt-s-1_47.lib;libboost_program_options-vc100-mt-s-1_47.lib;libboost_thread-vc100-mt-s-1_47.lib;libboost_system-vc100-mt-s-1_47.lib;libboost_date_time-vc100-mt-s-1_47.lib;clanApp-static-mt.lib;clanCore-static-mt.lib;clanDisplay-static-mt.lib;clanGL-static-mt.lib;clanGUI-static-mt.lib;zlib-static-mt.lib;libjpeg-static-mt.lib;icuin.lib;icuuc.lib;icudt.lib;icuio.lib;wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libboost_filesystem-vc100-mt-s-1_47.lib;libboost_program_options-vc100-mt-s-1_47.lib;libboost_thread-vc100-mt-s-1_47.lib;libboost_system-vc100-mt-s-1_47.lib;libboost_date_time-vc100-mt-s-1_47.lib;clanApp-static-mt.lib;clanCore-static-mt.lib;clanDisplay-static-mt.lib;clanGL-static-mt.lib;clanGUI-static-mt.lib;zlib-static-mt.lib;libjpeg-static-mt.lib;icuin.lib;icuuc.lib;icudt.lib;icuio.lib;wsock32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>

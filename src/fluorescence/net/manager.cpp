@@ -46,10 +46,25 @@ void Manager::destroy() {
 }
 
 Manager::Manager(const Config& config) {
+#ifdef WIN32
+    // Initialize Winsock
+	WSADATA wsaData;
+    int err = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (err != 0) {
+        LOG_EMERGENCY << "WSAStartup failed: " << err << " - " << strerror(err) << std::endl;
+        throw std::exception();
+    } else {
+		LOG_INFO << "WSAStartup ok" << std::endl;
+	}
+#endif
 }
 
 Manager::~Manager() {
     LOG_INFO << "net::Manager shutdown" << std::endl;
+
+#ifdef WIN32
+    WSACleanup();
+#endif
 }
 
 void Manager::step() {
