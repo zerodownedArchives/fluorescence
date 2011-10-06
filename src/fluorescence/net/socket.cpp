@@ -37,20 +37,33 @@ void Socket::setEncryption(boost::shared_ptr<Encryption> value) {
 
 bool Socket::connect(const UnicodeString& host, unsigned short port) {
     std::string stdString = StringConverter::toUtf8String(host);
-    hostent* hostent = gethostbyname(stdString.c_str());
 
-    if (!hostent) {
-        #ifdef WIN32
-            LOG_ERROR << "Unknown host " << host << ": " << strerror(WSAGetLastError()) << std::endl;
-        #else
-            LOG_ERROR << "Unknown host " << host << ": " << strerror(errno) << std::endl;
-        #endif
+    unsigned int ip = 0;
+
+#ifdef WIN32
+    addrinfo* result;
+    int error = getaddrinfo(stdString, NULL, NULL, &result);
+    if (error != 0) {
+        LOG_ERROR << "Unknown host " << host << ": " << strerror(WSAGetLastError()) << std::endl;
         close();
         return false;
     }
 
-    unsigned int ip = 0;
+    ip = ((struct sockaddr_in *)(res->ai_addr))->sin_addr.S_un;
+
+    freeaddrinfo(result);
+#else
+    hostent* hostent = gethostbyname(stdString.c_str());
+
+    if (!hostent) {
+        LOG_ERROR << "Unknown host " << host << ": " << strerror(errno) << std::endl;
+        close();
+        return false;
+    }
+
     memcpy(&ip, hostent->h_addr_list[0], 4);
+#endif
+
     return connect(ip, port);
 }
 
