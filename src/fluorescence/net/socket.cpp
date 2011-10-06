@@ -40,7 +40,11 @@ bool Socket::connect(const UnicodeString& host, unsigned short port) {
     hostent* hostent = gethostbyname(stdString.c_str());
 
     if (!hostent) {
-        LOG_ERROR << "Unknown host: " << host << std::endl;
+        #ifdef WIN32
+            LOG_ERROR << "Unknown host " << host << ": " << strerror(WSAGetLastError()) << std::endl;
+        #else
+            LOG_ERROR << "Unknown host " << host << ": " << strerror(errno) << std::endl;
+        #endif
         close();
         return false;
     }
@@ -124,7 +128,7 @@ void Socket::close() {
         LOG_INFO << "Closing socket" << std::endl;
 
 #ifdef WIN32
-		closesocket(socketFd_);
+        closesocket(socketFd_);
 #else
         ::close(socketFd_);
 #endif
