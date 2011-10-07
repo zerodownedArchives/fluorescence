@@ -205,7 +205,7 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
     // transform vector to default argc, argv
     int argc = args.size();
 #ifdef WIN32
-	char** argv = new char*[argc];
+    char** argv = new char*[argc];
 #else
     char* argv[argc];
 #endif
@@ -238,7 +238,7 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
     }
 
 #ifdef WIN32
-	free(argv);
+    free(argv);
 #endif
 
     return true;

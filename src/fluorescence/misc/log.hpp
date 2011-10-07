@@ -75,7 +75,7 @@ public:
 private:
     Log();
 
-	// not overly proper, but otherwise visual studio cries about having no default ctor for ostream
+    // not overly proper, but otherwise visual studio cries about having no default ctor for ostream
 #ifndef WIN32
     Log(const Log& copy) { }
 #endif

@@ -157,7 +157,7 @@ void Socket::receiveRun() {
         socketMutex_.lock();
         int recvLen = recv(socketFd_, reinterpret_cast<char*>(rawBuffer_), 0x4000, 0);
 #ifdef WIN32
-		int sockErr = WSAGetLastError();
+        int sockErr = WSAGetLastError();
 #endif
         socketMutex_.unlock();
 
@@ -195,7 +195,7 @@ void Socket::receiveRun() {
 #ifdef WIN32
             if (sockErr == EAGAIN || sockErr == WSAEWOULDBLOCK) {
 #else
-			if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
 #endif
                 continue;
             } else {
