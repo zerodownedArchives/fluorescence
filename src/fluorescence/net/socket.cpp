@@ -190,17 +190,17 @@ void Socket::receiveRun() {
             break;
         } else if (recvLen < 0 && running_) { // error
 #ifdef WIN32
-			int err = WSAGetLastError();
+            int err = WSAGetLastError();
             if (err == EAGAIN || err == WSAEWOULDBLOCK) {
 #else
-			if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
 #endif
                 continue;
             } else {
                 #ifdef WIN32
                     LOG_ERROR << "Socket error in receiveRun(): " << err << " - " << strerror(err) << std::endl;
                 #else
-                    LOG_ERROR << "Socket error in receiveRun(): " << errno << " - " strerror(errno) << std::endl;
+                    LOG_ERROR << "Socket error in receiveRun(): " << errno << " - " << strerror(errno) << std::endl;
                 #endif
 
                 criticalError_ = true;

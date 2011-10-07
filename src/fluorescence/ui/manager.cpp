@@ -136,7 +136,7 @@ void Manager::step() {
 
     getGraphicContext().clear();
     windowManager_->draw_windows(getGraphicContext());
-    mainWindow_->flip(); // use parameter 1 here for vsync
+    mainWindow_->flip(0); // use parameter 1 here for vsync
 
     CL_KeepAlive::process();
 
