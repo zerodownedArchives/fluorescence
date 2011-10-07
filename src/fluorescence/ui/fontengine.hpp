@@ -35,6 +35,8 @@ private:
 
     void calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeString& text, unsigned int maxWidth, unsigned int borderWidth,
         unsigned int& width, unsigned int& height, std::list<unsigned int>& lineBreakIndices);
+    UnicodeString calculateSizeAndLinebreaks(CL_Font& font, const UnicodeString& text, unsigned int maxWidth, unsigned int borderWidth,
+        unsigned int& width, unsigned int& height);
 };
 
 }

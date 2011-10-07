@@ -126,6 +126,9 @@ bool GumpMenu::onInputPressed(const CL_InputEvent& msg) {
 
         break;
 
+#ifndef WIN32
+    case CL_KEY_NUMPAD_ENTER:
+#endif
     case CL_KEY_ENTER:
         if (action_.length() > 0) {
             GumpActions::doAction(this, action_, 0, NULL);

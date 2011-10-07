@@ -133,11 +133,11 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
     //boost::shared_ptr<ui::Texture> testText2 = data::Manager::getUnicodeText(1, "foobar omg mäh superlanger text", true, 140, 0xFF0000FF);
     //CL_Draw::texture(gc, *testText2->getTexture(), CL_Rectf(0, 40, CL_Sizef(testText2->getWidth(), testText2->getHeight())));
 
-    //boost::shared_ptr<ui::Texture> testText3 = data::Manager::getUnicodeText(2, "foobar omg mäh superlanger text", true, 140, 0xFF0000FF);
-    //CL_Draw::texture(gc, *testText3->getTexture(), CL_Rectf(0, 80, CL_Sizef(testText3->getWidth(), testText3->getHeight())));
+    boost::shared_ptr<ui::Texture> testText3 = ui::Manager::getFontEngine()->getUniFontTexture(1, "The quick brown fox jumps over the lazy dog wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww", 140, 0x00FF00FF, 1);
+    CL_Draw::texture(gc, *testText3->getTexture(), CL_Rectf(30, 120, CL_Sizef(testText3->getWidth(), testText3->getHeight())));
 
 
-    boost::shared_ptr<ui::Texture> textTexture = ui::Manager::getFontEngine()->getDefaultTexture("The quick brown fox jumps over the lazy dog", 270, 0xFF0000FF, 1);
+    boost::shared_ptr<ui::Texture> textTexture = ui::Manager::getFontEngine()->getDefaultTexture("The quick brown fox jumps over the lazy dog", 140, 0xFFFF00FF, 1);
     CL_Draw::texture(gc, *textTexture->getTexture(), CL_Rectf(30, 30, CL_Sizef(textTexture->getWidth(), textTexture->getHeight())));
 }
 

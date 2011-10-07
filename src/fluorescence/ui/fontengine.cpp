@@ -185,6 +185,77 @@ boost::shared_ptr<ui::Texture> FontEngine::getUniFontTexture(unsigned int uniFon
     return tex;
 }
 
+UnicodeString FontEngine::calculateSizeAndLinebreaks(CL_Font& font, const UnicodeString& text, unsigned int maxWidth, unsigned int borderWidth,
+        unsigned int& width, unsigned int& height) {
+    CL_GraphicContext& gc = ui::Manager::getGraphicContext();
+
+    UnicodeString textWithBreaks(text);
+
+    maxWidth -= borderWidth * 2;
+
+    // calculate size
+    unsigned int lineCount = 1;
+    unsigned int curWidth = 0;
+    //unsigned int curIndex = 0;
+    //unsigned int lastBlank = 0;
+    //unsigned int widthSinceLastBlank = 0;
+
+    int lastSpaceIdx = 0;
+    int lastNewLineIdx = 0;
+    int curSpaceIdx = 0;
+
+    LOG_DEBUG << "loop start" << std::endl;
+    while (curSpaceIdx != -1) {
+        curSpaceIdx = text.indexOf(' ', lastSpaceIdx + 1);
+
+        // if space is found, use substring until space. if not, use rest of the string
+        unsigned int strLen = curSpaceIdx != -1 ? curSpaceIdx - lastNewLineIdx : text.length() - lastNewLineIdx;
+        UnicodeString lineTest(text, lastNewLineIdx, strLen);
+
+        CL_Size lineSize = font.get_text_size(gc, StringConverter::toUtf8String(lineTest));
+        curWidth = lineSize.width;
+
+        // there seems to be some difference in the font size calculated by clanlib and the actual pixels required ^^
+        curWidth *= 1.1f;
+        LOG_DEBUG << "cur line=\"" << lineTest << "\" curWidth " << curWidth << std::endl;
+
+        if (curWidth < maxWidth) {
+            // this substring fits the line
+            lastSpaceIdx = curSpaceIdx;
+            width = (std::max)(width, curWidth);
+            LOG_DEBUG << "fits line, width=" << width << std::endl;
+        } else {
+            // substring too long
+            LOG_DEBUG << "need line break" << std::endl;
+            // if there was a space before, use it as line break
+            if (lastSpaceIdx != lastNewLineIdx - 1) {
+                textWithBreaks.setCharAt(lastSpaceIdx, '\n');
+                lastNewLineIdx = lastSpaceIdx + 1;
+            } else {
+                // long word needs to be split
+
+            }
+
+            ++lineCount;
+        }
+    }
+
+    CL_Size size = font.get_text_size(gc, StringConverter::toUtf8String(textWithBreaks));
+    height = size.height + borderWidth * 2;
+    width = size.width + borderWidth * 2;
+    width *= 1.1f;
+
+    //LOG_DEBUG << "calculated width=" << width << "  height=" << height << std::endl;
+    //LOG_DEBUG << "font height=" << font.get_font_metrics().get_height()
+                //<< " ascent=" << font.get_font_metrics().get_ascent()
+                //<< " descent=" << font.get_font_metrics().get_descent()
+                //<< " internal leading=" << font.get_font_metrics().get_internal_leading()
+                //<< " external leading" << font.get_font_metrics().get_external_leading()
+                //<< std::endl;
+
+    return textWithBreaks;
+}
+
 boost::shared_ptr<ui::Texture> FontEngine::getFontTexture(CL_Font& font, const UnicodeString& text, unsigned int maxWidth, uint32_t color, unsigned int borderWidth, uint32_t borderColor) {
     CL_GraphicContext& gc = ui::Manager::getSingleton()->getGraphicContext();
 
@@ -192,14 +263,26 @@ boost::shared_ptr<ui::Texture> FontEngine::getFontTexture(CL_Font& font, const U
 
     boost::shared_ptr<ui::Texture> fontTexture(new ui::Texture);
     // TODO: calculate size and line breaks
-    fontTexture->initPixelBuffer(maxWidth, 100);
+    unsigned int width;
+    unsigned int height;
+    UnicodeString textWithBreaks = calculateSizeAndLinebreaks(font, text, maxWidth, borderWidth, width, height);
+
+    fontTexture->initPixelBuffer(width, height);
     CL_FrameBuffer fb(gc);
     fb.attach_color_buffer(0, *fontTexture->getTexture(false));
 
     gc.set_frame_buffer(fb);
 
     gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
-    font.draw_text(gc, 20, 50, StringConverter::toUtf8String(text), CL_Colorf(1.f, 0.f, 0.f, 1.f));
+    // when drawing text, (0,0) is not the top left corner but the vertical center of the first line
+    CL_FontMetrics metrics = font.get_font_metrics();
+    unsigned int vertOffset = metrics.get_ascent() - metrics.get_internal_leading();
+
+    int r = color >> 24;
+    int g = (color >> 16) & 0xFF;
+    int b = (color >> 8) & 0xFF;
+    int a = color & 0xFF;
+    font.draw_text(gc, 0, vertOffset + borderWidth, StringConverter::toUtf8String(textWithBreaks), CL_Colorf(r, g, b, a));
 
     gc.set_frame_buffer(origBuffer);
 
@@ -229,7 +312,7 @@ void FontEngine::applyBorder(boost::shared_ptr<ui::Texture> tex, uint32_t color,
                 for (int i = -iBorderWidth; i <= iBorderWidth; ++i) {
                     for (int j = -iBorderWidth; j <= iBorderWidth; ++j) {
                         int idx = (i+y) * width + j+x;
-                        if (pixBufPtr[idx] == 0x00000000) {
+                        if (pixBufPtr[idx] != color) {
                             pixBufPtr[idx] = borderColor;
                         }
                     }
