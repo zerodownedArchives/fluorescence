@@ -30,7 +30,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz);
 
 // helper to sleep a certain amount of milliseconds
 namespace fluo {
-	void sleepMs(unsigned int ms);
+    void sleepMs(unsigned int ms);
 }
 
 #endif

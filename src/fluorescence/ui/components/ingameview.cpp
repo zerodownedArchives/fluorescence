@@ -134,8 +134,6 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     CL_Vec3f direction;
     boost::shared_ptr<world::IngameObject> clickedObject;
 
-	static unsigned int curDirection = 0;
-
     //LOGARG_INFO(LOGTYPE_INPUT, "input pressed ingameview: %u", e.id);
 
     switch (e.id) {
@@ -199,11 +197,6 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
 
     case CL_KEY_F:
         data::Manager::getArtLoader()->printStats();
-        break;
-
-    case CL_KEY_G:
-        //world::Manager::getSingleton()->getPlayer()->playAnim(curAnimId++);
-        world::Manager::getSingleton()->getPlayer()->setDirection(curDirection++);
         break;
 
 

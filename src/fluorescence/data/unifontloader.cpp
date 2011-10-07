@@ -26,7 +26,7 @@ UnicodeCharacter::UnicodeCharacter(unsigned int charCode, unsigned int xOffset, 
 
     data_ = reinterpret_cast<uint8_t*>(malloc(width_ * height_));
 
-	memset(data_, 0, width_ * height_);
+    memset(data_, 0, width_ * height_);
 }
 
 UnicodeCharacter::~UnicodeCharacter() {

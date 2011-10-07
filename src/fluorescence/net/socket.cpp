@@ -156,6 +156,9 @@ void Socket::receiveRun() {
     while (running_ && !criticalError_) {
         socketMutex_.lock();
         int recvLen = recv(socketFd_, reinterpret_cast<char*>(rawBuffer_), 0x4000, 0);
+#ifdef WIN32
+        int sockErr = WSAGetLastError();
+#endif
         socketMutex_.unlock();
 
         if (recvLen > 0) {
@@ -190,15 +193,14 @@ void Socket::receiveRun() {
             break;
         } else if (recvLen < 0 && running_) { // error
 #ifdef WIN32
-            int err = WSAGetLastError();
-            if (err == EAGAIN || err == WSAEWOULDBLOCK) {
+            if (sockErr == EAGAIN || sockErr == WSAEWOULDBLOCK) {
 #else
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
 #endif
                 continue;
             } else {
                 #ifdef WIN32
-                    LOG_ERROR << "Socket error in receiveRun(): " << err << " - " << strerror(err) << std::endl;
+                    LOG_ERROR << "Socket error in receiveRun(): " << sockErr << " - " << strerror(sockErr) << std::endl;
                 #else
                     LOG_ERROR << "Socket error in receiveRun(): " << errno << " - " << strerror(errno) << std::endl;
                 #endif
