@@ -69,7 +69,6 @@ void FontEngine::calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeSt
 
     while (iter.hasNext()) {
         unsigned int charCode = iter.nextPostInc();
-        //LOG_DEBUG << "iter char=" << charCode << " (" << (char)charCode << ")" << std::endl;
         boost::shared_ptr<data::UnicodeCharacter> curChar = fontLoader->getCharacter(charCode);
 
         unsigned int curCharWidth;
@@ -84,9 +83,11 @@ void FontEngine::calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeSt
 
         curCharWidth = curChar->getTotalWidth();
 
+        //LOG_DEBUG << "char " << (char)charCode << " (" << charCode << ") width=" << curCharWidth << " lineWidth=" << curWidth << " sinceBlank=" << widthSinceLastBlank << std::endl;
+
         if (curWidth + curCharWidth >= maxWidth) {
             // word exceeds line width
-            width = (std::min)(width, curWidth);
+            width = (std::max)(width, curWidth - widthSinceLastBlank);
 
             if (lastBlank != 0) {
                 // move word to next line
@@ -94,33 +95,34 @@ void FontEngine::calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeSt
                 curWidth = widthSinceLastBlank;
             } else {
                 // word too long for one line, break here
-                lineBreakIndices.push_back(curIndex);
+                LOG_DEBUG << "word too long for line curWidth=" << curWidth << std::endl;
+                lineBreakIndices.push_back(curIndex - 1);
                 curWidth = 0;
             }
             ++lineCount;
-            widthSinceLastBlank = 0;
+            widthSinceLastBlank = curWidth;
+            lastBlank = 0;
 
-        } else {
-            if (charCode != ' ') {
-                widthSinceLastBlank += curCharWidth;
-            }
-            curWidth += curCharWidth + uniCharSpacing_;
         }
 
+        if (charCode != ' ') {
+            widthSinceLastBlank += curCharWidth + uniCharSpacing_;
+        }
+        curWidth += curCharWidth + uniCharSpacing_;
         ++curIndex;
     }
 
     height = lineCount * (fontLoader->getMaxHeight() + uniLineSpacing_) + borderWidth*2;
-    width = (std::max)(width, curWidth);
+    width = (std::max)(width, curWidth) + borderWidth*2;
 
     //LOG_DEBUG << "calculated width=" << width << "  height=" << height << std::endl;
-    //LOG_DEBUG << "line breaks: " << lineBreakIndices.front() << std::endl;
+    //LOG_DEBUG << "line breaks[0]: " << lineBreakIndices.front() << std::endl;
 }
 
 boost::shared_ptr<ui::Texture> FontEngine::getUniFontTexture(unsigned int uniFontId, const UnicodeString& text, unsigned int maxWidth, uint32_t color, unsigned int borderWidth, uint32_t borderColor) {
     std::list<unsigned int> lineBreakIndices;
-    unsigned int width;
-    unsigned int height;
+    unsigned int width = 0;
+    unsigned int height = 0;
 
     calculateSizeAndLinebreaks(uniFontId, text, maxWidth, borderWidth, width, height, lineBreakIndices);
 
@@ -132,21 +134,16 @@ boost::shared_ptr<ui::Texture> FontEngine::getUniFontTexture(unsigned int uniFon
     uint32_t* pixBufPtr = tex->getPixelBufferData();
 
 
-    unsigned int curX = 0;
-    unsigned int curY = 0;
+    unsigned int curX = borderWidth;
+    unsigned int curY = borderWidth;
     unsigned int curIndex = 0;
-
-    if (borderWidth > 0) {
-        curX += borderWidth;
-        curY += borderWidth;
-    }
 
     StringCharacterIterator iter(text);
     while (iter.hasNext()) {
         unsigned int charCode = iter.nextPostInc();
 
         if (!lineBreakIndices.empty() && lineBreakIndices.front() == curIndex) {
-            curX = 0;
+            curX = borderWidth;
             curY += (fontLoader->getMaxHeight() + uniLineSpacing_);
             lineBreakIndices.pop_front();
 
@@ -196,15 +193,12 @@ UnicodeString FontEngine::calculateSizeAndLinebreaks(CL_Font& font, const Unicod
     // calculate size
     unsigned int lineCount = 1;
     unsigned int curWidth = 0;
-    //unsigned int curIndex = 0;
-    //unsigned int lastBlank = 0;
-    //unsigned int widthSinceLastBlank = 0;
 
     int lastSpaceIdx = 0;
     int lastNewLineIdx = 0;
     int curSpaceIdx = 0;
 
-    LOG_DEBUG << "loop start" << std::endl;
+    //LOG_DEBUG << "loop start" << std::endl;
     while (curSpaceIdx != -1) {
         curSpaceIdx = text.indexOf(' ', lastSpaceIdx + 1);
 
@@ -217,16 +211,16 @@ UnicodeString FontEngine::calculateSizeAndLinebreaks(CL_Font& font, const Unicod
 
         // there seems to be some difference in the font size calculated by clanlib and the actual pixels required ^^
         curWidth *= 1.1f;
-        LOG_DEBUG << "cur line=\"" << lineTest << "\" curWidth " << curWidth << std::endl;
+        //LOG_DEBUG << "cur line=\"" << lineTest << "\" curWidth " << curWidth << std::endl;
 
         if (curWidth < maxWidth) {
             // this substring fits the line
             lastSpaceIdx = curSpaceIdx;
             width = (std::max)(width, curWidth);
-            LOG_DEBUG << "fits line, width=" << width << std::endl;
+            //LOG_DEBUG << "fits line, width=" << width << std::endl;
         } else {
             // substring too long
-            LOG_DEBUG << "need line break lastSpace=" << lastSpaceIdx << " lastNewLine=" << lastNewLineIdx << std::endl;
+            //LOG_DEBUG << "need line break lastSpace=" << lastSpaceIdx << " lastNewLine=" << lastNewLineIdx << std::endl;
             // if there was a space before, use it as line break
             if (lastSpaceIdx != lastNewLineIdx - 1) {
                 textWithBreaks.setCharAt(lastSpaceIdx, '\n');
@@ -236,7 +230,7 @@ UnicodeString FontEngine::calculateSizeAndLinebreaks(CL_Font& font, const Unicod
                 curSpaceIdx = 0;
             } else {
                 // long word needs to be split
-                LOG_DEBUG << "long word " << lineTest << std::endl;
+                //LOG_DEBUG << "long word " << lineTest << std::endl;
                 while (curWidth >= maxWidth && lineTest.length() > 1) {
                     lineTest.remove(lineTest.length() - 1, 1);
                     CL_Size lineSize = font.get_text_size(gc, StringConverter::toUtf8String(lineTest));
@@ -244,7 +238,7 @@ UnicodeString FontEngine::calculateSizeAndLinebreaks(CL_Font& font, const Unicod
                     curWidth *= 1.1f;
                 }
 
-                LOG_DEBUG << "line reduced to " << lineTest << std::endl;
+                //LOG_DEBUG << "line reduced to " << lineTest << std::endl;
 
                 lastNewLineIdx += lineTest.length();
                 lastSpaceIdx = lastNewLineIdx - 1;
@@ -281,8 +275,8 @@ boost::shared_ptr<ui::Texture> FontEngine::getFontTexture(CL_Font& font, const U
 
     boost::shared_ptr<ui::Texture> fontTexture(new ui::Texture);
     // TODO: calculate size and line breaks
-    unsigned int width;
-    unsigned int height;
+    unsigned int width = 0;
+    unsigned int height = 0;
     UnicodeString textWithBreaks = calculateSizeAndLinebreaks(font, text, maxWidth, borderWidth, width, height);
 
     fontTexture->initPixelBuffer(width, height);

@@ -28,7 +28,7 @@ private:
     unsigned int defaultUniFont_;
     CL_Font defaultFont_;
 
-    static const unsigned int uniCharSpacing_ = 0;
+    static const unsigned int uniCharSpacing_ = 1;
     static const unsigned int uniLineSpacing_ = 0;
 
     void applyBorder(boost::shared_ptr<ui::Texture> tex, uint32_t color, unsigned int borderWidth, uint32_t borderColor);
