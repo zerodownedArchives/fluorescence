@@ -137,7 +137,7 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
     CL_Draw::texture(gc, *testText3->getTexture(), CL_Rectf(30, 120, CL_Sizef(testText3->getWidth(), testText3->getHeight())));
 
 
-    boost::shared_ptr<ui::Texture> textTexture = ui::Manager::getFontEngine()->getDefaultTexture("The quick brown fox jumps over the lazy dog", 140, 0xFFFF00FF, 1);
+    boost::shared_ptr<ui::Texture> textTexture = ui::Manager::getFontEngine()->getDefaultTexture("The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz", 140, 0xFFFF00FF, 1);
     CL_Draw::texture(gc, *textTexture->getTexture(), CL_Rectf(30, 30, CL_Sizef(textTexture->getWidth(), textTexture->getHeight())));
 }
 

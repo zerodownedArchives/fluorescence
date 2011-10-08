@@ -226,14 +226,32 @@ UnicodeString FontEngine::calculateSizeAndLinebreaks(CL_Font& font, const Unicod
             LOG_DEBUG << "fits line, width=" << width << std::endl;
         } else {
             // substring too long
-            LOG_DEBUG << "need line break" << std::endl;
+            LOG_DEBUG << "need line break lastSpace=" << lastSpaceIdx << " lastNewLine=" << lastNewLineIdx << std::endl;
             // if there was a space before, use it as line break
             if (lastSpaceIdx != lastNewLineIdx - 1) {
                 textWithBreaks.setCharAt(lastSpaceIdx, '\n');
                 lastNewLineIdx = lastSpaceIdx + 1;
+
+                // make sure the newly created line is checked also if the last word is overly long
+                curSpaceIdx = 0;
             } else {
                 // long word needs to be split
+                LOG_DEBUG << "long word " << lineTest << std::endl;
+                while (curWidth >= maxWidth && lineTest.length() > 1) {
+                    lineTest.remove(lineTest.length() - 1, 1);
+                    CL_Size lineSize = font.get_text_size(gc, StringConverter::toUtf8String(lineTest));
+                    curWidth = lineSize.width;
+                    curWidth *= 1.1f;
+                }
 
+                LOG_DEBUG << "line reduced to " << lineTest << std::endl;
+
+                lastNewLineIdx += lineTest.length();
+                lastSpaceIdx = lastNewLineIdx - 1;
+                textWithBreaks.insert(lastNewLineIdx, '\n');
+
+                // make sure the newly created line is checked also if the last part of the split word is overly long
+                curSpaceIdx = 0;
             }
 
             ++lineCount;
