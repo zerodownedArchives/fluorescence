@@ -80,6 +80,15 @@ boost::shared_ptr<ui::Texture> HuesLoader::getHuesTexture() {
     return huesTexture_;
 }
 
+uint32_t HuesLoader::getFontRgbColor(unsigned int hue) const {
+    if (hue >= hueCount_) {
+        LOG_WARN << "Trying to access too high hue index " << hue << std::endl;
+        hue = 0;
+    }
+
+    return hues_[hue].colorTable_[15];
+}
+
 unsigned int HuesLoader::translateHue(unsigned int hue) const {
     unsigned int ret = hue;
 

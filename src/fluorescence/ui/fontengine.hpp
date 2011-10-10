@@ -18,10 +18,11 @@ class FontEngine {
 public:
     FontEngine(Config& config, CL_GraphicContext& gc);
 
-    boost::shared_ptr<ui::Texture> getDefaultTexture(const UnicodeString& text, unsigned int maxWidth, uint32_t color, unsigned int borderWidth = 1, uint32_t borderColor = 0x000000FF);
+    // If parameter useRgbColor is true, the color value is interpreted as a 32bit rgba value. If false, like a uo hue id
+    boost::shared_ptr<ui::Texture> getDefaultTexture(const UnicodeString& text, unsigned int maxWidth, uint32_t color, bool useRgbColor = true, unsigned int borderWidth = 1, uint32_t borderColor = 0x000000FF);
 
-    boost::shared_ptr<ui::Texture> getUniFontTexture(unsigned int uniFontId, const UnicodeString& text, unsigned int maxWidth, uint32_t color, unsigned int borderWidth = 1, uint32_t borderColor = 0x000000FF);
-    boost::shared_ptr<ui::Texture> getFontTexture(CL_Font& font, const UnicodeString& text, unsigned int maxWidth, uint32_t color, unsigned int borderWidth = 1, uint32_t borderColor = 0x000000FF);
+    boost::shared_ptr<ui::Texture> getUniFontTexture(unsigned int uniFontId, const UnicodeString& text, unsigned int maxWidth, uint32_t color, bool useRgbColor = true, unsigned int borderWidth = 1, uint32_t borderColor = 0x000000FF);
+    boost::shared_ptr<ui::Texture> getFontTexture(CL_Font& font, const UnicodeString& text, unsigned int maxWidth, uint32_t color, bool useRgbColor = true, unsigned int borderWidth = 1, uint32_t borderColor = 0x000000FF);
 
 private:
     bool useDefaultUniFont_;
@@ -31,7 +32,7 @@ private:
     static const unsigned int uniCharSpacing_ = 1;
     static const unsigned int uniLineSpacing_ = 0;
 
-    void applyBorder(boost::shared_ptr<ui::Texture> tex, uint32_t color, unsigned int borderWidth, uint32_t borderColor);
+    void applyBorder(boost::shared_ptr<CL_PixelBuffer> tex, uint32_t color, unsigned int borderWidth, uint32_t borderColor);
 
     void calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeString& text, unsigned int maxWidth, unsigned int borderWidth,
         unsigned int& width, unsigned int& height, std::list<unsigned int>& lineBreakIndices);

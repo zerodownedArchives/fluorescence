@@ -11,6 +11,7 @@
 
 #include <data/manager.hpp>
 #include <data/unifontloader.hpp>
+#include <data/huesloader.hpp>
 
 namespace fluo {
 namespace ui {
@@ -44,11 +45,11 @@ FontEngine::FontEngine(Config& config, CL_GraphicContext& gc) {
     }
 }
 
-boost::shared_ptr<ui::Texture> FontEngine::getDefaultTexture(const UnicodeString& text, unsigned int maxWidth, uint32_t color, unsigned int borderWidth, uint32_t borderColor) {
+boost::shared_ptr<ui::Texture> FontEngine::getDefaultTexture(const UnicodeString& text, unsigned int maxWidth, uint32_t color, bool useRgbColor, unsigned int borderWidth, uint32_t borderColor) {
     if (useDefaultUniFont_) {
-        return getUniFontTexture(defaultUniFont_, text, maxWidth, color, borderWidth, borderColor);
+        return getUniFontTexture(defaultUniFont_, text, maxWidth, color, useRgbColor, borderWidth, borderColor);
     } else {
-        return getFontTexture(defaultFont_, text, maxWidth, color, borderWidth, borderColor);
+        return getFontTexture(defaultFont_, text, maxWidth, color, useRgbColor, borderWidth, borderColor);
     }
 }
 
@@ -87,16 +88,17 @@ void FontEngine::calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeSt
 
         if (curWidth + curCharWidth >= maxWidth) {
             // word exceeds line width
-            width = (std::max)(width, curWidth - widthSinceLastBlank);
 
             if (lastBlank != 0) {
                 // move word to next line
                 lineBreakIndices.push_back(lastBlank);
+                width = (std::max)(width, curWidth - widthSinceLastBlank);
                 curWidth = widthSinceLastBlank;
             } else {
                 // word too long for one line, break here
-                LOG_DEBUG << "word too long for line curWidth=" << curWidth << std::endl;
+                //LOG_DEBUG << "word too long for line curWidth=" << curWidth << std::endl;
                 lineBreakIndices.push_back(curIndex - 1);
+                width = (std::max)(width, curWidth);
                 curWidth = 0;
             }
             ++lineCount;
@@ -115,16 +117,22 @@ void FontEngine::calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeSt
     height = lineCount * (fontLoader->getMaxHeight() + uniLineSpacing_) + borderWidth*2;
     width = (std::max)(width, curWidth) + borderWidth*2;
 
-    //LOG_DEBUG << "calculated width=" << width << "  height=" << height << std::endl;
+    LOG_DEBUG << "calculated width=" << width << "  height=" << height << std::endl;
     //LOG_DEBUG << "line breaks[0]: " << lineBreakIndices.front() << std::endl;
 }
 
-boost::shared_ptr<ui::Texture> FontEngine::getUniFontTexture(unsigned int uniFontId, const UnicodeString& text, unsigned int maxWidth, uint32_t color, unsigned int borderWidth, uint32_t borderColor) {
+boost::shared_ptr<ui::Texture> FontEngine::getUniFontTexture(unsigned int uniFontId, const UnicodeString& text, unsigned int maxWidth, uint32_t color, bool useRgbColor, unsigned int borderWidth, uint32_t borderColor) {
     std::list<unsigned int> lineBreakIndices;
     unsigned int width = 0;
     unsigned int height = 0;
 
     calculateSizeAndLinebreaks(uniFontId, text, maxWidth, borderWidth, width, height, lineBreakIndices);
+
+    if (!useRgbColor) {
+        // translate uo color to rgb
+        boost::shared_ptr<data::HuesLoader> huesLoader = data::Manager::getHuesLoader();
+        color = huesLoader->getFontRgbColor(color);
+    }
 
 
     boost::shared_ptr<data::UniFontLoader> fontLoader = data::Manager::getUniFontLoader(uniFontId);
@@ -174,7 +182,7 @@ boost::shared_ptr<ui::Texture> FontEngine::getUniFontTexture(unsigned int uniFon
 
 
     if (borderWidth > 0) {
-        applyBorder(tex, color, borderWidth, borderColor);
+        applyBorder(tex->getPixelBuffer(), color, borderWidth, borderColor);
     }
 
     tex->setReadComplete();
@@ -268,20 +276,26 @@ UnicodeString FontEngine::calculateSizeAndLinebreaks(CL_Font& font, const Unicod
     return textWithBreaks;
 }
 
-boost::shared_ptr<ui::Texture> FontEngine::getFontTexture(CL_Font& font, const UnicodeString& text, unsigned int maxWidth, uint32_t color, unsigned int borderWidth, uint32_t borderColor) {
+boost::shared_ptr<ui::Texture> FontEngine::getFontTexture(CL_Font& font, const UnicodeString& text, unsigned int maxWidth, uint32_t color, bool useRgbColor, unsigned int borderWidth, uint32_t borderColor) {
     CL_GraphicContext& gc = ui::Manager::getSingleton()->getGraphicContext();
 
     CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 
-    boost::shared_ptr<ui::Texture> fontTexture(new ui::Texture);
+
     // TODO: calculate size and line breaks
     unsigned int width = 0;
     unsigned int height = 0;
     UnicodeString textWithBreaks = calculateSizeAndLinebreaks(font, text, maxWidth, borderWidth, width, height);
 
-    fontTexture->initPixelBuffer(width, height);
+    if (!useRgbColor) {
+        // translate uo color to rgb
+        boost::shared_ptr<data::HuesLoader> huesLoader = data::Manager::getHuesLoader();
+        color = huesLoader->getFontRgbColor(color);
+    }
+
+    CL_Texture tempTex(gc, width, height, cl_rgba8);
     CL_FrameBuffer fb(gc);
-    fb.attach_color_buffer(0, *fontTexture->getTexture(false));
+    fb.attach_color_buffer(0, tempTex);
 
     gc.set_frame_buffer(fb);
 
@@ -298,9 +312,13 @@ boost::shared_ptr<ui::Texture> FontEngine::getFontTexture(CL_Font& font, const U
 
     gc.set_frame_buffer(origBuffer);
 
+    boost::shared_ptr<ui::Texture> fontTexture(new ui::Texture);
+    fontTexture->initPixelBuffer(width, height);
+    memcpy(fontTexture->getPixelBufferData(), tempTex.get_pixeldata().get_data(), width * height * 4);
+
     // applying the border has to be done after resetting the frame buffer!
     if (borderWidth > 0) {
-        applyBorder(fontTexture, color, borderWidth, borderColor);
+        applyBorder(fontTexture->getPixelBuffer(), color, borderWidth, borderColor);
     }
 
     fontTexture->setReadComplete();
@@ -308,13 +326,12 @@ boost::shared_ptr<ui::Texture> FontEngine::getFontTexture(CL_Font& font, const U
     return fontTexture;
 }
 
-void FontEngine::applyBorder(boost::shared_ptr<ui::Texture> tex, uint32_t color, unsigned int borderWidth, uint32_t borderColor) {
-    unsigned int width = tex->getWidth();
-    unsigned int height = tex->getHeight();
+void FontEngine::applyBorder(boost::shared_ptr<CL_PixelBuffer> pxBuf, uint32_t color, unsigned int borderWidth, uint32_t borderColor) {
+    unsigned int width = pxBuf->get_width();
+    unsigned int height = pxBuf->get_height();
 
     // this is a bit complicated, but as system fonts are directly rendered to a texture there is no easy way around
-    CL_PixelBuffer pixBuf = tex->getTexture()->get_pixeldata();
-    uint32_t* pixBufPtr = (uint32_t*)pixBuf.get_data();
+    uint32_t* pixBufPtr = (uint32_t*)pxBuf->get_data();
     int iBorderWidth = borderWidth;
 
     for (unsigned int y = borderWidth; y < height - borderWidth; ++y) {
@@ -332,8 +349,6 @@ void FontEngine::applyBorder(boost::shared_ptr<ui::Texture> tex, uint32_t color,
             }
         }
     }
-
-    tex->getTexture()->set_image(pixBuf);
 }
 
 }

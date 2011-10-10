@@ -22,8 +22,7 @@ public:
 
     boost::shared_ptr<CL_PixelBuffer> getPixelBuffer();
 
-    boost::shared_ptr<CL_Texture> getTexture(bool releasePixelBuffer = true);
-    void releasePixelBuffer();
+    boost::shared_ptr<CL_Texture> getTexture();
 
     unsigned int getWidth();
     unsigned int getHeight();

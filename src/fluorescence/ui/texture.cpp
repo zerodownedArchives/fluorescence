@@ -24,22 +24,16 @@ boost::shared_ptr<CL_PixelBuffer> Texture::getPixelBuffer() {
     return pixelBuffer_;
 }
 
-boost::shared_ptr<CL_Texture> Texture::getTexture(bool releasePixelBuffer) {
+boost::shared_ptr<CL_Texture> Texture::getTexture() {
     if (!texture_.get()) {
         texture_.reset(ui::Manager::getSingleton()->provideTexture(pixelBuffer_->get_width(), pixelBuffer_->get_height()));
         texture_->set_image(*(pixelBuffer_));
-        bitMask_.init(pixelBuffer_);
 
-        if (releasePixelBuffer) {
-            this->releasePixelBuffer();
-        }
+        bitMask_.init(pixelBuffer_);
+        pixelBuffer_.reset();
     }
 
     return texture_;
-}
-
-void Texture::releasePixelBuffer() {
-    pixelBuffer_.reset();
 }
 
 unsigned int Texture::getWidth() {

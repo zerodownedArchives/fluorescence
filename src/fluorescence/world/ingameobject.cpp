@@ -9,6 +9,8 @@
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
 
+#include "overheadmessage.hpp"
+
 namespace fluo {
 namespace world {
 
@@ -53,6 +55,15 @@ void IngameObject::invalidateRenderData(bool updateTextureProvider) {
 
     if (updateTextureProvider) {
         requestUpdateTextureProvider();
+    }
+
+    if (!overheadMessages_.empty()) {
+        std::list<boost::shared_ptr<OverheadMessage> >::iterator iter = overheadMessages_.begin();
+        std::list<boost::shared_ptr<OverheadMessage> >::iterator end = overheadMessages_.end();
+
+        for (; iter != end; ++iter) {
+            (*iter)->invalidateRenderData();
+        }
     }
 }
 
@@ -196,6 +207,22 @@ void IngameObject::printRenderPriority() {
             << renderPriority_[3] << " - "
             << renderPriority_[4] << " - "
             << renderPriority_[5] << " - " << std::endl;
+}
+
+void IngameObject::addOverheadMessage(boost::shared_ptr<OverheadMessage> msg) {
+    overheadMessages_.push_front(msg);
+
+    std::list<boost::shared_ptr<OverheadMessage> >::iterator iter = overheadMessages_.begin();
+    std::list<boost::shared_ptr<OverheadMessage> >::iterator end = overheadMessages_.end();
+
+    int offset = -5;
+
+    for (; iter != end; ++iter) {
+        int curHeight = (*iter)->getIngameTexture()->getHeight();
+        int curOffset = offset - curHeight;
+        (*iter)->setParentPixelOffset(curOffset);
+        offset = curOffset - 2;
+    }
 }
 
 }

@@ -10,6 +10,7 @@ set (WORLD_HPP
     world/serverobject.hpp
     world/mobile.hpp
     world/dynamicitem.hpp
+    world/overheadmessage.hpp
     )
 
 set (WORLD_CPP
@@ -23,6 +24,7 @@ set (WORLD_CPP
     world/serverobject.cpp
     world/mobile.cpp
     world/dynamicitem.cpp
+    world/overheadmessage.cpp
     )
 
 set(WORLD_FILES ${WORLD_HPP} ${WORLD_CPP} PARENT_SCOPE)

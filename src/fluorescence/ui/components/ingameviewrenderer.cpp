@@ -126,18 +126,18 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
     gc.reset_program_object();
 
 
-    boost::shared_ptr<ui::Texture> testText1 = ui::Manager::getFontEngine()->getUniFontTexture(1, "The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 0x0000FFFF, 1);
-    CL_Draw::texture(gc, *testText1->getTexture(), CL_Rectf(30, 450, CL_Sizef(testText1->getWidth(), testText1->getHeight())));
+    //boost::shared_ptr<ui::Texture> testText1 = ui::Manager::getFontEngine()->getUniFontTexture(1, "The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 0x00FF00FF, true);
+    //CL_Draw::texture(gc, *testText1->getTexture(), CL_Rectf(30, 450, CL_Sizef(testText1->getWidth(), testText1->getHeight())));
 
-    boost::shared_ptr<ui::Texture> testText2 = ui::Manager::getFontEngine()->getUniFontTexture(2, "The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 0xFF0000FF, 1);
-    CL_Draw::texture(gc, *testText2->getTexture(), CL_Rectf(30, 300, CL_Sizef(testText2->getWidth(), testText2->getHeight())));
+    //boost::shared_ptr<ui::Texture> testText2 = ui::Manager::getFontEngine()->getUniFontTexture(2, "The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 135, false);
+    //CL_Draw::texture(gc, *testText2->getTexture(), CL_Rectf(30, 300, CL_Sizef(testText2->getWidth(), testText2->getHeight())));
 
-    boost::shared_ptr<ui::Texture> testText3 = ui::Manager::getFontEngine()->getUniFontTexture(1, "The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 0x00FF00FF, 1);
-    CL_Draw::texture(gc, *testText3->getTexture(), CL_Rectf(30, 150, CL_Sizef(testText3->getWidth(), testText3->getHeight())));
+    //boost::shared_ptr<ui::Texture> testText3 = ui::Manager::getFontEngine()->getUniFontTexture(1, "The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 0x00FF00FF, true, 4);
+    //CL_Draw::texture(gc, *testText3->getTexture(), CL_Rectf(30, 150, CL_Sizef(testText3->getWidth(), testText3->getHeight())));
 
 
-    boost::shared_ptr<ui::Texture> textTexture = ui::Manager::getFontEngine()->getDefaultTexture("The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 0xFFFF00FF, 1);
-    CL_Draw::texture(gc, *textTexture->getTexture(), CL_Rectf(30, 30, CL_Sizef(textTexture->getWidth(), textTexture->getHeight())));
+    //boost::shared_ptr<ui::Texture> textTexture = ui::Manager::getFontEngine()->getDefaultTexture("The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 0xFFFF00FF);
+    //CL_Draw::texture(gc, *textTexture->getTexture(), CL_Rectf(30, 30, CL_Sizef(textTexture->getWidth(), textTexture->getHeight())));
 }
 
 }

@@ -8,6 +8,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
+#include <list>
+
 namespace fluo {
 
 namespace ui {
@@ -16,6 +18,8 @@ namespace ui {
 }
 
 namespace world {
+
+class OverheadMessage;
 
 class IngameObject : public boost::enable_shared_from_this<IngameObject> {
 
@@ -68,6 +72,8 @@ public:
 
     virtual IngameObject* getTopParent();
 
+    void addOverheadMessage(boost::shared_ptr<OverheadMessage> msg);
+
 
     void printRenderPriority();
 
@@ -89,6 +95,8 @@ protected:
     virtual void updateVertexCoordinates() = 0;
 
     virtual void updateRenderPriority() = 0;
+
+    std::list<boost::shared_ptr<OverheadMessage> > overheadMessages_;
 
 private:
     bool visible_;

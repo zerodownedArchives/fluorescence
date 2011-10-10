@@ -14,6 +14,11 @@
 #include <misc/log.hpp>
 
 
+
+#include <world/manager.hpp>
+#include <world/overheadmessage.hpp>
+
+
 namespace fluo {
 namespace ui {
 
@@ -112,6 +117,10 @@ bool GumpActions::sendSpeech(GumpMenu* menu, const UnicodeString& action, unsign
             line->setText("");
             line->set_focus(false);
             menu->activatePage(0);
+
+            boost::shared_ptr<world::Mobile> player = world::Manager::getSingleton()->getPlayer();
+            boost::shared_ptr<world::OverheadMessage> msg(new world::OverheadMessage(player, speechText, 1, 5, false));
+            player->addOverheadMessage(msg);
         }
     } else {
         LOG_ERROR << "Line element \"speechtext\" not found in gamewindow gump" << std::endl;
