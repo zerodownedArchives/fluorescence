@@ -3,7 +3,7 @@
 
 #include <boost/filesystem/operations.hpp>
 
-#include "renderqueue.hpp"
+#include "ingamerenderqueue.hpp"
 #include "cursormanager.hpp"
 #include "doubleclickhandler.hpp"
 #include "gumpmenu.hpp"
@@ -99,7 +99,7 @@ bool Manager::setShardConfig(Config& config) {
     path = path / config["/fluo/shard@name"].asPath() / "fonts";
     loadFontDirectory(path);
 
-    renderQueue_.reset(new RenderQueue());
+    worldRenderQueue_.reset(new IngameRenderQueue());
 
     cursorManager_.reset(new CursorManager(config, mainWindow_));
     singleton_->getCursorManager()->setCursor(CursorType::GAME_WEST);
@@ -114,8 +114,8 @@ bool Manager::setShardConfig(Config& config) {
 
 Manager::~Manager() {
     LOG_INFO << "ui::Manager shutdown" << std::endl;
-    if (renderQueue_) {
-        renderQueue_->clear();
+    if (worldRenderQueue_) {
+        worldRenderQueue_->clear();
     }
 }
 
@@ -155,8 +155,8 @@ CL_Texture* Manager::provideTexture(unsigned int width, unsigned int height) {
     return new CL_Texture(singleton_->getGraphicContext(), width, height, cl_rgb8);
 }
 
-boost::shared_ptr<RenderQueue> Manager::getRenderQueue() {
-    return singleton_->renderQueue_;
+boost::shared_ptr<IngameRenderQueue> Manager::getWorldRenderQueue() {
+    return singleton_->worldRenderQueue_;
 }
 
 boost::shared_ptr<CL_GUIManager> Manager::getGuiManager() {

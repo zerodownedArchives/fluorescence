@@ -70,7 +70,7 @@ public:
     virtual void onClick();
     virtual void onDoubleClick();
 
-    virtual IngameObject* getTopParent();
+    virtual boost::shared_ptr<IngameObject> getTopParent();
 
     void addOverheadMessage(boost::shared_ptr<OverheadMessage> msg);
 
@@ -86,7 +86,6 @@ protected:
 
     void addToRenderQueue();
     void removeFromRenderQueue();
-    void removeFromRenderQueueImmediately();
 
     void requestUpdateTextureProvider();
     virtual void updateTextureProvider() = 0;

@@ -27,7 +27,7 @@
 namespace fluo {
 namespace world {
 
-DynamicItem::DynamicItem(Serial serial) : ServerObject(serial), artId_(0), equipped_(false), parentMobile_(NULL) {
+DynamicItem::DynamicItem(Serial serial) : ServerObject(serial), artId_(0), hue_(0), equipped_(false) {
 }
 
 boost::shared_ptr<ui::Texture> DynamicItem::getIngameTexture() const {
@@ -83,8 +83,12 @@ void DynamicItem::setStackIdOffset(unsigned int offset) {
 }
 
 void DynamicItem::setHue(unsigned int hue) {
-    hue_ = hue;
-    hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
+    if (hue != hue_) {
+        hue_ = hue;
+        hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
+
+        invalidateRenderData();
+    }
 }
 
 void DynamicItem::updateVertexCoordinates() {
@@ -98,8 +102,10 @@ void DynamicItem::updateVertexCoordinates() {
         //int py = (getLocX() + getLocY()) * 22 - texHeight + 44;
         //py -= getLocZ() * 4;
 
-        int px = (parentMobile_->getLocX() - parentMobile_->getLocY()) * 22 + 22;
-        int py = (parentMobile_->getLocX() + parentMobile_->getLocY()) * 22 - parentMobile_->getLocZ() * 4 + 22;
+        boost::shared_ptr<Mobile> parent = parentMobile_.lock();
+
+        int px = (parent->getLocX() - parent->getLocY()) * 22 + 22;
+        int py = (parent->getLocX() + parent->getLocY()) * 22 - parent->getLocZ() * 4 + 22;
         py = py - frame.centerY_ - texHeight;
 
         if (isMirrored()) {
@@ -153,17 +159,19 @@ void DynamicItem::updateRenderPriority() {
     }
 
     if (equipped_) {
+        boost::shared_ptr<Mobile> parent = parentMobile_.lock();
+
         // level 0 x+y
-        renderPriority_[0] = parentMobile_->getLocX() + parentMobile_->getLocY();
+        renderPriority_[0] = parent->getLocX() + parent->getLocY();
 
         // level 1 z
-        renderPriority_[1] = parentMobile_->getLocZ() + 7;
+        renderPriority_[1] = parent->getLocZ() + 7;
 
         // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
         renderPriority_[2] = 40;
 
         // level 2 layer priority
-        renderPriority_[3] = layerPriorities[parentMobile_->getDirection()][layer_ - 1];
+        renderPriority_[3] = layerPriorities[parent->getDirection()][layer_ - 1];
 
         // level 5 serial
         renderPriority_[5] = getSerial();
@@ -200,7 +208,7 @@ void DynamicItem::updateRenderPriority() {
 void DynamicItem::updateTextureProvider() {
     if (equipped_) {
         animTextureProvider_.reset(new ui::AnimTextureProvider(tileDataInfo_->animId_));
-        setDirection(parentMobile_->getDirection());
+        setDirection(parentMobile_.lock()->getDirection());
     } else {
         textureProvider_ = data::Manager::getItemTextureProvider(artId_);
 
@@ -270,7 +278,7 @@ void DynamicItem::onDraggedOnto(boost::shared_ptr<IngameObject> obj) {
     }
 }
 
-void DynamicItem::equipOn(Mobile* mob) {
+void DynamicItem::equipOn(boost::shared_ptr<Mobile> mob) {
     parentMobile_ = mob;
     equipped_ = true;
     invalidateRenderData(true);
@@ -278,7 +286,7 @@ void DynamicItem::equipOn(Mobile* mob) {
 
 void DynamicItem::unequip() {
     equipped_ = false;
-    parentMobile_ = NULL;
+    parentMobile_.reset();
     invalidateRenderData(true);
 }
 
@@ -292,15 +300,15 @@ bool DynamicItem::isMirrored() const {
 
 void DynamicItem::onDelete(boost::shared_ptr<DynamicItem> sharedThis) {
     if (equipped_) {
-        parentMobile_->unequip(sharedThis);
+        parentMobile_.lock()->unequip(sharedThis);
     }
 }
 
-IngameObject* DynamicItem::getTopParent() {
+boost::shared_ptr<IngameObject> DynamicItem::getTopParent() {
     if (equipped_) {
-        return parentMobile_;
+        return parentMobile_.lock();
     } else {
-        return this;
+        return shared_from_this();
     }
 }
 

@@ -13,7 +13,7 @@
 #include <world/ingameobject.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/renderqueue.hpp>
+#include <ui/ingamerenderqueue.hpp>
 #include <ui/doubleclickhandler.hpp>
 #include <ui/cursormanager.hpp>
 
@@ -27,9 +27,9 @@ namespace fluo {
 namespace ui {
 
 IngameView::IngameView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent),
-        centerTileX_(0), centerTileY_(0) {
+        centerTileX_(0), centerTileY_(0), centerTileZ_(0) {
     this->set_geometry(bounds);
-    renderer_.reset(new IngameViewRenderer(this));
+    renderer_.reset(new IngameViewRenderer(ui::Manager::getWorldRenderQueue(), this));
 
     world::Manager::getSectorManager()->registerIngameView(this);
     setCenterObject(world::Manager::getSingleton()->getPlayer());
@@ -62,6 +62,14 @@ float IngameView::getCenterTileY() {
     }
 }
 
+float IngameView::getCenterTileZ() {
+    if (centerObject_) {
+        return centerObject_->getLocZ();
+    } else {
+        return centerTileZ_;
+    }
+}
+
 void IngameView::setCenterTiles(float x, float y) {
     centerTileX_ = x;
     centerTileY_ = y;
@@ -72,7 +80,7 @@ int IngameView::getCenterPixelX() {
 }
 
 int IngameView::getCenterPixelY() {
-    return (getCenterTileX() + getCenterTileY()) * 22;;
+    return (getCenterTileX() + getCenterTileY()) * 22 - getCenterTileZ() * 4;
 }
 
 unsigned int IngameView::getWidth() {
@@ -85,7 +93,8 @@ unsigned int IngameView::getHeight() {
 
 void IngameView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     gc.push_cliprect(get_geometry());
-    renderer_->renderOneFrame(gc, clipRect);
+    //CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
+    renderer_->render(gc);
     gc.pop_cliprect();
 }
 
@@ -197,7 +206,7 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
 
     case CL_KEY_F:
         data::Manager::getArtLoader()->printStats();
-        LOG_DEBUG << "Render queue count: " << ui::Manager::getSingleton()->getRenderQueue()->size() << std::endl;
+        LOG_DEBUG << "Render queue count: " << ui::Manager::getWorldRenderQueue()->size() << std::endl;
         break;
 
 
@@ -271,7 +280,7 @@ boost::shared_ptr<world::IngameObject> IngameView::getFirstIngameObjectAt(unsign
     int worldY = getCenterPixelY() - get_height()/2.0;
     worldY += pixelY;
 
-    return ui::Manager::getSingleton()->getRenderQueue()->getFirstIngameObjectAt(worldX, worldY, true);
+    return ui::Manager::getWorldRenderQueue()->getFirstIngameObjectAt(worldX, worldY, true);
 }
 
 void IngameView::setCenterObject(boost::shared_ptr<world::IngameObject> obj) {

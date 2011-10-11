@@ -6,23 +6,31 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include "ui/ingameobjectrenderer.hpp"
+
 namespace fluo {
 namespace ui {
 
 class RenderQueue;
 class IngameView;
+class Texture;
 
-class IngameViewRenderer {
+class IngameViewRenderer : public IngameObjectRenderer {
 public:
-    IngameViewRenderer(IngameView* ingameView);
+    IngameViewRenderer(boost::shared_ptr<RenderQueue> renderQueue, IngameView* ingameView);
     ~IngameViewRenderer();
 
-    void renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect);
+    virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc);
+    virtual void render(CL_GraphicContext& gc);
 
 private:
     boost::shared_ptr<CL_ProgramObject> shaderProgram_;
 
     IngameView* ingameView_;
+    boost::shared_ptr<RenderQueue> renderQueue_;
+
+    boost::shared_ptr<Texture> texture_;
+    void checkTextureSize();
 };
 
 }

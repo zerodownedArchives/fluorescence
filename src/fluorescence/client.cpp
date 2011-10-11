@@ -9,7 +9,7 @@
 
 #include <ui/manager.hpp>
 #include <ui/gumpmenus.hpp>
-#include <ui/renderqueue.hpp>
+#include <ui/ingamerenderqueue.hpp>
 #include <ui/gumpmenu.hpp>
 #include <ui/gumpactions.hpp>
 
@@ -311,7 +311,7 @@ void Client::doStatePlaying(unsigned int elapsedMillis) {
     netManager->step();
 
     world::Manager::getSectorManager()->addNewSectors();
-    uiManager->getRenderQueue()->prepareRender((unsigned int)elapsedMillis);
+    uiManager->getWorldRenderQueue()->prepareRender((unsigned int)elapsedMillis);
     // deleting sectors has to be done after RenderQueue::prepareRender() (list is sorted now)
     world::Manager::getSectorManager()->deleteSectors();
 

@@ -7,7 +7,7 @@
 namespace fluo {
 namespace ui {
 
-Texture::Texture() {
+Texture::Texture(bool useBitMask) : useBitMask_(useBitMask) {
 }
 
 void Texture::initPixelBuffer(unsigned int width, unsigned int height) {
@@ -29,7 +29,10 @@ boost::shared_ptr<CL_Texture> Texture::getTexture() {
         texture_.reset(ui::Manager::getSingleton()->provideTexture(pixelBuffer_->get_width(), pixelBuffer_->get_height()));
         texture_->set_image(*(pixelBuffer_));
 
-        bitMask_.init(pixelBuffer_);
+        if (useBitMask_) {
+            bitMask_.init(pixelBuffer_);
+        }
+
         pixelBuffer_.reset();
     }
 
@@ -57,7 +60,11 @@ unsigned int Texture::getHeight() {
 }
 
 bool Texture::hasPixel(unsigned int pixelX, unsigned int pixelY) {
-    return bitMask_.hasPixel(pixelX, pixelY);
+    if (useBitMask_) {
+        return bitMask_.hasPixel(pixelX, pixelY);
+    } else {
+        return true;
+    }
 }
 
 }

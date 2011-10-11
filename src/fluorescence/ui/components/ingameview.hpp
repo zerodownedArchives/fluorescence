@@ -29,6 +29,7 @@ public:
 
     int getCenterPixelX();
     int getCenterPixelY();
+    int getCenterPixelZ();
 
     unsigned int getWidth();
     unsigned int getHeight();
@@ -43,11 +44,13 @@ public:
 private:
     float centerTileX_;
     float centerTileY_;
+    float centerTileZ_;
 
     boost::shared_ptr<world::IngameObject> centerObject_;
 
     float getCenterTileX();
     float getCenterTileY();
+    float getCenterTileZ();
 
     boost::shared_ptr<IngameViewRenderer> renderer_;
 

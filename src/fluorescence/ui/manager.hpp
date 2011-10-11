@@ -1,5 +1,5 @@
-#ifndef FLUO_GUI_MANAGER_HPP
-#define FLUO_GUI_MANAGER_HPP
+#ifndef FLUO_UI_MANAGER_HPP
+#define FLUO_UI_MANAGER_HPP
 
 #include <ClanLib/core.h>
 #include <ClanLib/application.h>
@@ -25,7 +25,7 @@ namespace world {
 namespace ui {
 
 class IngameView;
-class RenderQueue;
+class IngameRenderQueue;
 class CursorManager;
 class DoubleClickHandler;
 class GumpMenu;
@@ -44,7 +44,7 @@ public:
 
     static CL_Texture* provideTexture(unsigned int width, unsigned int height);
 
-    static boost::shared_ptr<RenderQueue> getRenderQueue();
+    static boost::shared_ptr<IngameRenderQueue> getWorldRenderQueue();
     static boost::shared_ptr<CL_GUIManager> getGuiManager();
     static boost::shared_ptr<CursorManager> getCursorManager();
     static boost::shared_ptr<DoubleClickHandler> getDoubleClickHandler();
@@ -76,7 +76,7 @@ private:
     Manager(const Manager& copy) { }
     void operator=(const Manager& copy) { }
 
-    boost::shared_ptr<RenderQueue> renderQueue_;
+    boost::shared_ptr<IngameRenderQueue> worldRenderQueue_;
 
     // clan lib setup stuff
     CL_SetupCore clSetupCore;

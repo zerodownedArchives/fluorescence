@@ -14,6 +14,10 @@ ArtLoader::ArtLoader(const boost::filesystem::path& idxPath, const boost::filesy
     boost::shared_ptr<IndexedOnDemandFileLoader<ui::Texture> > loader(new IndexedOnDemandFileLoader<ui::Texture>(idxPath, mulPath,
                 boost::bind(&ArtLoader::readCallback, this, _1, _2, _3, _4, _5, _6)));
     cache_.init(loader);
+
+    // fix default graphics
+    cache_.fixItem(0);
+    cache_.fixItem(0x4000);
 }
 
 boost::shared_ptr<ui::Texture> ArtLoader::getMapTexture(unsigned int id) {

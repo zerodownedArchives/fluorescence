@@ -2,9 +2,9 @@
 #define FLUO_UI_RENDERQUEUE_HPP
 
 #include <list>
-
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/function.hpp>
 
 namespace fluo {
 
@@ -15,63 +15,58 @@ namespace world {
 
 namespace ui {
 
-class UiObject;
-
 class RenderQueue {
 public:
-    RenderQueue();
-    ~RenderQueue();
+    typedef std::list<boost::shared_ptr<world::IngameObject> >::iterator iterator;
+    typedef std::list<boost::shared_ptr<world::IngameObject> >::const_iterator const_iterator;
+    typedef std::list<boost::shared_ptr<world::IngameObject> >::reverse_iterator reverse_iterator;
+    typedef std::list<boost::shared_ptr<world::IngameObject> >::const_reverse_iterator const_reverse_iterator;
 
-    void add(world::IngameObject* obj);
+    typedef boost::function<bool (const boost::shared_ptr<world::IngameObject>&, const boost::shared_ptr<world::IngameObject>&)> SortFunction;
 
-    /// do not use unless absolutely necessary
-    void removeImmediately(world::IngameObject* obj);
 
+    RenderQueue(SortFunction sortFunction);
+
+    void add(boost::shared_ptr<world::IngameObject> obj);
     void remove(boost::shared_ptr<world::IngameObject> obj);
-    /// batch delete function for sectors. way faster than deleting each item individually
-    void remove(boost::shared_ptr<world::Sector> sector);
-
-    /// Calling this function will make the client re-sort the queue at the next rendering
-    void requireIngameSort();
-    void prepareRender(unsigned int elapsedMillis);
-
-    std::list<world::IngameObject*>::const_iterator beginIngame();
-    std::list<world::IngameObject*>::const_iterator endIngame();
-
-    unsigned int size() { return ingameList_.size(); }
 
     void clear();
+    void sort();
 
-    boost::shared_ptr<world::IngameObject> getFirstIngameObjectAt(int worldX, int worldY, bool getTopParent);
+    unsigned int size() const;
 
-private:
-    /* I'm aware of the fact that, according to good programming standards, this should be a list of weak_ptr
-     * I experimented with that quite a bit, but implementing this list with weak pointers has an incredibly heavy
-     * performance impact (~ 6x times slower on my computer). Thus, I decided to stick to plain pointers here.
-     * You can find the weak pointer experiments in the git tree, if I managed to use git correctly ;)
-     */
-    std::list<world::IngameObject*> ingameList_;
+    RenderQueue::iterator begin();
+    RenderQueue::const_iterator begin() const;
 
-    void sortIngame();
-    /// used to sort the objects according to their render priority. returns true, if a should be painted before b
-    bool renderPriorityComparator(const world::IngameObject* a, const world::IngameObject* b);
-    bool renderPriorityComparatorSharedPtr(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b);
+    RenderQueue::iterator end();
+    RenderQueue::const_iterator end() const;
 
+    RenderQueue::reverse_iterator rbegin();
+    RenderQueue::const_reverse_iterator rbegin() const;
+
+    RenderQueue::reverse_iterator rend();
+    RenderQueue::const_reverse_iterator rend() const;
+
+protected:
     void processRemoveList();
     bool processAddList();
 
-    bool debugIngameCheckSorted();
-    bool debugIngameCheckInList(world::IngameObject* obj);
-    world::IngameObject* debugIngameGetByIndex(unsigned int idx);
+    // items to remove are collected here before removal, because batch remove is more efficient
+    std::list<boost::shared_ptr<world::IngameObject> > removeList_;
+
+private:
+    std::list<boost::shared_ptr<world::IngameObject> > objectList_;
 
     // ingameobjects might be added to or deleted from the render queue asynchronously. thus, we keep an extra list for added/deleted items
-    std::list<world::IngameObject*> ingameAddList_;
-    boost::mutex ingameAddListMutex_;
+    std::list<boost::shared_ptr<world::IngameObject> > addList_;
+    boost::mutex addListMutex_;
 
-    // removing items from the queue is usually done in prepare render. but the objects have to stay alive long enough
-    // to remove them properly, so for delayed removal, we take ownership.
-    // for immediate (emergency only!) removal, there is removeImmediately(IngameObject*)
-    std::list<boost::shared_ptr<world::IngameObject> > ingameRemoveList_;
+    SortFunction sortFunction_;
+
+
+    bool debugIngameCheckSorted();
+    bool debugIngameCheckInList(boost::shared_ptr<world::IngameObject> obj);
+    boost::shared_ptr<world::IngameObject> debugIngameGetByIndex(unsigned int idx);
 };
 
 }

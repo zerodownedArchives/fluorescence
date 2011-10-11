@@ -154,6 +154,9 @@ void Socket::close() {
 
 void Socket::receiveRun() {
     while (running_ && !criticalError_) {
+        // sleep a little
+        fluo::sleepMs(10);
+
         socketMutex_.lock();
         int recvLen = recv(socketFd_, reinterpret_cast<char*>(rawBuffer_), 0x4000, 0);
 #ifdef WIN32
@@ -183,10 +186,6 @@ void Socket::receiveRun() {
             //dumpBuffer(decompressedBuffer_, decompLen);
 
             parsePackets();
-
-            // sleep a little
-            fluo::sleepMs(10);
-
         } else if (recvLen == 0) { // peer has shut down
             LOG_INFO << "Peer has shut down socket" << std::endl;
             // set error indicator ?

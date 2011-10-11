@@ -9,7 +9,7 @@
 #include <misc/log.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/renderqueue.hpp>
+#include <ui/ingamerenderqueue.hpp>
 #include <ui/components/ingameview.hpp>
 
 #include <data/maploader.hpp>
@@ -95,7 +95,7 @@ void SectorManager::deleteSectors() {
     std::list<unsigned int>::const_iterator requiredBegin = sectorRequiredList.begin();
     std::list<unsigned int>::const_iterator requiredEnd = sectorRequiredList.end();
 
-    boost::shared_ptr<ui::RenderQueue> renderQueue = ui::Manager::getSingleton()->getRenderQueue();
+    boost::shared_ptr<ui::IngameRenderQueue> renderQueue = ui::Manager::getWorldRenderQueue();
 
     while (deleteIter != deleteEnd) {
         if (deleteIter->second->getMapId() != mapId ||

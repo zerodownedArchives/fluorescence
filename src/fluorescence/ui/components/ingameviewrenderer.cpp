@@ -20,8 +20,8 @@
 namespace fluo {
 namespace ui {
 
-IngameViewRenderer::IngameViewRenderer(IngameView* ingameView) :
-        ingameView_(ingameView) {
+IngameViewRenderer::IngameViewRenderer(boost::shared_ptr<RenderQueue> renderQueue, IngameView* ingameView) : IngameObjectRenderer(true),
+        ingameView_(ingameView), renderQueue_(renderQueue) {
 
     CL_GraphicContext gc = fluo::ui::Manager::getSingleton()->getGraphicContext();
 
@@ -40,8 +40,33 @@ IngameViewRenderer::IngameViewRenderer(IngameView* ingameView) :
 IngameViewRenderer::~IngameViewRenderer() {
 }
 
-void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
-    gc.clear(CL_Colorf(0.0f, 0.0f, 0.0f));
+void IngameViewRenderer::checkTextureSize() {
+    if (!texture_ || texture_->getWidth() != ingameView_->getWidth() || texture_->getHeight() != ingameView_->getHeight()) {
+        texture_.reset(new ui::Texture(false));
+        texture_->initPixelBuffer(ingameView_->getWidth(), ingameView_->getHeight());
+        texture_->setReadComplete();
+    }
+}
+
+boost::shared_ptr<Texture> IngameViewRenderer::getTexture(CL_GraphicContext& gc) {
+    checkTextureSize();
+    CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
+
+    CL_FrameBuffer fb(gc);
+    fb.attach_color_buffer(0, *texture_->getTexture());
+
+    gc.set_frame_buffer(fb);
+
+    render(gc);
+
+    gc.set_frame_buffer(origBuffer);
+
+    return texture_;
+}
+
+
+void IngameViewRenderer::render(CL_GraphicContext& gc) {
+    gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
 
     gc.set_program_object(*shaderProgram_, cl_program_matrix_modelview_projection);
 
@@ -83,12 +108,11 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
     shaderProgram_->set_uniform3f("GlobalLightIntensity", lightManager->getGlobalIntensity());
     shaderProgram_->set_uniform3f("GlobalLightDirection", lightManager->getGlobalDirection());
 
-    boost::shared_ptr<RenderQueue> renderQueue = ui::Manager::getSingleton()->getRenderQueue();
-    std::list<world::IngameObject*>::const_iterator igIter = renderQueue->beginIngame();
-    std::list<world::IngameObject*>::const_iterator igEnd = renderQueue->endIngame();
+    RenderQueue::const_iterator igIter = renderQueue_->begin();
+    RenderQueue::const_iterator igEnd = renderQueue_->end();
 
     for (; igIter != igEnd; ++igIter) {
-        world::IngameObject* curObj = *igIter;
+        boost::shared_ptr<world::IngameObject> curObj = *igIter;
 
         // object is invisible
         if (!curObj->isVisible()) {

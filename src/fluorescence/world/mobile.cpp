@@ -21,7 +21,7 @@
 namespace fluo {
 namespace world {
 
-Mobile::Mobile(Serial serial) : ServerObject(serial), bodyId_(0) {
+Mobile::Mobile(Serial serial) : ServerObject(serial), bodyId_(0), hue_(0) {
 }
 
 boost::shared_ptr<ui::Texture> Mobile::getIngameTexture() const {
@@ -60,8 +60,12 @@ void Mobile::setBodyId(unsigned int value) {
 }
 
 void Mobile::setHue(unsigned int value) {
-    hue_ = value;
-    hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
+    if (value != hue_) {
+        hue_ = value;
+        hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
+
+        invalidateRenderData();
+    }
 }
 
 void Mobile::updateVertexCoordinates() {
@@ -203,8 +207,8 @@ void Mobile::onStartDrag(const CL_Point& mousePos) {
     net::Manager::getSingleton()->send(queryPacket);
 }
 
-void Mobile::equip(boost::shared_ptr<DynamicItem> itm) {
-    itm->equipOn(this);
+void Mobile::equip(boost::shared_ptr<DynamicItem> itm, boost::shared_ptr<Mobile> sharedThis) {
+    itm->equipOn(sharedThis);
 
     equippedItems_.push_back(itm);
 }

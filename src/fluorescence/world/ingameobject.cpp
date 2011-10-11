@@ -7,7 +7,7 @@
 
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>
-#include <ui/renderqueue.hpp>
+#include <ui/ingamerenderqueue.hpp>
 
 #include "overheadmessage.hpp"
 
@@ -23,9 +23,6 @@ IngameObject::IngameObject() : draggable_(false), visible_(true), renderDataVali
 }
 
 IngameObject::~IngameObject() {
-    // emergency remove from render queue is first action in dtor
-    // this should never be necessary, but it doesn't hurt to make sure
-    removeFromRenderQueueImmediately();
 }
 
 bool IngameObject::isVisible() const {
@@ -124,21 +121,14 @@ void IngameObject::requestUpdateTextureProvider() {
 
 void IngameObject::addToRenderQueue() {
     if (!addedToRenderQueue_) {
-        ui::Manager::getSingleton()->getRenderQueue()->add(this);
+        ui::Manager::getWorldRenderQueue()->add(shared_from_this());
         addedToRenderQueue_ = true;
-    }
-}
-
-void IngameObject::removeFromRenderQueueImmediately() {
-    if (addedToRenderQueue_) {
-        ui::Manager::getSingleton()->getRenderQueue()->removeImmediately(this);
-        addedToRenderQueue_ = false;
     }
 }
 
 void IngameObject::removeFromRenderQueue() {
     if (addedToRenderQueue_) {
-        ui::Manager::getSingleton()->getRenderQueue()->remove(shared_from_this());
+        ui::Manager::getWorldRenderQueue()->RenderQueue::remove(shared_from_this());
         addedToRenderQueue_ = false;
     }
 }
@@ -203,8 +193,8 @@ void IngameObject::onStartDrag(const CL_Point& mousePos) {
     LOG_ERROR << "Starting to drag object other than DynamicItem or Mobile" << std::endl;
 }
 
-IngameObject* IngameObject::getTopParent() {
-    return this;
+boost::shared_ptr<IngameObject> IngameObject::getTopParent() {
+    return shared_from_this();
 }
 
 void IngameObject::printRenderPriority() {

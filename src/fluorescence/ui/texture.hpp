@@ -15,7 +15,7 @@ namespace ui {
 
 class Texture : public fluo::data::OnDemandReadable {
 public:
-    Texture();
+    Texture(bool useBitMask = true);
 
     void initPixelBuffer(unsigned int width, unsigned int height);
     uint32_t* getPixelBufferData();
@@ -32,6 +32,7 @@ public:
 private:
     boost::shared_ptr<CL_PixelBuffer> pixelBuffer_;
     boost::shared_ptr<CL_Texture> texture_;
+    bool useBitMask_;
     BitMask bitMask_;
 };
 }
