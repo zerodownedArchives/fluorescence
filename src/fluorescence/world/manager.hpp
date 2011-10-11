@@ -22,23 +22,19 @@ public:
     static void destroy();
     static Manager* getSingleton();
 
-    boost::shared_ptr<SectorManager> getSectorManager();
+    static boost::shared_ptr<SectorManager> getSectorManager();
+    static boost::shared_ptr<LightManager> getLightManager();
 
     unsigned int getCurrentMapId();
     void setCurrentMapId(unsigned int id);
 
-    boost::shared_ptr<LightManager> getLightManager();
-
+    boost::shared_ptr<Mobile> initPlayer(Serial serial);
     boost::shared_ptr<Mobile> getPlayer();
 
     boost::shared_ptr<Mobile> getMobile(Serial serial, bool createIfNotExists = true);
     boost::shared_ptr<DynamicItem> getDynamicItem(Serial serial, bool createIfNotExists = true);
 
-    boost::shared_ptr<Mobile> initPlayer(Serial serial);
-
     void deleteObject(Serial serial);
-
-    void printItemSerials();
 
 private:
     static Manager* singleton_;

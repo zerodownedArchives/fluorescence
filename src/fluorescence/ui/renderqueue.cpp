@@ -219,8 +219,6 @@ void RenderQueue::clear() {
 }
 
 boost::shared_ptr<world::IngameObject> RenderQueue::getFirstIngameObjectAt(int worldX, int worldY, bool getTopParent) {
-    //world::Manager::getSingleton()->printItemSerials();
-
     std::list<world::IngameObject*>::reverse_iterator igIter = ingameList_.rbegin();
     std::list<world::IngameObject*>::reverse_iterator igEnd = ingameList_.rend();
 

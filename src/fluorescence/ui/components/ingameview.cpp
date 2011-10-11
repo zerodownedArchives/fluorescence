@@ -31,7 +31,7 @@ IngameView::IngameView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpEle
     this->set_geometry(bounds);
     renderer_.reset(new IngameViewRenderer(this));
 
-    world::Manager::getSingleton()->getSectorManager()->registerIngameView(this);
+    world::Manager::getSectorManager()->registerIngameView(this);
     setCenterObject(world::Manager::getSingleton()->getPlayer());
 
     set_constant_repaint(true);
@@ -43,7 +43,7 @@ IngameView::IngameView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpEle
 }
 
 IngameView::~IngameView() {
-    world::Manager::getSingleton()->getSectorManager()->unregisterIngameView(this);
+    world::Manager::getSectorManager()->unregisterIngameView(this);
 }
 
 float IngameView::getCenterTileX() {
@@ -151,7 +151,7 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         break;
 
     case CL_KEY_ADD:
-        lm = world::Manager::getSingleton()->getLightManager();
+        lm = world::Manager::getLightManager();
         intensity = lm->getAmbientIntensity();
         intensity.r += 0.1;
         intensity.g += 0.1;
@@ -159,7 +159,7 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         lm->setAmbientIntensity(intensity);
         break;
     case CL_KEY_SUBTRACT:
-        lm = world::Manager::getSingleton()->getLightManager();
+        lm = world::Manager::getLightManager();
         intensity = lm->getAmbientIntensity();
         intensity.r = (std::max)(0.0, intensity.r - 0.1);
         intensity.g = (std::max)(0.0, intensity.g - 0.1);
@@ -168,7 +168,7 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         break;
 
     case CL_KEY_A:
-        lm = world::Manager::getSingleton()->getLightManager();
+        lm = world::Manager::getLightManager();
         intensity = lm->getGlobalIntensity();
         intensity.r += 0.03;
         intensity.g += 0.03;
@@ -176,7 +176,7 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         lm->setGlobalIntensity(intensity);
         break;
     case CL_KEY_S:
-        lm = world::Manager::getSingleton()->getLightManager();
+        lm = world::Manager::getLightManager();
         intensity = lm->getGlobalIntensity();
         intensity.r = (std::max)(0.0, intensity.r - 0.03);
         intensity.g = (std::max)(0.0, intensity.g - 0.03);
@@ -185,18 +185,19 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
         break;
 
     case CL_MOUSE_WHEEL_UP:
-        lm = world::Manager::getSingleton()->getLightManager();
+        lm = world::Manager::getLightManager();
         lm->setGlobalAngle(lm->getGlobalAngle() + 5);
         LOG_DEBUG << "mw up " << lm->getGlobalAngle() << std::endl;
         break;
     case CL_MOUSE_WHEEL_DOWN:
-        lm = world::Manager::getSingleton()->getLightManager();
+        lm = world::Manager::getLightManager();
         lm->setGlobalAngle(lm->getGlobalAngle() - 5);
         LOG_DEBUG <<"mw down " << lm->getGlobalAngle() << std::endl;
         break;
 
     case CL_KEY_F:
         data::Manager::getArtLoader()->printStats();
+        LOG_DEBUG << "Render queue count: " << ui::Manager::getSingleton()->getRenderQueue()->size() << std::endl;
         break;
 
 

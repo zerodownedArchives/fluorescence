@@ -241,8 +241,6 @@ void Manager::init(Config& config) {
             animLoader_[index].reset(new AnimLoader(idxPath, path, highDetailCount, lowDetailCount));
 
             if (!fallbackAnimLoader_.get()) {
-                LOG_WARN << "Unable to open anim" << indexChar << " from idx=" << idxPath << ", mul=" << path << ", high-detail=" <<
-                        highDetailCount << ", low-detail=" << lowDetailCount << std::endl;
                 fallbackAnimLoader_ = animLoader_[index];
             }
         } else {

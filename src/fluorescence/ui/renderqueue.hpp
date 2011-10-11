@@ -28,10 +28,8 @@ public:
     void removeImmediately(world::IngameObject* obj);
 
     void remove(boost::shared_ptr<world::IngameObject> obj);
-    void remove(boost::shared_ptr<world::Sector> sector);
-
     /// batch delete function for sectors. way faster than deleting each item individually
-    void removeSector(world::Sector* sector);
+    void remove(boost::shared_ptr<world::Sector> sector);
 
     /// Calling this function will make the client re-sort the queue at the next rendering
     void requireIngameSort();

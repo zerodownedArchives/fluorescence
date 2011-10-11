@@ -49,7 +49,7 @@ Manager::~Manager() {
 }
 
 boost::shared_ptr<SectorManager> Manager::getSectorManager() {
-    return sectorManager_;
+    return getSingleton()->sectorManager_;
 }
 
 unsigned int Manager::getCurrentMapId() {
@@ -61,7 +61,7 @@ void Manager::setCurrentMapId(unsigned int id) {
 }
 
 boost::shared_ptr<LightManager> Manager::getLightManager() {
-    return lightManager_;
+    return getSingleton()->lightManager_;
 }
 
 boost::shared_ptr<Mobile> Manager::initPlayer(Serial serial) {
@@ -116,18 +116,6 @@ boost::shared_ptr<DynamicItem> Manager::getDynamicItem(Serial serial, bool creat
 
     return itm;
 }
-
-void Manager::printItemSerials() {
-    LOG_DEBUG << "all item serials:" << std::endl;
-
-    std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator iter = dynamicItems_.begin();
-    std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator end = dynamicItems_.end();
-
-    for (; iter != end; ++iter) {
-        LOG_DEBUG << "\titm serial=" << iter->second->getSerial() << std::endl;
-    }
-}
-
 
 }
 }

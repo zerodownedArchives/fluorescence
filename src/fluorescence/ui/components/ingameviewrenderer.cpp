@@ -78,7 +78,7 @@ void IngameViewRenderer::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& cl
     shaderProgram_->set_uniform1i("HueTexture", 0);
     shaderProgram_->set_uniform1i("ObjectTexture", 1);
 
-    boost::shared_ptr<world::LightManager> lightManager = world::Manager::getSingleton()->getLightManager();
+    boost::shared_ptr<world::LightManager> lightManager = world::Manager::getLightManager();
     shaderProgram_->set_uniform3f("AmbientLightIntensity", lightManager->getAmbientIntensity());
     shaderProgram_->set_uniform3f("GlobalLightIntensity", lightManager->getGlobalIntensity());
     shaderProgram_->set_uniform3f("GlobalLightDirection", lightManager->getGlobalDirection());

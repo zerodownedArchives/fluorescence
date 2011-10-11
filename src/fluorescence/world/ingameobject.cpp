@@ -136,6 +136,13 @@ void IngameObject::removeFromRenderQueueImmediately() {
     }
 }
 
+void IngameObject::removeFromRenderQueue() {
+    if (addedToRenderQueue_) {
+        ui::Manager::getSingleton()->getRenderQueue()->remove(shared_from_this());
+        addedToRenderQueue_ = false;
+    }
+}
+
 bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {
     //LOGARG_DEBUG(LOGTYPE_WORLD, "isInDrawArea (%u %u %u %u) => x=%u y=%u\n", leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord, vertexCoordinates_[0u].x, vertexCoordinates_[0u].y);
 

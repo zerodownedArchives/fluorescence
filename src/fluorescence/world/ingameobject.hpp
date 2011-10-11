@@ -85,6 +85,7 @@ protected:
     bool draggable_;
 
     void addToRenderQueue();
+    void removeFromRenderQueue();
     void removeFromRenderQueueImmediately();
 
     void requestUpdateTextureProvider();
