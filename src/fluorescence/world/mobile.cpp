@@ -56,7 +56,7 @@ void Mobile::setBodyId(unsigned int value) {
         invalidateRenderData(true);
     }
 
-    addToRenderQueue();
+    addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 void Mobile::setHue(unsigned int value) {

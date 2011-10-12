@@ -62,7 +62,7 @@ void IngameRenderQueue::prepareRender(unsigned int elapsedMillis) {
     }
 }
 
-boost::shared_ptr<world::IngameObject> IngameRenderQueue::getFirstIngameObjectAt(int worldX, int worldY, bool getTopParent) {
+boost::shared_ptr<world::IngameObject> IngameRenderQueue::getFirstObjectAt(int worldX, int worldY, bool getTopParent) {
     RenderQueue::reverse_iterator igIter = rbegin();
     RenderQueue::reverse_iterator igEnd = rend();
 
@@ -82,22 +82,6 @@ boost::shared_ptr<world::IngameObject> IngameRenderQueue::getFirstIngameObjectAt
     }
 
     return ret;
-}
-
-void IngameRenderQueue::remove(boost::shared_ptr<world::Sector> sector) {
-    std::list<boost::shared_ptr<world::StaticItem> > staticList = sector->getStaticBlock()->getItemList();
-    std::list<boost::shared_ptr<world::StaticItem> >::const_iterator it = staticList.begin();
-    std::list<boost::shared_ptr<world::StaticItem> >::const_iterator end = staticList.end();
-
-    for (; it != end; ++it) {
-        removeList_.push_back(*it);
-    }
-
-    for (unsigned int x = 0; x < 8; ++x) {
-        for (unsigned int y = 0; y < 8; ++y) {
-            removeList_.push_back(sector->getMapBlock()->get(x, y));
-        }
-    }
 }
 
 }

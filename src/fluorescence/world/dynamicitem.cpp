@@ -17,6 +17,7 @@
 #include <ui/texture.hpp>
 #include <ui/textureprovider.hpp>
 #include <ui/animtextureprovider.hpp>
+#include <ui/manager.hpp>
 
 #include <net/manager.hpp>
 #include <net/packets/singleclick.hpp>
@@ -51,7 +52,7 @@ void DynamicItem::setArtId(unsigned int artId) {
         invalidateRenderData(true);
     }
 
-    addToRenderQueue();
+    addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 void DynamicItem::setDirection(unsigned int direction) {

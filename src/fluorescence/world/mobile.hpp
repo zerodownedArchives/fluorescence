@@ -48,7 +48,7 @@ public:
 
     virtual void onStartDrag(const CL_Point& mousePos);
 
-    void equip(boost::shared_ptr<DynamicItem> itm, boost::shared_ptr<Mobile>);
+    void equip(boost::shared_ptr<DynamicItem> itm, boost::shared_ptr<Mobile> mob);
     void unequip(boost::shared_ptr<DynamicItem> itm);
 
     void onDelete(boost::shared_ptr<Mobile> sharedThis);

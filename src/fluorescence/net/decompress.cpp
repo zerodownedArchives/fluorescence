@@ -31,13 +31,15 @@ BinaryTree* BinaryTree::buildHuffmanTree() {
         while (bit > 0) {
             bit--;
             if ((val & (1 << bit)) != 0) {
-                if (!cur->one_)
+                if (!cur->one_) {
                     cur->one_ = new BinaryTree;
+                }
                 cur = cur->one_;
 
             } else {
-                if (!cur->zero_)
+                if (!cur->zero_) {
                     cur->zero_ = new BinaryTree;
+                }
                 cur = cur->zero_;
             }
         }

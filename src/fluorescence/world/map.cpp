@@ -7,6 +7,7 @@
 #include <data/tiledataloader.hpp>
 
 #include <ui/texture.hpp>
+#include <ui/manager.hpp>
 
 namespace fluo {
 namespace world {
@@ -99,7 +100,7 @@ void MapTile::setSurroundingZ(int left, int right, int bottom) {
 
     // if the tile got surrounding z values from the loading thread for the first time, we can finally add it to the render queue
     // double adding checks are done in the function
-    addToRenderQueue();
+    addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 unsigned int MapTile::getArtId() {

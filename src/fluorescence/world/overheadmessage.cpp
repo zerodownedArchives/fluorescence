@@ -14,7 +14,7 @@ OverheadMessage::OverheadMessage(boost::shared_ptr<IngameObject> parent, const U
             parent_(parent) {
     texture_ = ui::Manager::getFontEngine()->getUniFontTexture(font, text, 180, color, useRgbColor);
 
-    addToRenderQueue();
+    addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 boost::shared_ptr<ui::Texture> OverheadMessage::getIngameTexture() const {

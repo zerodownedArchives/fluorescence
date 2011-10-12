@@ -7,6 +7,7 @@
 #include <data/huesloader.hpp>
 
 #include <ui/texture.hpp>
+#include <ui/manager.hpp>
 
 namespace fluo {
 namespace world {
@@ -29,7 +30,7 @@ void StaticItem::set(int locX, int locY, int locZ, unsigned int artId, unsigned 
     hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
     hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
 
-    addToRenderQueue();
+    addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 void StaticItem::updateVertexCoordinates() {

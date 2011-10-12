@@ -13,8 +13,8 @@ AnimDataTextureProvider::AnimDataTextureProvider(unsigned int artId) : currentId
     //LOGARG_WARN(LOGTYPE_DATA, "Using AnimDataTexPro for artId=%u frameCount=%u", artId, info_.frameCount_);
 
     if (info_.frameCount_ == 0) {
-        LOG_WARN << "Using artId withouth animdata for animation: " << artId << "  " << std::hex << artId << std::dec << std::endl;
-        boost::shared_ptr<ui::Texture> tex = data::Manager::getArtLoader()->getItemTexture(1);
+        LOG_WARN << "Using artId without animdata for animation: " << artId << "  " << std::hex << artId << std::dec << std::endl;
+        boost::shared_ptr<ui::Texture> tex = data::Manager::getArtLoader()->getItemTexture(artId);
         textures_.push_back(tex);
     }
 

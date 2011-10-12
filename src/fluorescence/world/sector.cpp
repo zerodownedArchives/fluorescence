@@ -54,5 +54,21 @@ unsigned int Sector::getSectorId() const {
     return id_;
 }
 
+void Sector::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
+    std::list<boost::shared_ptr<world::StaticItem> > staticList = staticBlock_->getItemList();
+    std::list<boost::shared_ptr<world::StaticItem> >::const_iterator it = staticList.begin();
+    std::list<boost::shared_ptr<world::StaticItem> >::const_iterator end = staticList.end();
+
+    for (; it != end; ++it) {
+        (*it)->removeFromRenderQueue(rq);
+    }
+
+    for (unsigned int x = 0; x < 8; ++x) {
+        for (unsigned int y = 0; y < 8; ++y) {
+            mapBlock_->get(x, y)->removeFromRenderQueue(rq);
+        }
+    }
+}
+
 }
 }

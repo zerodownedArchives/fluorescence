@@ -280,7 +280,7 @@ boost::shared_ptr<world::IngameObject> IngameView::getFirstIngameObjectAt(unsign
     int worldY = getCenterPixelY() - get_height()/2.0;
     worldY += pixelY;
 
-    return ui::Manager::getWorldRenderQueue()->getFirstIngameObjectAt(worldX, worldY, true);
+    return ui::Manager::getWorldRenderQueue()->getFirstObjectAt(worldX, worldY, true);
 }
 
 void IngameView::setCenterObject(boost::shared_ptr<world::IngameObject> obj) {

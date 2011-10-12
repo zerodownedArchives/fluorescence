@@ -14,7 +14,7 @@
 namespace fluo {
 namespace world {
 
-IngameObject::IngameObject() : draggable_(false), visible_(true), renderDataValid_(false), textureProviderUpdateRequired_(true), addedToRenderQueue_(false) {
+IngameObject::IngameObject() : draggable_(false), visible_(true), renderDataValid_(false), textureProviderUpdateRequired_(true) {
     for (unsigned int i = 0; i < 6; ++i) {
         renderPriority_[i] = 0;
         vertexNormals_[i] = CL_Vec3f(0, 0, 1);
@@ -119,20 +119,6 @@ void IngameObject::requestUpdateTextureProvider() {
     textureProviderUpdateRequired_ = true;
 }
 
-void IngameObject::addToRenderQueue() {
-    if (!addedToRenderQueue_) {
-        ui::Manager::getWorldRenderQueue()->add(shared_from_this());
-        addedToRenderQueue_ = true;
-    }
-}
-
-void IngameObject::removeFromRenderQueue() {
-    if (addedToRenderQueue_) {
-        ui::Manager::getWorldRenderQueue()->RenderQueue::remove(shared_from_this());
-        addedToRenderQueue_ = false;
-    }
-}
-
 bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {
     //LOGARG_DEBUG(LOGTYPE_WORLD, "isInDrawArea (%u %u %u %u) => x=%u y=%u\n", leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord, vertexCoordinates_[0u].x, vertexCoordinates_[0u].y);
 
@@ -219,6 +205,42 @@ void IngameObject::addOverheadMessage(boost::shared_ptr<OverheadMessage> msg) {
         int curOffset = offset - curHeight;
         (*iter)->setParentPixelOffset(curOffset);
         offset = curOffset - 2;
+    }
+}
+
+bool IngameObject::isInRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
+    std::list<boost::weak_ptr<ui::RenderQueue> >::const_iterator iter = renderQueues_.begin();
+    std::list<boost::weak_ptr<ui::RenderQueue> >::const_iterator end = renderQueues_.end();
+    for (; iter != end; ++iter) {
+        if (iter->lock() == rq) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void IngameObject::addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
+    boost::weak_ptr<ui::RenderQueue> weakRq(rq);
+
+    if (!isInRenderQueue(rq)) {
+        renderQueues_.push_back(weakRq);
+        rq->add(shared_from_this());
+    }
+}
+
+void IngameObject::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
+    std::list<boost::weak_ptr<ui::RenderQueue> >::iterator iter = renderQueues_.begin();
+    std::list<boost::weak_ptr<ui::RenderQueue> >::iterator end = renderQueues_.end();
+    for (; iter != end; ++iter) {
+        if (iter->lock() == rq) {
+            break;
+        }
+    }
+
+    if (iter != end) {
+        renderQueues_.erase(iter);
+        rq->remove(shared_from_this());
     }
 }
 

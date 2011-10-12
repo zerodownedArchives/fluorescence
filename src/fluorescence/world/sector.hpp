@@ -12,6 +12,10 @@ namespace data {
     class SectorReader;
 }
 
+namespace ui {
+    class RenderQueue;
+}
+
 namespace world {
 
 class Sector {
@@ -30,6 +34,8 @@ public:
 
     boost::shared_ptr<MapBlock> getMapBlock() const;
     boost::shared_ptr<StaticBlock> getStaticBlock() const;
+
+    void removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
 
 private:
     unsigned int mapId_;

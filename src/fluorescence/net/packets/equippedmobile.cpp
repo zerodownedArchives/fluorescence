@@ -65,8 +65,6 @@ void EquippedMobile::onReceive() {
         itm->setLayer(iter->layer_);
 
         mob->equip(itm, mob);
-
-        itm->shared_from_this();
     }
 }
 

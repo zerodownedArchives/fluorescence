@@ -74,6 +74,10 @@ public:
 
     void addOverheadMessage(boost::shared_ptr<OverheadMessage> msg);
 
+    void addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
+    void removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
+    bool isInRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
+
 
     void printRenderPriority();
 
@@ -83,9 +87,6 @@ protected:
     int renderPriority_[6];
     CL_Vec2f hueInfo_;
     bool draggable_;
-
-    void addToRenderQueue();
-    void removeFromRenderQueue();
 
     void requestUpdateTextureProvider();
     virtual void updateTextureProvider() = 0;
@@ -106,7 +107,7 @@ private:
     CL_Vec3f location_;
     bool textureProviderUpdateRequired_;
 
-    bool addedToRenderQueue_;
+    std::list<boost::weak_ptr<ui::RenderQueue> > renderQueues_;
 };
 
 }

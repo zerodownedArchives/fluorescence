@@ -5,17 +5,19 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/function.hpp>
+#include <boost/enable_shared_from_this.hpp>
+
+#include <world/ingameobject.hpp>
 
 namespace fluo {
 
 namespace world {
-    class IngameObject;
     class Sector;
 }
 
 namespace ui {
 
-class RenderQueue {
+class RenderQueue : public boost::enable_shared_from_this<RenderQueue> {
 public:
     typedef std::list<boost::shared_ptr<world::IngameObject> >::iterator iterator;
     typedef std::list<boost::shared_ptr<world::IngameObject> >::const_iterator const_iterator;
@@ -27,11 +29,11 @@ public:
 
     RenderQueue(SortFunction sortFunction);
 
-    void add(boost::shared_ptr<world::IngameObject> obj);
-    void remove(boost::shared_ptr<world::IngameObject> obj);
-
     void clear();
     void sort();
+
+    virtual void prepareRender(unsigned int elapsedMillis) = 0;
+    virtual boost::shared_ptr<world::IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopParent) = 0;
 
     unsigned int size() const;
 
@@ -67,6 +69,12 @@ private:
     bool debugIngameCheckSorted();
     bool debugIngameCheckInList(boost::shared_ptr<world::IngameObject> obj);
     boost::shared_ptr<world::IngameObject> debugIngameGetByIndex(unsigned int idx);
+
+    void add(boost::shared_ptr<world::IngameObject> obj);
+    void remove(boost::shared_ptr<world::IngameObject> obj);
+
+    friend void world::IngameObject::addToRenderQueue(boost::shared_ptr<RenderQueue> rq);
+    friend void world::IngameObject ::removeFromRenderQueue(boost::shared_ptr<RenderQueue> rq);
 };
 
 }

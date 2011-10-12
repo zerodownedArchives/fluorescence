@@ -155,7 +155,7 @@ CL_Texture* Manager::provideTexture(unsigned int width, unsigned int height) {
     return new CL_Texture(singleton_->getGraphicContext(), width, height, cl_rgb8);
 }
 
-boost::shared_ptr<IngameRenderQueue> Manager::getWorldRenderQueue() {
+boost::shared_ptr<RenderQueue> Manager::getWorldRenderQueue() {
     return singleton_->worldRenderQueue_;
 }
 

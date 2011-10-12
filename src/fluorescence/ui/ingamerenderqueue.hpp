@@ -20,14 +20,11 @@ public:
     IngameRenderQueue();
     ~IngameRenderQueue();
 
-    /// batch delete function for sectors. way faster than deleting each item individually
-    void remove(boost::shared_ptr<world::Sector> sector);
-
     /// Calling this function will make the client re-sort the queue at the next rendering
     void requireIngameSort();
-    void prepareRender(unsigned int elapsedMillis);
+    virtual void prepareRender(unsigned int elapsedMillis);
 
-    boost::shared_ptr<world::IngameObject> getFirstIngameObjectAt(int worldX, int worldY, bool getTopParent);
+    virtual boost::shared_ptr<world::IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopParent);
 
 private:
     void sortIngame();

@@ -95,12 +95,12 @@ void SectorManager::deleteSectors() {
     std::list<unsigned int>::const_iterator requiredBegin = sectorRequiredList.begin();
     std::list<unsigned int>::const_iterator requiredEnd = sectorRequiredList.end();
 
-    boost::shared_ptr<ui::IngameRenderQueue> renderQueue = ui::Manager::getWorldRenderQueue();
+    boost::shared_ptr<ui::RenderQueue> renderQueue = ui::Manager::getWorldRenderQueue();
 
     while (deleteIter != deleteEnd) {
         if (deleteIter->second->getMapId() != mapId ||
                 !std::binary_search(requiredBegin, requiredEnd, deleteIter->second->getSectorId())) {
-            renderQueue->remove(deleteIter->second);
+            deleteIter->second->removeFromRenderQueue(renderQueue);
             sectorMap_.erase(deleteIter);
         }
 

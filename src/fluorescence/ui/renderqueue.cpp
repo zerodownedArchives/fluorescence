@@ -44,14 +44,19 @@ RenderQueue::const_reverse_iterator RenderQueue::rend() const {
 }
 
 void RenderQueue::clear() {
+    boost::shared_ptr<RenderQueue> sharedThis = shared_from_this();
+
     RenderQueue::iterator iter = begin();
     RenderQueue::iterator iterEnd = end();
 
     for (; iter != iterEnd; ++iter) {
-        (*iter)->addedToRenderQueue_ = false;
+        (*iter)->removeFromRenderQueue(sharedThis);
     }
 
     objectList_.clear();
+
+    // all items are in the delete list now
+    removeList_.clear();
 }
 
 bool RenderQueue::processAddList() {
@@ -81,13 +86,12 @@ void RenderQueue::processRemoveList() {
     std::list<boost::shared_ptr<world::IngameObject> >::iterator objEnd = objectList_.end();
     std::list<boost::shared_ptr<world::IngameObject> >::iterator deleteHelper;
 
+    boost::shared_ptr<RenderQueue> sharedThis = shared_from_this();
+
     while(objIter != objEnd) {
         boost::shared_ptr<world::IngameObject> curDelete = *deleteIter;
 
         if (*objIter == curDelete) {
-            // mark item as deleted
-            curDelete->addedToRenderQueue_ = false;
-
             deleteHelper = objIter;
             ++objIter;
             objectList_.erase(deleteHelper);
