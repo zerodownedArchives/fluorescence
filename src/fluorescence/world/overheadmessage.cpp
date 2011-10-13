@@ -10,11 +10,9 @@
 namespace fluo {
 namespace world {
 
-OverheadMessage::OverheadMessage(boost::shared_ptr<IngameObject> parent, const UnicodeString& text, unsigned int font, unsigned int color, bool useRgbColor) :
-            parent_(parent) {
+OverheadMessage::OverheadMessage(const UnicodeString& text, unsigned int font, unsigned int color, bool useRgbColor) :
+            IngameObject(IngameObject::TYPE_SPEECH) {
     texture_ = ui::Manager::getFontEngine()->getUniFontTexture(font, text, 180, color, useRgbColor);
-
-    addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 boost::shared_ptr<ui::Texture> OverheadMessage::getIngameTexture() const {
@@ -23,7 +21,7 @@ boost::shared_ptr<ui::Texture> OverheadMessage::getIngameTexture() const {
 
 void OverheadMessage::updateVertexCoordinates() {
     // do nothing
-    CL_Vec2f parentCoords = parent_->getVertexCoordinates()[0];
+    CL_Vec2f parentCoords = parentObject_.lock()->getVertexCoordinates()[0];
 
     int x = parentCoords.x + 22 - texture_->getWidth()/2;
     int y = parentCoords.y + parentPixelOffsetY_;
@@ -60,6 +58,10 @@ void OverheadMessage::setParentPixelOffset(int y) {
     parentPixelOffsetY_ = y;
 
     invalidateRenderData();
+}
+
+void OverheadMessage::onAddedToParent() {
+    addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 }

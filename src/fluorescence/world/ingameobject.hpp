@@ -26,22 +26,29 @@ class IngameObject : public boost::enable_shared_from_this<IngameObject> {
 friend class ui::RenderQueue;
 
 public:
-    IngameObject();
+    enum {
+        TYPE_MAP,
+        TYPE_STATIC_ITEM,
+        TYPE_DYNAMIC_ITEM,
+        TYPE_MOBILE,
+        TYPE_SPEECH,
+    };
+
+    IngameObject(unsigned int objectType);
     virtual ~IngameObject();
 
     float getLocX() const { return location_[0u]; }
     float getLocY() const { return location_[1u]; }
     float getLocZ() const { return location_[2u]; }
+    void setLocation(int locX, int locY, int locZ);
 
     bool isVisible() const;
     void setVisible(bool visible);
 
     virtual boost::shared_ptr<ui::Texture> getIngameTexture() const = 0;
 
-    void setLocation(int locX, int locY, int locZ);
-
     bool isRenderDataValid() const;
-    virtual void invalidateRenderData(bool updateTextureProvider = false);
+    void invalidateRenderData(bool updateTextureProvider = false);
     bool updateRenderData(unsigned int elapsedMillis); ///< calls updateVertexCoordinates, updateRenderPriority, updateTextureProvider and updateAnimation
 
     const CL_Vec2f* getVertexCoordinates() const;
@@ -72,11 +79,26 @@ public:
 
     virtual boost::shared_ptr<IngameObject> getTopParent();
 
-    void addOverheadMessage(boost::shared_ptr<OverheadMessage> msg);
+    void setOverheadMessageOffsets();
 
     void addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
     void removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
     bool isInRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
+
+    void addChildObject(boost::shared_ptr<IngameObject> obj);
+    void removeChildObject(boost::shared_ptr<IngameObject> obj);
+
+    virtual void onAddedToParent();
+    virtual void onRemovedFromParent();
+
+    void onDelete();
+
+
+    bool isMap() const;
+    bool isStaticItem() const;
+    bool isDynamicItem() const;
+    bool isMobile() const;
+    bool isSpeech() const;
 
 
     void printRenderPriority();
@@ -97,9 +119,12 @@ protected:
 
     virtual void updateRenderPriority() = 0;
 
-    std::list<boost::shared_ptr<OverheadMessage> > overheadMessages_;
+    boost::weak_ptr<IngameObject> parentObject_;
+    std::list<boost::shared_ptr<IngameObject> > childObjects_;
 
 private:
+    unsigned int objectType_;
+
     bool visible_;
 
     bool renderDataValid_; ///< whether or not the vertex positions and render priorities are correct
@@ -108,6 +133,10 @@ private:
     bool textureProviderUpdateRequired_;
 
     std::list<boost::weak_ptr<ui::RenderQueue> > renderQueues_;
+
+
+    void setParentObject();
+    void setParentObject(boost::shared_ptr<IngameObject> parent);
 };
 
 }

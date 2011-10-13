@@ -64,7 +64,7 @@ void EquippedMobile::onReceive() {
         itm->setHue(iter->hue_);
         itm->setLayer(iter->layer_);
 
-        mob->equip(itm, mob);
+        mob->addChildObject(itm);
     }
 }
 

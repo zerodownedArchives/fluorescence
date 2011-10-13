@@ -12,7 +12,7 @@
 namespace fluo {
 namespace world {
 
-MapTile::MapTile() : artId_(0) {
+MapTile::MapTile() : IngameObject(IngameObject::TYPE_MAP), artId_(0) {
 }
 
 boost::shared_ptr<ui::Texture> MapTile::getIngameTexture() const {

@@ -46,16 +46,12 @@ public:
     virtual void onStartDrag();
     virtual void onDraggedOnto(boost::shared_ptr<IngameObject> obj);
 
-    void equipOn(boost::shared_ptr<Mobile> mob);
-    void unequip();
-
     void setLayer(unsigned int layer);
 
-    void onDelete(boost::shared_ptr<DynamicItem> sharedThis);
-
-    virtual boost::shared_ptr<IngameObject> getTopParent();
-
     void playAnim(unsigned int animId);
+
+    virtual void onAddedToParent();
+    virtual void onRemovedFromParent();
 
 private:
     unsigned int artId_;
@@ -75,7 +71,6 @@ private:
 
     bool equipped_;
     unsigned int layer_;
-    boost::weak_ptr<world::Mobile> parentMobile_;
     boost::shared_ptr<ui::AnimTextureProvider> animTextureProvider_;
 };
 

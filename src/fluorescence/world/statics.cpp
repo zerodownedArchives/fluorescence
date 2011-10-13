@@ -12,6 +12,9 @@
 namespace fluo {
 namespace world {
 
+StaticItem::StaticItem() : IngameObject(IngameObject::TYPE_STATIC_ITEM) {
+}
+
 boost::shared_ptr<ui::Texture> StaticItem::getIngameTexture() const {
     return textureProvider_->getTexture();
 }

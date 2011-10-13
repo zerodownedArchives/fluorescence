@@ -119,8 +119,8 @@ bool GumpActions::sendSpeech(GumpMenu* menu, const UnicodeString& action, unsign
             menu->activatePage(0);
 
             boost::shared_ptr<world::Mobile> player = world::Manager::getSingleton()->getPlayer();
-            boost::shared_ptr<world::OverheadMessage> msg(new world::OverheadMessage(player, speechText, 1, 5, false));
-            player->addOverheadMessage(msg);
+            boost::shared_ptr<world::OverheadMessage> msg(new world::OverheadMessage(speechText, 1, 5, false));
+            player->addChildObject(msg);
         }
     } else {
         LOG_ERROR << "Line element \"speechtext\" not found in gamewindow gump" << std::endl;

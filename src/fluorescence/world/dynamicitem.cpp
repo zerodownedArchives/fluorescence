@@ -28,7 +28,7 @@
 namespace fluo {
 namespace world {
 
-DynamicItem::DynamicItem(Serial serial) : ServerObject(serial), artId_(0), hue_(0), equipped_(false) {
+DynamicItem::DynamicItem(Serial serial) : ServerObject(serial, IngameObject::TYPE_DYNAMIC_ITEM), artId_(0), hue_(0), equipped_(false) {
 }
 
 boost::shared_ptr<ui::Texture> DynamicItem::getIngameTexture() const {
@@ -103,7 +103,7 @@ void DynamicItem::updateVertexCoordinates() {
         //int py = (getLocX() + getLocY()) * 22 - texHeight + 44;
         //py -= getLocZ() * 4;
 
-        boost::shared_ptr<Mobile> parent = parentMobile_.lock();
+        boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
 
         int px = (parent->getLocX() - parent->getLocY()) * 22 + 22;
         int py = (parent->getLocX() + parent->getLocY()) * 22 - parent->getLocZ() * 4 + 22;
@@ -160,7 +160,7 @@ void DynamicItem::updateRenderPriority() {
     }
 
     if (equipped_) {
-        boost::shared_ptr<Mobile> parent = parentMobile_.lock();
+        boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
 
         // level 0 x+y
         renderPriority_[0] = parent->getLocX() + parent->getLocY();
@@ -209,7 +209,8 @@ void DynamicItem::updateRenderPriority() {
 void DynamicItem::updateTextureProvider() {
     if (equipped_) {
         animTextureProvider_.reset(new ui::AnimTextureProvider(tileDataInfo_->animId_));
-        setDirection(parentMobile_.lock()->getDirection());
+        boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
+        setDirection(parent->getDirection());
     } else {
         textureProvider_ = data::Manager::getItemTextureProvider(artId_);
 
@@ -279,18 +280,6 @@ void DynamicItem::onDraggedOnto(boost::shared_ptr<IngameObject> obj) {
     }
 }
 
-void DynamicItem::equipOn(boost::shared_ptr<Mobile> mob) {
-    parentMobile_ = mob;
-    equipped_ = true;
-    invalidateRenderData(true);
-}
-
-void DynamicItem::unequip() {
-    equipped_ = false;
-    parentMobile_.reset();
-    invalidateRenderData(true);
-}
-
 void DynamicItem::setLayer(unsigned int layer) {
     layer_ = layer;
 }
@@ -299,23 +288,23 @@ bool DynamicItem::isMirrored() const {
     return direction_ < 3;
 }
 
-void DynamicItem::onDelete(boost::shared_ptr<DynamicItem> sharedThis) {
-    if (equipped_) {
-        parentMobile_.lock()->unequip(sharedThis);
-    }
-}
-
-boost::shared_ptr<IngameObject> DynamicItem::getTopParent() {
-    if (equipped_) {
-        return parentMobile_.lock();
-    } else {
-        return shared_from_this();
-    }
-}
-
 void DynamicItem::playAnim(unsigned int animId) {
-    if (equipped_) {
+    if (equipped_ && animTextureProvider_) {
         animTextureProvider_->setAnimId(animId);
+    }
+}
+
+void DynamicItem::onAddedToParent() {
+    if (parentObject_.lock()->isMobile()) {
+        equipped_ = true;
+        invalidateRenderData(true);
+    }
+}
+
+void DynamicItem::onRemovedFromParent() {
+    if (equipped_) {
+        equipped_ = false;
+        invalidateRenderData(true);
     }
 }
 

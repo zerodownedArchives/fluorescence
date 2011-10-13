@@ -21,7 +21,7 @@
 namespace fluo {
 namespace world {
 
-Mobile::Mobile(Serial serial) : ServerObject(serial), bodyId_(0), hue_(0) {
+Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE), bodyId_(0), hue_(0) {
 }
 
 boost::shared_ptr<ui::Texture> Mobile::getIngameTexture() const {
@@ -128,11 +128,13 @@ bool Mobile::updateAnimation(unsigned int elapsedMillis) {
 void Mobile::playAnim(unsigned int animId) {
     textureProvider_->setAnimId(animId);
 
-    std::list<boost::shared_ptr<DynamicItem> >::iterator iter = equippedItems_.begin();
-    std::list<boost::shared_ptr<DynamicItem> >::iterator end = equippedItems_.end();
+    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
 
     for (; iter != end; ++iter) {
-        (*iter)->playAnim(animId);
+        if ((*iter)->isDynamicItem()) {
+            boost::dynamic_pointer_cast<DynamicItem>(*iter)->playAnim(animId);
+        }
     }
 }
 
@@ -144,11 +146,13 @@ void Mobile::setDirection(unsigned int direction) {
         textureProvider_->setDirection(direction);
     }
 
-    std::list<boost::shared_ptr<DynamicItem> >::iterator iter = equippedItems_.begin();
-    std::list<boost::shared_ptr<DynamicItem> >::iterator end = equippedItems_.end();
+    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
 
     for (; iter != end; ++iter) {
-        (*iter)->setDirection(direction_);
+        if ((*iter)->isDynamicItem()) {
+            boost::dynamic_pointer_cast<DynamicItem>(*iter)->setDirection(direction_);
+        }
     }
 
     invalidateRenderData();
@@ -205,32 +209,6 @@ void Mobile::onStartDrag(const CL_Point& mousePos) {
 
     net::packets::StatSkillQuery queryPacket(getSerial(), net::packets::StatSkillQuery::QUERY_STATS);
     net::Manager::getSingleton()->send(queryPacket);
-}
-
-void Mobile::equip(boost::shared_ptr<DynamicItem> itm, boost::shared_ptr<Mobile> sharedThis) {
-    itm->equipOn(sharedThis);
-
-    equippedItems_.push_back(itm);
-}
-
-void Mobile::unequip(boost::shared_ptr<DynamicItem> itm) {
-    itm->unequip();
-    equippedItems_.remove(itm);
-}
-
-void Mobile::invalidateRenderData(bool updateTextureProvider) {
-    IngameObject::invalidateRenderData(updateTextureProvider);
-
-    std::list<boost::shared_ptr<DynamicItem> >::iterator iter = equippedItems_.begin();
-    std::list<boost::shared_ptr<DynamicItem> >::iterator end = equippedItems_.end();
-
-    for (; iter != end; ++iter) {
-        (*iter)->invalidateRenderData(updateTextureProvider);
-    }
-}
-
-void Mobile::onDelete(boost::shared_ptr<Mobile> sharedThis) {
-    // TODO
 }
 
 }

@@ -78,12 +78,12 @@ boost::shared_ptr<Mobile> Manager::getPlayer() {
 void Manager::deleteObject(Serial serial) {
     boost::shared_ptr<Mobile> mob = getMobile(serial, false);
     if (mob) {
-        mob->onDelete(mob);
+        mob->onDelete();
         mobiles_.erase(serial);
     } else {
         boost::shared_ptr<DynamicItem> itm = getDynamicItem(serial, false);
         if (itm) {
-            itm->onDelete(itm);
+            itm->onDelete();
             dynamicItems_.erase(serial);
         }
     }

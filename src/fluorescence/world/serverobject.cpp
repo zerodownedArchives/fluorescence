@@ -5,7 +5,7 @@ namespace fluo {
 namespace world {
 
 
-ServerObject::ServerObject(Serial serial) : serial_(serial) {
+ServerObject::ServerObject(Serial serial, unsigned int objectType) : IngameObject(objectType), serial_(serial) {
     draggable_ = true;
 }
 

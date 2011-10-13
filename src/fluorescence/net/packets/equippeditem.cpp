@@ -40,7 +40,7 @@ void EquippedItem::onReceive() {
     itm->setLayer(layer_);
     itm->setHue(hue_);
 
-    mob->equip(itm, mob);
+    mob->addChildObject(itm);
 }
 
 }

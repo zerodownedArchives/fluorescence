@@ -14,7 +14,7 @@
 namespace fluo {
 namespace world {
 
-IngameObject::IngameObject() : draggable_(false), visible_(true), renderDataValid_(false), textureProviderUpdateRequired_(true) {
+IngameObject::IngameObject(unsigned int objectType) : draggable_(false), objectType_(objectType), visible_(true), renderDataValid_(false), textureProviderUpdateRequired_(true) {
     for (unsigned int i = 0; i < 6; ++i) {
         renderPriority_[i] = 0;
         vertexNormals_[i] = CL_Vec3f(0, 0, 1);
@@ -54,9 +54,9 @@ void IngameObject::invalidateRenderData(bool updateTextureProvider) {
         requestUpdateTextureProvider();
     }
 
-    if (!overheadMessages_.empty()) {
-        std::list<boost::shared_ptr<OverheadMessage> >::iterator iter = overheadMessages_.begin();
-        std::list<boost::shared_ptr<OverheadMessage> >::iterator end = overheadMessages_.end();
+    if (!childObjects_.empty()) {
+        std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+        std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
 
         for (; iter != end; ++iter) {
             (*iter)->invalidateRenderData();
@@ -180,7 +180,12 @@ void IngameObject::onStartDrag(const CL_Point& mousePos) {
 }
 
 boost::shared_ptr<IngameObject> IngameObject::getTopParent() {
-    return shared_from_this();
+    boost::shared_ptr<IngameObject> parent = parentObject_.lock();
+    if (parent) {
+        return parent->getTopParent();
+    } else {
+        return shared_from_this();
+    }
 }
 
 void IngameObject::printRenderPriority() {
@@ -192,19 +197,20 @@ void IngameObject::printRenderPriority() {
             << renderPriority_[5] << " - " << std::endl;
 }
 
-void IngameObject::addOverheadMessage(boost::shared_ptr<OverheadMessage> msg) {
-    overheadMessages_.push_front(msg);
-
-    std::list<boost::shared_ptr<OverheadMessage> >::iterator iter = overheadMessages_.begin();
-    std::list<boost::shared_ptr<OverheadMessage> >::iterator end = overheadMessages_.end();
+void IngameObject::setOverheadMessageOffsets() {
+    std::list<boost::shared_ptr<IngameObject> >::reverse_iterator iter = childObjects_.rbegin();
+    std::list<boost::shared_ptr<IngameObject> >::reverse_iterator end = childObjects_.rend();
 
     int offset = -5;
 
     for (; iter != end; ++iter) {
-        int curHeight = (*iter)->getIngameTexture()->getHeight();
-        int curOffset = offset - curHeight;
-        (*iter)->setParentPixelOffset(curOffset);
-        offset = curOffset - 2;
+        if ((*iter)->isSpeech()) {
+            boost::shared_ptr<OverheadMessage> msgObj = boost::dynamic_pointer_cast<OverheadMessage>(*iter);
+            int curHeight = (*iter)->getIngameTexture()->getHeight();
+            int curOffset = offset - curHeight;
+            msgObj->setParentPixelOffset(curOffset);
+            offset = curOffset - 2;
+        }
     }
 }
 
@@ -241,6 +247,106 @@ void IngameObject::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) 
     if (iter != end) {
         renderQueues_.erase(iter);
         rq->remove(shared_from_this());
+    }
+}
+
+void IngameObject::addChildObject(boost::shared_ptr<IngameObject> obj) {
+    std::list<boost::shared_ptr<IngameObject> >::iterator iter = std::find(childObjects_.begin(), childObjects_.end(), obj);
+
+    if (iter == childObjects_.end()) {
+        obj->setParentObject(shared_from_this());
+        childObjects_.push_back(obj);
+
+        if (obj->isSpeech()) {
+            setOverheadMessageOffsets();
+        }
+    }
+}
+
+void IngameObject::removeChildObject(boost::shared_ptr<IngameObject> obj) {
+    std::list<boost::shared_ptr<IngameObject> >::iterator iter = std::find(childObjects_.begin(), childObjects_.end(), obj);
+
+    if (iter != childObjects_.end()) {
+        obj->setParentObject();
+        childObjects_.erase(iter);
+    }
+}
+
+void IngameObject::onAddedToParent() {
+}
+
+void IngameObject::onRemovedFromParent() {
+}
+
+void IngameObject::setParentObject() {
+    boost::shared_ptr<IngameObject> parent = parentObject_.lock();
+
+    if (parent && (isSpeech() || parent->isMobile())) {
+        // remove this item from all render queues the parent is in
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator iter = renderQueues_.begin();
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator end = renderQueues_.end();
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator helper;
+        while (iter != end) {
+            boost::shared_ptr<ui::RenderQueue> rq = iter->lock();
+            if (parent->isInRenderQueue(rq)) {
+                helper = iter;
+                ++iter;
+                renderQueues_.erase(helper);
+            } else {
+                ++iter;
+            }
+        }
+    }
+
+    onRemovedFromParent();
+
+    parentObject_.reset();
+}
+
+void IngameObject::setParentObject(boost::shared_ptr<IngameObject> parent) {
+    boost::shared_ptr<IngameObject> curParent = parentObject_.lock();
+    if (curParent) {
+        setParentObject();
+    }
+
+    if (isSpeech() || parent->isMobile()) {
+        // add this item to all render queues the parent is in
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator iter = parent->renderQueues_.begin();
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator end = parent->renderQueues_.end();
+        for (; iter != end; ++iter) {
+            addToRenderQueue(iter->lock());
+        }
+    }
+
+    parentObject_ = parent;
+
+    onAddedToParent();
+}
+
+bool IngameObject::isMap() const {
+    return objectType_ == TYPE_MAP;
+}
+
+bool IngameObject::isStaticItem() const {
+    return objectType_ == TYPE_STATIC_ITEM;
+}
+
+bool IngameObject::isDynamicItem() const {
+    return objectType_ == TYPE_DYNAMIC_ITEM;
+}
+
+bool IngameObject::isMobile() const {
+    return objectType_ == TYPE_MOBILE;
+}
+
+bool IngameObject::isSpeech() const {
+    return objectType_ == TYPE_SPEECH;
+}
+
+void IngameObject::onDelete() {
+    boost::shared_ptr<IngameObject> parent = parentObject_.lock();
+    if (parent) {
+        parent->removeChildObject(shared_from_this());
     }
 }
 

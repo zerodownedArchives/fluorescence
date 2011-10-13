@@ -10,7 +10,7 @@ namespace world {
 
 class ServerObject : public IngameObject {
 public:
-    ServerObject(Serial serial);
+    ServerObject(Serial serial, unsigned int objectType);
 
     Serial getSerial() const;
 

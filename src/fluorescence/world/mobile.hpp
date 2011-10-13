@@ -48,11 +48,6 @@ public:
 
     virtual void onStartDrag(const CL_Point& mousePos);
 
-    void equip(boost::shared_ptr<DynamicItem> itm, boost::shared_ptr<Mobile> mob);
-    void unequip(boost::shared_ptr<DynamicItem> itm);
-
-    void onDelete(boost::shared_ptr<Mobile> sharedThis);
-
 private:
     unsigned int bodyId_;
     unsigned int hue_;
@@ -69,10 +64,6 @@ private:
     std::map<UnicodeString, Variable> propertyMap_;
 
     std::list<ui::GumpMenu*> linkedGumps_;
-
-    std::list<boost::shared_ptr<DynamicItem> > equippedItems_;
-
-    virtual void invalidateRenderData(bool updateTextureProvider = false);
 };
 
 }
