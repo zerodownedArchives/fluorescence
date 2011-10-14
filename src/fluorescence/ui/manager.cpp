@@ -3,7 +3,7 @@
 
 #include <boost/filesystem/operations.hpp>
 
-#include "ingamerenderqueue.hpp"
+#include "render/worldrenderqueue.hpp"
 #include "cursormanager.hpp"
 #include "doubleclickhandler.hpp"
 #include "gumpmenu.hpp"
@@ -99,7 +99,7 @@ bool Manager::setShardConfig(Config& config) {
     path = path / config["/fluo/shard@name"].asPath() / "fonts";
     loadFontDirectory(path);
 
-    worldRenderQueue_.reset(new IngameRenderQueue());
+    worldRenderQueue_.reset(new WorldRenderQueue());
 
     cursorManager_.reset(new CursorManager(config, mainWindow_));
     singleton_->getCursorManager()->setCursor(CursorType::GAME_WEST);

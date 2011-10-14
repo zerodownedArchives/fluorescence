@@ -1,10 +1,10 @@
-#ifndef FLUO_UI_INGAMERENDERQUEUE_HPP
-#define FLUO_UI_INGAMERENDERQUEUE_HPP
+#ifndef FLUO_UI_WORLDRENDERQUEUE_HPP
+#define FLUO_UI_WORLDRENDERQUEUE_HPP
 
 #include <list>
 #include <boost/shared_ptr.hpp>
 
-#include "renderqueue.hpp"
+#include <ui/renderqueue.hpp>
 
 namespace fluo {
 
@@ -15,10 +15,10 @@ namespace world {
 
 namespace ui {
 
-class IngameRenderQueue : public RenderQueue {
+class WorldRenderQueue : public RenderQueue {
 public:
-    IngameRenderQueue();
-    ~IngameRenderQueue();
+    WorldRenderQueue();
+    ~WorldRenderQueue();
 
     /// Calling this function will make the client re-sort the queue at the next rendering
     void requireIngameSort();

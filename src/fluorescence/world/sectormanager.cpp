@@ -9,8 +9,8 @@
 #include <misc/log.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/ingamerenderqueue.hpp>
-#include <ui/components/ingameview.hpp>
+#include <ui/renderqueue.hpp>
+#include <ui/components/worldview.hpp>
 
 #include <data/maploader.hpp>
 #include <data/manager.hpp>
@@ -27,12 +27,12 @@ SectorManager::SectorManager(const Config& config) :
 SectorManager::~SectorManager() {
 }
 
-void SectorManager::registerIngameView(ui::IngameView* view) {
-    ingameViews_.push_back(view);
+void SectorManager::registerWorldView(ui::WorldView* view) {
+    worldViews_.push_back(view);
 }
 
-void SectorManager::unregisterIngameView(ui::IngameView* view) {
-    ingameViews_.remove(view);
+void SectorManager::unregisterWorldView(ui::WorldView* view) {
+    worldViews_.remove(view);
 }
 
 void SectorManager::addNewSectors(bool force) {
@@ -120,13 +120,13 @@ unsigned int SectorManager::calcSectorIndex(unsigned int x, unsigned int y) {
 
 void SectorManager::buildSectorRequiredList(std::list<unsigned int>& list, unsigned int cacheAdd) {
     // ask all ingame views which sectors they need
-    std::list<ui::IngameView*>::iterator viewIter = ingameViews_.begin();
-    std::list<ui::IngameView*>::iterator viewEnd = ingameViews_.end();
+    std::list<ui::WorldView*>::iterator viewIter = worldViews_.begin();
+    std::list<ui::WorldView*>::iterator viewEnd = worldViews_.end();
 
     unsigned int mapHeight = data::Manager::getMapLoader(lastMapId_)->getBlockCountY();
 
     while (viewIter != viewEnd) {
-        ui::IngameView* curView = (*viewIter);
+        ui::WorldView* curView = (*viewIter);
         curView->getRequiredSectors(list, mapHeight, cacheAdd);
         ++viewIter;
     }

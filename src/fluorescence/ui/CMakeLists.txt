@@ -8,7 +8,6 @@ set (UI_HPP
     ui/animdatatextureprovider.hpp
     ui/animtextureprovider.hpp
     ui/renderqueue.hpp
-    ui/ingamerenderqueue.hpp
     ui/bitmask.hpp
     ui/cursormanager.hpp
     ui/cursorimage.hpp
@@ -27,7 +26,6 @@ set (UI_CPP
     ui/animdatatextureprovider.cpp
     ui/animtextureprovider.cpp
     ui/renderqueue.cpp
-    ui/ingamerenderqueue.cpp
     ui/bitmask.cpp
     ui/cursormanager.cpp
     ui/cursorimage.cpp
@@ -50,9 +48,9 @@ set (GUMPMENU_HPP
     ui/components/scrollarea.hpp
     ui/components/lineedit.hpp
     ui/components/label.hpp
-    ui/components/ingameviewrenderer.hpp
-    ui/components/ingameview.hpp
+    ui/components/worldview.hpp
     ui/components/propertylabel.hpp
+    ui/components/gumpview.hpp
     )
 
 set (GUMPMENU_CPP
@@ -67,10 +65,24 @@ set (GUMPMENU_CPP
     ui/components/scrollarea.cpp
     ui/components/lineedit.cpp
     ui/components/label.cpp
-    ui/components/ingameviewrenderer.cpp
-    ui/components/ingameview.cpp
+    ui/components/worldview.cpp
     ui/components/propertylabel.cpp
+    ui/components/gumpview.cpp
     )
 
-SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} PARENT_SCOPE)
+set (RENDER_HPP
+    ui/render/worldrenderdata.hpp
+    ui/render/worldrenderqueue.hpp
+    ui/render/worldviewrenderer.hpp
+    ui/render/gumprenderer.hpp
+    )
+
+set (RENDER_CPP
+    ui/render/worldrenderdata.cpp
+    ui/render/worldrenderqueue.cpp
+    ui/render/worldviewrenderer.cpp
+    ui/render/gumprenderer.cpp
+    )
+
+SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${RENDER_HPP} ${RENDER_CPP} PARENT_SCOPE)
 

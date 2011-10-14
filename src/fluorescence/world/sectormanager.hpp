@@ -11,7 +11,7 @@
 namespace fluo {
 
 namespace ui {
-    class IngameView;
+    class WorldView;
 }
 
 namespace world {
@@ -24,8 +24,8 @@ public:
 
     ~SectorManager();
 
-    void registerIngameView(ui::IngameView* view);
-    void unregisterIngameView(ui::IngameView* view);
+    void registerWorldView(ui::WorldView* view);
+    void unregisterWorldView(ui::WorldView* view);
 
     /**
      * \param force If true, sector check is forced. If not, sector check only if update frequency kicks in
@@ -49,7 +49,7 @@ private:
 
     unsigned int calcSectorIndex(unsigned int x, unsigned int y);
 
-    std::list<ui::IngameView*> ingameViews_;
+    std::list<ui::WorldView*> worldViews_;
 
     void buildSectorRequiredList(std::list<unsigned int>& list, unsigned int cacheAdd);
 };

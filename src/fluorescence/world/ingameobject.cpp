@@ -7,7 +7,7 @@
 
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>
-#include <ui/ingamerenderqueue.hpp>
+#include <ui/renderqueue.hpp>
 
 #include "overheadmessage.hpp"
 
@@ -348,6 +348,11 @@ void IngameObject::onDelete() {
     if (parent) {
         parent->removeChildObject(shared_from_this());
     }
+}
+
+boost::shared_ptr<ui::Texture> IngameObject::getGumpTexture() const {
+    LOG_ERROR << "getGumpTexture called on IngameObject" << std::endl;
+    return getIngameTexture();
 }
 
 }

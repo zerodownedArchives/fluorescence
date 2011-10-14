@@ -1,5 +1,5 @@
-#ifndef FLUO_UI_INGAMEVIEW_HPP
-#define FLUO_UI_INGAMEVIEW_HPP
+#ifndef FLUO_UI_WORLDVIEW_HPP
+#define FLUO_UI_WORLDVIEW_HPP
 
 #include <boost/shared_ptr.hpp>
 
@@ -11,17 +11,16 @@ namespace fluo {
 
 namespace world {
 class IngameObject;
-class IngameObject;
 }
 
 namespace ui {
 
-class IngameViewRenderer;
+class WorldViewRenderer;
 
-class IngameView : public GumpElement {
+class WorldView : public GumpElement {
 public:
-    IngameView(CL_GUIComponent* parent, const CL_Rect& bounds);
-    ~IngameView();
+    WorldView(CL_GUIComponent* parent, const CL_Rect& bounds);
+    ~WorldView();
 
     void setCenterObject(boost::shared_ptr<world::IngameObject> obj);
 
@@ -52,7 +51,7 @@ private:
     float getCenterTileY();
     float getCenterTileZ();
 
-    boost::shared_ptr<IngameViewRenderer> renderer_;
+    boost::shared_ptr<WorldViewRenderer> renderer_;
 
     bool onInputPressed(const CL_InputEvent& e);
     bool onInputReleased(const CL_InputEvent & e);

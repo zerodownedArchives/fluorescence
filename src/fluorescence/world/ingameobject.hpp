@@ -10,6 +10,8 @@
 
 #include <list>
 
+#include <ui/render/worldrenderdata.hpp>
+
 namespace fluo {
 
 namespace ui {
@@ -46,6 +48,7 @@ public:
     void setVisible(bool visible);
 
     virtual boost::shared_ptr<ui::Texture> getIngameTexture() const = 0;
+    virtual boost::shared_ptr<ui::Texture> getGumpTexture() const;
 
     bool isRenderDataValid() const;
     void invalidateRenderData(bool updateTextureProvider = false);
@@ -104,33 +107,22 @@ public:
     void printRenderPriority();
 
 protected:
-    CL_Vec2f vertexCoordinates_[6];
-    CL_Vec3f vertexNormals_[6];
-    int renderPriority_[6];
-    CL_Vec2f hueInfo_;
-    bool draggable_;
+    WorldRenderData worldRenderData_;
 
-    void requestUpdateTextureProvider();
     virtual void updateTextureProvider() = 0;
-
     virtual bool updateAnimation(unsigned int elapsedMillis) = 0;
-
     virtual void updateVertexCoordinates() = 0;
-
     virtual void updateRenderPriority() = 0;
+
+    bool draggable_;
 
     boost::weak_ptr<IngameObject> parentObject_;
     std::list<boost::shared_ptr<IngameObject> > childObjects_;
 
 private:
     unsigned int objectType_;
-
     bool visible_;
-
-    bool renderDataValid_; ///< whether or not the vertex positions and render priorities are correct
-
     CL_Vec3f location_;
-    bool textureProviderUpdateRequired_;
 
     std::list<boost::weak_ptr<ui::RenderQueue> > renderQueues_;
 

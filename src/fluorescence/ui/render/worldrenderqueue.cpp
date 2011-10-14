@@ -1,5 +1,5 @@
 
-#include "ingamerenderqueue.hpp"
+#include "worldrenderqueue.hpp"
 
 #include <boost/bind.hpp>
 
@@ -14,7 +14,7 @@
 namespace fluo {
 namespace ui {
 
-bool IngameRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
+bool WorldRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
     const int* aPrio = a->getRenderPriorities();
     const int* bPrio = b->getRenderPriorities();
 
@@ -38,14 +38,14 @@ bool IngameRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::
     return (unsigned long)a.get() <= (unsigned long)b.get();
 }
 
-IngameRenderQueue::IngameRenderQueue() : RenderQueue(boost::bind(&IngameRenderQueue::renderPriorityComparator, this, _1, _2)) {
+WorldRenderQueue::WorldRenderQueue() : RenderQueue(boost::bind(&WorldRenderQueue::renderPriorityComparator, this, _1, _2)) {
 }
 
-IngameRenderQueue::~IngameRenderQueue() {
+WorldRenderQueue::~WorldRenderQueue() {
 }
 
 
-void IngameRenderQueue::prepareRender(unsigned int elapsedMillis) {
+void WorldRenderQueue::prepareRender(unsigned int elapsedMillis) {
     processRemoveList();
     bool requireSort = processAddList();
 
@@ -62,7 +62,7 @@ void IngameRenderQueue::prepareRender(unsigned int elapsedMillis) {
     }
 }
 
-boost::shared_ptr<world::IngameObject> IngameRenderQueue::getFirstObjectAt(int worldX, int worldY, bool getTopParent) {
+boost::shared_ptr<world::IngameObject> WorldRenderQueue::getFirstObjectAt(int worldX, int worldY, bool getTopParent) {
     RenderQueue::reverse_iterator igIter = rbegin();
     RenderQueue::reverse_iterator igEnd = rend();
 

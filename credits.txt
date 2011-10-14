@@ -1,8 +1,11 @@
-UO:ME makes extensive use of ClanLib (www.ClanLib.org). 
+fluorescence makes extensive use of ClanLib (www.ClanLib.org). 
 
 The "Devinne Swash" font was created by Dieter Steffmann (http://www.steffmann.de/). It is available at http://www.fontspace.com/dieter-steffmann/devinne-swash
 
-UO:ME is based on pugixml library (http://pugixml.org)
+fluorescence is based on pugixml library (http://pugixml.org)
 pugixml is Copyright (C) 2006-2010 Arseny Kapoulkine.
 
-UO:ME makes extensive use of several boost libraries (www.boost.org). 
+fluorescence makes extensive use of several boost libraries (www.boost.org). 
+
+fluorescence relies on the International Components for Unicode (http://site.icu-project.org/).
+

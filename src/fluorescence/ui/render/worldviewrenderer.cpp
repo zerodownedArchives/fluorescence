@@ -1,12 +1,11 @@
 
-#include "ingameviewrenderer.hpp"
-
-#include "ingameview.hpp"
+#include "worldviewrenderer.hpp"
 
 #include <ui/manager.hpp>
 #include <ui/renderqueue.hpp>
 #include <ui/texture.hpp>
 #include <ui/fontengine.hpp>
+#include <ui/components/worldview.hpp>
 
 #include <misc/log.hpp>
 
@@ -20,12 +19,12 @@
 namespace fluo {
 namespace ui {
 
-IngameViewRenderer::IngameViewRenderer(boost::shared_ptr<RenderQueue> renderQueue, IngameView* ingameView) : IngameObjectRenderer(true),
-        ingameView_(ingameView), renderQueue_(renderQueue) {
+WorldViewRenderer::WorldViewRenderer(boost::shared_ptr<RenderQueue> renderQueue, WorldView* worldView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_WORLD, true),
+        worldView_(worldView), renderQueue_(renderQueue) {
 
     CL_GraphicContext gc = fluo::ui::Manager::getSingleton()->getGraphicContext();
 
-    shaderProgram_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/vertex.glsl", "shader/fragment.glsl")));
+    shaderProgram_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/world_vertex.glsl", "shader/world_fragment.glsl")));
     shaderProgram_->bind_attribute_location(0, "gl_Vertex");
     shaderProgram_->bind_attribute_location(1, "TexCoord0");
     shaderProgram_->bind_attribute_location(2, "gl_Normal");
@@ -37,18 +36,18 @@ IngameViewRenderer::IngameViewRenderer(boost::shared_ptr<RenderQueue> renderQueu
     }
 }
 
-IngameViewRenderer::~IngameViewRenderer() {
+WorldViewRenderer::~WorldViewRenderer() {
 }
 
-void IngameViewRenderer::checkTextureSize() {
-    if (!texture_ || texture_->getWidth() != ingameView_->getWidth() || texture_->getHeight() != ingameView_->getHeight()) {
+void WorldViewRenderer::checkTextureSize() {
+    if (!texture_ || texture_->getWidth() != worldView_->getWidth() || texture_->getHeight() != worldView_->getHeight()) {
         texture_.reset(new ui::Texture(false));
-        texture_->initPixelBuffer(ingameView_->getWidth(), ingameView_->getHeight());
+        texture_->initPixelBuffer(worldView_->getWidth(), worldView_->getHeight());
         texture_->setReadComplete();
     }
 }
 
-boost::shared_ptr<Texture> IngameViewRenderer::getTexture(CL_GraphicContext& gc) {
+boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) {
     checkTextureSize();
     CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 
@@ -65,7 +64,7 @@ boost::shared_ptr<Texture> IngameViewRenderer::getTexture(CL_GraphicContext& gc)
 }
 
 
-void IngameViewRenderer::render(CL_GraphicContext& gc) {
+void WorldViewRenderer::render(CL_GraphicContext& gc) {
     gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
 
     gc.set_program_object(*shaderProgram_, cl_program_matrix_modelview_projection);
@@ -90,10 +89,10 @@ void IngameViewRenderer::render(CL_GraphicContext& gc) {
         CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom)
     };
 
-    int clippingLeftPixelCoord = ingameView_->getCenterPixelX() - ingameView_->getWidth()/2;
-    int clippingRightPixelCoord = ingameView_->getCenterPixelX() + ingameView_->getWidth()/2;
-    int clippingTopPixelCoord = ingameView_->getCenterPixelY() - ingameView_->getHeight()/2;
-    int clippingBottomPixelCoord = ingameView_->getCenterPixelY() + ingameView_->getHeight()/2;
+    int clippingLeftPixelCoord = worldView_->getCenterPixelX() - worldView_->getWidth()/2;
+    int clippingRightPixelCoord = worldView_->getCenterPixelX() + worldView_->getWidth()/2;
+    int clippingTopPixelCoord = worldView_->getCenterPixelY() - worldView_->getHeight()/2;
+    int clippingBottomPixelCoord = worldView_->getCenterPixelY() + worldView_->getHeight()/2;
 
 
     CL_Vec2f pixelOffsetVec(clippingLeftPixelCoord, clippingTopPixelCoord);
@@ -162,6 +161,10 @@ void IngameViewRenderer::render(CL_GraphicContext& gc) {
 
     //boost::shared_ptr<ui::Texture> textTexture = ui::Manager::getFontEngine()->getDefaultTexture("The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 0xFFFF00FF);
     //CL_Draw::texture(gc, *textTexture->getTexture(), CL_Rectf(30, 30, CL_Sizef(textTexture->getWidth(), textTexture->getHeight())));
+}
+
+boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {
+    return renderQueue_;
 }
 
 }

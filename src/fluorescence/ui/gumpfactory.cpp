@@ -21,7 +21,7 @@
 #include "components/scrollarea.hpp"
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
-#include "components/ingameview.hpp"
+#include "components/worldview.hpp"
 #include "components/propertylabel.hpp"
 
 namespace fluo {
@@ -821,9 +821,9 @@ bool GumpFactory::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, Gum
 bool GumpFactory::parseIngameView(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
 
-    ui::IngameView* ingameView = new ui::IngameView(parent, bounds);
+    ui::WorldView* worldView = new ui::WorldView(parent, bounds);
 
-    parseId(node, ingameView);
+    parseId(node, worldView);
 
     return true;
 }

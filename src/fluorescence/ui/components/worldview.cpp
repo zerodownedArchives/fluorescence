@@ -1,7 +1,5 @@
 
-#include "ingameview.hpp"
-
-#include "ingameviewrenderer.hpp"
+#include "worldview.hpp"
 
 #include <misc/log.hpp>
 
@@ -13,9 +11,10 @@
 #include <world/ingameobject.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/ingamerenderqueue.hpp>
+#include <ui/renderqueue.hpp>
 #include <ui/doubleclickhandler.hpp>
 #include <ui/cursormanager.hpp>
+#include <ui/render/worldviewrenderer.hpp>
 
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
@@ -26,27 +25,27 @@
 namespace fluo {
 namespace ui {
 
-IngameView::IngameView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent),
+WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent),
         centerTileX_(0), centerTileY_(0), centerTileZ_(0) {
     this->set_geometry(bounds);
-    renderer_.reset(new IngameViewRenderer(ui::Manager::getWorldRenderQueue(), this));
+    renderer_.reset(new WorldViewRenderer(ui::Manager::getWorldRenderQueue(), this));
 
-    world::Manager::getSectorManager()->registerIngameView(this);
+    world::Manager::getSectorManager()->registerWorldView(this);
     setCenterObject(world::Manager::getSingleton()->getPlayer());
 
     set_constant_repaint(true);
 
-    func_render().set(this, &IngameView::renderOneFrame);
-    func_input_pressed().set(this, &IngameView::onInputPressed);
-    func_input_released().set(this, &IngameView::onInputReleased);
-    func_input_doubleclick().set(this, &IngameView::onDoubleClick);
+    func_render().set(this, &WorldView::renderOneFrame);
+    func_input_pressed().set(this, &WorldView::onInputPressed);
+    func_input_released().set(this, &WorldView::onInputReleased);
+    func_input_doubleclick().set(this, &WorldView::onDoubleClick);
 }
 
-IngameView::~IngameView() {
-    world::Manager::getSectorManager()->unregisterIngameView(this);
+WorldView::~WorldView() {
+    world::Manager::getSectorManager()->unregisterWorldView(this);
 }
 
-float IngameView::getCenterTileX() {
+float WorldView::getCenterTileX() {
     if (centerObject_) {
         return centerObject_->getLocX();
     } else {
@@ -54,7 +53,7 @@ float IngameView::getCenterTileX() {
     }
 }
 
-float IngameView::getCenterTileY() {
+float WorldView::getCenterTileY() {
     if (centerObject_) {
         return centerObject_->getLocY();
     } else {
@@ -62,7 +61,7 @@ float IngameView::getCenterTileY() {
     }
 }
 
-float IngameView::getCenterTileZ() {
+float WorldView::getCenterTileZ() {
     if (centerObject_) {
         return centerObject_->getLocZ();
     } else {
@@ -70,35 +69,35 @@ float IngameView::getCenterTileZ() {
     }
 }
 
-void IngameView::setCenterTiles(float x, float y) {
+void WorldView::setCenterTiles(float x, float y) {
     centerTileX_ = x;
     centerTileY_ = y;
 }
 
-int IngameView::getCenterPixelX() {
+int WorldView::getCenterPixelX() {
     return (getCenterTileX() - getCenterTileY()) * 22;
 }
 
-int IngameView::getCenterPixelY() {
+int WorldView::getCenterPixelY() {
     return (getCenterTileX() + getCenterTileY()) * 22 - getCenterTileZ() * 4;
 }
 
-unsigned int IngameView::getWidth() {
+unsigned int WorldView::getWidth() {
     return get_width();
 }
 
-unsigned int IngameView::getHeight() {
+unsigned int WorldView::getHeight() {
     return get_height();
 }
 
-void IngameView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
+void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     gc.push_cliprect(get_geometry());
     //CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
     renderer_->render(gc);
     gc.pop_cliprect();
 }
 
-void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int mapHeight, unsigned int cacheAdd) {
+void WorldView::getRequiredSectors(std::list<unsigned int>& list, unsigned int mapHeight, unsigned int cacheAdd) {
     // at least, we need to load as much tiles as the diagonal of the view is long
     // we load this amount of tiles (plus a little cache) in each direction of the center tile
 
@@ -135,7 +134,7 @@ void IngameView::getRequiredSectors(std::list<unsigned int>& list, unsigned int 
     }
 }
 
-bool IngameView::onInputPressed(const CL_InputEvent& e) {
+bool WorldView::onInputPressed(const CL_InputEvent& e) {
     bool consumed = true;
 
     boost::shared_ptr<world::LightManager> lm;
@@ -143,7 +142,7 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     CL_Vec3f direction;
     boost::shared_ptr<world::IngameObject> clickedObject;
 
-    //LOGARG_INFO(LOGTYPE_INPUT, "input pressed ingameview: %u", e.id);
+    //LOGARG_INFO(LOGTYPE_INPUT, "input pressed WorldView: %u", e.id);
 
     switch (e.id) {
     case CL_KEY_UP:
@@ -226,7 +225,7 @@ bool IngameView::onInputPressed(const CL_InputEvent& e) {
     return consumed;
 }
 
-bool IngameView::onInputReleased(const CL_InputEvent& e) {
+bool WorldView::onInputReleased(const CL_InputEvent& e) {
     bool consumed = true;
 
     boost::shared_ptr<world::IngameObject> clickedObject;
@@ -257,7 +256,7 @@ bool IngameView::onInputReleased(const CL_InputEvent& e) {
     return consumed;
 }
 
-bool IngameView::onDoubleClick(const CL_InputEvent& e) {
+bool WorldView::onDoubleClick(const CL_InputEvent& e) {
     if (e.id == CL_MOUSE_LEFT) {
         boost::shared_ptr<world::IngameObject> clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
         if (!clickedObject) {
@@ -272,8 +271,8 @@ bool IngameView::onDoubleClick(const CL_InputEvent& e) {
     return false;
 }
 
-boost::shared_ptr<world::IngameObject> IngameView::getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) {
-    //LOG_INFO << "IngameView::getFirstObjectAt " << pixelX << " " << pixelY << std::endl;
+boost::shared_ptr<world::IngameObject> WorldView::getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) {
+    //LOG_INFO << "WorldView::getFirstObjectAt " << pixelX << " " << pixelY << std::endl;
     int worldX = getCenterPixelX() - get_width()/2.0;
     worldX += pixelX;
 
@@ -283,7 +282,7 @@ boost::shared_ptr<world::IngameObject> IngameView::getFirstIngameObjectAt(unsign
     return ui::Manager::getWorldRenderQueue()->getFirstObjectAt(worldX, worldY, true);
 }
 
-void IngameView::setCenterObject(boost::shared_ptr<world::IngameObject> obj) {
+void WorldView::setCenterObject(boost::shared_ptr<world::IngameObject> obj) {
     centerObject_ = obj;
 }
 
