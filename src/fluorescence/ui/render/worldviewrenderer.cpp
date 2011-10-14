@@ -2,7 +2,7 @@
 #include "worldviewrenderer.hpp"
 
 #include <ui/manager.hpp>
-#include <ui/renderqueue.hpp>
+#include <ui/render/renderqueue.hpp>
 #include <ui/texture.hpp>
 #include <ui/fontengine.hpp>
 #include <ui/components/worldview.hpp>
@@ -48,17 +48,19 @@ void WorldViewRenderer::checkTextureSize() {
 }
 
 boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) {
-    checkTextureSize();
-    CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
+    if (renderQueue_->requireWorldRepaint()) {
+        checkTextureSize();
+        CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 
-    CL_FrameBuffer fb(gc);
-    fb.attach_color_buffer(0, *texture_->getTexture());
+        CL_FrameBuffer fb(gc);
+        fb.attach_color_buffer(0, *texture_->getTexture());
 
-    gc.set_frame_buffer(fb);
+        gc.set_frame_buffer(fb);
 
-    render(gc);
+        render(gc);
 
-    gc.set_frame_buffer(origBuffer);
+        gc.set_frame_buffer(origBuffer);
+    }
 
     return texture_;
 }

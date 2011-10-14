@@ -52,13 +52,16 @@ void WorldRenderQueue::prepareRender(unsigned int elapsedMillis) {
     RenderQueue::iterator igIter = begin();
     RenderQueue::iterator igEnd = end();
 
+    resetWorldRepaintIndicators();
+
     for (; igIter != igEnd; ++igIter) {
-        // update rendering data (priority, vertex coordinates, texture, ...)
-        requireSort |= (*igIter)->updateRenderData(elapsedMillis);
+        // update rendering data (priority, vertex coordinates, texture, ...) if necessary
+        (*igIter)->updateRenderData(elapsedMillis);
     }
 
-    if (requireSort) {
+    if (requireSort || objectWorldPriorityChanged_ ) {
         sort();
+        objectWorldPriorityChanged_ = false;
     }
 }
 

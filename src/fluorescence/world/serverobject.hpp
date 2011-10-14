@@ -14,8 +14,11 @@ public:
 
     Serial getSerial() const;
 
+    void setHue(unsigned int hue);
+
 private:
     Serial serial_;
+    unsigned int hue_;
 };
 
 }

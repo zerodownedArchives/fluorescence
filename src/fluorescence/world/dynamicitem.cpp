@@ -12,7 +12,6 @@
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
 #include <data/tiledataloader.hpp>
-#include <data/huesloader.hpp>
 
 #include <ui/texture.hpp>
 #include <ui/textureprovider.hpp>
@@ -28,7 +27,7 @@
 namespace fluo {
 namespace world {
 
-DynamicItem::DynamicItem(Serial serial) : ServerObject(serial, IngameObject::TYPE_DYNAMIC_ITEM), artId_(0), hue_(0), equipped_(false) {
+DynamicItem::DynamicItem(Serial serial) : ServerObject(serial, IngameObject::TYPE_DYNAMIC_ITEM), artId_(0), equipped_(false) {
 }
 
 boost::shared_ptr<ui::Texture> DynamicItem::getIngameTexture() const {
@@ -47,9 +46,9 @@ void DynamicItem::setArtId(unsigned int artId) {
     if (artId_ != artId) {
         artId_ = artId;
         tileDataInfo_ = data::Manager::getTileDataLoader()->getStaticTileInfo(artId_);
-        hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
+        worldRenderData_.hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
 
-        invalidateRenderData(true);
+        invalidateTextureProvider();
     }
 
     addToRenderQueue(ui::Manager::getWorldRenderQueue());
@@ -60,6 +59,7 @@ void DynamicItem::setDirection(unsigned int direction) {
 
     if (equipped_ && animTextureProvider_) {
         animTextureProvider_->setDirection(direction_);
+        invalidateVertexCoordinates();
     }
 }
 
@@ -81,15 +81,6 @@ void DynamicItem::setStackIdOffset(unsigned int offset) {
     }
 
     // TODO: display change when stacked
-}
-
-void DynamicItem::setHue(unsigned int hue) {
-    if (hue != hue_) {
-        hue_ = hue;
-        hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
-
-        invalidateRenderData();
-    }
 }
 
 void DynamicItem::updateVertexCoordinates() {
@@ -117,12 +108,12 @@ void DynamicItem::updateVertexCoordinates() {
 
         CL_Rectf rect(px, py, px + texWidth, py + texHeight);
 
-        vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
-        vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
-        vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
-        vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
-        vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
-        vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+        worldRenderData_.vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
+        worldRenderData_.vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
+        worldRenderData_.vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
+        worldRenderData_.vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
+        worldRenderData_.vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
+        worldRenderData_.vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
     } else {
         int texWidth = getIngameTexture()->getWidth();
         int texHeight = getIngameTexture()->getHeight();
@@ -133,12 +124,12 @@ void DynamicItem::updateVertexCoordinates() {
 
         CL_Rectf rect(px, py, px + texWidth, py + texHeight);
 
-        vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
-        vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
-        vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
-        vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
-        vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
-        vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+        worldRenderData_.vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
+        worldRenderData_.vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
+        worldRenderData_.vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
+        worldRenderData_.vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
+        worldRenderData_.vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
+        worldRenderData_.vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
     }
 }
 
@@ -163,46 +154,43 @@ void DynamicItem::updateRenderPriority() {
         boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
 
         // level 0 x+y
-        renderPriority_[0] = parent->getLocX() + parent->getLocY();
+        worldRenderData_.renderPriority_[0] = parent->getLocX() + parent->getLocY();
 
         // level 1 z
-        renderPriority_[1] = parent->getLocZ() + 7;
+        worldRenderData_.renderPriority_[1] = parent->getLocZ() + 7;
 
         // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
-        renderPriority_[2] = 40;
+        worldRenderData_.renderPriority_[2] = 40;
 
         // level 2 layer priority
-        renderPriority_[3] = layerPriorities[parent->getDirection()][layer_ - 1];
+        worldRenderData_.renderPriority_[3] = layerPriorities[parent->getDirection()][layer_ - 1];
 
         // level 5 serial
-        renderPriority_[5] = getSerial();
+        worldRenderData_.renderPriority_[5] = getSerial();
     } else {
         // level 0 x+y
-        renderPriority_[0] = getLocX() + getLocY();
+        worldRenderData_.renderPriority_[0] = getLocX() + getLocY();
 
         // level 1 z and tiledata flags
-        renderPriority_[1] = getLocZ();
+        worldRenderData_.renderPriority_[1] = getLocZ();
         if (tileDataInfo_->background() && tileDataInfo_->surface()) {
-            renderPriority_[1] += 2;
+            worldRenderData_.renderPriority_[1] += 2;
         } else if (tileDataInfo_->background()) {
-            renderPriority_[1] += 3;
+            worldRenderData_.renderPriority_[1] += 3;
         } else if (tileDataInfo_->surface()) {
-            renderPriority_[1] += 4;
+            worldRenderData_.renderPriority_[1] += 4;
         } else {
-            renderPriority_[1] += 6;
+            worldRenderData_.renderPriority_[1] += 6;
         }
 
         // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
-        renderPriority_[2] = 20;
+        worldRenderData_.renderPriority_[2] = 20;
 
         // level 3 tiledata value height
-        renderPriority_[3] = tileDataInfo_->height_;
+        worldRenderData_.renderPriority_[3] = tileDataInfo_->height_;
 
-        // level 4 if hue is set => higher value
-        renderPriority_[4] = (hue_ != 0) ? 1 : 0;
-
-        // level 5 serial
-        renderPriority_[5] = getSerial();
+        // level 4 serial
+        worldRenderData_.renderPriority_[5] = getSerial();
     }
 }
 
@@ -297,14 +285,16 @@ void DynamicItem::playAnim(unsigned int animId) {
 void DynamicItem::onAddedToParent() {
     if (parentObject_.lock()->isMobile()) {
         equipped_ = true;
-        invalidateRenderData(true);
+        invalidateTextureProvider();
+        invalidateRenderPriority();
     }
 }
 
 void DynamicItem::onRemovedFromParent() {
     if (equipped_) {
         equipped_ = false;
-        invalidateRenderData(true);
+        invalidateTextureProvider();
+        invalidateRenderPriority();
     }
 }
 

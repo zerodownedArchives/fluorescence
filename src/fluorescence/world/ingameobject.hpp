@@ -50,9 +50,7 @@ public:
     virtual boost::shared_ptr<ui::Texture> getIngameTexture() const = 0;
     virtual boost::shared_ptr<ui::Texture> getGumpTexture() const;
 
-    bool isRenderDataValid() const;
-    void invalidateRenderData(bool updateTextureProvider = false);
-    bool updateRenderData(unsigned int elapsedMillis); ///< calls updateVertexCoordinates, updateRenderPriority, updateTextureProvider and updateAnimation
+    void updateRenderData(unsigned int elapsedMillis); ///< calls updateVertexCoordinates, updateRenderPriority, updateTextureProvider and updateAnimation
 
     const CL_Vec2f* getVertexCoordinates() const;
 
@@ -107,12 +105,17 @@ public:
     void printRenderPriority();
 
 protected:
-    WorldRenderData worldRenderData_;
+    ui::WorldRenderData worldRenderData_;
 
     virtual void updateTextureProvider() = 0;
     virtual bool updateAnimation(unsigned int elapsedMillis) = 0;
     virtual void updateVertexCoordinates() = 0;
     virtual void updateRenderPriority() = 0;
+
+    void invalidateTextureProvider();
+    void invalidateVertexCoordinates();
+    void invalidateRenderPriority();
+
 
     bool draggable_;
 
@@ -125,6 +128,10 @@ private:
     CL_Vec3f location_;
 
     std::list<boost::weak_ptr<ui::RenderQueue> > renderQueues_;
+    void notifyRenderQueuesWorldTexture();
+    void notifyRenderQueuesWorldCoordinates();
+    void notifyRenderQueuesWorldPriority();
+    void forceRepaint();
 
 
     void setParentObject();

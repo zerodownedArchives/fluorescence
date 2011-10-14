@@ -7,19 +7,15 @@
 
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>
-#include <ui/renderqueue.hpp>
+#include <ui/render/renderqueue.hpp>
 
 #include "overheadmessage.hpp"
 
 namespace fluo {
 namespace world {
 
-IngameObject::IngameObject(unsigned int objectType) : draggable_(false), objectType_(objectType), visible_(true), renderDataValid_(false), textureProviderUpdateRequired_(true) {
-    for (unsigned int i = 0; i < 6; ++i) {
-        renderPriority_[i] = 0;
-        vertexNormals_[i] = CL_Vec3f(0, 0, 1);
-    }
-    hueInfo_ = CL_Vec2f(0.0f, 0.0f);
+IngameObject::IngameObject(unsigned int objectType) : draggable_(false), objectType_(objectType), visible_(true) {
+
 }
 
 IngameObject::~IngameObject() {
@@ -40,36 +36,47 @@ void IngameObject::setLocation(int locX, int locY, int locZ) {
 
     //LOGARG_DEBUG(LOGTYPE_WORLD, "Object location: %i %i %i", locX, locY, locZ);
 
-    invalidateRenderData();
+    invalidateRenderPriority();
+    invalidateVertexCoordinates();
 }
 
-bool IngameObject::isRenderDataValid() const {
-    return renderDataValid_;
+void IngameObject::invalidateTextureProvider() {
+    worldRenderData_.invalidateTextureProvider();
+    worldRenderData_.invalidateVertexCoordinates();
 }
 
-void IngameObject::invalidateRenderData(bool updateTextureProvider) {
-    renderDataValid_ = false;
-
-    if (updateTextureProvider) {
-        requestUpdateTextureProvider();
-    }
+void IngameObject::invalidateVertexCoordinates() {
+    worldRenderData_.invalidateVertexCoordinates();
 
     if (!childObjects_.empty()) {
         std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
         std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
 
         for (; iter != end; ++iter) {
-            (*iter)->invalidateRenderData();
+            (*iter)->invalidateVertexCoordinates();
+        }
+    }
+}
+
+void IngameObject::invalidateRenderPriority() {
+    worldRenderData_.invalidateRenderPriority();
+
+    if (!childObjects_.empty()) {
+        std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+        std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
+
+        for (; iter != end; ++iter) {
+            (*iter)->invalidateRenderPriority();
         }
     }
 }
 
 const CL_Vec2f* IngameObject::getVertexCoordinates() const {
-    return vertexCoordinates_;
+    return worldRenderData_.vertexCoordinates_;
 }
 
 const CL_Vec2f& IngameObject::getHueInfo() const {
-    return hueInfo_;
+    return worldRenderData_.hueInfo_;
 }
 
 int IngameObject::getRenderPriority(unsigned int lvl) const {
@@ -77,46 +84,47 @@ int IngameObject::getRenderPriority(unsigned int lvl) const {
         lvl = 0;
     }
 
-    return renderPriority_[lvl];
+    return worldRenderData_.renderPriority_[lvl];
 }
 
 const int* IngameObject::getRenderPriorities() const {
-    return renderPriority_;
+    return worldRenderData_.renderPriority_;
 }
 
-bool IngameObject::updateRenderData(unsigned int elapsedMillis) {
-    bool bigUpdate = false;
-    if (!isRenderDataValid()) {
-        bigUpdate = true;
-        if (textureProviderUpdateRequired_) {
-            updateTextureProvider();
-            textureProviderUpdateRequired_ = false;
-        }
-
-        boost::shared_ptr<ui::Texture> tex = getIngameTexture();
-        if (!tex || !tex->isReadComplete()) {
-            return false;
-        }
-
-        updateAnimation(elapsedMillis);
-
-        updateVertexCoordinates();
-        updateRenderPriority();
-
-        renderDataValid_ = true;
-    } else {
+void IngameObject::updateRenderData(unsigned int elapsedMillis) {
+    if (worldRenderData_.renderDataValid()) {
         bool frameChanged = updateAnimation(elapsedMillis);
 
         if (frameChanged) {
             updateVertexCoordinates();
+            worldRenderData_.onVertexCoordinatesUpdate();
+            notifyRenderQueuesWorldCoordinates();
+        }
+    } else {
+        if (worldRenderData_.textureProviderUpdateRequired()) {
+            updateTextureProvider();
+            worldRenderData_.onTextureProviderUpdate();
+            notifyRenderQueuesWorldTexture();
+        }
+
+        boost::shared_ptr<ui::Texture> tex = getIngameTexture();
+        if (!tex || !tex->isReadComplete()) {
+            return;
+        }
+
+        bool frameChanged = updateAnimation(elapsedMillis);
+        if (frameChanged || worldRenderData_.vertexCoordinatesUpdateRequired()) {
+            updateVertexCoordinates();
+            worldRenderData_.onVertexCoordinatesUpdate();
+            notifyRenderQueuesWorldCoordinates();
+        }
+
+        if (worldRenderData_.renderPriorityUpdateRequired()) {
+            updateRenderPriority();
+            worldRenderData_.onRenderPriorityUpdate();
+            notifyRenderQueuesWorldPriority();
         }
     }
-
-    return bigUpdate;
-}
-
-void IngameObject::requestUpdateTextureProvider() {
-    textureProviderUpdateRequired_ = true;
 }
 
 bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {
@@ -124,24 +132,24 @@ bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int top
 
     // almost every texture is a rectangle, with vertexCoordinates_[0] being top left and vertexCoordinates_[5] bottom right
     // all non-rectangular cases are maptiles
-    return vertexCoordinates_[0].x <= rightPixelCoord &&
-            vertexCoordinates_[0].y <= bottomPixelCoord &&
-            vertexCoordinates_[5].x >= leftPixelCoord &&
-            vertexCoordinates_[5].y >= topPixelCoord;
+    return worldRenderData_.vertexCoordinates_[0].x <= rightPixelCoord &&
+            worldRenderData_.vertexCoordinates_[0].y <= bottomPixelCoord &&
+            worldRenderData_.vertexCoordinates_[5].x >= leftPixelCoord &&
+            worldRenderData_.vertexCoordinates_[5].y >= topPixelCoord;
 }
 
 bool IngameObject::hasPixel(int pixelX, int pixelY) const {
     // almost every texture is a rectangle, with vertexCoordinates_[0] being top left and vertexCoordinates_[5] bottom right
     // all non-rectangular cases are maptiles
-    bool coordinateCheck = vertexCoordinates_[0].x <= pixelX &&
-            vertexCoordinates_[0].y <= pixelY &&
-            vertexCoordinates_[5].x >= pixelX &&
-            vertexCoordinates_[5].y >= pixelY;
+    bool coordinateCheck = worldRenderData_.vertexCoordinates_[0].x <= pixelX &&
+            worldRenderData_.vertexCoordinates_[0].y <= pixelY &&
+            worldRenderData_.vertexCoordinates_[5].x >= pixelX &&
+            worldRenderData_.vertexCoordinates_[5].y >= pixelY;
 
     boost::shared_ptr<ui::Texture> tex = getIngameTexture();
     if (coordinateCheck && tex && tex->isReadComplete()) {
-        unsigned int texPixelX = pixelX - vertexCoordinates_[0].x;
-        unsigned int texPixelY = pixelY - vertexCoordinates_[0].y;
+        unsigned int texPixelX = pixelX - worldRenderData_.vertexCoordinates_[0].x;
+        unsigned int texPixelY = pixelY - worldRenderData_.vertexCoordinates_[0].y;
         return tex->hasPixel(texPixelX, texPixelY);
     } else {
         return false;
@@ -149,7 +157,7 @@ bool IngameObject::hasPixel(int pixelX, int pixelY) const {
 }
 
 const CL_Vec3f* IngameObject::getVertexNormals() const {
-    return vertexNormals_;
+    return worldRenderData_.vertexNormals_;
 }
 
 void IngameObject::onClick() {
@@ -189,12 +197,12 @@ boost::shared_ptr<IngameObject> IngameObject::getTopParent() {
 }
 
 void IngameObject::printRenderPriority() {
-    LOG_DEBUG << "Render priority: " << renderPriority_[0] << " - "
-            << renderPriority_[1] << " - "
-            << renderPriority_[2] << " - "
-            << renderPriority_[3] << " - "
-            << renderPriority_[4] << " - "
-            << renderPriority_[5] << " - " << std::endl;
+    LOG_DEBUG << "Render priority: " << worldRenderData_.renderPriority_[0] << " - "
+            << worldRenderData_.renderPriority_[1] << " - "
+            << worldRenderData_.renderPriority_[2] << " - "
+            << worldRenderData_.renderPriority_[3] << " - "
+            << worldRenderData_.renderPriority_[4] << " - "
+            << worldRenderData_.renderPriority_[5] << " - " << std::endl;
 }
 
 void IngameObject::setOverheadMessageOffsets() {
@@ -353,6 +361,75 @@ void IngameObject::onDelete() {
 boost::shared_ptr<ui::Texture> IngameObject::getGumpTexture() const {
     LOG_ERROR << "getGumpTexture called on IngameObject" << std::endl;
     return getIngameTexture();
+}
+
+
+void IngameObject::notifyRenderQueuesWorldTexture() {
+    switch (renderQueues_.size()) {
+    case 0:
+        // do nothing
+        break;
+    case 1:
+        renderQueues_.front().lock()->onObjectWorldTextureChanged();
+        break;
+    default:
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
+        for (; rqIter != rqEnd; ++rqIter) {
+            rqIter->lock()->onObjectWorldTextureChanged();
+        }
+    }
+}
+
+void IngameObject::notifyRenderQueuesWorldCoordinates() {
+    switch (renderQueues_.size()) {
+    case 0:
+        // do nothing
+        break;
+    case 1:
+        renderQueues_.front().lock()->onObjectWorldCoordinatesChanged();
+        break;
+    default:
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
+        for (; rqIter != rqEnd; ++rqIter) {
+            rqIter->lock()->onObjectWorldCoordinatesChanged();
+        }
+    }
+}
+
+void IngameObject::notifyRenderQueuesWorldPriority() {
+    switch (renderQueues_.size()) {
+    case 0:
+        // do nothing
+        break;
+    case 1:
+        renderQueues_.front().lock()->onObjectWorldPriorityChanged();
+        break;
+    default:
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
+        for (; rqIter != rqEnd; ++rqIter) {
+            rqIter->lock()->onObjectWorldPriorityChanged();
+        }
+    }
+}
+
+void IngameObject::forceRepaint() {
+    switch (renderQueues_.size()) {
+    case 0:
+        // do nothing
+        break;
+    case 1:
+        renderQueues_.front().lock()->forceRepaint();
+        break;
+    default:
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
+        for (; rqIter != rqEnd; ++rqIter) {
+            rqIter->lock()->forceRepaint();
+        }
+    }
 }
 
 }

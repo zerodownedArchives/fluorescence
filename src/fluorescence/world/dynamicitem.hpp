@@ -36,8 +36,6 @@ public:
     unsigned int getAmount() const;
     void setStackIdOffset(unsigned int offset);
 
-    void setHue(unsigned int hue);
-
     const data::StaticTileInfo* getTileDataInfo() const;
 
     virtual void onClick();
@@ -55,7 +53,6 @@ public:
 
 private:
     unsigned int artId_;
-    unsigned int hue_;
     unsigned int amount_;
     unsigned int stackIdOffset_;
     unsigned int direction_;

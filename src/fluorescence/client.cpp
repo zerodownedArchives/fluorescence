@@ -9,7 +9,7 @@
 
 #include <ui/manager.hpp>
 #include <ui/gumpmenus.hpp>
-#include <ui/renderqueue.hpp>
+#include <ui/render/renderqueue.hpp>
 #include <ui/gumpmenu.hpp>
 #include <ui/gumpactions.hpp>
 

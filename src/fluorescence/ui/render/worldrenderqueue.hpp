@@ -4,7 +4,7 @@
 #include <list>
 #include <boost/shared_ptr.hpp>
 
-#include <ui/renderqueue.hpp>
+#include <ui/render/renderqueue.hpp>
 
 namespace fluo {
 

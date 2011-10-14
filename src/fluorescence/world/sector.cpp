@@ -6,7 +6,7 @@
 #include <data/maploader.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/renderqueue.hpp>
+#include <ui/render/renderqueue.hpp>
 
 namespace fluo {
 namespace world {

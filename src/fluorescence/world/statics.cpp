@@ -30,8 +30,8 @@ void StaticItem::set(int locX, int locY, int locZ, unsigned int artId, unsigned 
 
     setLocation(locX, locY, locZ);
 
-    hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
-    hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
+    worldRenderData_.hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
+    worldRenderData_.hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
 
     addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
@@ -46,42 +46,42 @@ void StaticItem::updateVertexCoordinates() {
 
     CL_Rectf rect(px, py, px + texWidth, py + texHeight);
 
-    vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
-    vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
-    vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
-    vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
-    vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
-    vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+    worldRenderData_.vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
+    worldRenderData_.vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
+    worldRenderData_.vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
+    worldRenderData_.vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
+    worldRenderData_.vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
+    worldRenderData_.vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
 }
 
 void StaticItem::updateRenderPriority() {
     // render prio
     // level 0 x+y
-    renderPriority_[0] = getLocX() + getLocY();
+    worldRenderData_.renderPriority_[0] = getLocX() + getLocY();
 
     // level 1 z and tiledata flags
-    renderPriority_[1] = getLocZ();
+    worldRenderData_.renderPriority_[1] = getLocZ();
     if (tileDataInfo_->background() && tileDataInfo_->surface()) {
-        renderPriority_[1] += 2;
+        worldRenderData_.renderPriority_[1] += 2;
     } else if (tileDataInfo_->background()) {
-        renderPriority_[1] += 3;
+        worldRenderData_.renderPriority_[1] += 3;
     } else if (tileDataInfo_->surface()) {
-        renderPriority_[1] += 4;
+        worldRenderData_.renderPriority_[1] += 4;
     } else {
-        renderPriority_[1] += 6;
+        worldRenderData_.renderPriority_[1] += 6;
     }
 
     // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
-    renderPriority_[2] = 10;
+    worldRenderData_.renderPriority_[2] = 10;
 
     // level 3 tiledata value height
-    renderPriority_[3] = tileDataInfo_->height_;
+    worldRenderData_.renderPriority_[3] = tileDataInfo_->height_;
 
     // level 4 if hue is set => higher value
-    renderPriority_[4] = (hue_ != 0) ? 1 : 0;
+    worldRenderData_.renderPriority_[4] = (hue_ != 0) ? 1 : 0;
 
     // level 5 index in statics file
-    renderPriority_[5] = indexInBlock_;
+    worldRenderData_.renderPriority_[5] = indexInBlock_;
 }
 
 void StaticItem::updateTextureProvider() {

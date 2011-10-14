@@ -11,7 +11,7 @@
 #include <world/ingameobject.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/renderqueue.hpp>
+#include <ui/render/renderqueue.hpp>
 #include <ui/doubleclickhandler.hpp>
 #include <ui/cursormanager.hpp>
 #include <ui/render/worldviewrenderer.hpp>
@@ -91,10 +91,10 @@ unsigned int WorldView::getHeight() {
 }
 
 void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
-    gc.push_cliprect(get_geometry());
-    //CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
-    renderer_->render(gc);
-    gc.pop_cliprect();
+    //gc.push_cliprect(get_geometry());
+    CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
+    // renderer_->render(gc);
+    //gc.pop_cliprect();
 }
 
 void WorldView::getRequiredSectors(std::list<unsigned int>& list, unsigned int mapHeight, unsigned int cacheAdd) {

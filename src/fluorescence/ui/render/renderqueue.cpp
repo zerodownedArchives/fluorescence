@@ -173,5 +173,32 @@ boost::shared_ptr<world::IngameObject> RenderQueue::debugIngameGetByIndex(unsign
     return ret;
 }
 
+void RenderQueue::onObjectWorldTextureChanged() {
+    objectWorldTextureChanged_ = true;
+}
+
+void RenderQueue::onObjectWorldCoordinatesChanged() {
+    objectWorldCoordinatesChanged_ = true;
+}
+
+void RenderQueue::onObjectWorldPriorityChanged() {
+    objectWorldPriorityChanged_ = true;
+}
+
+void RenderQueue::forceRepaint() {
+    forceRepaint_ = true;
+}
+
+bool RenderQueue::requireWorldRepaint() const {
+    return objectWorldTextureChanged_ || objectWorldCoordinatesChanged_ || objectWorldPriorityChanged_ || forceRepaint_;
+}
+
+void RenderQueue::resetWorldRepaintIndicators() {
+    objectWorldTextureChanged_ = false;
+    objectWorldCoordinatesChanged_ = false;
+    objectWorldPriorityChanged_ = false;
+    forceRepaint_ = false;
+}
+
 }
 }

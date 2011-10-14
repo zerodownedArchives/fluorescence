@@ -21,17 +21,13 @@ class WorldRenderData {
 friend class world::IngameObject;
 
 public:
-    void invalidateTextureProvider();
-    void invalidateVertexCoordinates();
-    void invalidateRenderPriority();
+    WorldRenderData();
+
+    bool renderDataValid() const;
 
     bool textureProviderUpdateRequired() const;
     bool vertexCoordinatesUpdateRequired() const;
     bool renderPriorityUpdateRequired() const;
-
-    void onTextureProviderUpdate();
-    void onVertexCoordinatesUpdate();
-    void onRenderPriorityUpdate();
 
     bool textureProviderUpdated() const;
     bool vertexCoordinatesUpdated() const;
@@ -39,14 +35,20 @@ public:
 
     void reset();
 
-    boost::shared_ptr<ui::Texture> texture_;
     int renderPriority_[6];
     CL_Vec2f vertexCoordinates_[6];
     CL_Vec3f vertexNormals_[6];
     CL_Vec2f hueInfo_;
-    bool mirrored_;
 
 private:
+    void invalidateTextureProvider();
+    void invalidateVertexCoordinates();
+    void invalidateRenderPriority();
+
+    void onTextureProviderUpdate();
+    void onVertexCoordinatesUpdate();
+    void onRenderPriorityUpdate();
+
     bool textureProviderUpdateRequired_;
     bool vertexCoordinatesUpdateRequired_;
     bool renderPriorityUpdateRequired_;

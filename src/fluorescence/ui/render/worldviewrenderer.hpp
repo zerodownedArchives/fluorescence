@@ -6,7 +6,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <ui/ingameobjectrenderer.hpp>
+#include <ui/render/ingameobjectrenderer.hpp>
 
 namespace fluo {
 namespace ui {

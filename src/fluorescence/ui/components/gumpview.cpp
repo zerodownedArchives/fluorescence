@@ -11,7 +11,7 @@
 #include <world/ingameobject.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/renderqueue.hpp>
+#include <ui/render/renderqueue.hpp>
 #include <ui/doubleclickhandler.hpp>
 #include <ui/cursormanager.hpp>
 #include <ui/render/gumprenderer.hpp>

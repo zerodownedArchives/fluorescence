@@ -9,7 +9,7 @@
 #include <misc/log.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/renderqueue.hpp>
+#include <ui/render/renderqueue.hpp>
 #include <ui/components/worldview.hpp>
 
 #include <data/maploader.hpp>

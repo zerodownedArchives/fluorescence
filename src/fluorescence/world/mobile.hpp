@@ -28,8 +28,6 @@ public:
     unsigned int getBodyId() const;
     void setBodyId(unsigned int value);
 
-    void setHue(unsigned int value);
-
     virtual void onClick();
     virtual void onDoubleClick();
 
@@ -50,7 +48,6 @@ public:
 
 private:
     unsigned int bodyId_;
-    unsigned int hue_;
     unsigned int direction_;
     bool isRunning_;
 

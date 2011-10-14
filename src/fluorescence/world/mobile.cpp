@@ -21,7 +21,7 @@
 namespace fluo {
 namespace world {
 
-Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE), bodyId_(0), hue_(0) {
+Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE), bodyId_(0) {
 }
 
 boost::shared_ptr<ui::Texture> Mobile::getIngameTexture() const {
@@ -53,19 +53,10 @@ void Mobile::onDoubleClick() {
 void Mobile::setBodyId(unsigned int value) {
     if (value != bodyId_) {
         bodyId_ = value;
-        invalidateRenderData(true);
+        invalidateTextureProvider();
     }
 
     addToRenderQueue(ui::Manager::getWorldRenderQueue());
-}
-
-void Mobile::setHue(unsigned int value) {
-    if (value != hue_) {
-        hue_ = value;
-        hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
-
-        invalidateRenderData();
-    }
 }
 
 void Mobile::updateVertexCoordinates() {
@@ -90,30 +81,30 @@ void Mobile::updateVertexCoordinates() {
 
     CL_Rectf rect(px, py, px + texWidth, py + texHeight);
 
-    vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
-    vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
-    vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
-    vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
-    vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
-    vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+    worldRenderData_.vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
+    worldRenderData_.vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
+    worldRenderData_.vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
+    worldRenderData_.vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
+    worldRenderData_.vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
+    worldRenderData_.vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
 }
 
 void Mobile::updateRenderPriority() {
     // render prio
     // level 0 x+y
-    renderPriority_[0] = getLocX() + getLocY();
+    worldRenderData_.renderPriority_[0] = getLocX() + getLocY();
 
     // level 1 z
-    renderPriority_[1] = getLocZ() + 7;
+    worldRenderData_.renderPriority_[1] = getLocZ() + 7;
 
     // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
-    renderPriority_[2] = 30;
+    worldRenderData_.renderPriority_[2] = 30;
 
     // level 2 layer
-    renderPriority_[3] = 0;
+    worldRenderData_.renderPriority_[3] = 0;
 
     // level 5 serial
-    renderPriority_[5] = getSerial();
+    worldRenderData_.renderPriority_[5] = getSerial();
 }
 
 void Mobile::updateTextureProvider() {
@@ -144,6 +135,7 @@ void Mobile::setDirection(unsigned int direction) {
 
     if (textureProvider_) {
         textureProvider_->setDirection(direction);
+        invalidateVertexCoordinates();
     }
 
     std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
@@ -154,8 +146,6 @@ void Mobile::setDirection(unsigned int direction) {
             boost::dynamic_pointer_cast<DynamicItem>(*iter)->setDirection(direction_);
         }
     }
-
-    invalidateRenderData();
 }
 
 unsigned int Mobile::getDirection() const {

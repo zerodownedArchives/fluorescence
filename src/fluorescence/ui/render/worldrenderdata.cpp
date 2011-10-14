@@ -4,6 +4,16 @@
 namespace fluo {
 namespace ui {
 
+WorldRenderData::WorldRenderData() :
+            textureProviderUpdateRequired_(true), vertexCoordinatesUpdateRequired_(true), renderPriorityUpdateRequired_(true),
+            textureProviderUpdated_(false), vertexCoordinatesUpdated_(false), renderPriorityUpdated_(false) {
+    for (unsigned int i = 0; i < 6; ++i) {
+        renderPriority_[i] = 0;
+        vertexNormals_[i] = CL_Vec3f(0, 0, 1);
+    }
+    hueInfo_ = CL_Vec2f(0.0f, 0.0f);
+}
+
 void WorldRenderData::invalidateTextureProvider() {
     textureProviderUpdateRequired_ = true;
 }
@@ -14,6 +24,10 @@ void WorldRenderData::invalidateVertexCoordinates() {
 
 void WorldRenderData::invalidateRenderPriority() {
     renderPriorityUpdateRequired_ = true;
+}
+
+bool WorldRenderData::renderDataValid() const {
+    return !textureProviderUpdateRequired_ && !vertexCoordinatesUpdateRequired_ && !renderPriorityUpdateRequired_;
 }
 
 bool WorldRenderData::textureProviderUpdateRequired() const {

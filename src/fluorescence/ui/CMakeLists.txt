@@ -7,7 +7,6 @@ set (UI_HPP
     ui/singletextureprovider.hpp
     ui/animdatatextureprovider.hpp
     ui/animtextureprovider.hpp
-    ui/renderqueue.hpp
     ui/bitmask.hpp
     ui/cursormanager.hpp
     ui/cursorimage.hpp
@@ -15,7 +14,6 @@ set (UI_HPP
     ui/gumpmenus.hpp
     ui/gumpactions.hpp
     ui/fontengine.hpp
-    ui/ingameobjectrenderer.hpp
     )
 
 set (UI_CPP
@@ -25,7 +23,6 @@ set (UI_CPP
     ui/singletextureprovider.cpp
     ui/animdatatextureprovider.cpp
     ui/animtextureprovider.cpp
-    ui/renderqueue.cpp
     ui/bitmask.cpp
     ui/cursormanager.cpp
     ui/cursorimage.cpp
@@ -33,7 +30,6 @@ set (UI_CPP
     ui/gumpmenus.cpp
     ui/gumpactions.cpp
     ui/fontengine.cpp
-    ui/ingameobjectrenderer.cpp
     )
 
 set (GUMPMENU_HPP
@@ -71,6 +67,8 @@ set (GUMPMENU_CPP
     )
 
 set (RENDER_HPP
+    ui/render/renderqueue.hpp
+    ui/render/ingameobjectrenderer.hpp
     ui/render/worldrenderdata.hpp
     ui/render/worldrenderqueue.hpp
     ui/render/worldviewrenderer.hpp
@@ -78,6 +76,8 @@ set (RENDER_HPP
     )
 
 set (RENDER_CPP
+    ui/render/renderqueue.cpp
+    ui/render/ingameobjectrenderer.cpp
     ui/render/worldrenderdata.cpp
     ui/render/worldrenderqueue.cpp
     ui/render/worldviewrenderer.cpp

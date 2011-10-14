@@ -49,12 +49,26 @@ public:
     RenderQueue::reverse_iterator rend();
     RenderQueue::const_reverse_iterator rend() const;
 
+
+    void onObjectWorldTextureChanged();
+    void onObjectWorldCoordinatesChanged();
+    void onObjectWorldPriorityChanged();
+    void forceRepaint();
+
+    bool requireWorldRepaint() const;
+    void resetWorldRepaintIndicators();
+
 protected:
     void processRemoveList();
     bool processAddList();
 
     // items to remove are collected here before removal, because batch remove is more efficient
     std::list<boost::shared_ptr<world::IngameObject> > removeList_;
+
+    bool objectWorldTextureChanged_;
+    bool objectWorldCoordinatesChanged_;
+    bool objectWorldPriorityChanged_;
+    bool forceRepaint_;
 
 private:
     std::list<boost::shared_ptr<world::IngameObject> > objectList_;

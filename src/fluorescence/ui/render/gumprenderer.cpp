@@ -2,7 +2,7 @@
 #include "gumprenderer.hpp"
 
 #include <ui/manager.hpp>
-#include <ui/renderqueue.hpp>
+#include <ui/render/renderqueue.hpp>
 #include <ui/texture.hpp>
 #include <ui/components/gumpview.hpp>
 
