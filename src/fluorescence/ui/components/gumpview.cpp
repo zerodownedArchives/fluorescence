@@ -15,6 +15,7 @@
 #include <ui/doubleclickhandler.hpp>
 #include <ui/cursormanager.hpp>
 #include <ui/render/gumprenderer.hpp>
+#include <ui/render/gumprenderqueue.hpp>
 
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
@@ -27,7 +28,8 @@ namespace ui {
 
 GumpView::GumpView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent) {
     this->set_geometry(bounds);
-    renderer_.reset(new GumpRenderer(ui::Manager::getWorldRenderQueue(), this));
+    boost::shared_ptr<GumpRenderQueue> rq(new GumpRenderQueue());
+    renderer_.reset(new GumpRenderer(rq, this));
 
     set_constant_repaint(true);
 

@@ -101,6 +101,10 @@ void StaticItem::onClick() {
             getLocZ() << ") name=" << tileDataInfo_->name_ << std::endl;
 }
 
+bool StaticItem::requireRenderUpdate() const {
+    return tileDataInfo_->animation();
+}
+
 
 std::list<boost::shared_ptr<StaticItem> >& StaticBlock::getItemList() {
     return itemList_;

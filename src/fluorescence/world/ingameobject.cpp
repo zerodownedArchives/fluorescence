@@ -98,7 +98,7 @@ void IngameObject::updateRenderData(unsigned int elapsedMillis) {
         if (frameChanged) {
             updateVertexCoordinates();
             worldRenderData_.onVertexCoordinatesUpdate();
-            notifyRenderQueuesWorldCoordinates();
+            notifyRenderQueuesWorldTexture();
         }
     } else {
         if (worldRenderData_.textureProviderUpdateRequired()) {
@@ -116,7 +116,12 @@ void IngameObject::updateRenderData(unsigned int elapsedMillis) {
         if (frameChanged || worldRenderData_.vertexCoordinatesUpdateRequired()) {
             updateVertexCoordinates();
             worldRenderData_.onVertexCoordinatesUpdate();
-            notifyRenderQueuesWorldCoordinates();
+
+            if (frameChanged) {
+                notifyRenderQueuesWorldTexture();
+            } else {
+                notifyRenderQueuesWorldCoordinates();
+            }
         }
 
         if (worldRenderData_.renderPriorityUpdateRequired()) {
@@ -293,16 +298,19 @@ void IngameObject::setParentObject() {
         // remove this item from all render queues the parent is in
         std::list<boost::weak_ptr<ui::RenderQueue> >::iterator iter = renderQueues_.begin();
         std::list<boost::weak_ptr<ui::RenderQueue> >::iterator end = renderQueues_.end();
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator helper;
-        while (iter != end) {
+
+        std::list<boost::shared_ptr<ui::RenderQueue> > rqsToRemove;
+        for (; iter != end; ++iter) {
             boost::shared_ptr<ui::RenderQueue> rq = iter->lock();
             if (parent->isInRenderQueue(rq)) {
-                helper = iter;
-                ++iter;
-                renderQueues_.erase(helper);
-            } else {
-                ++iter;
+                rqsToRemove.push_back(rq);
             }
+        }
+
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remIter = rqsToRemove.begin();
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remEnd = rqsToRemove.end();
+        for (; remIter != remEnd; ++remIter) {
+            removeFromRenderQueue(*remIter);
         }
     }
 
@@ -355,6 +363,13 @@ void IngameObject::onDelete() {
     boost::shared_ptr<IngameObject> parent = parentObject_.lock();
     if (parent) {
         parent->removeChildObject(shared_from_this());
+    }
+
+    std::list<boost::weak_ptr<ui::RenderQueue> > rqsToRemove(renderQueues_.begin(), renderQueues_.end());
+    std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqIter = rqsToRemove.begin();
+    std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqEnd = rqsToRemove.end();
+    for (; rqIter != rqEnd; ++rqIter) {
+        removeFromRenderQueue(rqIter->lock());
     }
 }
 
@@ -430,6 +445,10 @@ void IngameObject::forceRepaint() {
             rqIter->lock()->forceRepaint();
         }
     }
+}
+
+const ui::WorldRenderData& IngameObject::getWorldRenderData() const {
+    return worldRenderData_;
 }
 
 }

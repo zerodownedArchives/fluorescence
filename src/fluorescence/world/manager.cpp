@@ -117,5 +117,30 @@ boost::shared_ptr<DynamicItem> Manager::getDynamicItem(Serial serial, bool creat
     return itm;
 }
 
+void Manager::step(unsigned int elapsedMillis) {
+    world::Manager::getSectorManager()->deleteSectors();
+    world::Manager::getSectorManager()->addNewSectors();
+
+    update(elapsedMillis);
+}
+
+void Manager::update(unsigned int elapsedMillis) {
+    std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobIter = mobiles_.begin();
+    std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobEnd = mobiles_.end();
+
+    for (; mobIter != mobEnd; ++mobIter) {
+        mobIter->second->updateRenderData(elapsedMillis);
+    }
+
+    std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator itmIter = dynamicItems_.begin();
+    std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator itmEnd = dynamicItems_.end();
+
+    for (; itmIter != itmEnd; ++itmIter) {
+        itmIter->second->updateRenderData(elapsedMillis);
+    }
+
+    sectorManager_->update(elapsedMillis);
+}
+
 }
 }

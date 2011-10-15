@@ -1,5 +1,5 @@
 
-#include "worldrenderqueue.hpp"
+#include "gumprenderqueue.hpp"
 
 #include <boost/bind.hpp>
 
@@ -14,7 +14,7 @@
 namespace fluo {
 namespace ui {
 
-bool WorldRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
+bool GumpRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
     const int* aPrio = a->getRenderPriorities();
     const int* bPrio = b->getRenderPriorities();
 
@@ -38,31 +38,37 @@ bool WorldRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::I
     return (unsigned long)a.get() <= (unsigned long)b.get();
 }
 
-WorldRenderQueue::WorldRenderQueue() : RenderQueue(boost::bind(&WorldRenderQueue::renderPriorityComparator, this, _1, _2)) {
+GumpRenderQueue::GumpRenderQueue() : RenderQueue(boost::bind(&GumpRenderQueue::renderPriorityComparator, this, _1, _2)) {
 }
 
-WorldRenderQueue::~WorldRenderQueue() {
+GumpRenderQueue::~GumpRenderQueue() {
 }
 
 
-void WorldRenderQueue::preRender() {
-    if (!removeList_.empty()) {
-        processRemoveList();
-        forceRepaint_ = true;
-    }
+void GumpRenderQueue::preRender() {
+    //processRemoveList();
+    //bool requireSort = processAddList();
 
-    bool requireSort = processAddList();
+    //RenderQueue::iterator igIter = begin();
+    //RenderQueue::iterator igEnd = end();
 
-    if (requireSort || objectWorldPriorityChanged_ ) {
-        sort();
-    }
+    //resetGumpRepaintIndicators();
+
+    //for (; igIter != igEnd; ++igIter) {
+        //// update rendering data (priority, vertex coordinates, texture, ...) if necessary
+        //(*igIter)->updateGumpRenderData(elapsedMillis);
+    //}
+
+    //if (requireSort || objectGumpPriorityChanged_ ) {
+        //sort();
+        //objectWorldPriorityChanged_ = false;
+    //}
 }
 
-void WorldRenderQueue::postRender() {
-    resetWorldRepaintIndicators();
+void GumpRenderQueue::postRender() {
 }
 
-boost::shared_ptr<world::IngameObject> WorldRenderQueue::getFirstObjectAt(int worldX, int worldY, bool getTopParent) {
+boost::shared_ptr<world::IngameObject> GumpRenderQueue::getFirstObjectAt(int worldX, int worldY, bool getTopParent) {
     RenderQueue::reverse_iterator igIter = rbegin();
     RenderQueue::reverse_iterator igEnd = rend();
 

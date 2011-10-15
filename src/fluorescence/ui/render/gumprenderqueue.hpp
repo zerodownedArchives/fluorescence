@@ -1,5 +1,5 @@
-#ifndef FLUO_UI_WORLDRENDERQUEUE_HPP
-#define FLUO_UI_WORLDRENDERQUEUE_HPP
+#ifndef FLUO_UI_GUMPRENDERQUEUE_HPP
+#define FLUO_UI_GUMPRENDERQUEUE_HPP
 
 #include <list>
 #include <boost/shared_ptr.hpp>
@@ -15,10 +15,10 @@ namespace world {
 
 namespace ui {
 
-class WorldRenderQueue : public RenderQueue {
+class GumpRenderQueue : public RenderQueue {
 public:
-    WorldRenderQueue();
-    ~WorldRenderQueue();
+    GumpRenderQueue();
+    ~GumpRenderQueue();
 
     virtual void preRender();
     virtual void postRender();
@@ -26,7 +26,7 @@ public:
     virtual boost::shared_ptr<world::IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopParent);
 
 private:
-    /// used to sort the objects according to their render priority. returns true, if a should be painted before b
+    /// used to sort the objects according to their layer
     bool renderPriorityComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b);
 
 };

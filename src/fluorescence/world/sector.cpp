@@ -12,7 +12,7 @@ namespace fluo {
 namespace world {
 
 Sector::Sector(unsigned int mapId, unsigned int sectorId) :
-        mapId_(mapId), id_(sectorId), visible_(true) {
+        mapId_(mapId), id_(sectorId), visible_(true), fullUpdateRenderDataRequired_(true) {
 
     unsigned int mapHeight = data::Manager::getMapLoader(mapId_)->getBlockCountY();
     location_[0u] = sectorId / mapHeight;
@@ -66,6 +66,65 @@ void Sector::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
     for (unsigned int x = 0; x < 8; ++x) {
         for (unsigned int y = 0; y < 8; ++y) {
             mapBlock_->get(x, y)->removeFromRenderQueue(rq);
+        }
+    }
+}
+
+void Sector::update(unsigned int elapsedMillis) {
+    //LOG_DEBUG << "Sector::update " << id_ << std::endl;
+    if (fullUpdateRenderDataRequired_) {
+        //LOG_DEBUG << "full update required" << std::endl;
+        // the sector is not yet loaded completely (e.g. a graphic is still missing)
+        bool curFullUpdateRequired = false;
+
+        std::list<boost::shared_ptr<world::StaticItem> > staticList = staticBlock_->getItemList();
+        std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticList.begin();
+        std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticList.end();
+
+        for (; it != end; ++it) {
+            if (!(*it)->getWorldRenderData().renderDataValid()) {
+                (*it)->updateRenderData(elapsedMillis);
+                curFullUpdateRequired = true;
+            }
+        }
+
+        for (unsigned int x = 0; x < 8; ++x) {
+            for (unsigned int y = 0; y < 8; ++y) {
+                if (!mapBlock_->get(x, y)->getWorldRenderData().renderDataValid()) {
+                    mapBlock_->get(x, y)->updateRenderData(elapsedMillis);
+                    curFullUpdateRequired = true;
+                }
+            }
+        }
+
+        if (!curFullUpdateRequired) {
+            //LOG_DEBUG << "full update not required anymore" << std::endl;
+            // all the items in this sector are now fully loaded, including texture etc
+            // to save time in the future, update only the items that are animated. store those in a list now
+            quickRenderUpdateList_.clear();
+
+            std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticList.begin();
+            std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticList.end();
+
+            for (; it != end; ++it) {
+                if ((*it)->requireRenderUpdate()) {
+                    quickRenderUpdateList_.push_back(*it);
+                }
+            }
+
+            fullUpdateRenderDataRequired_ = false;
+
+            //LOG_DEBUG << "Items in quicklist: " << quickRenderUpdateList_.size() << std::endl;
+        }
+
+    } else if (!quickRenderUpdateList_.empty()) {
+        //LOG_DEBUG << "quick render update, size=" << quickRenderUpdateList_.size() << std::endl;
+        // only call update on those few things that really need to be updated (e.g. animated statics)
+        std::list<boost::shared_ptr<world::StaticItem> >::iterator iter = quickRenderUpdateList_.begin();
+        std::list<boost::shared_ptr<world::StaticItem> >::iterator end = quickRenderUpdateList_.end();
+
+        for (; iter != end; ++iter) {
+            (*iter)->updateRenderData(elapsedMillis);
         }
     }
 }

@@ -307,14 +307,10 @@ int Client::main(const std::vector<CL_String8>& args) {
 void Client::doStatePlaying(unsigned int elapsedMillis) {
     static ui::Manager* uiManager = ui::Manager::getSingleton();
     static net::Manager* netManager = net::Manager::getSingleton();
+    static world::Manager* worldManager = world::Manager::getSingleton();
 
     netManager->step();
-
-    world::Manager::getSectorManager()->addNewSectors();
-    uiManager->getWorldRenderQueue()->prepareRender((unsigned int)elapsedMillis);
-    // deleting sectors has to be done after RenderQueue::prepareRender() (list is sorted now)
-    world::Manager::getSectorManager()->deleteSectors();
-
+    worldManager->step(elapsedMillis);
     uiManager->step();
 }
 

@@ -67,6 +67,9 @@ boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) 
 
 
 void WorldViewRenderer::render(CL_GraphicContext& gc) {
+    renderQueue_->preRender();
+
+
     gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
 
     gc.set_program_object(*shaderProgram_, cl_program_matrix_modelview_projection);
@@ -149,6 +152,8 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
 
     gc.reset_textures();
     gc.reset_program_object();
+
+    renderQueue_->postRender();
 
 
     //boost::shared_ptr<ui::Texture> testText1 = ui::Manager::getFontEngine()->getUniFontTexture(1, "The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 0x00FF00FF, true);

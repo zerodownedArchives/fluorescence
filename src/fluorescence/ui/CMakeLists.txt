@@ -73,6 +73,7 @@ set (RENDER_HPP
     ui/render/worldrenderqueue.hpp
     ui/render/worldviewrenderer.hpp
     ui/render/gumprenderer.hpp
+    ui/render/gumprenderqueue.hpp
     )
 
 set (RENDER_CPP
@@ -82,6 +83,7 @@ set (RENDER_CPP
     ui/render/worldrenderqueue.cpp
     ui/render/worldviewrenderer.cpp
     ui/render/gumprenderer.cpp
+    ui/render/gumprenderqueue.cpp
     )
 
 SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${RENDER_HPP} ${RENDER_CPP} PARENT_SCOPE)

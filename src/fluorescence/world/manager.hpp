@@ -36,6 +36,8 @@ public:
 
     void deleteObject(Serial serial);
 
+    void step(unsigned int elapsedMillis);
+
 private:
     static Manager* singleton_;
     Manager(const Config& config);
@@ -51,6 +53,8 @@ private:
     std::map<Serial, boost::shared_ptr<Mobile> > mobiles_;
 
     std::map<Serial, boost::shared_ptr<DynamicItem> > dynamicItems_;
+
+    void update(unsigned int millis);
 };
 
 }

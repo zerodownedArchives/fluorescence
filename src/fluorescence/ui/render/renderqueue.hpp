@@ -32,7 +32,8 @@ public:
     void clear();
     void sort();
 
-    virtual void prepareRender(unsigned int elapsedMillis) = 0;
+    virtual void preRender() = 0;
+    virtual void postRender() = 0;
     virtual boost::shared_ptr<world::IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopParent) = 0;
 
     unsigned int size() const;
@@ -58,6 +59,9 @@ public:
     bool requireWorldRepaint() const;
     void resetWorldRepaintIndicators();
 
+    bool requireGumpRepaint() const;
+    void resetGumpRepaintIndicators();
+
 protected:
     void processRemoveList();
     bool processAddList();
@@ -69,6 +73,8 @@ protected:
     bool objectWorldCoordinatesChanged_;
     bool objectWorldPriorityChanged_;
     bool forceRepaint_;
+
+    bool gumpTextureChanged_;
 
 private:
     std::list<boost::shared_ptr<world::IngameObject> > objectList_;

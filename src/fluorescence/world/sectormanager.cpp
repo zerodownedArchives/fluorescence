@@ -152,5 +152,14 @@ void SectorManager::buildSectorRequiredList(std::list<unsigned int>& list, unsig
     }
 }
 
+void SectorManager::update(unsigned int elapsedMillis) {
+    std::map<unsigned int, boost::shared_ptr<world::Sector> >::iterator iter = sectorMap_.begin();
+    std::map<unsigned int, boost::shared_ptr<world::Sector> >::iterator end = sectorMap_.end();
+
+    for (; iter != end; ++iter) {
+        iter->second->update(elapsedMillis);
+    }
+}
+
 }
 }

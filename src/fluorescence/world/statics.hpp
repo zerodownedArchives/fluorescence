@@ -37,6 +37,10 @@ public:
 
     virtual void onClick();
 
+    // returns wheter other not this static tile requires periodic updates to updateRenderData to be rendere correctly.
+    // this is only the case if is animated
+    bool requireRenderUpdate() const;
+
 private:
     unsigned int artId_;
     unsigned int hue_;

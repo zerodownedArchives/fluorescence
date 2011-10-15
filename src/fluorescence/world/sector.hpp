@@ -37,6 +37,8 @@ public:
 
     void removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
 
+    void update(unsigned int elapsedMillis);
+
 private:
     unsigned int mapId_;
     unsigned int id_;
@@ -46,6 +48,9 @@ private:
     boost::shared_ptr<StaticBlock> staticBlock_;
 
     bool visible_;
+
+    bool fullUpdateRenderDataRequired_;
+    std::list<boost::shared_ptr<world::StaticItem> > quickRenderUpdateList_;
 
 };
 

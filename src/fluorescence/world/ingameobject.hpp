@@ -101,6 +101,8 @@ public:
     bool isMobile() const;
     bool isSpeech() const;
 
+    const ui::WorldRenderData& getWorldRenderData() const;
+
 
     void printRenderPriority();
 

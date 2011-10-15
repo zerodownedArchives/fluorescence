@@ -36,6 +36,8 @@ public:
 
     void clear();
 
+    void update(unsigned int elapsedMillis);
+
 private:
     std::map<unsigned int, boost::shared_ptr<world::Sector> > sectorMap_;
 
