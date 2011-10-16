@@ -33,6 +33,7 @@ void StaticItem::set(int locX, int locY, int locZ, unsigned int artId, unsigned 
     worldRenderData_.hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
     worldRenderData_.hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
 
+    updateTextureProvider(); // ensure the texture object is properly initialized
     addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 

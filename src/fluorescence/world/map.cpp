@@ -96,7 +96,8 @@ void MapTile::setSurroundingZ(int left, int right, int bottom) {
     zRight_ = right;
     zBottom_ = bottom;
 
-    invalidateTextureProvider(); // includes invalidateVertexCoordinates
+    updateTextureProvider(); // ensure the texture object is properly initialized
+    invalidateVertexCoordinates();
 
     // if the tile got surrounding z values from the loading thread for the first time, we can finally add it to the render queue
     // double adding checks are done in the function
