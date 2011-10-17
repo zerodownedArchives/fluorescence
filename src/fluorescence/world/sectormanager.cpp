@@ -27,11 +27,11 @@ SectorManager::SectorManager(const Config& config) :
 SectorManager::~SectorManager() {
 }
 
-void SectorManager::registerWorldView(ui::WorldView* view) {
+void SectorManager::registerWorldView(ui::components::WorldView* view) {
     worldViews_.push_back(view);
 }
 
-void SectorManager::unregisterWorldView(ui::WorldView* view) {
+void SectorManager::unregisterWorldView(ui::components::WorldView* view) {
     worldViews_.remove(view);
 }
 
@@ -120,13 +120,13 @@ unsigned int SectorManager::calcSectorIndex(unsigned int x, unsigned int y) {
 
 void SectorManager::buildSectorRequiredList(std::list<unsigned int>& list, unsigned int cacheAdd) {
     // ask all ingame views which sectors they need
-    std::list<ui::WorldView*>::iterator viewIter = worldViews_.begin();
-    std::list<ui::WorldView*>::iterator viewEnd = worldViews_.end();
+    std::list<ui::components::WorldView*>::iterator viewIter = worldViews_.begin();
+    std::list<ui::components::WorldView*>::iterator viewEnd = worldViews_.end();
 
     unsigned int mapHeight = data::Manager::getMapLoader(lastMapId_)->getBlockCountY();
 
     while (viewIter != viewEnd) {
-        ui::WorldView* curView = (*viewIter);
+        ui::components::WorldView* curView = (*viewIter);
         curView->getRequiredSectors(list, mapHeight, cacheAdd);
         ++viewIter;
     }

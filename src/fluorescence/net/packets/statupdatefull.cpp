@@ -103,7 +103,7 @@ void StatUpdateFull::onReceive() {
     //mob->getProperty().setInt("", nameFlag_);
 
     if (packetContents_ > 0) {
-        mob->getProperty("gender").setInt(gender_);
+        mob->setGender(gender_);
         mob->getProperty("strength").setInt(str_);
         mob->getProperty("dexterity").setInt(dex_);
         mob->getProperty("intelligence").setInt(int_);
@@ -119,7 +119,7 @@ void StatUpdateFull::onReceive() {
 
     if (packetContents_ >= 5) {
         mob->getProperty("weight-max").setInt( weightMax_);
-        mob->getProperty("race").setInt(race_);
+        mob->setRace(race_);
     }
 
     if (packetContents_ >= 3) {

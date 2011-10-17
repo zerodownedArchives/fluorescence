@@ -173,7 +173,7 @@ Config::Config() {
     variablesMap_["/fluo/ui/gameview/font@size"].setInt(12, true);
 
 
-    // layer priorities for animations
+    // layer priorities for animations and paperdoll
     variablesMap_["/fluo/ui/layer-priorities@north"].setString      ("21, 22,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 23, 24, 16, 12,  4", true);
     variablesMap_["/fluo/ui/layer-priorities@northeast"].setString  ("21, 23,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 22, 24, 16, 12,  4", true);
     variablesMap_["/fluo/ui/layer-priorities@east"].setString       ("21, 23,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 22, 24, 16, 12,  4", true);
@@ -182,6 +182,7 @@ Config::Config() {
     variablesMap_["/fluo/ui/layer-priorities@southwest"].setString  ("21, 23,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 22, 24, 16, 12,  4", true);
     variablesMap_["/fluo/ui/layer-priorities@west"].setString       ("21, 22,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 23, 24, 16, 12,  4", true);
     variablesMap_["/fluo/ui/layer-priorities@northwest"].setString  ("21, 22,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 23, 24, 16, 12,  4", true);
+    variablesMap_["/fluo/ui/layer-priorities@paperdoll"].setString  ("22, 23,  4,  3,  2, 21, 13,  9, 10, 15, 16, 17,  7, 11, 12, 19,  8, 20,  6,  1, 24, 17, 14,  5", true);
 
 
     // input stuff

@@ -24,6 +24,7 @@
 
 namespace fluo {
 namespace ui {
+namespace components {
 
 WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent),
         centerTileX_(0), centerTileY_(0), centerTileZ_(0) {
@@ -286,5 +287,6 @@ void WorldView::setCenterObject(boost::shared_ptr<world::IngameObject> obj) {
     centerObject_ = obj;
 }
 
+}
 }
 }

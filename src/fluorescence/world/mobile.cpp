@@ -17,6 +17,11 @@
 #include <ui/gumpmenu.hpp>
 #include <ui/gumpfactory.hpp>
 #include <ui/cursormanager.hpp>
+#include <ui/components/gumpview.hpp>
+#include <ui/singletextureprovider.hpp>
+#include <ui/animtextureprovider.hpp>
+
+#include <world/manager.hpp>
 
 namespace fluo {
 namespace world {
@@ -26,6 +31,10 @@ Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE),
 
 boost::shared_ptr<ui::Texture> Mobile::getIngameTexture() const {
     return textureProvider_->getTexture();
+}
+
+boost::shared_ptr<ui::Texture> Mobile::getGumpTexture() const {
+    return gumpTextureProvider_->getTexture();
 }
 
 unsigned int Mobile::getBodyId() const {
@@ -110,6 +119,8 @@ void Mobile::updateRenderPriority() {
 void Mobile::updateTextureProvider() {
     textureProvider_.reset(new ui::AnimTextureProvider(bodyId_));
     textureProvider_->setDirection(direction_);
+
+    gumpTextureProvider_.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_GUMPART_MUL, 0xC));
 }
 
 bool Mobile::updateAnimation(unsigned int elapsedMillis) {
@@ -187,7 +198,12 @@ void Mobile::removeLinkedGump(ui::GumpMenu* menu) {
 void Mobile::onStartDrag(const CL_Point& mousePos) {
     ui::Manager::getSingleton()->getCursorManager()->stopDragging();
 
-    ui::GumpMenu* statsMenu = ui::Manager::getSingleton()->openXmlGump("smallstatus");
+    ui::GumpMenu* statsMenu;
+    if (isPlayer()) {
+        statsMenu = ui::Manager::getSingleton()->openXmlGump("status-self");
+    } else {
+        statsMenu = ui::Manager::getSingleton()->openXmlGump("status-other");
+    }
     addLinkedGump(statsMenu);
 
     CL_Size size = statsMenu->get_size();
@@ -199,6 +215,49 @@ void Mobile::onStartDrag(const CL_Point& mousePos) {
 
     net::packets::StatSkillQuery queryPacket(getSerial(), net::packets::StatSkillQuery::QUERY_STATS);
     net::Manager::getSingleton()->send(queryPacket);
+}
+
+void Mobile::openPaperdoll() {
+    ui::GumpMenu* paperdoll;
+    if (isPlayer()) {
+        paperdoll = ui::Manager::getSingleton()->openXmlGump("paperdoll-self");
+    } else {
+        paperdoll = ui::Manager::getSingleton()->openXmlGump("paperdoll-other");
+    }
+    ui::components::GumpView* pdView = dynamic_cast<ui::components::GumpView*>(paperdoll->get_named_item("paperdoll"));
+    if (pdView) {
+        pdView->addObject(shared_from_this());
+    } else {
+        LOG_ERROR << "Unable to find paperdoll component in paperdoll gump" << std::endl;
+    }
+    addLinkedGump(paperdoll);
+}
+
+void Mobile::setRace(unsigned int race) {
+    if (race_ != race) {
+        race_ = race;
+    }
+
+    // TODO
+}
+
+unsigned int Mobile::getRace() const {
+    return race_;
+}
+
+void Mobile::setGender(unsigned int gender) {
+    // TODO
+}
+
+unsigned int Mobile::isFemale() const {
+    return female_;
+}
+
+void Mobile::updateGumpTextureProvider() {
+}
+
+bool Mobile::isPlayer() const {
+    return world::Manager::getSingleton()->getPlayer().get() == this;
 }
 
 }

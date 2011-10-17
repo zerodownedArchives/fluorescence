@@ -29,6 +29,7 @@ private:
     /// used to sort the objects according to their layer
     bool renderPriorityComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b);
 
+    std::vector<int> layerPriorities_;
 };
 
 }

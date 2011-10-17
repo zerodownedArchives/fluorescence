@@ -21,6 +21,7 @@
 #include "packets/equippedmobile.hpp" // 0x78
 #include "packets/loginrequest.hpp" // 0x80
 #include "packets/loginreject.hpp" // 0x82
+#include "packets/openpaperdoll.hpp" //0x88
 #include "packets/serverredirect.hpp" // 0x8c
 #include "packets/gameserverloginrequest.hpp" // 0x91
 #include "packets/gameserverselect.hpp" // 0xA0

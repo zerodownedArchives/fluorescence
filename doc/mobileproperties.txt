@@ -1,6 +1,5 @@
 name
-race
-gender
+paperdoll-name
 
 strength
 dexterity

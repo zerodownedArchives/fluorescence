@@ -54,6 +54,7 @@ public:
     void onObjectWorldTextureChanged();
     void onObjectWorldCoordinatesChanged();
     void onObjectWorldPriorityChanged();
+    void onGumpChanged();
     void forceRepaint();
 
     bool requireWorldRepaint() const;
@@ -69,12 +70,12 @@ protected:
     // items to remove are collected here before removal, because batch remove is more efficient
     std::list<boost::shared_ptr<world::IngameObject> > removeList_;
 
-    bool objectWorldTextureChanged_;
-    bool objectWorldCoordinatesChanged_;
-    bool objectWorldPriorityChanged_;
+    bool worldTextureChanged_;
+    bool worldCoordinatesChanged_;
+    bool worldPriorityChanged_;
     bool forceRepaint_;
 
-    bool gumpTextureChanged_;
+    bool gumpChanged_;
 
 private:
     std::list<boost::shared_ptr<world::IngameObject> > objectList_;

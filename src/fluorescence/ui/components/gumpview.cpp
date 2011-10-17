@@ -25,6 +25,7 @@
 
 namespace fluo {
 namespace ui {
+namespace components {
 
 GumpView::GumpView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent) {
     this->set_geometry(bounds);
@@ -51,10 +52,10 @@ unsigned int GumpView::getHeight() {
 }
 
 void GumpView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
-    gc.push_cliprect(get_geometry());
-    //CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
-    renderer_->render(gc);
-    gc.pop_cliprect();
+    //gc.push_cliprect(get_geometry());
+    CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
+    //renderer_->render(gc);
+    //gc.pop_cliprect();
 }
 
 bool GumpView::onInputPressed(const CL_InputEvent& e) {
@@ -67,8 +68,10 @@ bool GumpView::onInputPressed(const CL_InputEvent& e) {
     switch (e.id) {
     case CL_MOUSE_LEFT:
         set_focus();
-        clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
-        if (clickedObject && clickedObject->isDraggable()) {
+        clickedObject = renderer_->getRenderQueue()->getFirstObjectAt(e.mouse_pos.x, e.mouse_pos.y, false);
+        if (!clickedObject) {
+            consumed = false;
+        } else if (clickedObject->isDraggable()) {
             ui::Manager::getSingleton()->getCursorManager()->setDragCandidate(clickedObject, e.mouse_pos.x, e.mouse_pos.y);
         }
         break;
@@ -89,7 +92,7 @@ bool GumpView::onInputReleased(const CL_InputEvent& e) {
 
     switch (e.id) {
     case CL_MOUSE_LEFT:
-        clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
+        clickedObject = renderer_->getRenderQueue()->getFirstObjectAt(e.mouse_pos.x, e.mouse_pos.y, false);
         draggedObject = ui::Manager::getSingleton()->getCursorManager()->stopDragging();
 
         if (clickedObject) {
@@ -101,6 +104,8 @@ bool GumpView::onInputReleased(const CL_InputEvent& e) {
         } else if (draggedObject) {
             // dragged to void
             draggedObject->onDraggedToVoid();
+        } else {
+            consumed = false;
         }
         break;
 
@@ -114,7 +119,7 @@ bool GumpView::onInputReleased(const CL_InputEvent& e) {
 
 bool GumpView::onDoubleClick(const CL_InputEvent& e) {
     if (e.id == CL_MOUSE_LEFT) {
-        boost::shared_ptr<world::IngameObject> clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
+        boost::shared_ptr<world::IngameObject> clickedObject = renderer_->getRenderQueue()->getFirstObjectAt(e.mouse_pos.x, e.mouse_pos.y, false);
         if (!clickedObject) {
             LOG_DEBUG << "doublelicked, but found no object" << std::endl;
         } else {
@@ -127,12 +132,6 @@ bool GumpView::onDoubleClick(const CL_InputEvent& e) {
     return false;
 }
 
-boost::shared_ptr<world::IngameObject> GumpView::getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) {
-    //LOG_INFO << "GumpView::getFirstObjectAt " << pixelX << " " << pixelY << std::endl;
-
-    return renderer_->getRenderQueue()->getFirstObjectAt(pixelX, pixelY, false);
-}
-
 void GumpView::addObject(boost::shared_ptr<world::IngameObject> obj) {
     obj->addToRenderQueue(renderer_->getRenderQueue());
 }
@@ -141,5 +140,6 @@ void GumpView::removeObject(boost::shared_ptr<world::IngameObject> obj) {
     obj->removeFromRenderQueue(renderer_->getRenderQueue());
 }
 
+}
 }
 }

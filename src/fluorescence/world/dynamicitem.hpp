@@ -25,6 +25,7 @@ public:
     DynamicItem(Serial serial);
 
     virtual boost::shared_ptr<ui::Texture> getIngameTexture() const;
+    virtual boost::shared_ptr<ui::Texture> getGumpTexture() const;
 
     void setArtId(unsigned int artId);
     unsigned int getArtId() const;
@@ -41,10 +42,11 @@ public:
     virtual void onClick();
     virtual void onDoubleClick();
 
-    virtual void onStartDrag();
+    virtual void onStartDrag(const CL_Point& mousePos);
     virtual void onDraggedOnto(boost::shared_ptr<IngameObject> obj);
 
     void setLayer(unsigned int layer);
+    unsigned int getLayer() const;
 
     void playAnim(unsigned int animId);
 
@@ -58,6 +60,7 @@ private:
     unsigned int direction_;
 
     boost::shared_ptr<ui::TextureProvider> textureProvider_;
+    boost::shared_ptr<ui::TextureProvider> gumpTextureProvider_;
 
     const data::StaticTileInfo* tileDataInfo_;
 

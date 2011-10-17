@@ -1735,3 +1735,9 @@ label#label-bigfont
 {
     font-size:18pt;
 }
+
+window#nobackground
+{
+    bg-color:transparent;
+    bg-image:ToolBarButtonNormal;
+}

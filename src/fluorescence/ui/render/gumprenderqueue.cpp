@@ -3,6 +3,7 @@
 
 #include <boost/bind.hpp>
 
+#include <client.hpp>
 #include <misc/log.hpp>
 
 #include <world/ingameobject.hpp>
@@ -15,30 +16,45 @@ namespace fluo {
 namespace ui {
 
 bool GumpRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
-    const int* aPrio = a->getRenderPriorities();
-    const int* bPrio = b->getRenderPriorities();
-
-    if (aPrio[0] > bPrio[0]) {
+    // mobile is always rendered first;
+    if (a->isMobile()) {
+        return true;
+    } else if (b->isMobile()) {
         return false;
     }
 
-    for (int i=1; i < 6; ++i) {
-        if (aPrio[i-1] == bPrio[i-1]) {
-            if (aPrio[i] > bPrio[i]) {
-                return false;
-            }
-        } else {
-            return true;
-        }
+    if (!a->isDynamicItem() || !b->isDynamicItem()) {
+        // why is that in this queue?
+        LOG_WARN << "Object other than mobile or item in GumpRenderQueue" << std::endl;
+        return true;
     }
 
-    /* None of the priorities differs. To make sure this function sorts the list exactly the same, no matter how the
-     * list elements were in the list before, we use the memory address of the objects as a last resort
-     */
-    return (unsigned long)a.get() <= (unsigned long)b.get();
+    boost::shared_ptr<world::DynamicItem> aDyn = boost::dynamic_pointer_cast<world::DynamicItem>(a);
+    boost::shared_ptr<world::DynamicItem> bDyn = boost::dynamic_pointer_cast<world::DynamicItem>(b);
+
+    unsigned int aLayer = aDyn->getLayer() - 1;
+    unsigned int bLayer = bDyn->getLayer() - 1;
+
+    if (aLayer >= layerPriorities_.size()) {
+        LOG_WARN << "Rendering item with invalid layer " << aDyn->getLayer() << ". Unable to assign render priority" << std::endl;
+        aLayer = 0;
+    }
+
+    if (bLayer >= layerPriorities_.size()) {
+        LOG_WARN << "Rendering item with invalid layer " << bDyn->getLayer() << ". Unable to assign render priority" << std::endl;
+        bLayer = 0;
+    }
+
+    if (layerPriorities_[aLayer] == layerPriorities_[bLayer]) {
+        LOG_WARN << "2 Items at same layer in GumpRenderQueue::renderPriorityComparator" << std::endl;
+        return true;
+    }
+
+    return layerPriorities_[aLayer] <= layerPriorities_[bLayer];
 }
 
 GumpRenderQueue::GumpRenderQueue() : RenderQueue(boost::bind(&GumpRenderQueue::renderPriorityComparator, this, _1, _2)) {
+    layerPriorities_ = Client::getSingleton()->getConfig()["/fluo/ui/layer-priorities@paperdoll"].asIntList();
 }
 
 GumpRenderQueue::~GumpRenderQueue() {
@@ -46,29 +62,23 @@ GumpRenderQueue::~GumpRenderQueue() {
 
 
 void GumpRenderQueue::preRender() {
-    //processRemoveList();
-    //bool requireSort = processAddList();
+    if (!removeList_.empty()) {
+        processRemoveList();
+        forceRepaint_ = true;
+    }
 
-    //RenderQueue::iterator igIter = begin();
-    //RenderQueue::iterator igEnd = end();
+    bool requireSort = processAddList();
 
-    //resetGumpRepaintIndicators();
-
-    //for (; igIter != igEnd; ++igIter) {
-        //// update rendering data (priority, vertex coordinates, texture, ...) if necessary
-        //(*igIter)->updateGumpRenderData(elapsedMillis);
-    //}
-
-    //if (requireSort || objectGumpPriorityChanged_ ) {
-        //sort();
-        //objectWorldPriorityChanged_ = false;
-    //}
+    if (requireSort || gumpChanged_) {
+        sort();
+    }
 }
 
 void GumpRenderQueue::postRender() {
+    resetGumpRepaintIndicators();
 }
 
-boost::shared_ptr<world::IngameObject> GumpRenderQueue::getFirstObjectAt(int worldX, int worldY, bool getTopParent) {
+boost::shared_ptr<world::IngameObject> GumpRenderQueue::getFirstObjectAt(int pixelX, int pixelY, bool getTopParent) {
     RenderQueue::reverse_iterator igIter = rbegin();
     RenderQueue::reverse_iterator igEnd = rend();
 
@@ -76,7 +86,7 @@ boost::shared_ptr<world::IngameObject> GumpRenderQueue::getFirstObjectAt(int wor
 
     for (; igIter != igEnd; ++igIter) {
         boost::shared_ptr<world::IngameObject> curObj = *igIter;
-        if (curObj->isVisible() && curObj->hasPixel(worldX, worldY)) {
+        if (curObj->isDynamicItem() && curObj->isVisible() && curObj->hasGumpPixel(pixelX, pixelY)) {
 
             if (getTopParent) {
                 curObj = curObj->getTopParent();

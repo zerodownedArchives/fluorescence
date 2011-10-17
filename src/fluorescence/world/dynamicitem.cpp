@@ -13,10 +13,11 @@
 #include <data/artloader.hpp>
 #include <data/tiledataloader.hpp>
 
+#include <ui/manager.hpp>
 #include <ui/texture.hpp>
 #include <ui/textureprovider.hpp>
 #include <ui/animtextureprovider.hpp>
-#include <ui/manager.hpp>
+#include <ui/singletextureprovider.hpp>
 
 #include <net/manager.hpp>
 #include <net/packets/singleclick.hpp>
@@ -36,6 +37,10 @@ boost::shared_ptr<ui::Texture> DynamicItem::getIngameTexture() const {
     } else {
         return textureProvider_->getTexture();
     }
+}
+
+boost::shared_ptr<ui::Texture> DynamicItem::getGumpTexture() const {
+    return gumpTextureProvider_->getTexture();
 }
 
 unsigned int DynamicItem::getArtId() const {
@@ -163,7 +168,12 @@ void DynamicItem::updateRenderPriority() {
         worldRenderData_.renderPriority_[2] = 40;
 
         // level 2 layer priority
-        worldRenderData_.renderPriority_[3] = layerPriorities[parent->getDirection()][layer_ - 1];
+        unsigned int layerTmp = layer_ - 1;
+        if (layerTmp >= layerPriorities[parent->getDirection()].size()) {
+            LOG_WARN << "Rendering item with invalid layer " << layer_ << ". Unable to assign render priority" << std::endl;
+            layerTmp = 0;
+        }
+        worldRenderData_.renderPriority_[3] = layerPriorities[parent->getDirection()][layerTmp];
 
         // level 5 serial
         worldRenderData_.renderPriority_[5] = getSerial();
@@ -199,10 +209,14 @@ void DynamicItem::updateTextureProvider() {
         animTextureProvider_.reset(new ui::AnimTextureProvider(tileDataInfo_->animId_));
         boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
         setDirection(parent->getDirection());
+
+        gumpTextureProvider_.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_GUMPART_MUL, tileDataInfo_->animId_ + 50000));
+        LOG_DEBUG << "Gump idx " << tileDataInfo_->animId_ + 50000 << std::endl;
     } else {
         textureProvider_ = data::Manager::getItemTextureProvider(artId_);
 
         animTextureProvider_.reset(); // remove anim tex provider if not equipped
+        gumpTextureProvider_.reset();
     }
 }
 
@@ -236,7 +250,7 @@ void DynamicItem::onDoubleClick() {
     net::Manager::getSingleton()->send(pkt);
 }
 
-void DynamicItem::onStartDrag() {
+void DynamicItem::onStartDrag(const CL_Point& mousePos) {
     net::packets::PickUpItem pkt(this, getAmount());
     net::Manager::getSingleton()->send(pkt);
 }
@@ -270,6 +284,10 @@ void DynamicItem::onDraggedOnto(boost::shared_ptr<IngameObject> obj) {
 
 void DynamicItem::setLayer(unsigned int layer) {
     layer_ = layer;
+}
+
+unsigned int DynamicItem::getLayer() const {
+    return layer_;
 }
 
 bool DynamicItem::isMirrored() const {

@@ -174,15 +174,19 @@ boost::shared_ptr<world::IngameObject> RenderQueue::debugIngameGetByIndex(unsign
 }
 
 void RenderQueue::onObjectWorldTextureChanged() {
-    objectWorldTextureChanged_ = true;
+    worldTextureChanged_ = true;
 }
 
 void RenderQueue::onObjectWorldCoordinatesChanged() {
-    objectWorldCoordinatesChanged_ = true;
+    worldCoordinatesChanged_ = true;
 }
 
 void RenderQueue::onObjectWorldPriorityChanged() {
-    objectWorldPriorityChanged_ = true;
+    worldPriorityChanged_ = true;
+}
+
+void RenderQueue::onGumpChanged() {
+    gumpChanged_ = true;
 }
 
 void RenderQueue::forceRepaint() {
@@ -190,15 +194,25 @@ void RenderQueue::forceRepaint() {
 }
 
 bool RenderQueue::requireWorldRepaint() const {
-    return objectWorldTextureChanged_ || objectWorldCoordinatesChanged_ || objectWorldPriorityChanged_ || forceRepaint_;
+    return worldTextureChanged_ || worldCoordinatesChanged_ || worldPriorityChanged_ || forceRepaint_;
 }
 
 void RenderQueue::resetWorldRepaintIndicators() {
-    objectWorldTextureChanged_ = false;
-    objectWorldCoordinatesChanged_ = false;
-    objectWorldPriorityChanged_ = false;
+    worldTextureChanged_ = false;
+    worldCoordinatesChanged_ = false;
+    worldPriorityChanged_ = false;
     forceRepaint_ = false;
 }
+
+bool RenderQueue::requireGumpRepaint() const {
+    return gumpChanged_ || forceRepaint_;
+}
+
+void RenderQueue::resetGumpRepaintIndicators() {
+    gumpChanged_ = false;
+    forceRepaint_ = false;
+}
+
 
 }
 }

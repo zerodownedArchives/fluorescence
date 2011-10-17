@@ -12,12 +12,15 @@ namespace fluo {
 namespace ui {
 
 class RenderQueue;
-class WorldView;
 class Texture;
+
+namespace components {
+class WorldView;
+}
 
 class WorldViewRenderer : public IngameObjectRenderer {
 public:
-    WorldViewRenderer(boost::shared_ptr<RenderQueue> renderQueue, WorldView* ingameView);
+    WorldViewRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::WorldView* ingameView);
     ~WorldViewRenderer();
 
     virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc);
@@ -28,7 +31,7 @@ public:
 private:
     boost::shared_ptr<CL_ProgramObject> shaderProgram_;
 
-    WorldView* worldView_;
+    components::WorldView* worldView_;
     boost::shared_ptr<RenderQueue> renderQueue_;
 
     boost::shared_ptr<Texture> texture_;

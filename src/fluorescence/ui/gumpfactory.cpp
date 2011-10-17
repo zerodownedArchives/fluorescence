@@ -23,6 +23,7 @@
 #include "components/label.hpp"
 #include "components/worldview.hpp"
 #include "components/propertylabel.hpp"
+#include "components/gumpview.hpp"
 
 namespace fluo {
 namespace ui {
@@ -77,7 +78,8 @@ GumpFactory::GumpFactory() {
     functionTable_["page"] = boost::bind(&GumpFactory::parsePage, this, _1, _2, _3);
 
     functionTable_["image"] = boost::bind(&GumpFactory::parseImage, this, _1, _2, _3);
-    functionTable_["ingameview"] = boost::bind(&GumpFactory::parseIngameView, this, _1, _2, _3);
+    functionTable_["worldview"] = boost::bind(&GumpFactory::parseWorldView, this, _1, _2, _3);
+    functionTable_["paperdoll"] = boost::bind(&GumpFactory::parsePaperdoll, this, _1, _2, _3);
 }
 
 void GumpFactory::addRepeatContext(const UnicodeString& name, const RepeatContext& context) {
@@ -156,6 +158,7 @@ GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
         bool draggable = rootNode.attribute("draggable").as_bool();
         UnicodeString action = StringConverter::fromUtf8(rootNode.attribute("action").value());
         UnicodeString cancelAction = StringConverter::fromUtf8(rootNode.attribute("cancelaction").value());
+        bool background = rootNode.attribute("background").as_bool();
 
         CL_GUITopLevelDescription desc(bounds, false);
         desc.set_decorations(false);
@@ -163,6 +166,10 @@ GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
         ret = new GumpMenu(desc);
         ret->setClosable(closable);
         ret->setDraggable(draggable);
+
+        if (!background) {
+            ret->set_id_name("nobackground");
+        }
 
         if (action.length() > 0) {
             ret->setAction(action);
@@ -625,6 +632,8 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
         if (height == 0) {
             height = texture->getPixelBuffer()->get_height();
         }
+
+        LOG_DEBUG << "width=" << width << " height=" << height << std::endl;
     } else if (artId) {
         boost::shared_ptr<ui::Texture> texture = data::Manager::getArtLoader()->getItemTexture(artId);
         // TODO: find something better than busy waiting here
@@ -818,10 +827,20 @@ bool GumpFactory::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     return true;
 }
 
-bool GumpFactory::parseIngameView(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool GumpFactory::parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
 
-    ui::WorldView* worldView = new ui::WorldView(parent, bounds);
+    ui::components::WorldView* worldView = new ui::components::WorldView(parent, bounds);
+
+    parseId(node, worldView);
+
+    return true;
+}
+
+bool GumpFactory::parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, parent);
+
+    ui::components::GumpView* worldView = new ui::components::GumpView(parent, bounds);
 
     parseId(node, worldView);
 

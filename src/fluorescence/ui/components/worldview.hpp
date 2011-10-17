@@ -17,6 +17,8 @@ namespace ui {
 
 class WorldViewRenderer;
 
+namespace components {
+
 class WorldView : public GumpElement {
 public:
     WorldView(CL_GUIComponent* parent, const CL_Rect& bounds);
@@ -58,6 +60,7 @@ private:
     bool onDoubleClick(const CL_InputEvent& e);
 };
 
+}
 }
 }
 

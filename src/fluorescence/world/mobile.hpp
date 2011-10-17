@@ -2,17 +2,19 @@
 #define FLUO_WORLD_MOBILE_HPP
 
 #include <list>
+#include <map>
 
 #include "serverobject.hpp"
 
 #include <misc/variable.hpp>
-#include <ui/animtextureprovider.hpp>
 
 namespace fluo {
 
 namespace ui {
     class Texture;
     class GumpMenu;
+    class AnimTextureProvider;
+    class SingleTextureProvider;
 }
 
 
@@ -24,9 +26,16 @@ public:
     Mobile(Serial serial);
 
     virtual boost::shared_ptr<ui::Texture> getIngameTexture() const;
+    virtual boost::shared_ptr<ui::Texture> getGumpTexture() const;
 
     unsigned int getBodyId() const;
     void setBodyId(unsigned int value);
+
+    void setRace(unsigned int race);
+    unsigned int getRace() const;
+
+    void setGender(unsigned int gender);
+    unsigned int isFemale() const;
 
     virtual void onClick();
     virtual void onDoubleClick();
@@ -46,6 +55,10 @@ public:
 
     virtual void onStartDrag(const CL_Point& mousePos);
 
+    void openPaperdoll();
+
+    bool isPlayer() const;
+
 private:
     unsigned int bodyId_;
     unsigned int direction_;
@@ -55,12 +68,17 @@ private:
     void updateRenderPriority();
     void updateTextureProvider();
     bool updateAnimation(unsigned int elapsedMillis);
+    void updateGumpTextureProvider();
 
     boost::shared_ptr<ui::AnimTextureProvider> textureProvider_;
+    boost::shared_ptr<ui::SingleTextureProvider> gumpTextureProvider_;
 
     std::map<UnicodeString, Variable> propertyMap_;
 
     std::list<ui::GumpMenu*> linkedGumps_;
+
+    unsigned int race_;
+    bool female_;
 };
 
 }

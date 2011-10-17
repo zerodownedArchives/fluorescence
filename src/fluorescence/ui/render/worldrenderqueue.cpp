@@ -53,7 +53,7 @@ void WorldRenderQueue::preRender() {
 
     bool requireSort = processAddList();
 
-    if (requireSort || objectWorldPriorityChanged_ ) {
+    if (requireSort || worldPriorityChanged_ ) {
         sort();
     }
 }

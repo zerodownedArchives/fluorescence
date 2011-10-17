@@ -373,7 +373,7 @@ boost::shared_ptr<ui::TextureProvider> Manager::getItemTextureProvider(unsigned 
         ret.reset(new ui::AnimDataTextureProvider(artId));
     } else {
         // if not, just load the simple one
-        ret.reset(new ui::SingleTextureProvider(artId));
+        ret.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_ART_MUL, artId));
     }
 
     return ret;

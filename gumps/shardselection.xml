@@ -1,4 +1,4 @@
-<gump x="center" y="center" width="250" height="250" closable="0" draggable="1" action="selectshard-first" cancelaction="shutdown">
+<gump x="center" y="center" width="250" height="250" closable="0" draggable="1" action="selectshard-first" cancelaction="shutdown" background="1">
     <!--
     In case you want to redesign this gump, keep in mind that at this point, you can not
     access any uo data (e.g. art.mul graphics), as the mul files are not loaded yet.

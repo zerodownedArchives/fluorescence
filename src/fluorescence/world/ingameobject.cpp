@@ -161,6 +161,15 @@ bool IngameObject::hasPixel(int pixelX, int pixelY) const {
     }
 }
 
+bool IngameObject::hasGumpPixel(int pixelX, int pixelY) const {
+    boost::shared_ptr<ui::Texture> tex = getGumpTexture();
+    if (tex && tex->isReadComplete()) {
+        return tex->hasPixel(pixelX, pixelY);
+    } else {
+        return false;
+    }
+}
+
 const CL_Vec3f* IngameObject::getVertexNormals() const {
     return worldRenderData_.vertexNormals_;
 }
@@ -245,6 +254,17 @@ void IngameObject::addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
     if (!isInRenderQueue(rq)) {
         renderQueues_.push_back(weakRq);
         rq->add(shared_from_this());
+
+        if (!childObjects_.empty()) {
+            std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+            std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
+
+            for (; iter != end; ++iter) {
+                if ((*iter)->isSpeech() || isMobile()) {
+                    (*iter)->addToRenderQueue(rq);
+                }
+            }
+        }
     }
 }
 
@@ -260,6 +280,17 @@ void IngameObject::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) 
     if (iter != end) {
         renderQueues_.erase(iter);
         rq->remove(shared_from_this());
+
+        if (!childObjects_.empty()) {
+            std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+            std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
+
+            for (; iter != end; ++iter) {
+                if ((*iter)->isSpeech() || isMobile()) {
+                    (*iter)->addToRenderQueue(rq);
+                }
+            }
+        }
     }
 }
 
@@ -430,6 +461,23 @@ void IngameObject::notifyRenderQueuesWorldPriority() {
     }
 }
 
+void IngameObject::notifyRenderQueuesGump() {
+    switch (renderQueues_.size()) {
+    case 0:
+        // do nothing
+        break;
+    case 1:
+        renderQueues_.front().lock()->onGumpChanged();
+        break;
+    default:
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
+        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
+        for (; rqIter != rqEnd; ++rqIter) {
+            rqIter->lock()->onGumpChanged();
+        }
+    }
+}
+
 void IngameObject::forceRepaint() {
     switch (renderQueues_.size()) {
     case 0:
@@ -449,6 +497,9 @@ void IngameObject::forceRepaint() {
 
 const ui::WorldRenderData& IngameObject::getWorldRenderData() const {
     return worldRenderData_;
+}
+
+void IngameObject::updateGumpTextureProvider() {
 }
 
 }

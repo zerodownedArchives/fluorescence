@@ -16,7 +16,7 @@
 namespace fluo {
 namespace ui {
 
-GumpRenderer::GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, GumpView* gumpView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_GUMP, true),
+GumpRenderer::GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::GumpView* gumpView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_GUMP, true),
             gumpView_(gumpView), renderQueue_(renderQueue) {
 
     CL_GraphicContext gc = fluo::ui::Manager::getSingleton()->getGraphicContext();
@@ -30,6 +30,10 @@ GumpRenderer::GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, GumpView*
         LOG_EMERGENCY << "Error while linking program:\n" << shaderProgram_->get_info_log().c_str() << std::endl;
         throw CL_Exception("Unable to link program");
     }
+}
+
+GumpRenderer::~GumpRenderer() {
+    renderQueue_->clear();
 }
 
 
@@ -59,6 +63,8 @@ boost::shared_ptr<Texture> GumpRenderer::getTexture(CL_GraphicContext& gc) {
 
 
 void GumpRenderer::render(CL_GraphicContext& gc) {
+    renderQueue_->preRender();
+
     gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
 
     gc.set_program_object(*shaderProgram_, cl_program_matrix_modelview_projection);
@@ -119,6 +125,8 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
 
     gc.reset_textures();
     gc.reset_program_object();
+
+    renderQueue_->postRender();
 }
 
 boost::shared_ptr<RenderQueue> GumpRenderer::getRenderQueue() const {

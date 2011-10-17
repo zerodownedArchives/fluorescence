@@ -247,6 +247,9 @@ void GumpMenu::updateMobileProperties() {
 
 void GumpMenu::setLinkedMobile(world::Mobile* mob) {
     linkedMobile_ = mob;
+    if (linkedMobile_) {
+        updateMobileProperties();
+    }
 }
 
 void GumpMenu::onClose() {

@@ -12,13 +12,17 @@
 namespace fluo {
 namespace ui {
 
-class RenderQueue;
+namespace components {
 class GumpView;
+}
+
+class RenderQueue;
 class Texture;
 
 class GumpRenderer : public IngameObjectRenderer {
 public:
-    GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, GumpView* gumpView);
+    GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::GumpView* gumpView);
+    ~GumpRenderer();
 
     virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc);
 
@@ -29,7 +33,7 @@ public:
 private:
     boost::shared_ptr<CL_ProgramObject> shaderProgram_;
 
-    GumpView* gumpView_;
+    components::GumpView* gumpView_;
     boost::shared_ptr<RenderQueue> renderQueue_;
 
     boost::shared_ptr<Texture> texture_;

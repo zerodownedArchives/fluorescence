@@ -19,7 +19,7 @@
 namespace fluo {
 namespace ui {
 
-WorldViewRenderer::WorldViewRenderer(boost::shared_ptr<RenderQueue> renderQueue, WorldView* worldView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_WORLD, true),
+WorldViewRenderer::WorldViewRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::WorldView* worldView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_WORLD, true),
         worldView_(worldView), renderQueue_(renderQueue) {
 
     CL_GraphicContext gc = fluo::ui::Manager::getSingleton()->getGraphicContext();
@@ -37,6 +37,7 @@ WorldViewRenderer::WorldViewRenderer(boost::shared_ptr<RenderQueue> renderQueue,
 }
 
 WorldViewRenderer::~WorldViewRenderer() {
+    renderQueue_->clear();
 }
 
 void WorldViewRenderer::checkTextureSize() {

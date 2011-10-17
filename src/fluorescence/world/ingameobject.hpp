@@ -67,6 +67,7 @@ public:
 
     /// returns wheter or not the given pixel coordinate is covered by this object's texture
     virtual bool hasPixel(int pixelX, int pixelY) const;
+    virtual bool hasGumpPixel(int pixelX, int pixelY) const;
 
     virtual bool isMirrored() const;
 
@@ -119,6 +120,9 @@ protected:
     void invalidateRenderPriority();
 
 
+    virtual void updateGumpTextureProvider();
+
+
     bool draggable_;
 
     boost::weak_ptr<IngameObject> parentObject_;
@@ -133,6 +137,7 @@ private:
     void notifyRenderQueuesWorldTexture();
     void notifyRenderQueuesWorldCoordinates();
     void notifyRenderQueuesWorldPriority();
+    void notifyRenderQueuesGump();
     void forceRepaint();
 
 

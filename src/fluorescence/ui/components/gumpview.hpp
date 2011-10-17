@@ -17,6 +17,8 @@ namespace ui {
 
 class GumpRenderer;
 
+namespace components {
+
 class GumpView : public GumpElement {
 public:
     GumpView(CL_GUIComponent* parent, const CL_Rect& bounds);
@@ -30,9 +32,6 @@ public:
     void addObject(boost::shared_ptr<world::IngameObject> obj);
     void removeObject(boost::shared_ptr<world::IngameObject> obj);
 
-
-    boost::shared_ptr<world::IngameObject> getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY);
-
 private:
     boost::shared_ptr<GumpRenderer> renderer_;
 
@@ -41,6 +40,7 @@ private:
     bool onDoubleClick(const CL_InputEvent& e);
 };
 
+}
 }
 }
 
