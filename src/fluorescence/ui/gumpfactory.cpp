@@ -178,6 +178,12 @@ GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
         if (cancelAction.length() > 0) {
             ret->setCancelAction(cancelAction);
         }
+
+        if (doc.find_node(boost::bind(&GumpFactory::gameViewFindHelper, this, _1))) {
+            ret->set_stay_in_background(true);
+        } else {
+            ret->set_stay_in_background(false);
+        }
     }
 
     parseChildren(rootNode, ret, ret);
@@ -845,6 +851,10 @@ bool GumpFactory::parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, 
     parseId(node, worldView);
 
     return true;
+}
+
+bool GumpFactory::gameViewFindHelper(pugi::xml_node& node) const {
+    return strcmp(node.name(), "worldview") == 0;
 }
 
 }

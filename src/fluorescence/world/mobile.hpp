@@ -59,6 +59,8 @@ public:
 
     bool isPlayer() const;
 
+    virtual void onDelete();
+
 private:
     unsigned int bodyId_;
     unsigned int direction_;

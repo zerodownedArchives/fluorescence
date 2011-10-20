@@ -259,7 +259,9 @@ void GumpMenu::onClose() {
 }
 
 void GumpMenu::startDragging(const CL_Point& mousePos) {
-    bring_to_front();
+    if (!stay_in_background()) {
+        bring_to_front();
+    }
     capture_mouse(true);
     lastMousePos_ = mousePos;
     isDragged_ = true;

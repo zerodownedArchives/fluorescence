@@ -93,7 +93,7 @@ public:
     virtual void onAddedToParent();
     virtual void onRemovedFromParent();
 
-    void onDelete();
+    virtual void onDelete();
 
 
     bool isMap() const;

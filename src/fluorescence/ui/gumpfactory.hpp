@@ -96,6 +96,8 @@ private:
 
     std::map<UnicodeString, boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> > functionTable_;
     std::map<UnicodeString, RepeatContext> repeatContexts_;
+
+    bool gameViewFindHelper(pugi::xml_node& node) const;
 };
 
 }

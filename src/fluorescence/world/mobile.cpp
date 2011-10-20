@@ -260,5 +260,18 @@ bool Mobile::isPlayer() const {
     return world::Manager::getSingleton()->getPlayer().get() == this;
 }
 
+void Mobile::onDelete() {
+    std::list<ui::GumpMenu*>::iterator iter = linkedGumps_.begin();
+    std::list<ui::GumpMenu*>::iterator end = linkedGumps_.end();
+
+    for (; iter != end; ++iter) {
+        ui::Manager::getSingleton()->closeGumpMenu(*iter);
+    }
+
+    linkedGumps_.clear();
+
+    IngameObject::onDelete();
+}
+
 }
 }
