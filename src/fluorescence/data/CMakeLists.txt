@@ -29,6 +29,7 @@ set(DATA_LOADERS_HPP
     data/unifontloader.hpp
 
     data/mobtypesloader.hpp
+    data/deffileloader.hpp
     )
 
 set(DATA_LOADERS_CPP

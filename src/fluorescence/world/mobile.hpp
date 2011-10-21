@@ -62,7 +62,8 @@ public:
     virtual void onDelete();
 
 private:
-    unsigned int bodyId_;
+    unsigned int baseBodyId_; // as sent by the server
+    unsigned int bodyId_; // after transformation, e.g. by body.def
     unsigned int direction_;
     bool isRunning_;
 

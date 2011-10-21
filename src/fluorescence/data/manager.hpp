@@ -12,6 +12,7 @@
 #include <ui/animation.hpp>
 
 #include <misc/config.hpp>
+#include "defstructs.hpp"
 
 namespace fluo {
 namespace data {
@@ -28,6 +29,9 @@ class AnimLoader;
 class MobTypesLoader;
 class UniFontLoader;
 
+template<typename ValueType>
+class DefFileLoader;
+
 class Manager {
 public:
     static bool create(Config& config);
@@ -35,6 +39,7 @@ public:
     static Manager* getSingleton();
     ~Manager();
 
+    static BodyDef getBodyDef(unsigned int baseBodyId);
 
     static boost::shared_ptr<ui::TextureProvider> getItemTextureProvider(unsigned int artId);
     static std::vector<boost::shared_ptr<ui::Animation> > getAnim(unsigned int bodyId, unsigned int animId);
@@ -81,6 +86,9 @@ private:
     boost::shared_ptr<UniFontLoader> fallbackUniFontLoader_;
 
     boost::shared_ptr<MobTypesLoader> mobTypesLoader_;
+
+    boost::shared_ptr<DefFileLoader<BodyDef> > bodyDefLoader_;
+    boost::shared_ptr<DefFileLoader<BodyConvDef> > bodyConvDefLoader_;
 };
 
 }

@@ -307,7 +307,7 @@ void Socket::parsePackets() {
         readSuccess = readSuccess && newPacket->read(decompressedBuffer_, lastPacketStart + packetSize, idx);
 
         if (readSuccess && idx - lastPacketStart == packetSize) {
-            LOG_DEBUG << "Read of packet successful: id=" << std::hex << (unsigned int)packetId << std::dec << " len=" << packetSize << std::endl;
+            //LOG_DEBUG << "Read of packet successful: id=" << std::hex << (unsigned int)packetId << std::dec << " len=" << packetSize << std::endl;
 
             packetQueueMutex_.lock();
             packetQueue_.push(newPacket);

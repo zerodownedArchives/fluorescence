@@ -111,15 +111,9 @@ Config::Config() {
 
 
     // anims
-    variablesMap_["/fluo/files/anim0@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/anim0@filename-idx"].setPath("anim.idx", true);
-    variablesMap_["/fluo/files/anim0@filename-mul"].setPath("anim.mul", true);
-    variablesMap_["/fluo/files/anim0@highdetail"].setInt(200, true);
-    variablesMap_["/fluo/files/anim0@lowdetail"].setInt(200, true);
-
     variablesMap_["/fluo/files/anim1@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/anim1@filename-idx"].setPath("anim1.idx", true);
-    variablesMap_["/fluo/files/anim1@filename-mul"].setPath("anim1.mul", true);
+    variablesMap_["/fluo/files/anim1@filename-idx"].setPath("anim.idx", true);
+    variablesMap_["/fluo/files/anim1@filename-mul"].setPath("anim.mul", true);
     variablesMap_["/fluo/files/anim1@highdetail"].setInt(200, true);
     variablesMap_["/fluo/files/anim1@lowdetail"].setInt(200, true);
 
@@ -163,6 +157,8 @@ Config::Config() {
 
 
     variablesMap_["/fluo/files/mobtypes@filename"].setPath("mobtypes.txt", true);
+    variablesMap_["/fluo/files/bodydef@filename"].setPath("body.def", true);
+    variablesMap_["/fluo/files/bodyconvdef@filename"].setPath("bodyconv.def", true);
 
 
     // ui stuff

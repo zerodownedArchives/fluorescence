@@ -60,8 +60,17 @@ void Mobile::onDoubleClick() {
 }
 
 void Mobile::setBodyId(unsigned int value) {
-    if (value != bodyId_) {
-        bodyId_ = value;
+    if (value != baseBodyId_) {
+        baseBodyId_ = value;
+
+        data::BodyDef bodyDefData = data::Manager::getBodyDef(baseBodyId_);
+        if (bodyDefData.origBody_ == baseBodyId_) {
+            bodyId_ = bodyDefData.newBody_;
+            setHue(bodyDefData.hue_);
+        } else {
+            bodyId_ = baseBodyId_;
+        }
+
         invalidateTextureProvider();
     }
 

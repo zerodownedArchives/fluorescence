@@ -12,6 +12,7 @@
 #include "animloader.hpp"
 #include "mobtypesloader.hpp"
 #include "unifontloader.hpp"
+#include "deffileloader.hpp"
 
 #include <ui/singletextureprovider.hpp>
 #include <ui/animdatatextureprovider.hpp>
@@ -216,7 +217,7 @@ void Manager::init(Config& config) {
     unsigned int highDetailCount;
     unsigned int lowDetailCount;
 
-    indexChar = '0';
+    indexChar = '1';
     digitIndex = 16;
     for (unsigned int index = 0; index < 5; ++index, ++indexChar) {
         animConfigEnabled[digitIndex] = indexChar;
@@ -309,6 +310,10 @@ void Manager::init(Config& config) {
     }
 
     free(uniFontPath);
+
+
+    bodyDefLoader_.reset(new DefFileLoader<BodyDef>(getPathFor(config, "/fluo/files/bodydef@filename")));
+    bodyConvDefLoader_.reset(new DefFileLoader<BodyConvDef>(getPathFor(config, "/fluo/files/bodyconvdef@filename")));
 }
 
 Manager::~Manager() {
@@ -380,14 +385,28 @@ boost::shared_ptr<ui::TextureProvider> Manager::getItemTextureProvider(unsigned 
 }
 
 std::vector<boost::shared_ptr<ui::Animation> > Manager::getAnim(unsigned int bodyId, unsigned int animId) {
+    Manager* sing = getSingleton();
+
+    BodyConvDef bodyConvEntry = sing->bodyConvDefLoader_->get(bodyId);
+    boost::shared_ptr<AnimLoader> ldr;
+    unsigned int animIdx;
+    if (bodyConvEntry.bodyId_ != 0) {
+        LOG_DEBUG << "redirecting anim! body=" << bodyId << " fileIdx=" << bodyConvEntry.getAnimFileIdx() << " idx in file=" << bodyConvEntry.getAnimIdxInFile() << std::endl;
+        animIdx = bodyConvEntry.getAnimIdxInFile();
+        ldr = getAnimLoader(bodyConvEntry.getAnimFileIdx());
+    } else {
+        ldr = getAnimLoader(0);
+        animIdx = bodyId;
+    }
+
     // TODO check .def files for correct anim file
     std::vector<boost::shared_ptr<ui::Animation> > ret;
 
-    boost::shared_ptr<ui::Animation> tmpDown = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, 0);
-    boost::shared_ptr<ui::Animation> tmpDownLeft = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, 1);
-    boost::shared_ptr<ui::Animation> tmpLeft = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, 2);
-    boost::shared_ptr<ui::Animation> tmpUpLeft = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, 3);
-    boost::shared_ptr<ui::Animation> tmpUp = getSingleton()->animLoader_[0]->getAnimation(bodyId, animId, 4);
+    boost::shared_ptr<ui::Animation> tmpDown = ldr->getAnimation(animIdx, animId, 0);
+    boost::shared_ptr<ui::Animation> tmpDownLeft = ldr->getAnimation(animIdx, animId, 1);
+    boost::shared_ptr<ui::Animation> tmpLeft = ldr->getAnimation(animIdx, animId, 2);
+    boost::shared_ptr<ui::Animation> tmpUpLeft = ldr->getAnimation(animIdx, animId, 3);
+    boost::shared_ptr<ui::Animation> tmpUp = ldr->getAnimation(animIdx, animId, 4);
 
     // mirrored
     ret.push_back(tmpUpLeft);
@@ -437,6 +456,16 @@ boost::shared_ptr<UniFontLoader> Manager::getUniFontLoader(unsigned int index) {
     }
 }
 
+BodyDef Manager::getBodyDef(unsigned int baseBodyId) {
+    Manager* sing = getSingleton();
+
+    // a little strange, but bodyconv.def overwrites body.def. So if there is a bodyconv entry, return foo
+    if (sing->bodyConvDefLoader_->hasValue(baseBodyId)) {
+        return BodyDef();
+    }
+
+    return sing->bodyDefLoader_->get(baseBodyId);
+}
 
 }
 }
