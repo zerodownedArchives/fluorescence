@@ -282,7 +282,6 @@ boost::shared_ptr<ui::Texture> FontEngine::getFontTexture(CL_Font& font, const U
     CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 
 
-    // TODO: calculate size and line breaks
     unsigned int width = 0;
     unsigned int height = 0;
     UnicodeString textWithBreaks = calculateSizeAndLinebreaks(font, text, maxWidth, borderWidth, width, height);

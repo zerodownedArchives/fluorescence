@@ -399,7 +399,6 @@ std::vector<boost::shared_ptr<ui::Animation> > Manager::getAnim(unsigned int bod
         animIdx = bodyId;
     }
 
-    // TODO check .def files for correct anim file
     std::vector<boost::shared_ptr<ui::Animation> > ret;
 
     boost::shared_ptr<ui::Animation> tmpDown = ldr->getAnimation(animIdx, animId, 0);
