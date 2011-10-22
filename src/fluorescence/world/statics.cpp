@@ -63,11 +63,11 @@ void StaticItem::updateRenderPriority() {
     // level 1 z and tiledata flags
     worldRenderData_.renderPriority_[1] = getLocZ();
     if (tileDataInfo_->background() && tileDataInfo_->surface()) {
-        worldRenderData_.renderPriority_[1] += 2;
-    } else if (tileDataInfo_->background()) {
-        worldRenderData_.renderPriority_[1] += 3;
-    } else if (tileDataInfo_->surface()) {
         worldRenderData_.renderPriority_[1] += 4;
+    } else if (tileDataInfo_->background()) {
+        worldRenderData_.renderPriority_[1] += 2;
+    } else if (tileDataInfo_->surface()) {
+        worldRenderData_.renderPriority_[1] += 5;
     } else {
         worldRenderData_.renderPriority_[1] += 6;
     }
@@ -100,6 +100,11 @@ const data::StaticTileInfo* StaticItem::getTileDataInfo() const {
 void StaticItem::onClick() {
     LOG_INFO << "Clicked static, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
             getLocZ() << ") name=" << tileDataInfo_->name_ << std::endl;
+
+    //LOG_INFO << "background=" << tileDataInfo_->background() << " surface=" << tileDataInfo_->surface() << " height=" << (unsigned int)tileDataInfo_->height_ <<
+            //" hue=" << hue_ << " indexInBlock=" << indexInBlock_ << std::endl;
+
+    //printRenderPriority();
 }
 
 bool StaticItem::requireRenderUpdate() const {

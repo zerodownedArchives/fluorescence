@@ -166,6 +166,7 @@ void MapTile::onClick() {
             getLocZ() << ") name=" << tileDataInfo_->name_ << std::endl;
 
     //LOG_INFO << "z value: self=" << getLocZ() << " right=" << zRight_ << " bottom=" << zBottom_ << " left=" << zLeft_ << std::endl;
+    //printRenderPriority();
 }
 
 
