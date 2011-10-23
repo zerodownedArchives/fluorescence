@@ -32,6 +32,10 @@ bool WorldRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::I
         }
     }
 
+    if (aPrio[5] < bPrio[5]) {
+        return true;
+    }
+
     /* None of the priorities differs. To make sure this function sorts the list exactly the same, no matter how the
      * list elements were in the list before, we use the memory address of the objects as a last resort
      */

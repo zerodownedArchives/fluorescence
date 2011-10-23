@@ -77,6 +77,10 @@ protected:
 
     bool gumpChanged_;
 
+    bool debugIngameCheckSorted();
+    bool debugIngameCheckInList(boost::shared_ptr<world::IngameObject> obj);
+    boost::shared_ptr<world::IngameObject> debugIngameGetByIndex(unsigned int idx);
+
 private:
     std::list<boost::shared_ptr<world::IngameObject> > objectList_;
 
@@ -85,11 +89,6 @@ private:
     boost::mutex addListMutex_;
 
     SortFunction sortFunction_;
-
-
-    bool debugIngameCheckSorted();
-    bool debugIngameCheckInList(boost::shared_ptr<world::IngameObject> obj);
-    boost::shared_ptr<world::IngameObject> debugIngameGetByIndex(unsigned int idx);
 
     void add(boost::shared_ptr<world::IngameObject> obj);
     void remove(boost::shared_ptr<world::IngameObject> obj);

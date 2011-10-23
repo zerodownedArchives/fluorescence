@@ -79,10 +79,17 @@ void MapTile::updateRenderPriority() {
 }
 
 void MapTile::updateTextureProvider() {
+    bool hasTexture = (bool)texture_;
+
     if (isFlat()) {
         texture_ = data::Manager::getArtLoader()->getMapTexture(artId_);
     } else {
         texture_ = data::Manager::getMapTexLoader()->get(tileDataInfo_->textureId_);
+    }
+
+    if (!hasTexture && texture_) {
+        // was assigned a texture for the first time
+        addToRenderQueue(ui::Manager::getWorldRenderQueue());
     }
 }
 
@@ -96,12 +103,7 @@ void MapTile::setSurroundingZ(int left, int right, int bottom) {
     zRight_ = right;
     zBottom_ = bottom;
 
-    updateTextureProvider(); // ensure the texture object is properly initialized
     invalidateVertexCoordinates();
-
-    // if the tile got surrounding z values from the loading thread for the first time, we can finally add it to the render queue
-    // double adding checks are done in the function
-    addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 unsigned int MapTile::getArtId() {

@@ -32,9 +32,6 @@ void StaticItem::set(int locX, int locY, int locZ, unsigned int artId, unsigned 
 
     worldRenderData_.hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
     worldRenderData_.hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
-
-    updateTextureProvider(); // ensure the texture object is properly initialized
-    addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 void StaticItem::updateVertexCoordinates() {
@@ -86,7 +83,14 @@ void StaticItem::updateRenderPriority() {
 }
 
 void StaticItem::updateTextureProvider() {
+    bool hasProvider = (bool)textureProvider_;
+
     textureProvider_ = data::Manager::getItemTextureProvider(artId_);
+
+    if (!hasProvider) {
+        // texture assigned for the first time
+        addToRenderQueue(ui::Manager::getWorldRenderQueue());
+    }
 }
 
 bool StaticItem::updateAnimation(unsigned int elapsedMillis) {

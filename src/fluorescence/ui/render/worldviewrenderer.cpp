@@ -71,7 +71,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     renderQueue_->preRender();
 
 
-    gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
+    gc.clear(CL_Colorf(0.f, 0.f, 0.f, 1.f));
 
     gc.set_program_object(*shaderProgram_, cl_program_matrix_modelview_projection);
 

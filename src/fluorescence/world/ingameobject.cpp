@@ -210,13 +210,13 @@ boost::shared_ptr<IngameObject> IngameObject::getTopParent() {
     }
 }
 
-void IngameObject::printRenderPriority() {
-    LOG_DEBUG << "Render priority: " << worldRenderData_.renderPriority_[0] << " - "
-            << worldRenderData_.renderPriority_[1] << " - "
-            << worldRenderData_.renderPriority_[2] << " - "
-            << worldRenderData_.renderPriority_[3] << " - "
-            << worldRenderData_.renderPriority_[4] << " - "
-            << worldRenderData_.renderPriority_[5] << " - " << std::endl;
+void IngameObject::printRenderPriority() const {
+    LOG_DEBUG << "Render priority: " << worldRenderData_.renderPriority_[0] << " : "
+            << worldRenderData_.renderPriority_[1] << " : "
+            << worldRenderData_.renderPriority_[2] << " : "
+            << worldRenderData_.renderPriority_[3] << " : "
+            << worldRenderData_.renderPriority_[4] << " : "
+            << worldRenderData_.renderPriority_[5] << std::endl;
 }
 
 void IngameObject::setOverheadMessageOffsets() {

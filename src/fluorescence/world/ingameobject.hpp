@@ -105,7 +105,7 @@ public:
     const ui::WorldRenderData& getWorldRenderData() const;
 
 
-    void printRenderPriority();
+    void printRenderPriority() const;
 
 protected:
     ui::WorldRenderData worldRenderData_;

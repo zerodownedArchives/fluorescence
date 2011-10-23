@@ -140,6 +140,10 @@ bool RenderQueue::debugIngameCheckSorted() {
     for (unsigned int idx = 0; iter != end; ++iter, ++last, ++idx) {
         if (!sortFunction_(*last, *iter)) {
             LOG_ERROR << "RenderQueue: unsorted list elements at " << idx << std::endl;
+            LOG_ERROR << "Prio last: " << std::endl;
+            (*last)->printRenderPriority();
+            LOG_ERROR << "Prio iter: " << std::endl;
+            (*iter)->printRenderPriority();
             return false;
         }
     }

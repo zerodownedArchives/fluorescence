@@ -13,6 +13,7 @@ namespace data {
 }
 
 namespace world {
+class Sector;
 
 class MapTile : public IngameObject {
 
@@ -61,6 +62,7 @@ private:
 class MapBlock : public data::OnDemandReadable {
 
 friend class data::MapLoader;
+friend class world::Sector;
 
 public:
     MapBlock();
@@ -71,6 +73,8 @@ private:
     unsigned int blockIndexY_;
 
     boost::shared_ptr<MapTile> tiles_[64];
+
+    bool repaintRequested_; // used when a neighboring tile is loaded to adjust all textures and z levels
 };
 
 

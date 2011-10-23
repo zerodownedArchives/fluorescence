@@ -76,6 +76,11 @@ void Sector::update(unsigned int elapsedMillis) {
         return;
     }
 
+    if (mapBlock_->repaintRequested_) {
+        fullUpdateRenderDataRequired_ = true;
+        mapBlock_->repaintRequested_ = false;
+    }
+
     //LOG_DEBUG << "Sector::update " << id_ << std::endl;
     if (fullUpdateRenderDataRequired_) {
         //LOG_DEBUG << "full update required" << std::endl;

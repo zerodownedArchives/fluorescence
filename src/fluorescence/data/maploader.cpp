@@ -191,6 +191,16 @@ void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item) {
             }
         }
     }
+
+
+    // request repaint of all involved map blocks
+    for (unsigned int x = 0; x < 3; ++x) {
+        for (unsigned int y = 0; y < 3; ++y) {
+            if (blocksLoaded[x][y]) {
+                blocks[x][y]->repaintRequested_ = true;
+            }
+        }
+    }
 }
 
 /*  _____ _____ _____
