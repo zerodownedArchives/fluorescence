@@ -38,7 +38,7 @@ public:
     int renderPriority_[6];
     CL_Vec2f vertexCoordinates_[6];
     CL_Vec3f vertexNormals_[6];
-    CL_Vec2f hueInfo_;
+    CL_Vec3f hueInfo_;
 
 private:
     void invalidateTextureProvider();

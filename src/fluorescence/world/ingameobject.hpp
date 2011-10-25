@@ -57,7 +57,7 @@ public:
     const CL_Vec3f* getVertexNormals() const;
     void setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const CL_Vec3f& bottom, const CL_Vec3f& left);
 
-    const CL_Vec2f& getHueInfo() const;
+    const CL_Vec3f& getHueInfo() const;
 
     int getRenderPriority(unsigned int lvl) const;
     const int* getRenderPriorities() const;

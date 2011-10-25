@@ -32,6 +32,7 @@ void StaticItem::set(int locX, int locY, int locZ, unsigned int artId, unsigned 
 
     worldRenderData_.hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
     worldRenderData_.hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
+    worldRenderData_.hueInfo_[2u] = tileDataInfo_->translucent() ? 0.8 : 1.0;
 }
 
 void StaticItem::updateVertexCoordinates() {

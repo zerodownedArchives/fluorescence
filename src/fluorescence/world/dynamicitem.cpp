@@ -52,6 +52,7 @@ void DynamicItem::setArtId(unsigned int artId) {
         artId_ = artId;
         tileDataInfo_ = data::Manager::getTileDataLoader()->getStaticTileInfo(artId_);
         worldRenderData_.hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
+        worldRenderData_.hueInfo_[2u] = tileDataInfo_->translucent() ? 0.8 : 1.0;
 
         invalidateTextureProvider();
     }

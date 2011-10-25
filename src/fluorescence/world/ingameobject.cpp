@@ -75,7 +75,7 @@ const CL_Vec2f* IngameObject::getVertexCoordinates() const {
     return worldRenderData_.vertexCoordinates_;
 }
 
-const CL_Vec2f& IngameObject::getHueInfo() const {
+const CL_Vec3f& IngameObject::getHueInfo() const {
     return worldRenderData_.hueInfo_;
 }
 
