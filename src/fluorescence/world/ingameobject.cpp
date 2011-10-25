@@ -155,6 +155,7 @@ bool IngameObject::hasPixel(int pixelX, int pixelY) const {
     if (coordinateCheck && tex && tex->isReadComplete()) {
         unsigned int texPixelX = pixelX - worldRenderData_.vertexCoordinates_[0].x;
         unsigned int texPixelY = pixelY - worldRenderData_.vertexCoordinates_[0].y;
+
         return tex->hasPixel(texPixelX, texPixelY);
     } else {
         return false;

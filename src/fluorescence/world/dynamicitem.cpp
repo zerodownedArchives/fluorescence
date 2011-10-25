@@ -185,11 +185,11 @@ void DynamicItem::updateRenderPriority() {
         // level 1 z and tiledata flags
         worldRenderData_.renderPriority_[1] = getLocZ();
         if (tileDataInfo_->background() && tileDataInfo_->surface()) {
-            worldRenderData_.renderPriority_[1] += 2;
-        } else if (tileDataInfo_->background()) {
-            worldRenderData_.renderPriority_[1] += 3;
-        } else if (tileDataInfo_->surface()) {
             worldRenderData_.renderPriority_[1] += 4;
+        } else if (tileDataInfo_->background()) {
+            worldRenderData_.renderPriority_[1] += 2;
+        } else if (tileDataInfo_->surface()) {
+            worldRenderData_.renderPriority_[1] += 5;
         } else {
             worldRenderData_.renderPriority_[1] += 6;
         }
