@@ -209,11 +209,10 @@ void Mobile::onStartDrag(const CL_Point& mousePos) {
 
     ui::GumpMenu* statsMenu;
     if (isPlayer()) {
-        statsMenu = ui::Manager::getSingleton()->openXmlGump("status-self");
+        statsMenu = findOrCreateLinkedGump("status-self");
     } else {
-        statsMenu = ui::Manager::getSingleton()->openXmlGump("status-other");
+        statsMenu = findOrCreateLinkedGump("status-other");
     }
-    addLinkedGump(statsMenu);
 
     CL_Size size = statsMenu->get_size();
     statsMenu->set_window_geometry(CL_Rect(mousePos.x - 10, mousePos.y - 10, size));
@@ -226,20 +225,38 @@ void Mobile::onStartDrag(const CL_Point& mousePos) {
     net::Manager::getSingleton()->send(queryPacket);
 }
 
+ui::GumpMenu* Mobile::findOrCreateLinkedGump(const UnicodeString& gumpName) {
+    std::list<ui::GumpMenu*>::iterator iter = linkedGumps_.begin();
+    std::list<ui::GumpMenu*>::iterator end = linkedGumps_.end();
+
+    for (; iter != end; ++iter) {
+        if ((*iter)->getName() == gumpName) {
+            (*iter)->bring_to_front();
+            return *iter;
+        }
+    }
+
+    // not found, create
+    ui::GumpMenu* menu = ui::Manager::getSingleton()->openXmlGump(gumpName);
+    addLinkedGump(menu);
+
+    return menu;
+}
+
 void Mobile::openPaperdoll() {
     ui::GumpMenu* paperdoll;
     if (isPlayer()) {
-        paperdoll = ui::Manager::getSingleton()->openXmlGump("paperdoll-self");
+        paperdoll = findOrCreateLinkedGump("paperdoll-self");
     } else {
-        paperdoll = ui::Manager::getSingleton()->openXmlGump("paperdoll-other");
+        paperdoll = findOrCreateLinkedGump("paperdoll-other");
     }
+
     ui::components::GumpView* pdView = dynamic_cast<ui::components::GumpView*>(paperdoll->get_named_item("paperdoll"));
     if (pdView) {
         pdView->addObject(shared_from_this());
     } else {
         LOG_ERROR << "Unable to find paperdoll component in paperdoll gump" << std::endl;
     }
-    addLinkedGump(paperdoll);
 }
 
 void Mobile::setRace(unsigned int race) {
