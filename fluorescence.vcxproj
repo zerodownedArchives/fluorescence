@@ -41,7 +41,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;BOOST_FILESYSTEM_VERSION=2;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>winbuild\include;src\fluorescence%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
@@ -125,6 +125,7 @@
     <ClCompile Include="src\fluorescence\net\packets\loginrequest.cpp" />
     <ClCompile Include="src\fluorescence\net\packets\mobileanimation.cpp" />
     <ClCompile Include="src\fluorescence\net\packets\nakedmobile.cpp" />
+    <ClCompile Include="src\fluorescence\net\packets\openpaperdoll.cpp" />
     <ClCompile Include="src\fluorescence\net\packets\pickupitem.cpp" />
     <ClCompile Include="src\fluorescence\net\packets\pickupreject.cpp" />
     <ClCompile Include="src\fluorescence\net\packets\playerinit.cpp" />
@@ -152,8 +153,7 @@
     <ClCompile Include="src\fluorescence\ui\animtextureprovider.cpp" />
     <ClCompile Include="src\fluorescence\ui\bitmask.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\basebutton.cpp" />
-    <ClCompile Include="src\fluorescence\ui\components\ingameview.cpp" />
-    <ClCompile Include="src\fluorescence\ui\components\ingameviewrenderer.cpp" />
+    <ClCompile Include="src\fluorescence\ui\components\gumpview.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\label.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\lineedit.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\localbutton.cpp" />
@@ -161,6 +161,7 @@
     <ClCompile Include="src\fluorescence\ui\components\propertylabel.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\scrollarea.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\serverbutton.cpp" />
+    <ClCompile Include="src\fluorescence\ui\components\worldview.cpp" />
     <ClCompile Include="src\fluorescence\ui\cursorimage.cpp" />
     <ClCompile Include="src\fluorescence\ui\cursormanager.cpp" />
     <ClCompile Include="src\fluorescence\ui\doubleclickhandler.cpp" />
@@ -171,7 +172,13 @@
     <ClCompile Include="src\fluorescence\ui\gumpmenu.cpp" />
     <ClCompile Include="src\fluorescence\ui\gumpmenus.cpp" />
     <ClCompile Include="src\fluorescence\ui\manager.cpp" />
-    <ClCompile Include="src\fluorescence\ui\renderqueue.cpp" />
+    <ClCompile Include="src\fluorescence\ui\render\gumprenderer.cpp" />
+    <ClCompile Include="src\fluorescence\ui\render\gumprenderqueue.cpp" />
+    <ClCompile Include="src\fluorescence\ui\render\ingameobjectrenderer.cpp" />
+    <ClCompile Include="src\fluorescence\ui\render\renderqueue.cpp" />
+    <ClCompile Include="src\fluorescence\ui\render\worldrenderdata.cpp" />
+    <ClCompile Include="src\fluorescence\ui\render\worldrenderqueue.cpp" />
+    <ClCompile Include="src\fluorescence\ui\render\worldviewrenderer.cpp" />
     <ClCompile Include="src\fluorescence\ui\singletextureprovider.cpp" />
     <ClCompile Include="src\fluorescence\ui\texture.cpp" />
     <ClCompile Include="src\fluorescence\world\dynamicitem.cpp" />
@@ -180,6 +187,7 @@
     <ClCompile Include="src\fluorescence\world\manager.cpp" />
     <ClCompile Include="src\fluorescence\world\map.cpp" />
     <ClCompile Include="src\fluorescence\world\mobile.cpp" />
+    <ClCompile Include="src\fluorescence\world\overheadmessage.cpp" />
     <ClCompile Include="src\fluorescence\world\sector.cpp" />
     <ClCompile Include="src\fluorescence\world\sectormanager.cpp" />
     <ClCompile Include="src\fluorescence\world\serverobject.cpp" />
@@ -242,6 +250,7 @@
     <ClInclude Include="src\fluorescence\net\packets\loginrequest.hpp" />
     <ClInclude Include="src\fluorescence\net\packets\mobileanimation.hpp" />
     <ClInclude Include="src\fluorescence\net\packets\nakedmobile.hpp" />
+    <ClInclude Include="src\fluorescence\net\packets\openpaperdoll.hpp" />
     <ClInclude Include="src\fluorescence\net\packets\pickupitem.hpp" />
     <ClInclude Include="src\fluorescence\net\packets\pickupreject.hpp" />
     <ClInclude Include="src\fluorescence\net\packets\playerinit.hpp" />
@@ -273,8 +282,7 @@
     <ClInclude Include="src\fluorescence\ui\animtextureprovider.hpp" />
     <ClInclude Include="src\fluorescence\ui\bitmask.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\basebutton.hpp" />
-    <ClInclude Include="src\fluorescence\ui\components\ingameview.hpp" />
-    <ClInclude Include="src\fluorescence\ui\components\ingameviewrenderer.hpp" />
+    <ClInclude Include="src\fluorescence\ui\components\gumpview.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\label.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\lineedit.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\localbutton.hpp" />
@@ -282,6 +290,7 @@
     <ClInclude Include="src\fluorescence\ui\components\propertylabel.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\scrollarea.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\serverbutton.hpp" />
+    <ClInclude Include="src\fluorescence\ui\components\worldview.hpp" />
     <ClInclude Include="src\fluorescence\ui\cursorimage.hpp" />
     <ClInclude Include="src\fluorescence\ui\cursormanager.hpp" />
     <ClInclude Include="src\fluorescence\ui\doubleclickhandler.hpp" />
@@ -292,7 +301,13 @@
     <ClInclude Include="src\fluorescence\ui\gumpmenu.hpp" />
     <ClInclude Include="src\fluorescence\ui\gumpmenus.hpp" />
     <ClInclude Include="src\fluorescence\ui\manager.hpp" />
-    <ClInclude Include="src\fluorescence\ui\renderqueue.hpp" />
+    <ClInclude Include="src\fluorescence\ui\render\gumprenderer.hpp" />
+    <ClInclude Include="src\fluorescence\ui\render\gumprenderqueue.hpp" />
+    <ClInclude Include="src\fluorescence\ui\render\ingameobjectrenderer.hpp" />
+    <ClInclude Include="src\fluorescence\ui\render\renderqueue.hpp" />
+    <ClInclude Include="src\fluorescence\ui\render\worldrenderdata.hpp" />
+    <ClInclude Include="src\fluorescence\ui\render\worldrenderqueue.hpp" />
+    <ClInclude Include="src\fluorescence\ui\render\worldviewrenderer.hpp" />
     <ClInclude Include="src\fluorescence\ui\singletextureprovider.hpp" />
     <ClInclude Include="src\fluorescence\ui\texture.hpp" />
     <ClInclude Include="src\fluorescence\ui\textureprovider.hpp" />
@@ -302,6 +317,7 @@
     <ClInclude Include="src\fluorescence\world\manager.hpp" />
     <ClInclude Include="src\fluorescence\world\map.hpp" />
     <ClInclude Include="src\fluorescence\world\mobile.hpp" />
+    <ClInclude Include="src\fluorescence\world\overheadmessage.hpp" />
     <ClInclude Include="src\fluorescence\world\sector.hpp" />
     <ClInclude Include="src\fluorescence\world\sectormanager.hpp" />
     <ClInclude Include="src\fluorescence\world\serverobject.hpp" />
