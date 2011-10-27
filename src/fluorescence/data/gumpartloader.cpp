@@ -63,5 +63,9 @@ void GumpArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int l
     }
 }
 
+bool GumpArtLoader::hasTexture(unsigned int id) {
+    return cache_.hasId(id);
+}
+
 }
 }

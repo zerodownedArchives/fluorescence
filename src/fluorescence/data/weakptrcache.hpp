@@ -82,6 +82,10 @@ public:
         }
     }
 
+    bool hasId(unsigned int id) {
+        return cache_.find(id) != cache_.end();
+    }
+
     void printStats() {
         unsigned int weakCount = cache_.size();
         unsigned int realCount = 0;

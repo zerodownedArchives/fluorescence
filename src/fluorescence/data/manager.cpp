@@ -279,6 +279,16 @@ void Manager::init(Config& config) {
     path = filePathMap_["bodyconv.def"];
     LOG_INFO << "Opening bodyconv.def from path=" << path << std::endl;
     bodyConvDefLoader_.reset(new DefFileLoader<BodyConvDef>(path));
+
+    checkFileExists("paperdoll.def");
+    path = filePathMap_["paperdoll.def"];
+    LOG_INFO << "Opening paperdoll.def from path=" << path << std::endl;
+    paperdollDefLoader_.reset(new DefFileLoader<PaperdollDef>(path));
+
+    checkFileExists("gump.def");
+    path = filePathMap_["gump.def"];
+    LOG_INFO << "Opening gump.def from path=" << path << std::endl;
+    gumpDefLoader_.reset(new DefFileLoader<GumpDef>(path));
 }
 
 Manager::~Manager() {
@@ -416,6 +426,18 @@ BodyDef Manager::getBodyDef(unsigned int baseBodyId) {
     return sing->bodyDefLoader_->get(baseBodyId);
 }
 
+PaperdollDef Manager::getPaperdollDef(unsigned int bodyId) {
+    Manager* sing = getSingleton();
+
+    return sing->paperdollDefLoader_->get(bodyId);
+}
+
+GumpDef Manager::getGumpDef(unsigned int gumpId) {
+    Manager* sing = getSingleton();
+
+    return sing->gumpDefLoader_->get(gumpId);
+}
+
 void Manager::buildFilePathMap(Config& config) {
     boost::filesystem::path mulDirPath = config["/fluo/files/mul-directory@path"].asPath();
     if (!boost::filesystem::exists(mulDirPath) || !boost::filesystem::is_directory(mulDirPath)) {
@@ -423,6 +445,10 @@ void Manager::buildFilePathMap(Config& config) {
     }
 
     addToFilePathMap(mulDirPath);
+
+    boost::filesystem::path fluoDataPath("data");
+    addToFilePathMap(fluoDataPath);
+
     boost::filesystem::path shardDataPath("shards");
     shardDataPath = shardDataPath / config["/fluo/shard@name"].asPath() / "data";
     addToFilePathMap(shardDataPath);
@@ -460,6 +486,33 @@ void Manager::checkFileExists(const std::string& file) const {
         LOG_ERROR << "Required file " << file << " was not found" << std::endl;
         throw std::exception();
     }
+}
+
+unsigned int Manager::getGumpIdForItem(unsigned int itemId, unsigned int parentBodyId) {
+    Manager* sing = getSingleton();
+
+    unsigned int animId = sing->tileDataLoader_->getStaticTileInfo(itemId)->animId_;
+    PaperdollDef pdDef = sing->getPaperdollDef(parentBodyId);
+    if (pdDef.bodyId_ == 0) {
+        LOG_ERROR << "Unable to translate gump ids for body " << parentBodyId << std::endl;
+        return 1;
+    }
+
+    unsigned int gumpId = animId + pdDef.gumpOffset_;
+    GumpDef gumpDef = sing->getGumpDef(gumpId);
+    if (gumpDef.gumpId_ != 0) {
+        gumpId = gumpDef.translateId_;
+    }
+
+    if (!sing->getGumpArtLoader()->hasTexture(gumpId)) {
+        gumpId = animId + pdDef.gumpOffsetFallback_;
+        data::GumpDef gumpDef2 = sing->getGumpDef(gumpId);
+        if (gumpDef2.gumpId_ != 0) {
+            gumpId = gumpDef2.translateId_;
+        }
+    }
+
+    return gumpId;
 }
 
 }

@@ -66,7 +66,6 @@ void Mobile::setBodyId(unsigned int value) {
         data::BodyDef bodyDefData = data::Manager::getBodyDef(baseBodyId_);
         if (bodyDefData.origBody_ == baseBodyId_) {
             bodyId_ = bodyDefData.newBody_;
-            setHue(bodyDefData.hue_);
         } else {
             bodyId_ = baseBodyId_;
         }
@@ -129,7 +128,26 @@ void Mobile::updateTextureProvider() {
     textureProvider_.reset(new ui::AnimTextureProvider(bodyId_));
     textureProvider_->setDirection(direction_);
 
-    gumpTextureProvider_.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_GUMPART_MUL, 0xC));
+    data::PaperdollDef pdDef = data::Manager::getPaperdollDef(bodyId_);
+    if (pdDef.bodyId_ == 0) {
+        LOG_ERROR << "Unable to find paperdoll.def entry for body " << bodyId_ << std::endl;
+        gumpTextureProvider_.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_GUMPART_MUL, 0xC));
+        equipmentGumpOffset_ = 50000;
+        equipmentGumpOffsetFallback_ = 50000;
+    } else {
+        gumpTextureProvider_.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_GUMPART_MUL, pdDef.gumpId_));
+        equipmentGumpOffset_ = pdDef.gumpOffset_;
+        equipmentGumpOffsetFallback_ = pdDef.gumpOffsetFallback_;
+
+        if (!childObjects_.empty()) {
+            std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+            std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
+
+            for (; iter != end; ++iter) {
+                (*iter)->invalidateTextureProvider();
+            }
+        }
+    }
 }
 
 bool Mobile::updateAnimation(unsigned int elapsedMillis) {
@@ -156,6 +174,7 @@ void Mobile::setDirection(unsigned int direction) {
     if (textureProvider_) {
         textureProvider_->setDirection(direction);
         invalidateVertexCoordinates();
+        forceRepaint();
     }
 
     std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
@@ -297,6 +316,14 @@ void Mobile::onDelete() {
     linkedGumps_.clear();
 
     IngameObject::onDelete();
+}
+
+unsigned int Mobile::getEquipmentGumpOffset() const {
+    return equipmentGumpOffset_;
+}
+
+unsigned int Mobile::getEquipmentGumpOffsetFallback() const {
+    return equipmentGumpOffsetFallback_;
 }
 
 }

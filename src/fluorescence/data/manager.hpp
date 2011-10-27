@@ -39,7 +39,10 @@ public:
     static Manager* getSingleton();
     ~Manager();
 
+    static PaperdollDef getPaperdollDef(unsigned int bodyId);
     static BodyDef getBodyDef(unsigned int baseBodyId);
+    static GumpDef getGumpDef(unsigned int gumpId);
+    static unsigned int getGumpIdForItem(unsigned int itemId, unsigned int parentBodyId);
 
     static boost::shared_ptr<ui::TextureProvider> getItemTextureProvider(unsigned int artId);
     static std::vector<boost::shared_ptr<ui::Animation> > getAnim(unsigned int bodyId, unsigned int animId);
@@ -93,6 +96,8 @@ private:
 
     boost::shared_ptr<DefFileLoader<BodyDef> > bodyDefLoader_;
     boost::shared_ptr<DefFileLoader<BodyConvDef> > bodyConvDefLoader_;
+    boost::shared_ptr<DefFileLoader<PaperdollDef> > paperdollDefLoader_;
+    boost::shared_ptr<DefFileLoader<GumpDef> > gumpDefLoader_;
 };
 
 }

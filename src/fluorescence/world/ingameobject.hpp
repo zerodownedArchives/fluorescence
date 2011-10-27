@@ -21,8 +21,6 @@ namespace ui {
 
 namespace world {
 
-class OverheadMessage;
-
 class IngameObject : public boost::enable_shared_from_this<IngameObject> {
 
 friend class ui::RenderQueue;
@@ -104,6 +102,10 @@ public:
 
     const ui::WorldRenderData& getWorldRenderData() const;
 
+    void invalidateTextureProvider();
+    void invalidateVertexCoordinates();
+    void invalidateRenderPriority();
+
 
     void printRenderPriority() const;
 
@@ -115,18 +117,15 @@ protected:
     virtual void updateVertexCoordinates() = 0;
     virtual void updateRenderPriority() = 0;
 
-    void invalidateTextureProvider();
-    void invalidateVertexCoordinates();
-    void invalidateRenderPriority();
-
 
     virtual void updateGumpTextureProvider();
-
 
     bool draggable_;
 
     boost::weak_ptr<IngameObject> parentObject_;
     std::list<boost::shared_ptr<IngameObject> > childObjects_;
+
+    void forceRepaint();
 
 private:
     unsigned int objectType_;
@@ -138,7 +137,6 @@ private:
     void notifyRenderQueuesWorldCoordinates();
     void notifyRenderQueuesWorldPriority();
     void notifyRenderQueuesGump();
-    void forceRepaint();
 
 
     void setParentObject();

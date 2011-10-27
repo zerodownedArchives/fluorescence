@@ -61,6 +61,9 @@ public:
 
     virtual void onDelete();
 
+    unsigned int getEquipmentGumpOffset() const;
+    unsigned int getEquipmentGumpOffsetFallback() const;
+
 private:
     unsigned int baseBodyId_; // as sent by the server
     unsigned int bodyId_; // after transformation, e.g. by body.def
@@ -83,6 +86,8 @@ private:
 
     unsigned int race_;
     bool female_;
+    unsigned int equipmentGumpOffset_;
+    unsigned int equipmentGumpOffsetFallback_;
 };
 
 }

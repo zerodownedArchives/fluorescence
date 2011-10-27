@@ -20,6 +20,8 @@ void ServerObject::setHue(unsigned int hue) {
     if (hue != hue_) {
         hue_ = hue;
         worldRenderData_.hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
+
+        forceRepaint();
     }
 }
 

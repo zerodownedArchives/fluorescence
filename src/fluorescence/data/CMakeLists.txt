@@ -30,6 +30,7 @@ set(DATA_LOADERS_HPP
 
     data/mobtypesloader.hpp
     data/deffileloader.hpp
+    data/equipconvdefloader.hpp
     )
 
 set(DATA_LOADERS_CPP
@@ -46,6 +47,7 @@ set(DATA_LOADERS_CPP
     data/unifontloader.cpp
 
     data/mobtypesloader.cpp
+    data/equipconvdefloader.cpp
     )
 
 set (DATA_FILES

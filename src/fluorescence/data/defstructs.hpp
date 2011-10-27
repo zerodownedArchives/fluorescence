@@ -52,6 +52,38 @@ struct BodyConvDef {
     }
 };
 
+// TODO
+struct EquipConvDef {
+    int bodyId_;
+    int itemId_;
+    int itemIdTranslate_;
+    int gumpId_;
+    int hue_;
+
+    unsigned int getGumpId() {
+        if (gumpId_ == 0) {
+            return itemId_ + 50000;
+        } else if (gumpId_ == -1) {
+            return itemIdTranslate_ + 50000;
+        } else {
+            return gumpId_;
+        }
+    }
+};
+
+struct PaperdollDef {
+    unsigned int bodyId_;
+    unsigned int gumpId_;
+    unsigned int gumpOffset_;
+    unsigned int gumpOffsetFallback_;
+};
+
+struct GumpDef {
+    unsigned int gumpId_;
+    unsigned int translateId_;
+    unsigned int hue_;
+};
+
 }
 }
 

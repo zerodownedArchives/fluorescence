@@ -12,6 +12,7 @@
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
 #include <data/tiledataloader.hpp>
+#include <data/gumpartloader.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/texture.hpp>
@@ -61,11 +62,15 @@ void DynamicItem::setArtId(unsigned int artId) {
 }
 
 void DynamicItem::setDirection(unsigned int direction) {
-    direction_ = direction;
+    if (direction_ != direction) {
+        direction_ = direction;
 
-    if (equipped_ && animTextureProvider_) {
-        animTextureProvider_->setDirection(direction_);
-        invalidateVertexCoordinates();
+        if (equipped_ && animTextureProvider_) {
+            animTextureProvider_->setDirection(direction_);
+            invalidateVertexCoordinates();
+
+            forceRepaint();
+        }
     }
 }
 
@@ -211,8 +216,10 @@ void DynamicItem::updateTextureProvider() {
         boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
         setDirection(parent->getDirection());
 
-        gumpTextureProvider_.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_GUMPART_MUL, tileDataInfo_->animId_ + 50000));
-        LOG_DEBUG << "Gump idx " << tileDataInfo_->animId_ + 50000 << std::endl;
+        unsigned int gumpId = data::Manager::getGumpIdForItem(artId_, parent->getBodyId());
+
+        gumpTextureProvider_.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_GUMPART_MUL, gumpId));
+        LOG_DEBUG << "Gump idx " << gumpId << std::endl;
     } else {
         textureProvider_ = data::Manager::getItemTextureProvider(artId_);
 
