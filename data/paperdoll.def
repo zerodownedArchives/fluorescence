@@ -1,0 +1,13 @@
+# This file maps a body id to a paperdoll gump id
+# <body-id> <paperdoll-gump-id> <offset for this body> <fallback offset>
+# offset is usually either 50000 for male bodies, 60000 for female bodies. The fallback offset
+# is used if there is no gump at the primary offset (i.e. if there is no special female gump and
+# the male one should be used)
+
+400 12  50000 50000 # male human
+401 13  60000 50000 # female human
+605 14  50000 50000 # male elf
+606 15  60000 50000 # female elf
+666 666 50000 50000 # male gargoyle
+667 665 60000 50000 # female gargoyle
+
