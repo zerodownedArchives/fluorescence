@@ -134,6 +134,17 @@ void Manager::step() {
         obj->onDoubleClick();
     }
 
+    while (!dragQueue_.empty()) {
+        std::pair<boost::shared_ptr<world::IngameObject>, boost::shared_ptr<world::IngameObject> > dragPair = dragQueue_.front();
+        dragQueue_.pop();
+
+        if (dragPair.second) {
+            dragPair.first->onDraggedOnto(dragPair.second);
+        } else {
+            dragPair.first->onDraggedToVoid();
+        }
+    }
+
     getGraphicContext().clear();
     windowManager_->draw_windows(getGraphicContext());
     mainWindow_->flip(1); // use parameter 1 here for vsync
@@ -303,6 +314,11 @@ void Manager::queueSingleClick(boost::shared_ptr<world::IngameObject> obj) {
 
 void Manager::queueDoubleClick(boost::shared_ptr<world::IngameObject> obj) {
     doubleClickQueue_.push(obj);
+}
+
+
+void Manager::queueDrag(boost::shared_ptr<world::IngameObject> dragObj, boost::shared_ptr<world::IngameObject> dragTarget) {
+    dragQueue_.push(std::make_pair(dragObj, dragTarget));
 }
 
 }

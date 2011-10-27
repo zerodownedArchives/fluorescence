@@ -97,13 +97,14 @@ bool GumpView::onInputReleased(const CL_InputEvent& e) {
 
         if (clickedObject) {
             if (draggedObject) {
-                draggedObject->onDraggedOnto(clickedObject);
+                ui::Manager::getSingleton()->queueDrag(draggedObject, clickedObject);
             } else {
                 ui::Manager::getDoubleClickHandler()->notify(clickedObject);
             }
         } else if (draggedObject) {
             // dragged to void
-            draggedObject->onDraggedToVoid();
+            boost::shared_ptr<world::IngameObject> nullPtr;
+            ui::Manager::getSingleton()->queueDrag(draggedObject, nullPtr);
         } else {
             consumed = false;
         }

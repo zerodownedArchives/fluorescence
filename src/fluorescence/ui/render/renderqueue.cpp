@@ -57,6 +57,8 @@ void RenderQueue::clear() {
 
     // all items are in the delete list now
     removeList_.clear();
+
+    forceRepaint();
 }
 
 bool RenderQueue::processAddList() {
@@ -72,6 +74,7 @@ bool RenderQueue::processAddList() {
 
 void RenderQueue::remove(boost::shared_ptr<world::IngameObject> obj) {
     removeList_.push_back(obj);
+    forceRepaint();
 }
 
 void RenderQueue::processRemoveList() {
@@ -120,6 +123,8 @@ void RenderQueue::processRemoveList() {
 void RenderQueue::add(boost::shared_ptr<world::IngameObject> obj) {
     boost::mutex::scoped_lock myLock(addListMutex_);
     addList_.push_back(obj);
+
+    forceRepaint();
 }
 
 unsigned int RenderQueue::size() const {

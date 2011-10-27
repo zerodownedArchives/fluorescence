@@ -52,7 +52,6 @@ struct BodyConvDef {
     }
 };
 
-// TODO
 struct EquipConvDef {
     int bodyId_;
     int itemId_;

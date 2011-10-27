@@ -67,6 +67,7 @@ public:
 
     void queueSingleClick(boost::shared_ptr<world::IngameObject> obj);
     void queueDoubleClick(boost::shared_ptr<world::IngameObject> obj);
+    void queueDrag(boost::shared_ptr<world::IngameObject> dragObj, boost::shared_ptr<world::IngameObject> dragTarget);
 
 private:
     static Manager* singleton_;
@@ -110,6 +111,7 @@ private:
 
     std::queue<boost::shared_ptr<world::IngameObject> > singleClickQueue_;
     std::queue<boost::shared_ptr<world::IngameObject> > doubleClickQueue_;
+    std::queue<std::pair<boost::shared_ptr<world::IngameObject>, boost::shared_ptr<world::IngameObject> > > dragQueue_;
 
     boost::shared_ptr<FontEngine> fontEngine_;
 };
