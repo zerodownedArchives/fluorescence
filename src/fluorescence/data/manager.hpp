@@ -3,7 +3,7 @@
 
 #include <misc/exception.hpp>
 
-#include <boost/filesystem.hpp>
+#include <boost/filesystem/path.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <vector>
@@ -64,7 +64,11 @@ private:
     Manager(const Manager& copy) { }
     Manager& operator=(const Manager& copy) { return *this; }
 
-    boost::filesystem::path getPathFor(Config& config, const char* configValue);
+    std::map<std::string, boost::filesystem::path> filePathMap_;
+    void buildFilePathMap(Config& config);
+    void addToFilePathMap(const boost::filesystem::path& directory);
+    bool hasPathFor(const std::string& file) const;
+    void checkFileExists(const std::string& file) const;
 
     boost::shared_ptr<ArtLoader> artLoader_;
     boost::shared_ptr<TileDataLoader> tileDataLoader_;
@@ -73,10 +77,10 @@ private:
     boost::shared_ptr<MapTexLoader> mapTexLoader_;
     boost::shared_ptr<AnimDataLoader> animDataLoader_;
 
-    boost::shared_ptr<MapLoader> mapLoader_[5];
+    boost::shared_ptr<MapLoader> mapLoader_[6];
     boost::shared_ptr<MapLoader> fallbackMapLoader_;
 
-    boost::shared_ptr<StaticsLoader> staticsLoader_[5];
+    boost::shared_ptr<StaticsLoader> staticsLoader_[6];
     boost::shared_ptr<StaticsLoader> fallbackStaticsLoader_;
 
     boost::shared_ptr<AnimLoader> animLoader_[5];

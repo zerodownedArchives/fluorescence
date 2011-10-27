@@ -31,134 +31,57 @@ Config::Config() {
 
     // maps
     variablesMap_["/fluo/files/map0@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map0@filename"].setPath("map0.mul", true);
-    variablesMap_["/fluo/files/map0/difs@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map0/difs@filename-offsets"].setPath("mapdifl0.mul", true);
-    variablesMap_["/fluo/files/map0/difs@filename-mul"].setPath("mapdif0.mul", true);
+    variablesMap_["/fluo/files/map0@difs-enabled"].setBool(true, true);
     variablesMap_["/fluo/files/map0@width"].setInt(768, true);
     variablesMap_["/fluo/files/map0@height"].setInt(512, true);
 
-    variablesMap_["/fluo/files/map0/statics@filename-idx"].setPath("staidx0.mul", true);
-    variablesMap_["/fluo/files/map0/statics@filename-mul"].setPath("statics0.mul", true);
-    variablesMap_["/fluo/files/map0/statics/difs@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map0/statics/difs@filename-offsets"].setPath("stadifl0.mul", true);
-    variablesMap_["/fluo/files/map0/statics/difs@filename-idx"].setPath("stadifi0.mul", true);
-    variablesMap_["/fluo/files/map0/statics/difs@filename-mul"].setPath("stadif0.mul", true);
-
-
     variablesMap_["/fluo/files/map1@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map1@filename"].setPath("map0.mul", true);
-    variablesMap_["/fluo/files/map1/difs@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map1/difs@filename-offsets"].setPath("mapdifl1.mul", true);
-    variablesMap_["/fluo/files/map1/difs@filename-mul"].setPath("mapdif1.mul", true);
+    variablesMap_["/fluo/files/map1@difs-enabled"].setBool(true, true);
     variablesMap_["/fluo/files/map1@width"].setInt(768, true);
     variablesMap_["/fluo/files/map1@height"].setInt(512, true);
 
-    variablesMap_["/fluo/files/map1/statics@filename-idx"].setPath("staidx0.mul", true);
-    variablesMap_["/fluo/files/map1/statics@filename-mul"].setPath("statics0.mul", true);
-    variablesMap_["/fluo/files/map1/statics/difs@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map1/statics/difs@filename-offsets"].setPath("stadifl1.mul", true);
-    variablesMap_["/fluo/files/map1/statics/difs@filename-idx"].setPath("stadifi1.mul", true);
-    variablesMap_["/fluo/files/map1/statics/difs@filename-mul"].setPath("stadif1.mul", true);
-
-
     variablesMap_["/fluo/files/map2@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map2@filename"].setPath("map2.mul", true);
-    variablesMap_["/fluo/files/map2/difs@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map2/difs@filename-offsets"].setPath("mapdifl2.mul", true);
-    variablesMap_["/fluo/files/map2/difs@filename-mul"].setPath("mapdif2.mul", true);
+    variablesMap_["/fluo/files/map2@difs-enabled"].setBool(true, true);
     variablesMap_["/fluo/files/map2@width"].setInt(288, true);
     variablesMap_["/fluo/files/map2@height"].setInt(200, true);
 
-    variablesMap_["/fluo/files/map2/statics@filename-idx"].setPath("staidx2.mul", true);
-    variablesMap_["/fluo/files/map2/statics@filename-mul"].setPath("statics2.mul", true);
-    variablesMap_["/fluo/files/map2/statics/difs@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map2/statics/difs@filename-offsets"].setPath("stadifl2.mul", true);
-    variablesMap_["/fluo/files/map2/statics/difs@filename-idx"].setPath("stadifi2.mul", true);
-    variablesMap_["/fluo/files/map2/statics/difs@filename-mul"].setPath("stadif2.mul", true);
-
-
     variablesMap_["/fluo/files/map3@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map3@filename"].setPath("map3.mul", true);
-    variablesMap_["/fluo/files/map3/difs@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map3/difs@filename-offsets"].setPath("mapdifl3.mul", true);
-    variablesMap_["/fluo/files/map3/difs@filename-mul"].setPath("mapdif3.mul", true);
+    variablesMap_["/fluo/files/map3@difs-enabled"].setBool(true, true);
     variablesMap_["/fluo/files/map3@width"].setInt(320, true);
     variablesMap_["/fluo/files/map3@height"].setInt(256, true);
 
-    variablesMap_["/fluo/files/map3/statics@filename-idx"].setPath("staidx3.mul", true);
-    variablesMap_["/fluo/files/map3/statics@filename-mul"].setPath("statics3.mul", true);
-    variablesMap_["/fluo/files/map3/statics/difs@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map3/statics/difs@filename-offsets"].setPath("stadifl3.mul", true);
-    variablesMap_["/fluo/files/map3/statics/difs@filename-idx"].setPath("stadifi3.mul", true);
-    variablesMap_["/fluo/files/map3/statics/difs@filename-mul"].setPath("stadif3.mul", true);
-
-
     variablesMap_["/fluo/files/map4@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map4@filename"].setPath("map4.mul", true);
-    variablesMap_["/fluo/files/map4/difs@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map4/difs@filename-offsets"].setPath("mapdifl4.mul", true);
-    variablesMap_["/fluo/files/map4/difs@filename-mul"].setPath("mapdif4.mul", true);
+    variablesMap_["/fluo/files/map4@difs-enabled"].setBool(true, true);
     variablesMap_["/fluo/files/map4@width"].setInt(181, true);
     variablesMap_["/fluo/files/map4@height"].setInt(181, true);
 
-    variablesMap_["/fluo/files/map4/statics@filename-idx"].setPath("staidx4.mul", true);
-    variablesMap_["/fluo/files/map4/statics@filename-mul"].setPath("statics4.mul", true);
-    variablesMap_["/fluo/files/map4/statics/difs@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map4/statics/difs@filename-offsets"].setPath("stadifl4.mul", true);
-    variablesMap_["/fluo/files/map4/statics/difs@filename-idx"].setPath("stadifi4.mul", true);
-    variablesMap_["/fluo/files/map4/statics/difs@filename-mul"].setPath("stadif4.mul", true);
+    variablesMap_["/fluo/files/map5@enabled"].setBool(true, true);
+    variablesMap_["/fluo/files/map5@difs-enabled"].setBool(true, true);
+    variablesMap_["/fluo/files/map5@width"].setInt(320, true);
+    variablesMap_["/fluo/files/map5@height"].setInt(256, true);
+
 
 
     // anims
-    variablesMap_["/fluo/files/anim1@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/anim1@filename-idx"].setPath("anim.idx", true);
-    variablesMap_["/fluo/files/anim1@filename-mul"].setPath("anim.mul", true);
-    variablesMap_["/fluo/files/anim1@highdetail"].setInt(200, true);
-    variablesMap_["/fluo/files/anim1@lowdetail"].setInt(200, true);
+    variablesMap_["/fluo/files/anim@enabled"].setBool(true, true);
+    variablesMap_["/fluo/files/anim@highdetail"].setInt(200, true);
+    variablesMap_["/fluo/files/anim@lowdetail"].setInt(200, true);
 
     variablesMap_["/fluo/files/anim2@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/anim2@filename-idx"].setPath("anim2.idx", true);
-    variablesMap_["/fluo/files/anim2@filename-mul"].setPath("anim2.mul", true);
     variablesMap_["/fluo/files/anim2@highdetail"].setInt(200, true);
     variablesMap_["/fluo/files/anim2@lowdetail"].setInt(200, true);
 
     variablesMap_["/fluo/files/anim3@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/anim3@filename-idx"].setPath("anim3.idx", true);
-    variablesMap_["/fluo/files/anim3@filename-mul"].setPath("anim3.mul", true);
-    variablesMap_["/fluo/files/anim3@highdetail"].setInt(200, true);
-    variablesMap_["/fluo/files/anim3@lowdetail"].setInt(200, true);
+    variablesMap_["/fluo/files/anim3@highdetail"].setInt(420, true);
+    variablesMap_["/fluo/files/anim3@lowdetail"].setInt(70, true);
 
     variablesMap_["/fluo/files/anim4@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/anim4@filename-idx"].setPath("anim4.idx", true);
-    variablesMap_["/fluo/files/anim4@filename-mul"].setPath("anim4.mul", true);
     variablesMap_["/fluo/files/anim4@highdetail"].setInt(200, true);
     variablesMap_["/fluo/files/anim4@lowdetail"].setInt(200, true);
 
     variablesMap_["/fluo/files/anim5@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/anim5@filename-idx"].setPath("anim5.idx", true);
-    variablesMap_["/fluo/files/anim5@filename-mul"].setPath("anim5.mul", true);
     variablesMap_["/fluo/files/anim5@highdetail"].setInt(200, true);
     variablesMap_["/fluo/files/anim5@lowdetail"].setInt(200, true);
-
-    variablesMap_["/fluo/files/unifont@filename"].setPath("unifont.mul", true);
-    variablesMap_["/fluo/files/unifont1@filename"].setPath("unifont1.mul", true);
-    variablesMap_["/fluo/files/unifont2@filename"].setPath("unifont2.mul", true);
-    variablesMap_["/fluo/files/unifont3@filename"].setPath("unifont3.mul", true);
-    variablesMap_["/fluo/files/unifont4@filename"].setPath("unifont4.mul", true);
-    variablesMap_["/fluo/files/unifont5@filename"].setPath("unifont5.mul", true);
-    variablesMap_["/fluo/files/unifont6@filename"].setPath("unifont6.mul", true);
-    variablesMap_["/fluo/files/unifont7@filename"].setPath("unifont7.mul", true);
-    variablesMap_["/fluo/files/unifont8@filename"].setPath("unifont8.mul", true);
-    variablesMap_["/fluo/files/unifont9@filename"].setPath("unifont9.mul", true);
-    variablesMap_["/fluo/files/unifont10@filename"].setPath("unifont10.mul", true);
-    variablesMap_["/fluo/files/unifont11@filename"].setPath("unifont11.mul", true);
-    variablesMap_["/fluo/files/unifont12@filename"].setPath("unifont12.mul", true);
-
-
-    variablesMap_["/fluo/files/mobtypes@filename"].setPath("mobtypes.txt", true);
-    variablesMap_["/fluo/files/bodydef@filename"].setPath("body.def", true);
-    variablesMap_["/fluo/files/bodyconvdef@filename"].setPath("bodyconv.def", true);
 
 
     // ui stuff

@@ -36,6 +36,8 @@ const bool Variable::asBool() const {
     if (isBool() || isInt()) {
         return valueBool_;
     }
+
+    LOG_ERROR << "Unable to cast variable value " << asString() << " to bool" << std::endl;
     throw BadCastException();
 }
 
@@ -43,6 +45,8 @@ const int Variable::asInt() const {
     if (isInt() || isBool()) {
         return valueInt_;
     }
+
+    LOG_ERROR << "Unable to cast variable value " << asString() << " to int" << std::endl;
     throw BadCastException();
 }
 
@@ -50,6 +54,8 @@ const UnicodeString& Variable::asString() const {
     if (isString() || isInt() || isPath() || isBool()) {
         return valueString_;
     }
+
+    LOG_ERROR << "Unable to cast variable value to string" << std::endl;
     throw BadCastException();
 }
 
@@ -57,6 +63,8 @@ std::string Variable::asUtf8() const {
     if (isString() || isPath()) {
         return StringConverter::toUtf8String(valueString_);
     }
+
+    LOG_ERROR << "Unable to cast variable value " << asString() << " to utf" << std::endl;
     throw BadCastException();
 }
 
@@ -64,6 +72,8 @@ const boost::filesystem::path& Variable::asPath() const {
     if (isPath() || isString()) {
         return valuePath_;
     }
+
+    LOG_ERROR << "Unable to cast variable value " << asString() << " to path" << std::endl;
     throw BadCastException();
 }
 
