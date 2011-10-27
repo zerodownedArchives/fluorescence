@@ -69,11 +69,13 @@ EquipConvDefLoader::EquipConvDefLoader(const boost::filesystem::path& path) {
     } while (ifs.good());
 }
 
-bool EquipConvDefLoader::hasValue(std::pair<unsigned int, unsigned int> id) const {
+bool EquipConvDefLoader::hasValue(unsigned int bodyId, unsigned int itemId) const {
+    std::pair<unsigned int, unsigned int> id = std::make_pair(bodyId, itemId);
     return table_.find(id) != table_.end();
 }
 
-EquipConvDef EquipConvDefLoader::get(std::pair<unsigned int, unsigned int> id) const {
+EquipConvDef EquipConvDefLoader::get(unsigned int bodyId, unsigned int itemId) const {
+    std::pair<unsigned int, unsigned int> id = std::make_pair(bodyId, itemId);
     std::map<std::pair<unsigned int, unsigned int>, EquipConvDef>::const_iterator iter = table_.find(id);
     if (iter != table_.end()) {
         return iter->second;

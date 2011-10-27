@@ -13,9 +13,9 @@ class EquipConvDefLoader {
 public:
     EquipConvDefLoader(const boost::filesystem::path& path);
 
-    bool hasValue(std::pair<unsigned int, unsigned int> id) const;
+    bool hasValue(unsigned int bodyId, unsigned int itemId) const;
 
-    EquipConvDef get(std::pair<unsigned int, unsigned int> id) const;
+    EquipConvDef get(unsigned int bodyId, unsigned int itemId) const;
 
 private:
     std::map<std::pair<unsigned int, unsigned int>, EquipConvDef> table_;

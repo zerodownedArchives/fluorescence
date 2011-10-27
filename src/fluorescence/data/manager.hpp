@@ -28,6 +28,7 @@ class AnimDataLoader;
 class AnimLoader;
 class MobTypesLoader;
 class UniFontLoader;
+class EquipConvDefLoader;
 
 template<typename ValueType>
 class DefFileLoader;
@@ -98,6 +99,7 @@ private:
     boost::shared_ptr<DefFileLoader<BodyConvDef> > bodyConvDefLoader_;
     boost::shared_ptr<DefFileLoader<PaperdollDef> > paperdollDefLoader_;
     boost::shared_ptr<DefFileLoader<GumpDef> > gumpDefLoader_;
+    boost::shared_ptr<EquipConvDefLoader> equipConvDefLoader_;
 };
 
 }

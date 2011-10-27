@@ -15,6 +15,7 @@
 #include "mobtypesloader.hpp"
 #include "unifontloader.hpp"
 #include "deffileloader.hpp"
+#include "equipconvdefloader.hpp"
 
 #include <ui/singletextureprovider.hpp>
 #include <ui/animdatatextureprovider.hpp>
@@ -289,6 +290,11 @@ void Manager::init(Config& config) {
     path = filePathMap_["gump.def"];
     LOG_INFO << "Opening gump.def from path=" << path << std::endl;
     gumpDefLoader_.reset(new DefFileLoader<GumpDef>(path));
+
+    checkFileExists("equipconv.def");
+    path = filePathMap_["equipconv.def"];
+    LOG_INFO << "Opening equipconv.def from path=" << path << std::endl;
+    equipConvDefLoader_.reset(new EquipConvDefLoader(path));
 }
 
 Manager::~Manager() {
@@ -492,7 +498,13 @@ unsigned int Manager::getGumpIdForItem(unsigned int itemId, unsigned int parentB
     Manager* sing = getSingleton();
 
     unsigned int animId = sing->tileDataLoader_->getStaticTileInfo(itemId)->animId_;
-    PaperdollDef pdDef = sing->getPaperdollDef(parentBodyId);
+
+    EquipConvDef equipConv = sing->equipConvDefLoader_->get(parentBodyId, itemId);
+    if (equipConv.bodyId_ != 0) {
+        return equipConv.getGumpId();
+    }
+
+    PaperdollDef pdDef = sing->paperdollDefLoader_->get(parentBodyId);
     if (pdDef.bodyId_ == 0) {
         LOG_ERROR << "Unable to translate gump ids for body " << parentBodyId << std::endl;
         return 1;
