@@ -26,7 +26,10 @@ bool IngameObject::isVisible() const {
 }
 
 void IngameObject::setVisible(bool visible) {
-    visible_ = visible;
+    if (visible_ != visible) {
+        visible_ = visible;
+        forceRepaint();
+    }
 }
 
 void IngameObject::setLocation(int locX, int locY, int locZ) {

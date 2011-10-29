@@ -125,7 +125,12 @@ void Manager::step() {
     while (!singleClickQueue_.empty()) {
         boost::shared_ptr<world::IngameObject> obj = singleClickQueue_.front();
         singleClickQueue_.pop();
-        obj->onClick();
+
+        if (cursorManager_->hasTarget()) {
+            cursorManager_->onTarget(obj);
+        } else {
+            obj->onClick();
+        }
     }
 
     while (!doubleClickQueue_.empty()) {

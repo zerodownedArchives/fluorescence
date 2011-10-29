@@ -5,6 +5,8 @@
 #include <misc/config.hpp>
 #include <misc/log.hpp>
 
+#include "targeting/target.hpp"
+
 namespace fluo {
 namespace ui {
 
@@ -83,6 +85,44 @@ void CursorManager::onCursorMove(const CL_Point& mousePos) {
             startDragging();
             dragCandidate_->onStartDrag(mousePos);
         }
+    }
+}
+
+void CursorManager::cancelTarget() {
+    if (target_) {
+        target_->onCancel();
+        target_.reset();
+
+        setCursor(CursorType::GAME_WEST);
+    }
+}
+
+void CursorManager::setTarget(boost::shared_ptr<targeting::Target> targ) {
+    // should we cancel the previous target here? seems like a logical thing to do, but
+    // if both the last and current target were induced by the server, runuo interprets the
+    // cancelling of the old one wrong (= as cancelling the new one).
+    // thus, do not cancel here - for now
+    target_ = targ;
+    setCursor(CursorType::TARGET);
+}
+
+bool CursorManager::hasTarget() const {
+    return (bool)target_;
+}
+
+bool CursorManager::onTarget(boost::shared_ptr<world::IngameObject> obj) {
+    if (!hasTarget()) {
+        return false;
+    }
+
+    if (target_->acceptsTarget(obj)) {
+        target_->onTarget(obj);
+        target_.reset();
+        setCursor(CursorType::GAME_WEST);
+
+        return true;
+    } else {
+        return false;
     }
 }
 

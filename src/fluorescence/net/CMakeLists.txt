@@ -61,6 +61,7 @@ set (PACKETS_HPP
     net/packets/equippeditem.hpp
     net/packets/mobileanimation.hpp
     net/packets/openpaperdoll.hpp
+    net/packets/target.hpp
     )
 
 set (PACKETS_CPP
@@ -99,6 +100,7 @@ set (PACKETS_CPP
     net/packets/equippeditem.cpp
     net/packets/mobileanimation.cpp
     net/packets/openpaperdoll.cpp
+    net/packets/target.cpp
     )
 
 set (MD5

@@ -29,6 +29,7 @@ public:
     virtual boost::shared_ptr<ui::Texture> getGumpTexture() const;
 
     unsigned int getBodyId() const;
+    unsigned int getBaseBodyId() const;
     void setBodyId(unsigned int value);
 
     void setRace(unsigned int race);

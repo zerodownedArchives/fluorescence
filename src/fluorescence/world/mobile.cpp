@@ -41,6 +41,10 @@ unsigned int Mobile::getBodyId() const {
     return bodyId_;
 }
 
+unsigned int Mobile::getBaseBodyId() const {
+    return baseBodyId_;
+}
+
 void Mobile::onClick() {
     LOG_INFO << "Clicked mobile, id=" << std::hex << getBodyId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
             getLocZ() << ")" << std::endl;

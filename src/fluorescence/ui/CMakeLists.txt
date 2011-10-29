@@ -86,5 +86,16 @@ set (RENDER_CPP
     ui/render/gumprenderqueue.cpp
     )
 
-SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${RENDER_HPP} ${RENDER_CPP} PARENT_SCOPE)
+set (TARGETING_HPP
+    ui/targeting/target.hpp
+    ui/targeting/servertarget.hpp
+    )
+
+set (TARGETING_CPP
+    ui/targeting/target.cpp
+    ui/targeting/servertarget.cpp
+    )
+
+
+SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${RENDER_HPP} ${RENDER_CPP} ${TARGETING_HPP} ${TARGETING_CPP} PARENT_SCOPE)
 

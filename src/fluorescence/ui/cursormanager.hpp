@@ -14,6 +14,10 @@ class CL_DisplayWindow;
 namespace fluo {
 namespace ui {
 
+namespace targeting {
+    class Target;
+}
+
 struct CursorType {
     enum {
         GAME_NORTHWEST = 0,
@@ -50,6 +54,11 @@ public:
 
     void onCursorMove(const CL_Point& mousePos);
 
+    void setTarget(boost::shared_ptr<targeting::Target> targ);
+    void cancelTarget();
+    bool hasTarget() const;
+    bool onTarget(boost::shared_ptr<world::IngameObject> obj);
+
 private:
     bool warMode_;
     unsigned int warmodeArtOffset_;
@@ -66,6 +75,8 @@ private:
     int dragStartMouseX_;
     int dragStartMouseY_;
     boost::shared_ptr<world::IngameObject> dragCandidate_;
+
+    boost::shared_ptr<targeting::Target> target_;
 };
 
 }
