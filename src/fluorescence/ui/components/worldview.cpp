@@ -193,14 +193,14 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
         lm->setGlobalIntensity(intensity);
         break;
 
-    case CL_MOUSE_WHEEL_UP:
+    case CL_KEY_R:
         lm = world::Manager::getLightManager();
-        lm->setGlobalAngle(lm->getGlobalAngle() + 5);
+        lm->setGlobalAngle(lm->getGlobalAngle() + 1);
         LOG_DEBUG << "mw up " << lm->getGlobalAngle() << std::endl;
         break;
-    case CL_MOUSE_WHEEL_DOWN:
+    case CL_KEY_E:
         lm = world::Manager::getLightManager();
-        lm->setGlobalAngle(lm->getGlobalAngle() - 5);
+        lm->setGlobalAngle(lm->getGlobalAngle() - 1);
         LOG_DEBUG <<"mw down " << lm->getGlobalAngle() << std::endl;
         break;
 

@@ -129,6 +129,7 @@ private:
 
             if (next.offset_ == 0xFFFFFFFFu) {
                 // skip this. could be e.g. a static block with no data
+                next.item_->setReadComplete();
                 continue;
             }
 
