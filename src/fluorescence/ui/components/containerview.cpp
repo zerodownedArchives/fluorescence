@@ -3,31 +3,25 @@
 
 #include <misc/log.hpp>
 
-#include <world/manager.hpp>
-#include <world/sectormanager.hpp>
-#include <world/lightmanager.hpp>
-#include <world/map.hpp>
-#include <world/statics.hpp>
 #include <world/ingameobject.hpp>
+#include <world/dynamicitem.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/render/renderqueue.hpp>
 #include <ui/doubleclickhandler.hpp>
 #include <ui/cursormanager.hpp>
 #include <ui/render/containerrenderer.hpp>
 #include <ui/render/containerrenderqueue.hpp>
 
 #include <data/manager.hpp>
-#include <data/artloader.hpp>
+#include <data/gumpartloader.hpp>
 
-#include <algorithm>
 #include <ClanLib/Display/Window/keys.h>
 
 namespace fluo {
 namespace ui {
 namespace components {
 
-ContainerView::ContainerView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent) {
+ContainerView::ContainerView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent), sizeAdjusted(false) {
     this->set_geometry(bounds);
     boost::shared_ptr<ContainerRenderQueue> rq(new ContainerRenderQueue());
     renderer_.reset(new ContainerRenderer(rq, this));
@@ -41,6 +35,9 @@ ContainerView::ContainerView(CL_GUIComponent* parent, const CL_Rect& bounds) : G
 }
 
 ContainerView::~ContainerView() {
+    if (containerObject_) {
+        containerObject_->onContainerGumpClosed();
+    }
 }
 
 unsigned int ContainerView::getWidth() {
@@ -52,10 +49,17 @@ unsigned int ContainerView::getHeight() {
 }
 
 void ContainerView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
-    //gc.push_cliprect(get_geometry());
+    if (!sizeAdjusted && backgroundTexture_ && backgroundTexture_->isReadComplete()) {
+        //CL_GUIComponent* topComponent = get_top_level_component();
+        //CL_Rectf topGeom = topComponent->get_geometry();
+        //topGeom.set_size(CL_Sizef(backgroundTexture_->getWidth(), backgroundTexture_->getHeight()));
+        //topComponent->set_geometry(topGeom);
+        sizeAdjusted = true;
+
+        renderer_->getRenderQueue()->forceRepaint();
+    }
+
     CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
-    //renderer_->render(gc);
-    //gc.pop_cliprect();
 }
 
 bool ContainerView::onInputPressed(const CL_InputEvent& e) {
@@ -139,6 +143,19 @@ void ContainerView::addObject(boost::shared_ptr<world::IngameObject> obj) {
 
 void ContainerView::removeObject(boost::shared_ptr<world::IngameObject> obj) {
     obj->removeFromRenderQueue(renderer_->getRenderQueue());
+}
+
+void ContainerView::setBackgroundGumpId(unsigned int gumpId) {
+    backgroundTexture_ = data::Manager::getGumpArtLoader()->getTexture(gumpId);
+    sizeAdjusted = false;
+}
+
+boost::shared_ptr<ui::Texture> ContainerView::getBackgroundTexture() {
+    return backgroundTexture_;
+}
+
+void ContainerView::setContainerObject(boost::shared_ptr<world::DynamicItem> cont) {
+    containerObject_ = cont;
 }
 
 }

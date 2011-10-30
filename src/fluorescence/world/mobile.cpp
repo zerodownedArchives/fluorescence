@@ -134,12 +134,8 @@ void Mobile::updateTextureProvider() {
     if (pdDef.bodyId_ == 0) {
         LOG_ERROR << "Unable to find paperdoll.def entry for body " << bodyId_ << std::endl;
         gumpTextureProvider_.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_GUMPART_MUL, 0xC));
-        equipmentGumpOffset_ = 50000;
-        equipmentGumpOffsetFallback_ = 50000;
     } else {
         gumpTextureProvider_.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_GUMPART_MUL, pdDef.gumpId_));
-        equipmentGumpOffset_ = pdDef.gumpOffset_;
-        equipmentGumpOffsetFallback_ = pdDef.gumpOffsetFallback_;
 
         if (!childObjects_.empty()) {
             std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
@@ -320,12 +316,31 @@ void Mobile::onDelete() {
     IngameObject::onDelete();
 }
 
-unsigned int Mobile::getEquipmentGumpOffset() const {
-    return equipmentGumpOffset_;
+void Mobile::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
+    // add this item to all render queues the mobile is in
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = rqBegin();
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator end = rqEnd();
+    for (; iter != end; ++iter) {
+        obj->addToRenderQueue(*iter);
+    }
 }
 
-unsigned int Mobile::getEquipmentGumpOffsetFallback() const {
-    return equipmentGumpOffsetFallback_;
+void Mobile::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = rqBegin();
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator end = rqEnd();
+
+    std::list<boost::shared_ptr<ui::RenderQueue> > rqsToRemove;
+    for (; iter != end; ++iter) {
+        if (obj->isInRenderQueue(*iter)) {
+            rqsToRemove.push_back(*iter);
+        }
+    }
+
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remIter = rqsToRemove.begin();
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remEnd = rqsToRemove.end();
+    for (; remIter != remEnd; ++remIter) {
+        obj->removeFromRenderQueue(*remIter);
+    }
 }
 
 }

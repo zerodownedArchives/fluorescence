@@ -90,6 +90,8 @@ public:
 
     virtual void onAddedToParent();
     virtual void onRemovedFromParent();
+    virtual void onChildObjectAdded(boost::shared_ptr<IngameObject> obj);
+    virtual void onChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
 
     virtual void onDelete();
 
@@ -105,6 +107,9 @@ public:
     void invalidateTextureProvider();
     void invalidateVertexCoordinates();
     void invalidateRenderPriority();
+
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqBegin();
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd();
 
 
     void printRenderPriority() const;
@@ -132,7 +137,8 @@ private:
     bool visible_;
     CL_Vec3f location_;
 
-    std::list<boost::weak_ptr<ui::RenderQueue> > renderQueues_;
+    std::list<boost::shared_ptr<ui::RenderQueue> > renderQueues_;
+
     void notifyRenderQueuesWorldTexture();
     void notifyRenderQueuesWorldCoordinates();
     void notifyRenderQueuesWorldPriority();

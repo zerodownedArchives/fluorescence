@@ -64,6 +64,7 @@ set (PACKETS_HPP
     net/packets/target.hpp
     net/packets/displaycontainer.hpp
     net/packets/containercontent.hpp
+    net/packets/containerupdate.hpp
     )
 
 set (PACKETS_CPP
@@ -105,6 +106,7 @@ set (PACKETS_CPP
     net/packets/target.cpp
     net/packets/displaycontainer.cpp
     net/packets/containercontent.cpp
+    net/packets/containerupdate.cpp
     )
 
 set (MD5

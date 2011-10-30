@@ -11,11 +11,13 @@ namespace fluo {
 
 namespace world {
 class IngameObject;
+class DynamicItem;
 }
 
 namespace ui {
 
 class ContainerRenderer;
+class Texture;
 
 namespace components {
 
@@ -32,12 +34,21 @@ public:
     void addObject(boost::shared_ptr<world::IngameObject> obj);
     void removeObject(boost::shared_ptr<world::IngameObject> obj);
 
+    void setBackgroundGumpId(unsigned int gumpId);
+    void setContainerObject(boost::shared_ptr<world::DynamicItem> cont);
+
+    boost::shared_ptr<ui::Texture> getBackgroundTexture();
+
 private:
     boost::shared_ptr<ContainerRenderer> renderer_;
 
     bool onInputPressed(const CL_InputEvent& e);
     bool onInputReleased(const CL_InputEvent & e);
     bool onDoubleClick(const CL_InputEvent& e);
+
+    boost::shared_ptr<ui::Texture> backgroundTexture_;
+    bool sizeAdjusted;
+    boost::shared_ptr<world::DynamicItem> containerObject_;
 };
 
 }

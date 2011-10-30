@@ -25,29 +25,10 @@ bool ContainerRenderQueue::renderPriorityComparator(const boost::shared_ptr<worl
     boost::shared_ptr<world::DynamicItem> aDyn = boost::dynamic_pointer_cast<world::DynamicItem>(a);
     boost::shared_ptr<world::DynamicItem> bDyn = boost::dynamic_pointer_cast<world::DynamicItem>(b);
 
-    unsigned int aLayer = aDyn->getLayer() - 1;
-    unsigned int bLayer = bDyn->getLayer() - 1;
-
-    if (aLayer >= layerPriorities_.size()) {
-        LOG_WARN << "Rendering item with invalid layer " << aDyn->getLayer() << ". Unable to assign render priority" << std::endl;
-        aLayer = 0;
-    }
-
-    if (bLayer >= layerPriorities_.size()) {
-        LOG_WARN << "Rendering item with invalid layer " << bDyn->getLayer() << ". Unable to assign render priority" << std::endl;
-        bLayer = 0;
-    }
-
-    if (layerPriorities_[aLayer] == layerPriorities_[bLayer]) {
-        LOG_WARN << "2 Items at same layer in GumpRenderQueue::renderPriorityComparator" << std::endl;
-        return true;
-    }
-
-    return layerPriorities_[aLayer] <= layerPriorities_[bLayer];
+    return aDyn->getSerial() <= bDyn->getSerial();
 }
 
 ContainerRenderQueue::ContainerRenderQueue() : RenderQueue(boost::bind(&ContainerRenderQueue::renderPriorityComparator, this, _1, _2)) {
-    layerPriorities_ = Client::getSingleton()->getConfig()["/fluo/ui/layer-priorities@paperdoll"].asIntList();
 }
 
 ContainerRenderQueue::~ContainerRenderQueue() {
@@ -62,13 +43,13 @@ void ContainerRenderQueue::preRender() {
 
     bool requireSort = processAddList();
 
-    if (requireSort || gumpChanged_) {
+    if (requireSort) {
         sort();
     }
 }
 
 void ContainerRenderQueue::postRender() {
-    resetGumpRepaintIndicators();
+    resetWorldRepaintIndicators();
 }
 
 boost::shared_ptr<world::IngameObject> ContainerRenderQueue::getFirstObjectAt(int pixelX, int pixelY, bool getTopParent) {

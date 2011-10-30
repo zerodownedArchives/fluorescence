@@ -16,8 +16,8 @@
 namespace fluo {
 namespace ui {
 
-ContainerRenderer::ContainerRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::ContainerView* gumpView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_WORLD, true),
-            gumpView_(gumpView), renderQueue_(renderQueue) {
+ContainerRenderer::ContainerRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::ContainerView* containerView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_WORLD, true),
+            containerView_(containerView), renderQueue_(renderQueue) {
 
     CL_GraphicContext gc = fluo::ui::Manager::getSingleton()->getGraphicContext();
 
@@ -38,9 +38,9 @@ ContainerRenderer::~ContainerRenderer() {
 
 
 void ContainerRenderer::checkTextureSize() {
-    if (!texture_ || texture_->getWidth() != gumpView_->getWidth() || texture_->getHeight() != gumpView_->getHeight()) {
+    if (!texture_ || texture_->getWidth() != containerView_->getWidth() || texture_->getHeight() != containerView_->getHeight()) {
         texture_.reset(new ui::Texture(false));
-        texture_->initPixelBuffer(gumpView_->getWidth(), gumpView_->getHeight());
+        texture_->initPixelBuffer(containerView_->getWidth(), containerView_->getHeight());
         texture_->setReadComplete();
     }
 }
@@ -89,11 +89,37 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
     RenderQueue::const_iterator igIter = renderQueue_->begin();
     RenderQueue::const_iterator igEnd = renderQueue_->end();
 
+    CL_Vec2f vertexCoords[6];
+
+    // draw background container texture
+    boost::shared_ptr<ui::Texture> bgTex = containerView_->getBackgroundTexture();
+    if (bgTex && bgTex->isReadComplete()) {
+        CL_Vec3f hueInfo(0, 0, 1);
+
+        CL_Rectf rect(0, 0, CL_Sizef(bgTex->getWidth(), bgTex->getHeight()));
+
+        vertexCoords[0] = CL_Vec2f(rect.left, rect.top);
+        vertexCoords[1] = CL_Vec2f(rect.right, rect.top);
+        vertexCoords[2] = CL_Vec2f(rect.left, rect.bottom);
+        vertexCoords[3] = CL_Vec2f(rect.right, rect.top);
+        vertexCoords[4] = CL_Vec2f(rect.left, rect.bottom);
+        vertexCoords[5] = CL_Vec2f(rect.right, rect.bottom);
+
+        CL_PrimitivesArray primarray(gc);
+        primarray.set_attributes(0, vertexCoords);
+        primarray.set_attributes(1, tex1_coords);
+
+        primarray.set_attribute(2, hueInfo);
+
+        gc.set_texture(1, *bgTex->getTexture());
+        gc.draw_primitives(cl_triangles, 6, primarray);
+    }
+
     for (; igIter != igEnd; ++igIter) {
         boost::shared_ptr<world::IngameObject> curObj = *igIter;
 
-        // just mobiles and items in a gump
-        if (!curObj->isMobile() && ! curObj->isDynamicItem()) {
+        // just items in a container
+        if (!curObj->isDynamicItem()) {
             continue;
         }
 
@@ -104,8 +130,17 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
             continue;
         }
 
+        CL_Rectf rect(curObj->getLocX(), curObj->getLocY(), CL_Sizef(tex->getWidth(), tex->getHeight()));
+
+        vertexCoords[0] = CL_Vec2f(rect.left, rect.top);
+        vertexCoords[1] = CL_Vec2f(rect.right, rect.top);
+        vertexCoords[2] = CL_Vec2f(rect.left, rect.bottom);
+        vertexCoords[3] = CL_Vec2f(rect.right, rect.top);
+        vertexCoords[4] = CL_Vec2f(rect.left, rect.bottom);
+        vertexCoords[5] = CL_Vec2f(rect.right, rect.bottom);
+
         CL_PrimitivesArray primarray(gc);
-        primarray.set_attributes(0, curObj->getVertexCoordinates());
+        primarray.set_attributes(0, vertexCoords);
         primarray.set_attributes(1, tex1_coords);
 
         primarray.set_attribute(2, curObj->getHueInfo());

@@ -333,7 +333,9 @@ void DynamicItem::openContainerGump(unsigned int gumpId) {
 
     ui::components::ContainerView* contView = dynamic_cast<ui::components::ContainerView*>(containerGump_->get_named_item("container"));
     if (contView) {
-        //contView->setContainer(shared_from_this());
+        contView->setBackgroundGumpId(gumpId);
+        boost::shared_ptr<DynamicItem> dynSelf = boost::dynamic_pointer_cast<DynamicItem>(shared_from_this());
+        contView->setContainerObject(dynSelf);
     } else {
         LOG_ERROR << "Unable to find container component in container gump" << std::endl;
         return;
@@ -344,6 +346,32 @@ void DynamicItem::openContainerGump(unsigned int gumpId) {
 
     for (; iter != end; ++iter) {
         contView->addObject(*iter);
+    }
+}
+
+void DynamicItem::onContainerGumpClosed() {
+    containerGump_ = NULL;
+}
+
+void DynamicItem::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
+    if (containerGump_) {
+        ui::components::ContainerView* contView = dynamic_cast<ui::components::ContainerView*>(containerGump_->get_named_item("container"));
+        if (contView) {
+            contView->addObject(obj);
+        } else {
+            LOG_ERROR << "Unable to find container component in container gump" << std::endl;
+        }
+    }
+}
+
+void DynamicItem::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
+    if (containerGump_) {
+        ui::components::ContainerView* contView = dynamic_cast<ui::components::ContainerView*>(containerGump_->get_named_item("container"));
+        if (contView) {
+            contView->removeObject(obj);
+        } else {
+            LOG_ERROR << "Unable to find container component in container gump" << std::endl;
+        }
     }
 }
 

@@ -241,10 +241,10 @@ void IngameObject::setOverheadMessageOffsets() {
 }
 
 bool IngameObject::isInRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
-    std::list<boost::weak_ptr<ui::RenderQueue> >::const_iterator iter = renderQueues_.begin();
-    std::list<boost::weak_ptr<ui::RenderQueue> >::const_iterator end = renderQueues_.end();
+    std::list<boost::shared_ptr<ui::RenderQueue> >::const_iterator iter = renderQueues_.begin();
+    std::list<boost::shared_ptr<ui::RenderQueue> >::const_iterator end = renderQueues_.end();
     for (; iter != end; ++iter) {
-        if (iter->lock() == rq) {
+        if (*iter == rq) {
             return true;
         }
     }
@@ -253,7 +253,7 @@ bool IngameObject::isInRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
 }
 
 void IngameObject::addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
-    boost::weak_ptr<ui::RenderQueue> weakRq(rq);
+    boost::shared_ptr<ui::RenderQueue> weakRq(rq);
 
     if (!isInRenderQueue(rq)) {
         renderQueues_.push_back(weakRq);
@@ -273,10 +273,10 @@ void IngameObject::addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
 }
 
 void IngameObject::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
-    std::list<boost::weak_ptr<ui::RenderQueue> >::iterator iter = renderQueues_.begin();
-    std::list<boost::weak_ptr<ui::RenderQueue> >::iterator end = renderQueues_.end();
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = renderQueues_.begin();
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator end = renderQueues_.end();
     for (; iter != end; ++iter) {
-        if (iter->lock() == rq) {
+        if (*iter == rq) {
             break;
         }
     }
@@ -302,8 +302,9 @@ void IngameObject::addChildObject(boost::shared_ptr<IngameObject> obj) {
     std::list<boost::shared_ptr<IngameObject> >::iterator iter = std::find(childObjects_.begin(), childObjects_.end(), obj);
 
     if (iter == childObjects_.end()) {
-        obj->setParentObject(shared_from_this());
         childObjects_.push_back(obj);
+        obj->setParentObject(shared_from_this());
+        onChildObjectAdded(obj);
 
         if (obj->isSpeech()) {
             setOverheadMessageOffsets();
@@ -315,6 +316,7 @@ void IngameObject::removeChildObject(boost::shared_ptr<IngameObject> obj) {
     std::list<boost::shared_ptr<IngameObject> >::iterator iter = std::find(childObjects_.begin(), childObjects_.end(), obj);
 
     if (iter != childObjects_.end()) {
+        onChildObjectRemoved(*iter);
         obj->setParentObject();
         childObjects_.erase(iter);
     }
@@ -326,32 +328,16 @@ void IngameObject::onAddedToParent() {
 void IngameObject::onRemovedFromParent() {
 }
 
+void IngameObject::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
+}
+
+void IngameObject::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
+}
+
 void IngameObject::setParentObject() {
     boost::shared_ptr<IngameObject> parent = parentObject_.lock();
 
     if (parent) {
-        if (isSpeech() || parent->isMobile()) {
-            // remove this item from all render queues the parent is in
-            std::list<boost::weak_ptr<ui::RenderQueue> >::iterator iter = renderQueues_.begin();
-            std::list<boost::weak_ptr<ui::RenderQueue> >::iterator end = renderQueues_.end();
-
-            std::list<boost::shared_ptr<ui::RenderQueue> > rqsToRemove;
-            for (; iter != end; ++iter) {
-                boost::shared_ptr<ui::RenderQueue> rq = iter->lock();
-                if (parent->isInRenderQueue(rq)) {
-                    rqsToRemove.push_back(rq);
-                }
-            }
-
-            std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remIter = rqsToRemove.begin();
-            std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remEnd = rqsToRemove.end();
-            for (; remIter != remEnd; ++remIter) {
-                removeFromRenderQueue(*remIter);
-            }
-        } else if (parent->isDynamicItem()) {
-            // container
-        }
-
         onRemovedFromParent();
         parentObject_.reset();
     }
@@ -363,19 +349,7 @@ void IngameObject::setParentObject(boost::shared_ptr<IngameObject> parent) {
         setParentObject();
     }
 
-    if (isSpeech() || parent->isMobile()) {
-        // add this item to all render queues the parent is in
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator iter = parent->renderQueues_.begin();
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator end = parent->renderQueues_.end();
-        for (; iter != end; ++iter) {
-            addToRenderQueue(iter->lock());
-        }
-    } else if (parent->isDynamicItem()) {
-        // container
-    }
-
     parentObject_ = parent;
-
     onAddedToParent();
 }
 
@@ -405,11 +379,11 @@ void IngameObject::onDelete() {
         parent->removeChildObject(shared_from_this());
     }
 
-    std::list<boost::weak_ptr<ui::RenderQueue> > rqsToRemove(renderQueues_.begin(), renderQueues_.end());
-    std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqIter = rqsToRemove.begin();
-    std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqEnd = rqsToRemove.end();
+    std::list<boost::shared_ptr<ui::RenderQueue> > rqsToRemove(renderQueues_.begin(), renderQueues_.end());
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqIter = rqsToRemove.begin();
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd = rqsToRemove.end();
     for (; rqIter != rqEnd; ++rqIter) {
-        removeFromRenderQueue(rqIter->lock());
+        removeFromRenderQueue(*rqIter);
     }
 }
 
@@ -425,13 +399,13 @@ void IngameObject::notifyRenderQueuesWorldTexture() {
         // do nothing
         break;
     case 1:
-        renderQueues_.front().lock()->onObjectWorldTextureChanged();
+        renderQueues_.front()->onObjectWorldTextureChanged();
         break;
     default:
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
         for (; rqIter != rqEnd; ++rqIter) {
-            rqIter->lock()->onObjectWorldTextureChanged();
+            (*rqIter)->onObjectWorldTextureChanged();
         }
     }
 }
@@ -442,13 +416,13 @@ void IngameObject::notifyRenderQueuesWorldCoordinates() {
         // do nothing
         break;
     case 1:
-        renderQueues_.front().lock()->onObjectWorldCoordinatesChanged();
+        renderQueues_.front()->onObjectWorldCoordinatesChanged();
         break;
     default:
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
         for (; rqIter != rqEnd; ++rqIter) {
-            rqIter->lock()->onObjectWorldCoordinatesChanged();
+            (*rqIter)->onObjectWorldCoordinatesChanged();
         }
     }
 }
@@ -459,13 +433,13 @@ void IngameObject::notifyRenderQueuesWorldPriority() {
         // do nothing
         break;
     case 1:
-        renderQueues_.front().lock()->onObjectWorldPriorityChanged();
+        renderQueues_.front()->onObjectWorldPriorityChanged();
         break;
     default:
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
         for (; rqIter != rqEnd; ++rqIter) {
-            rqIter->lock()->onObjectWorldPriorityChanged();
+            (*rqIter)->onObjectWorldPriorityChanged();
         }
     }
 }
@@ -476,13 +450,13 @@ void IngameObject::notifyRenderQueuesGump() {
         // do nothing
         break;
     case 1:
-        renderQueues_.front().lock()->onGumpChanged();
+        renderQueues_.front()->onGumpChanged();
         break;
     default:
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
         for (; rqIter != rqEnd; ++rqIter) {
-            rqIter->lock()->onGumpChanged();
+            (*rqIter)->onGumpChanged();
         }
     }
 }
@@ -493,15 +467,23 @@ void IngameObject::forceRepaint() {
         // do nothing
         break;
     case 1:
-        renderQueues_.front().lock()->forceRepaint();
+        renderQueues_.front()->forceRepaint();
         break;
     default:
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
         for (; rqIter != rqEnd; ++rqIter) {
-            rqIter->lock()->forceRepaint();
+            (*rqIter)->forceRepaint();
         }
     }
+}
+
+std::list<boost::shared_ptr<ui::RenderQueue> >::iterator IngameObject::rqBegin() {
+    return renderQueues_.begin();
+}
+
+std::list<boost::shared_ptr<ui::RenderQueue> >::iterator IngameObject::rqEnd() {
+    return renderQueues_.end();
 }
 
 const ui::WorldRenderData& IngameObject::getWorldRenderData() const {

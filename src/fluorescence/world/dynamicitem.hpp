@@ -53,8 +53,11 @@ public:
 
     virtual void onAddedToParent();
     virtual void onRemovedFromParent();
+    virtual void onChildObjectAdded(boost::shared_ptr<IngameObject> obj);
+    virtual void onChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
 
     void openContainerGump(unsigned int gumpId);
+    void onContainerGumpClosed();
 
 private:
     unsigned int artId_;

@@ -21,7 +21,7 @@ class Texture;
 
 class ContainerRenderer : public IngameObjectRenderer {
 public:
-    ContainerRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::ContainerView* gumpView);
+    ContainerRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::ContainerView* containerView);
     ~ContainerRenderer();
 
     virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc);
@@ -33,7 +33,7 @@ public:
 private:
     boost::shared_ptr<CL_ProgramObject> shaderProgram_;
 
-    components::ContainerView* gumpView_;
+    components::ContainerView* containerView_;
     boost::shared_ptr<RenderQueue> renderQueue_;
 
     boost::shared_ptr<Texture> texture_;

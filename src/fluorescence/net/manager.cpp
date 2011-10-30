@@ -93,6 +93,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0x1D: ret.reset(new packets::DeleteObject()); break;
         case 0x20: ret.reset(new packets::Teleport()); break;
         case 0x24: ret.reset(new packets::DisplayContainer()); break;
+        case 0x25: ret.reset(new packets::ContainerUpdate()); break;
         case 0x27: ret.reset(new packets::PickUpReject()); break;
         case 0x2E: ret.reset(new packets::EquippedItem()); break;
         case 0x3C: ret.reset(new packets::ContainerContent()); break;

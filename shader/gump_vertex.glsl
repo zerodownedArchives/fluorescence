@@ -2,9 +2,9 @@
 uniform mat4 cl_ModelViewProjectionMatrix;
 
 attribute vec2 TexCoord0;
-attribute vec2 HueInfo0;
+attribute vec3 HueInfo0;
 
-varying vec2 HueInfo;
+varying vec3 HueInfo;
 
 void main(void) {
     gl_Position = cl_ModelViewProjectionMatrix * gl_Vertex;

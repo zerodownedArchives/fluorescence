@@ -62,7 +62,36 @@ void OverheadMessage::setParentPixelOffset(int y) {
 }
 
 void OverheadMessage::onAddedToParent() {
-    addToRenderQueue(ui::Manager::getWorldRenderQueue());
+    boost::shared_ptr<IngameObject> parent = parentObject_.lock();
+
+    if (parent) {
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = parent->rqBegin();
+        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator end = parent->rqEnd();
+        for (; iter != end; ++iter) {
+            addToRenderQueue(*iter);
+        }
+    }
+}
+
+void OverheadMessage::onRemovedFromParent() {
+    boost::shared_ptr<IngameObject> parent = parentObject_.lock();
+
+    // remove this item from all render queues the parent is in
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = rqBegin();
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator end = rqEnd();
+
+    std::list<boost::shared_ptr<ui::RenderQueue> > rqsToRemove;
+    for (; iter != end; ++iter) {
+        if (parent->isInRenderQueue(*iter)) {
+            rqsToRemove.push_back(*iter);
+        }
+    }
+
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remIter = rqsToRemove.begin();
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remEnd = rqsToRemove.end();
+    for (; remIter != remEnd; ++remIter) {
+        removeFromRenderQueue(*remIter);
+    }
 }
 
 }

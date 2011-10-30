@@ -2,7 +2,7 @@
 uniform sampler2D HueTexture;
 uniform sampler2D ObjectTexture;
 
-varying vec2 HueInfo;
+varying vec3 HueInfo;
 
 void main(void) {
     // sample actual pixel color
@@ -12,7 +12,7 @@ void main(void) {
         discard;
     }
 
-    gl_FragColor.a = rgba.a;
+    gl_FragColor.a = rgba.a * HueInfo.z;
 
     if (HueInfo[1] != 0.0) {
         // object has hue

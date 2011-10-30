@@ -24,6 +24,7 @@ public:
 
     virtual void onClick();
     virtual void onAddedToParent();
+    virtual void onRemovedFromParent();
 
 private:
     UnicodeString text_;

@@ -62,8 +62,8 @@ public:
 
     virtual void onDelete();
 
-    unsigned int getEquipmentGumpOffset() const;
-    unsigned int getEquipmentGumpOffsetFallback() const;
+    virtual void onChildObjectAdded(boost::shared_ptr<IngameObject> obj);
+    virtual void onChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
 
 private:
     unsigned int baseBodyId_; // as sent by the server
@@ -87,8 +87,6 @@ private:
 
     unsigned int race_;
     bool female_;
-    unsigned int equipmentGumpOffset_;
-    unsigned int equipmentGumpOffsetFallback_;
 };
 
 }

@@ -12,6 +12,7 @@
 #include "packets/deleteobject.hpp" // 0x1d
 #include "packets/teleport.hpp" // 0x20
 #include "packets/displaycontainer.hpp" // 0x24
+#include "packets/containerupdate.hpp" // 0x25
 #include "packets/pickupreject.hpp" // 0x27
 #include "packets/equippeditem.hpp" // 0x2e
 #include "packets/statskillquery.hpp" //0x34
