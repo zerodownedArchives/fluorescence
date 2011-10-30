@@ -4,6 +4,8 @@
 #include <world/manager.hpp>
 #include <world/mobile.hpp>
 
+#include <ui/manager.hpp>
+
 namespace fluo {
 namespace net {
 namespace packets {
@@ -33,6 +35,8 @@ void PlayerInit::onReceive() {
     player->setLocation(locX_, locY_, locZ_);
     player->setBodyId(bodyId_);
     player->setDirection(direction_);
+
+    player->addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 }

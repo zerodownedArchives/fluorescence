@@ -76,8 +76,6 @@ void Mobile::setBodyId(unsigned int value) {
 
         invalidateTextureProvider();
     }
-
-    addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 void Mobile::updateVertexCoordinates() {

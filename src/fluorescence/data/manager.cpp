@@ -350,7 +350,7 @@ std::vector<boost::shared_ptr<ui::Animation> > Manager::getAnim(unsigned int bod
     boost::shared_ptr<AnimLoader> ldr;
     unsigned int animIdx;
     if (bodyConvEntry.bodyId_ != 0) {
-        LOG_DEBUG << "redirecting anim! body=" << bodyId << " fileIdx=" << bodyConvEntry.getAnimFileIdx() << " idx in file=" << bodyConvEntry.getAnimIdxInFile() << std::endl;
+        //LOG_DEBUG << "redirecting anim! body=" << bodyId << " fileIdx=" << bodyConvEntry.getAnimFileIdx() << " idx in file=" << bodyConvEntry.getAnimIdxInFile() << std::endl;
         animIdx = bodyConvEntry.getAnimIdxInFile();
         ldr = getAnimLoader(bodyConvEntry.getAnimFileIdx());
     } else {

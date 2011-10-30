@@ -24,6 +24,7 @@
 #include "components/worldview.hpp"
 #include "components/propertylabel.hpp"
 #include "components/gumpview.hpp"
+#include "components/containerview.hpp"
 
 namespace fluo {
 namespace ui {
@@ -80,6 +81,7 @@ GumpFactory::GumpFactory() {
     functionTable_["image"] = boost::bind(&GumpFactory::parseImage, this, _1, _2, _3);
     functionTable_["worldview"] = boost::bind(&GumpFactory::parseWorldView, this, _1, _2, _3);
     functionTable_["paperdoll"] = boost::bind(&GumpFactory::parsePaperdoll, this, _1, _2, _3);
+    functionTable_["container"] = boost::bind(&GumpFactory::parseContainer, this, _1, _2, _3);
 }
 
 void GumpFactory::addRepeatContext(const UnicodeString& name, const RepeatContext& context) {
@@ -639,7 +641,7 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
             height = texture->getPixelBuffer()->get_height();
         }
 
-        LOG_DEBUG << "width=" << width << " height=" << height << std::endl;
+        //LOG_DEBUG << "width=" << width << " height=" << height << std::endl;
     } else if (artId) {
         boost::shared_ptr<ui::Texture> texture = data::Manager::getArtLoader()->getItemTexture(artId);
         // TODO: find something better than busy waiting here
@@ -847,6 +849,16 @@ bool GumpFactory::parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, 
     CL_Rect bounds = getBoundsFromNode(node, parent);
 
     ui::components::GumpView* worldView = new ui::components::GumpView(parent, bounds);
+
+    parseId(node, worldView);
+
+    return true;
+}
+
+bool GumpFactory::parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, parent);
+
+    ui::components::ContainerView* worldView = new ui::components::ContainerView(parent, bounds);
 
     parseId(node, worldView);
 

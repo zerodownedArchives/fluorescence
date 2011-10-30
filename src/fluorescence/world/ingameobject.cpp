@@ -329,29 +329,32 @@ void IngameObject::onRemovedFromParent() {
 void IngameObject::setParentObject() {
     boost::shared_ptr<IngameObject> parent = parentObject_.lock();
 
-    if (parent && (isSpeech() || parent->isMobile())) {
-        // remove this item from all render queues the parent is in
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator iter = renderQueues_.begin();
-        std::list<boost::weak_ptr<ui::RenderQueue> >::iterator end = renderQueues_.end();
+    if (parent) {
+        if (isSpeech() || parent->isMobile()) {
+            // remove this item from all render queues the parent is in
+            std::list<boost::weak_ptr<ui::RenderQueue> >::iterator iter = renderQueues_.begin();
+            std::list<boost::weak_ptr<ui::RenderQueue> >::iterator end = renderQueues_.end();
 
-        std::list<boost::shared_ptr<ui::RenderQueue> > rqsToRemove;
-        for (; iter != end; ++iter) {
-            boost::shared_ptr<ui::RenderQueue> rq = iter->lock();
-            if (parent->isInRenderQueue(rq)) {
-                rqsToRemove.push_back(rq);
+            std::list<boost::shared_ptr<ui::RenderQueue> > rqsToRemove;
+            for (; iter != end; ++iter) {
+                boost::shared_ptr<ui::RenderQueue> rq = iter->lock();
+                if (parent->isInRenderQueue(rq)) {
+                    rqsToRemove.push_back(rq);
+                }
             }
+
+            std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remIter = rqsToRemove.begin();
+            std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remEnd = rqsToRemove.end();
+            for (; remIter != remEnd; ++remIter) {
+                removeFromRenderQueue(*remIter);
+            }
+        } else if (parent->isDynamicItem()) {
+            // container
         }
 
-        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remIter = rqsToRemove.begin();
-        std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remEnd = rqsToRemove.end();
-        for (; remIter != remEnd; ++remIter) {
-            removeFromRenderQueue(*remIter);
-        }
+        onRemovedFromParent();
+        parentObject_.reset();
     }
-
-    onRemovedFromParent();
-
-    parentObject_.reset();
 }
 
 void IngameObject::setParentObject(boost::shared_ptr<IngameObject> parent) {
@@ -367,6 +370,8 @@ void IngameObject::setParentObject(boost::shared_ptr<IngameObject> parent) {
         for (; iter != end; ++iter) {
             addToRenderQueue(iter->lock());
         }
+    } else if (parent->isDynamicItem()) {
+        // container
     }
 
     parentObject_ = parent;

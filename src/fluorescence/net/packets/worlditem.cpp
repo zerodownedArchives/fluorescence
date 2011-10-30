@@ -4,6 +4,8 @@
 #include <world/manager.hpp>
 #include <world/dynamicitem.hpp>
 
+#include <ui/manager.hpp>
+
 namespace fluo {
 namespace net {
 namespace packets {
@@ -94,6 +96,8 @@ void WorldItem::onReceive() {
     itm->setHue(hue_);
 
     // TODO: handle status
+
+    itm->addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 }

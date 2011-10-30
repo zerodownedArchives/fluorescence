@@ -11,9 +11,11 @@
 #include "packets/asciitext.hpp" // 0x1c
 #include "packets/deleteobject.hpp" // 0x1d
 #include "packets/teleport.hpp" // 0x20
+#include "packets/displaycontainer.hpp" // 0x24
 #include "packets/pickupreject.hpp" // 0x27
 #include "packets/equippeditem.hpp" // 0x2e
 #include "packets/statskillquery.hpp" //0x34
+#include "packets/containercontent.hpp" // 0x3c
 #include "packets/logincomplete.hpp" // 0x55
 #include "packets/characterselect.hpp" // 0x5d
 #include "packets/target.hpp" // 0x6c

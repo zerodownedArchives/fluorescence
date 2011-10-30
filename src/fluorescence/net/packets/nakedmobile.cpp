@@ -6,6 +6,8 @@
 
 #include <misc/log.hpp>
 
+#include <ui/manager.hpp>
+
 namespace fluo {
 namespace net {
 namespace packets {
@@ -38,6 +40,8 @@ void NakedMobile::onReceive() {
     mob->setHue(hue_);
 
     // TODO: handle status
+
+    mob->addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 }

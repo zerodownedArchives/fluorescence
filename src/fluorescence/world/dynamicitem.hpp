@@ -14,6 +14,7 @@ namespace ui {
     class Texture;
     class TextureProvider;
     class AnimTextureProvider;
+    class GumpMenu;
 }
 
 namespace world {
@@ -53,6 +54,8 @@ public:
     virtual void onAddedToParent();
     virtual void onRemovedFromParent();
 
+    void openContainerGump(unsigned int gumpId);
+
 private:
     unsigned int artId_;
     unsigned int amount_;
@@ -72,6 +75,8 @@ private:
     bool equipped_;
     unsigned int layer_;
     boost::shared_ptr<ui::AnimTextureProvider> animTextureProvider_;
+
+    ui::GumpMenu* containerGump_;
 };
 
 }

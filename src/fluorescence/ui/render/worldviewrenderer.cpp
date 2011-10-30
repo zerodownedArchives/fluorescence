@@ -49,7 +49,7 @@ void WorldViewRenderer::checkTextureSize() {
 }
 
 boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) {
-    if (renderQueue_->requireWorldRepaint()) {
+    if (renderQueue_->requireWorldRepaint() || !texture_) {
         checkTextureSize();
         CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 

@@ -19,6 +19,8 @@
 #include <ui/textureprovider.hpp>
 #include <ui/animtextureprovider.hpp>
 #include <ui/singletextureprovider.hpp>
+#include <ui/gumpmenu.hpp>
+#include <ui/components/containerview.hpp>
 
 #include <net/manager.hpp>
 #include <net/packets/singleclick.hpp>
@@ -29,7 +31,7 @@
 namespace fluo {
 namespace world {
 
-DynamicItem::DynamicItem(Serial serial) : ServerObject(serial, IngameObject::TYPE_DYNAMIC_ITEM), artId_(0), equipped_(false) {
+DynamicItem::DynamicItem(Serial serial) : ServerObject(serial, IngameObject::TYPE_DYNAMIC_ITEM), artId_(0), equipped_(false), containerGump_(NULL) {
 }
 
 boost::shared_ptr<ui::Texture> DynamicItem::getIngameTexture() const {
@@ -57,8 +59,6 @@ void DynamicItem::setArtId(unsigned int artId) {
 
         invalidateTextureProvider();
     }
-
-    addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 void DynamicItem::setDirection(unsigned int direction) {
@@ -321,6 +321,29 @@ void DynamicItem::onRemovedFromParent() {
         equipped_ = false;
         invalidateTextureProvider();
         invalidateRenderPriority();
+    }
+}
+
+void DynamicItem::openContainerGump(unsigned int gumpId) {
+    if (containerGump_) {
+        containerGump_->bring_to_front();
+    } else {
+        containerGump_ = ui::Manager::getSingleton()->openXmlGump("container");
+    }
+
+    ui::components::ContainerView* contView = dynamic_cast<ui::components::ContainerView*>(containerGump_->get_named_item("container"));
+    if (contView) {
+        //contView->setContainer(shared_from_this());
+    } else {
+        LOG_ERROR << "Unable to find container component in container gump" << std::endl;
+        return;
+    }
+
+    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
+
+    for (; iter != end; ++iter) {
+        contView->addObject(*iter);
     }
 }
 

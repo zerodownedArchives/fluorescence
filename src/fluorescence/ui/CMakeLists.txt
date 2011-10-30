@@ -47,6 +47,7 @@ set (GUMPMENU_HPP
     ui/components/worldview.hpp
     ui/components/propertylabel.hpp
     ui/components/gumpview.hpp
+    ui/components/containerview.hpp
     )
 
 set (GUMPMENU_CPP
@@ -64,6 +65,7 @@ set (GUMPMENU_CPP
     ui/components/worldview.cpp
     ui/components/propertylabel.cpp
     ui/components/gumpview.cpp
+    ui/components/containerview.cpp
     )
 
 set (RENDER_HPP
@@ -74,6 +76,8 @@ set (RENDER_HPP
     ui/render/worldviewrenderer.hpp
     ui/render/gumprenderer.hpp
     ui/render/gumprenderqueue.hpp
+    ui/render/containerrenderer.hpp
+    ui/render/containerrenderqueue.hpp
     )
 
 set (RENDER_CPP
@@ -84,6 +88,8 @@ set (RENDER_CPP
     ui/render/worldviewrenderer.cpp
     ui/render/gumprenderer.cpp
     ui/render/gumprenderqueue.cpp
+    ui/render/containerrenderer.cpp
+    ui/render/containerrenderqueue.cpp
     )
 
 set (TARGETING_HPP

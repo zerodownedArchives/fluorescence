@@ -1,10 +1,10 @@
 
-#include "gumprenderer.hpp"
+#include "containerrenderer.hpp"
 
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
 #include <ui/texture.hpp>
-#include <ui/components/gumpview.hpp>
+#include <ui/components/containerview.hpp>
 
 #include <misc/log.hpp>
 
@@ -16,7 +16,7 @@
 namespace fluo {
 namespace ui {
 
-GumpRenderer::GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::GumpView* gumpView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_GUMP, true),
+ContainerRenderer::ContainerRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::ContainerView* gumpView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_WORLD, true),
             gumpView_(gumpView), renderQueue_(renderQueue) {
 
     CL_GraphicContext gc = fluo::ui::Manager::getSingleton()->getGraphicContext();
@@ -32,12 +32,12 @@ GumpRenderer::GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, component
     }
 }
 
-GumpRenderer::~GumpRenderer() {
+ContainerRenderer::~ContainerRenderer() {
     renderQueue_->clear();
 }
 
 
-void GumpRenderer::checkTextureSize() {
+void ContainerRenderer::checkTextureSize() {
     if (!texture_ || texture_->getWidth() != gumpView_->getWidth() || texture_->getHeight() != gumpView_->getHeight()) {
         texture_.reset(new ui::Texture(false));
         texture_->initPixelBuffer(gumpView_->getWidth(), gumpView_->getHeight());
@@ -45,8 +45,8 @@ void GumpRenderer::checkTextureSize() {
     }
 }
 
-boost::shared_ptr<Texture> GumpRenderer::getTexture(CL_GraphicContext& gc) {
-    if (renderQueue_->requireGumpRepaint() || !texture_) {
+boost::shared_ptr<Texture> ContainerRenderer::getTexture(CL_GraphicContext& gc) {
+    if (renderQueue_->requireWorldRepaint() || !texture_) {
         checkTextureSize();
         CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 
@@ -64,7 +64,7 @@ boost::shared_ptr<Texture> GumpRenderer::getTexture(CL_GraphicContext& gc) {
 }
 
 
-void GumpRenderer::render(CL_GraphicContext& gc) {
+void ContainerRenderer::render(CL_GraphicContext& gc) {
     renderQueue_->preRender();
 
     gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
@@ -89,8 +89,6 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
     RenderQueue::const_iterator igIter = renderQueue_->begin();
     RenderQueue::const_iterator igEnd = renderQueue_->end();
 
-    CL_Vec2f vertexCoords[6];
-
     for (; igIter != igEnd; ++igIter) {
         boost::shared_ptr<world::IngameObject> curObj = *igIter;
 
@@ -100,23 +98,14 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
         }
 
         // check if texture is ready to be drawn
-        boost::shared_ptr<ui::Texture> tex = curObj->getGumpTexture();
+        boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
 
         if (!tex || !tex->isReadComplete()) {
             continue;
         }
 
-        CL_Rectf rect(0, 0, tex->getWidth(), tex->getHeight());
-
-        vertexCoords[0] = CL_Vec2f(rect.left, rect.top);
-        vertexCoords[1] = CL_Vec2f(rect.right, rect.top);
-        vertexCoords[2] = CL_Vec2f(rect.left, rect.bottom);
-        vertexCoords[3] = CL_Vec2f(rect.right, rect.top);
-        vertexCoords[4] = CL_Vec2f(rect.left, rect.bottom);
-        vertexCoords[5] = CL_Vec2f(rect.right, rect.bottom);
-
         CL_PrimitivesArray primarray(gc);
-        primarray.set_attributes(0, vertexCoords);
+        primarray.set_attributes(0, curObj->getVertexCoordinates());
         primarray.set_attributes(1, tex1_coords);
 
         primarray.set_attribute(2, curObj->getHueInfo());
@@ -131,7 +120,7 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
     renderQueue_->postRender();
 }
 
-boost::shared_ptr<RenderQueue> GumpRenderer::getRenderQueue() const {
+boost::shared_ptr<RenderQueue> ContainerRenderer::getRenderQueue() const {
     return renderQueue_;
 }
 

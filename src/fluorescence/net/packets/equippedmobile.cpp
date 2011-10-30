@@ -5,6 +5,8 @@
 #include <world/mobile.hpp>
 #include <world/dynamicitem.hpp>
 
+#include <ui/manager.hpp>
+
 namespace fluo {
 namespace net {
 namespace packets {
@@ -66,6 +68,8 @@ void EquippedMobile::onReceive() {
 
         mob->addChildObject(itm);
     }
+
+    mob->addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 }
