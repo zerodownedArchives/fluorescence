@@ -3,6 +3,10 @@
 
 #include <net/manager.hpp>
 
+#include <client.hpp>
+#include <misc/config.hpp>
+#include <misc/log.hpp>
+
 namespace fluo {
 namespace net {
 namespace packets {
@@ -32,7 +36,9 @@ bool ClientVersion::read(const int8_t* buf, unsigned int len, unsigned int& inde
 }
 
 void ClientVersion::onReceive() {
-    ClientVersion reply("fluorescence");
+    UnicodeString version = Client::getSingleton()->getConfig()["/fluo/shard/client@version-id"].asString();
+    LOG_INFO << "Identifying myself as " << version << std::endl;
+    ClientVersion reply(version);
     net::Manager::getSingleton()->send(reply);
 }
 

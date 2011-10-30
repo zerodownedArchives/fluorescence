@@ -63,23 +63,18 @@ Config::Config() {
 
 
     // anims
-    variablesMap_["/fluo/files/anim@enabled"].setBool(true, true);
     variablesMap_["/fluo/files/anim@highdetail"].setInt(200, true);
     variablesMap_["/fluo/files/anim@lowdetail"].setInt(200, true);
 
-    variablesMap_["/fluo/files/anim2@enabled"].setBool(true, true);
     variablesMap_["/fluo/files/anim2@highdetail"].setInt(200, true);
     variablesMap_["/fluo/files/anim2@lowdetail"].setInt(200, true);
 
-    variablesMap_["/fluo/files/anim3@enabled"].setBool(true, true);
     variablesMap_["/fluo/files/anim3@highdetail"].setInt(420, true);
     variablesMap_["/fluo/files/anim3@lowdetail"].setInt(70, true);
 
-    variablesMap_["/fluo/files/anim4@enabled"].setBool(true, true);
     variablesMap_["/fluo/files/anim4@highdetail"].setInt(200, true);
     variablesMap_["/fluo/files/anim4@lowdetail"].setInt(200, true);
 
-    variablesMap_["/fluo/files/anim5@enabled"].setBool(true, true);
     variablesMap_["/fluo/files/anim5@highdetail"].setInt(200, true);
     variablesMap_["/fluo/files/anim5@lowdetail"].setInt(200, true);
 
@@ -110,7 +105,12 @@ Config::Config() {
 
 
     // shard stuff
+    variablesMap_["/fluo/shard/account@name"].setString("", true);
+    variablesMap_["/fluo/shard/account@password"].setString("", true);
     variablesMap_["/fluo/shard/account@save-password"].setBool(false, true);
+    variablesMap_["/fluo/shard/address@host"].setString("", true);
+    variablesMap_["/fluo/shard/address@port"].setInt(2593, true);
+    variablesMap_["/fluo/shard/client@version-id"].setString("fluorescence 0.1", true);
 }
 
 bool Config::parseCommandLine(const std::vector<CL_String8>& args) {

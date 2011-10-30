@@ -65,9 +65,14 @@ public:
 
     void systemMessage(const UnicodeString& msg);
 
+    // called by the doubleclick handler, resp. the cursor manager
     void queueSingleClick(boost::shared_ptr<world::IngameObject> obj);
     void queueDoubleClick(boost::shared_ptr<world::IngameObject> obj);
     void queueDrag(boost::shared_ptr<world::IngameObject> dragObj, boost::shared_ptr<world::IngameObject> dragTarget);
+
+
+    // called by the various ui components
+    void onClickEvent(boost::shared_ptr<world::IngameObject> obj);
 
 private:
     static Manager* singleton_;

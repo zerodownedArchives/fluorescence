@@ -99,7 +99,7 @@ bool GumpView::onInputReleased(const CL_InputEvent& e) {
             if (draggedObject) {
                 ui::Manager::getSingleton()->queueDrag(draggedObject, clickedObject);
             } else {
-                ui::Manager::getDoubleClickHandler()->notify(clickedObject);
+                ui::Manager::getSingleton()->onClickEvent(clickedObject);
             }
         } else if (draggedObject) {
             // dragged to void

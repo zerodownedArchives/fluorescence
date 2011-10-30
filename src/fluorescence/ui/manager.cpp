@@ -326,5 +326,13 @@ void Manager::queueDrag(boost::shared_ptr<world::IngameObject> dragObj, boost::s
     dragQueue_.push(std::make_pair(dragObj, dragTarget));
 }
 
+void Manager::onClickEvent(boost::shared_ptr<world::IngameObject> obj) {
+    if (cursorManager_->hasTarget()) {
+        queueSingleClick(obj);
+    } else {
+        doubleClickHandler_->notify(obj);
+    }
+}
+
 }
 }

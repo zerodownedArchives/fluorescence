@@ -18,6 +18,8 @@ namespace world {
 
 namespace ui {
 
+class Manager;
+
 /***
  * This class is used to distinguish double clicks from single clicks.
  * On win, this might not be necessary, but there is no double click support in clanlib
@@ -27,6 +29,9 @@ namespace ui {
  * timeout. If another post() is made => double click, otherwise => single click
  */
 class DoubleClickHandler {
+
+friend class ui::Manager;
+
 public:
     DoubleClickHandler(Config& config);
     ~DoubleClickHandler();
@@ -34,8 +39,6 @@ public:
     void start();
     void kill();
     void run();
-
-    void notify(boost::shared_ptr<world::IngameObject> obj);
 
 private:
     bool running_;
@@ -46,6 +49,8 @@ private:
     boost::shared_ptr<boost::thread> thread_;
 
     boost::shared_ptr<world::IngameObject> lastObject_;
+
+    void notify(boost::shared_ptr<world::IngameObject> obj);
 };
 
 }

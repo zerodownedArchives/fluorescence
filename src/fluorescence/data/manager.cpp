@@ -214,13 +214,6 @@ void Manager::init(Config& config) {
     const char* animNames[] = { "anim", "anim2", "anim3", "anim4", "anim5" };
     for (unsigned int index = 0; index < 5; ++index) {
         ss.str(""); ss.clear();
-        ss << "/fluo/files/" << animNames[index] << "@enabled";
-
-        if (!config[ss.str().c_str()].asBool()) {
-            continue;
-        }
-
-        ss.str(""); ss.clear();
         ss << "/fluo/files/" << animNames[index] << "@highdetail";
         highDetailCount = config[ss.str().c_str()].asInt();
 
