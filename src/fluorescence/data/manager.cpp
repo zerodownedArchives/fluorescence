@@ -16,6 +16,7 @@
 #include "unifontloader.hpp"
 #include "deffileloader.hpp"
 #include "equipconvdefloader.hpp"
+#include "clilocloader.hpp"
 
 #include <ui/singletextureprovider.hpp>
 #include <ui/animdatatextureprovider.hpp>
@@ -62,12 +63,12 @@ Manager::Manager() {
 void Manager::init(Config& config) {
     buildFilePathMap(config);
 
-    std::map<std::string, boost::filesystem::path>::iterator iter = filePathMap_.begin();
-    std::map<std::string, boost::filesystem::path>::iterator end = filePathMap_.end();
+    //std::map<std::string, boost::filesystem::path>::iterator iter = filePathMap_.begin();
+    //std::map<std::string, boost::filesystem::path>::iterator end = filePathMap_.end();
 
-    for (; iter != end; ++iter) {
-        LOG_DEBUG << "Path for \"" << iter->first << "\" is " << iter->second << std::endl;
-    }
+    //for (; iter != end; ++iter) {
+        //LOG_DEBUG << "Path for \"" << iter->first << "\" is " << iter->second << std::endl;
+    //}
 
 
     boost::filesystem::path idxPath;
@@ -288,6 +289,23 @@ void Manager::init(Config& config) {
     path = filePathMap_["equipconv.def"];
     LOG_INFO << "Opening equipconv.def from path=" << path << std::endl;
     equipConvDefLoader_.reset(new EquipConvDefLoader(path));
+
+    checkFileExists("cliloc.enu");
+    path = filePathMap_["cliloc.enu"];
+    LOG_INFO << "Opening cliloc.enu from path=" << path << std::endl;
+    clilocLoader_.reset(new ClilocLoader());
+    clilocLoader_->indexFile(path, true);
+
+    ss.str(""); ss.clear();
+    UnicodeString langString = config["/fluo/files/cliloc@language"].asString();
+    langString.toLower();
+    ss << "cliloc." << StringConverter::toUtf8String(langString);
+    if (ss.str() != "cliloc.enu") {
+        checkFileExists(ss.str());
+        path = filePathMap_[ss.str()];
+        LOG_INFO << "Opening " << ss.str() << " from path=" << path << std::endl;
+        clilocLoader_->indexFile(path, false);
+    }
 }
 
 Manager::~Manager() {
@@ -518,6 +536,10 @@ unsigned int Manager::getGumpIdForItem(unsigned int itemId, unsigned int parentB
     }
 
     return gumpId;
+}
+
+boost::shared_ptr<ClilocLoader> Manager::getClilocLoader() {
+    return getSingleton()->clilocLoader_;
 }
 
 }

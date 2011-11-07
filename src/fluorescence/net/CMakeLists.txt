@@ -65,6 +65,8 @@ set (PACKETS_HPP
     net/packets/displaycontainer.hpp
     net/packets/containercontent.hpp
     net/packets/containerupdate.hpp
+    net/packets/localizedtext.hpp
+    net/packets/localizedtextaffix.hpp
     )
 
 set (PACKETS_CPP
@@ -107,6 +109,8 @@ set (PACKETS_CPP
     net/packets/displaycontainer.cpp
     net/packets/containercontent.cpp
     net/packets/containerupdate.cpp
+    net/packets/localizedtext.cpp
+    net/packets/localizedtextaffix.cpp
     )
 
 set (MD5

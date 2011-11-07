@@ -29,6 +29,7 @@ class AnimLoader;
 class MobTypesLoader;
 class UniFontLoader;
 class EquipConvDefLoader;
+class ClilocLoader;
 
 template<typename ValueType>
 class DefFileLoader;
@@ -59,6 +60,7 @@ public:
     static boost::shared_ptr<AnimLoader> getAnimLoader(unsigned int index);
     static boost::shared_ptr<MobTypesLoader> getMobTypesLoader() { return getSingleton()->mobTypesLoader_; }
     static boost::shared_ptr<UniFontLoader> getUniFontLoader(unsigned int index);
+    static boost::shared_ptr<ClilocLoader> getClilocLoader();
 
 private:
     static Manager* singleton_;
@@ -100,6 +102,8 @@ private:
     boost::shared_ptr<DefFileLoader<PaperdollDef> > paperdollDefLoader_;
     boost::shared_ptr<DefFileLoader<GumpDef> > gumpDefLoader_;
     boost::shared_ptr<EquipConvDefLoader> equipConvDefLoader_;
+
+    boost::shared_ptr<ClilocLoader> clilocLoader_;
 };
 
 }

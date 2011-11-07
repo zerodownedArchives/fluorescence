@@ -4,8 +4,6 @@
 #include <iostream>
 #include <fstream>
 
-#include <unicode/regex.h>
-
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/program_options.hpp>
@@ -18,16 +16,7 @@ namespace fluo {
 Config::Config() {
     // file paths
     variablesMap_["/fluo/files/mul-directory@path"].setPath("./", true);
-    variablesMap_["/fluo/files/art@filename-idx"].setPath("artidx.mul", true);
-    variablesMap_["/fluo/files/art@filename-mul"].setPath("art.mul", true);
-    variablesMap_["/fluo/files/gumpart@filename-idx"].setPath("gumpidx.mul", true);
-    variablesMap_["/fluo/files/gumpart@filename-mul"].setPath("gumpart.mul", true);
-    variablesMap_["/fluo/files/hues@filename"].setPath("hues.mul", true);
-    variablesMap_["/fluo/files/tiledata@filename"].setPath("tiledata.mul", true);
-    variablesMap_["/fluo/files/texmaps@filename-idx"].setPath("texidx.mul", true);
-    variablesMap_["/fluo/files/texmaps@filename-mul"].setPath("texmaps.mul", true);
-    variablesMap_["/fluo/files/animdata@filename"].setPath("animdata.mul", true);
-
+    variablesMap_["/fluo/files/cliloc@language"].setString("enu", true);
 
     // maps
     variablesMap_["/fluo/files/map0@enabled"].setBool(true, true);

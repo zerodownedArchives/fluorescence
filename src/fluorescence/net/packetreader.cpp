@@ -33,7 +33,7 @@ bool PacketReader::readUtf8Null(const int8_t* buf, unsigned int len, unsigned in
 }
 
 bool PacketReader::readUtf8Fixed(const int8_t* buf, unsigned int len, unsigned int& index, UnicodeString& value, unsigned int fixed) {
-    if (index + fixed < len) {
+    if (index + fixed <= len) {
         value = StringConverter::fromUtf8(&buf[index], fixed);
 
         static UnicodeString errorIndicator("##FLUOERROR");
@@ -69,8 +69,28 @@ bool PacketReader::readUnicodeNull(const int8_t* buf, unsigned int len, unsigned
     }
 }
 
+bool PacketReader::readUnicodeNullLE(const int8_t* buf, unsigned int len, unsigned int& index, UnicodeString& value) {
+    // find 00 bytes, required to set index
+    unsigned int origIndex = index;
+
+    while (*(reinterpret_cast<const uint16_t*>(&buf[index])) != 0) {
+        index += 2;
+    }
+    index += 2;
+
+    value = StringConverter::fromUnicodeLE(&buf[origIndex], (index - origIndex));
+
+    static UnicodeString errorIndicator("##FLUOERROR");
+
+    if (value == errorIndicator) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 bool PacketReader::readUnicodeFixed(const int8_t* buf, unsigned int len, unsigned int& index, UnicodeString& value, unsigned int fixed) {
-    if (index + fixed < len) {
+    if (index + (fixed*2) <= len) {
         value = StringConverter::fromUnicode(&buf[index], fixed);
 
         static UnicodeString errorIndicator("##FLUOERROR");

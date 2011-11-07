@@ -27,6 +27,7 @@ set(DATA_LOADERS_HPP
     data/animdataloader.hpp
     data/animloader.hpp
     data/unifontloader.hpp
+    data/clilocloader.hpp
 
     data/mobtypesloader.hpp
     data/deffileloader.hpp
@@ -45,6 +46,7 @@ set(DATA_LOADERS_CPP
     data/animdataloader.cpp
     data/animloader.cpp
     data/unifontloader.cpp
+    data/clilocloader.cpp
 
     data/mobtypesloader.cpp
     data/equipconvdefloader.cpp

@@ -1,0 +1,3 @@
+<gump width="300" height="300" draggable="1" closable="1" background="0">
+    <container id="container" x="0" y="0" width="300" height="300" />
+</gump>

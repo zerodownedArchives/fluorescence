@@ -15,6 +15,7 @@ public:
     static UnicodeString fromUtf8(const char* buffer);
     static UnicodeString fromUtf8(const char* buffer, int bufferSize);
     static UnicodeString fromUnicode(const char* buffer, int bufferSize);
+    static UnicodeString fromUnicodeLE(const char* buffer, int bufferSize);
 
     static UnicodeString fromNumber(int nr);
 
@@ -25,6 +26,7 @@ public:
 
     static UnicodeString fromUtf8(const int8_t* buffer, int bufferSize);
     static UnicodeString fromUnicode(const int8_t* buffer, int bufferSize);
+    static UnicodeString fromUnicodeLE(const int8_t* buffer, int bufferSize);
     static int toUtf8(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated);
     static int toUnicode(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated);
 
@@ -32,6 +34,7 @@ public:
 
 private:
     static UConverter* getUnicodeConverter();
+    static UConverter* getUnicodeConverterLE();
     static NumberFormat* getNumberFormat();
 };
 

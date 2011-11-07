@@ -37,6 +37,8 @@
 #include "packets/speechrequest.hpp" // 0xad
 #include "packets/unicodetext.hpp" // 0xae
 #include "packets/clientversion.hpp" // 0xbd
+#include "packets/localizedtext.hpp" // 0xc1
+#include "packets/localizedtextaffix.hpp" // 0xcc
 
 #include "packets/unknown.hpp"
 

@@ -14,6 +14,8 @@ public:
     static bool readUtf8Null(const int8_t* buf, unsigned int len, unsigned int& index, UnicodeString& value);
     static bool readUtf8Fixed(const int8_t* buf, unsigned int len, unsigned int& index, UnicodeString& value, unsigned int fixed);
 
+    static bool readUnicodeNullLE(const int8_t* buf, unsigned int len, unsigned int& index, UnicodeString& value);
+
     static bool read(const int8_t* buf, unsigned int len, unsigned int& index, uint8_t& value);
     static bool read(const int8_t* buf, unsigned int len, unsigned int& index, uint16_t& value);
     static bool read(const int8_t* buf, unsigned int len, unsigned int& index, uint32_t& value);

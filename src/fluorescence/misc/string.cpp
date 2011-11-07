@@ -50,6 +50,17 @@ UnicodeString StringConverter::fromUnicode(const char* buffer, int bufferSize) {
     return ret;
 }
 
+UnicodeString StringConverter::fromUnicodeLE(const char* buffer, int bufferSize) {
+    UErrorCode error = U_ZERO_ERROR;
+    UnicodeString tmp(buffer, bufferSize, getUnicodeConverterLE(), error);
+    if (U_FAILURE(error)) {
+        tmp = UnicodeString("##FLUOERROR"); // set error string
+        LOG_WARN << "Unable to convert from utf-16-le string" << std::endl;
+    }
+    UnicodeString ret(tmp.getBuffer());
+    return ret;
+}
+
 UnicodeString StringConverter::fromNumber(int nr) {
     UnicodeString ret;
     getNumberFormat()->format(nr, ret);
@@ -137,6 +148,19 @@ UConverter* StringConverter::getUnicodeConverter() {
     return conv;
 }
 
+UConverter* StringConverter::getUnicodeConverterLE() {
+    static UConverter* conv = NULL;
+    if (!conv) {
+        UErrorCode error = U_ZERO_ERROR;
+        conv = ucnv_open("UTF-16LE", &error);
+        if (U_FAILURE(error)) {
+            throw Exception("Error creating UTF-16LE converter");
+        }
+    }
+
+    return conv;
+}
+
 NumberFormat* StringConverter::getNumberFormat() {
     static NumberFormat* nf = NULL;
     if (!nf) {
@@ -159,6 +183,10 @@ UnicodeString StringConverter::fromUtf8(const int8_t* buffer, int bufferSize) {
 
 UnicodeString StringConverter::fromUnicode(const int8_t* buffer, int bufferSize) {
     return fromUnicode(reinterpret_cast<const char*>(buffer), bufferSize);
+}
+
+UnicodeString StringConverter::fromUnicodeLE(const int8_t* buffer, int bufferSize) {
+    return fromUnicodeLE(reinterpret_cast<const char*>(buffer), bufferSize);
 }
 
 int StringConverter::toUtf8(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated) {
