@@ -45,7 +45,7 @@ uint8_t Packet::getId() {
     return id_;
 }
 
-unsigned Packet::preparePacketSize(unsigned int& index) const {
+unsigned int Packet::preparePacketSize(unsigned int& index) const {
     index += 2;
     return index;
 }

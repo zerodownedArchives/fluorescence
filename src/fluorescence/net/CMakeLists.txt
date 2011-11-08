@@ -11,6 +11,7 @@ set (NET_HPP
     net/packetlist.hpp
     net/packetwriter.hpp
     net/packetreader.hpp
+    net/multipurposepacket.hpp
     )
 
 set (NET_CPP
@@ -23,6 +24,7 @@ set (NET_CPP
     net/packet.cpp
     net/packetwriter.cpp
     net/packetreader.cpp
+    net/multipurposepacket.cpp
     )
 
 set (PACKETS_HPP
@@ -67,6 +69,9 @@ set (PACKETS_HPP
     net/packets/containerupdate.hpp
     net/packets/localizedtext.hpp
     net/packets/localizedtextaffix.hpp
+
+    net/packets/bf.hpp
+    net/packets/bf/changemap.hpp
     )
 
 set (PACKETS_CPP
@@ -111,6 +116,9 @@ set (PACKETS_CPP
     net/packets/containerupdate.cpp
     net/packets/localizedtext.cpp
     net/packets/localizedtextaffix.cpp
+
+    net/packets/bf.cpp
+    net/packets/bf/changemap.cpp
     )
 
 set (MD5

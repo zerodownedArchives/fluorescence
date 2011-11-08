@@ -111,6 +111,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0xA9: ret.reset(new packets::CharacterList()); break;
         case 0xAE: ret.reset(new packets::UnicodeText()); break;
         case 0xBD: ret.reset(new packets::ClientVersion()); break;
+        case 0xBF: ret.reset(new packets::BF()); break;
         case 0xC1: ret.reset(new packets::LocalizedText()); break;
         case 0xCC: ret.reset(new packets::LocalizedTextAffix()); break;
         default: ret.reset(new packets::Unknown(id)); break;

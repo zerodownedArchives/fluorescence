@@ -18,7 +18,7 @@ Sector::Sector(unsigned int mapId, unsigned int sectorId) :
     location_[0u] = sectorId / mapHeight;
     location_[1u] = sectorId % mapHeight;
 
-    //LOGARG_DEBUG(LOGTYPE_WORLD, "Sector construct, map=%u x=%u y=%u", mapId_, location_[0u], location_[1u]);
+    LOG_DEBUG << "Sector construct, map=" << mapId_ << " x=" << location_[0u] << " y=" << location_[1u] << std::endl;
 
     mapBlock_ = data::Manager::getMapLoader(mapId_)->get(location_[0u], location_[1u]);
     staticBlock_ = data::Manager::getStaticsLoader(mapId_)->get(location_[0u], location_[1u]);

@@ -78,9 +78,7 @@ void SectorManager::deleteSectors() {
 
     if (mapId != lastMapId_) {
         LOG_INFO << "Map change detected, clearing sectors" << std::endl;
-        clear();
         lastMapId_ = mapId;
-        return;
     }
 
     // these are all sectors we require for rendering
