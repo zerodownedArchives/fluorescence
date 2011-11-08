@@ -25,8 +25,8 @@ bool LocalizedText::read(const int8_t* buf, unsigned int len, unsigned int& inde
 
     text_ = data::Manager::getClilocLoader()->get(clilocId_, arguments_);
 
-    //LOG_DEBUG << "Received localized text with cliloc=" << clilocId_ << " arguments=" << arguments_ << std::endl;
-    //LOG_DEBUG << "Translates to: " << text_ << std::endl;
+    LOG_DEBUG << "Received localized text with cliloc=" << clilocId_ << " arguments=" << arguments_ << std::endl;
+    LOG_DEBUG << "Translates to: " << text_ << std::endl;
 
     return ret;
 }

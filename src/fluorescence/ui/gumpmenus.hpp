@@ -11,6 +11,11 @@ namespace net {
 namespace packets {
 class ServerList;
 class CharacterList;
+
+namespace bf {
+class OpenContextMenu;
+}
+
 }
 }
 
@@ -25,6 +30,7 @@ public:
     static GumpMenu* openLoginGump();
     static GumpMenu* openServerListGump(const net::packets::ServerList* list);
     static GumpMenu* openCharacterListGump(const net::packets::CharacterList* list);
+    static GumpMenu* openContextMenu(const net::packets::bf::OpenContextMenu* pkt);
 };
 
 }

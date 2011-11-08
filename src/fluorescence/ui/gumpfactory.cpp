@@ -119,7 +119,7 @@ GumpMenu* GumpFactory::fromXmlFile(const UnicodeString& name, GumpMenu* menu) {
         GumpMenu* ret = getSingleton()->fromXml(doc, menu);
 
         // save transformed document (debug)
-        // std::cout << "Saving result: " << doc.save_file("out.xml") << std::endl;
+        //LOG_DEBUG << "Saving result: " << doc.save_file("out.xml") << std::endl;
 
         if (ret) {
             ret->setName(name);

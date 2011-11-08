@@ -42,8 +42,8 @@ UnicodeString ClilocLoader::get(unsigned int id) {
 UnicodeString ClilocLoader::get(unsigned int id, const UnicodeString& paramString) {
     static UnicodeString params[9];
     static UnicodeString paramRegex[9] = {
-        "~1.+~", "~2.+~", "~3.+~", "~4.+~", "~5.+~",
-        "~6.+~", "~7.+~", "~9.+~",
+        "~1_[^~]+~", "~2_[^~]+~", "~3_[^~]+~", "~4_[^~]+~", "~5_[^~]+~",
+        "~6_[^~]+~", "~7_[^~]+~", "~8_[^~]+~", "~9_[^~]+~",
     };
 
     UnicodeString str = get(id);
@@ -53,9 +53,24 @@ UnicodeString ClilocLoader::get(unsigned int id, const UnicodeString& paramStrin
         RegexMatcher paramSplitter("\\t", 0, status);
         unsigned int paramCount = paramSplitter.split(paramString, params, 9, status);
 
+        //LOG_DEBUG << "param count after split: " << paramCount << std::endl;
+        //LOG_DEBUG << "str before replace: " << str << std::endl;
+
         for (unsigned int i = 0; i < paramCount; ++i) {
+            //LOG_DEBUG << "Param is \"" << params[i] << "\"" << std::endl;
+            //status = U_ZERO_ERROR;
             RegexMatcher curParamMatcher(paramRegex[i], str, 0, status);
+            //if (status != U_ZERO_ERROR) {
+                //LOG_DEBUG << "clilocloader ustatus=" << status << std::endl;
+            //}
+
+            //status = U_ZERO_ERROR;
+
             str = curParamMatcher.replaceAll(params[i], status);
+            //if (status != U_ZERO_ERROR) {
+                //LOG_DEBUG << "clilocloader ustatus=" << status << std::endl;
+            //}
+            //LOG_DEBUG << "str after replace: " << str << std::endl;
         }
     }
 

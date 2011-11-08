@@ -10,11 +10,12 @@ Packet::Packet(uint8_t id, uint16_t size) : id_(id), size_(size) {
 }
 
 bool Packet::writePacketId(int8_t* buf, unsigned int len, unsigned int& index) const {
-    bool ret = true;
+    return PacketWriter::write(buf, len, index, id_);
+}
 
-    ret &= PacketWriter::write(buf, len, index, id_);
-
-    return ret;
+bool Packet::writeSubPacketId(int8_t* buf, unsigned int len, unsigned int& index) const {
+    uint16_t id16 = id_;
+    return PacketWriter::write(buf, len, index, id16);
 }
 
 bool Packet::write(int8_t* buf, unsigned int len, unsigned int& index) const {

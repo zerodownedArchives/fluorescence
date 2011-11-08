@@ -10,6 +10,8 @@
 
 #include <net/manager.hpp>
 #include <net/packets/speechrequest.hpp>
+#include <net/packets/bf.hpp>
+#include <net/packets/bf/contextmenureply.hpp>
 
 #include <misc/log.hpp>
 
@@ -46,6 +48,7 @@ void GumpActions::buildFullActionTable() {
     actionTable_["selectcharacter-first"] = GumpAction(true, boost::bind(&GumpActions::selectCharacterFirst, _1, _2, _3, _4));
 
     actionTable_["sendspeech"] = GumpAction(false, boost::bind(&GumpActions::sendSpeech, _1, _2, _3, _4));
+    actionTable_["contextmenureply"] = GumpAction(true, boost::bind(&GumpActions::contextMenuReply, _1, _2, _3, _4));
 }
 
 
@@ -125,6 +128,16 @@ bool GumpActions::sendSpeech(GumpMenu* menu, const UnicodeString& action, unsign
     } else {
         LOG_ERROR << "Line element \"speechtext\" not found in gamewindow gump" << std::endl;
     }
+    return true;
+}
+
+bool GumpActions::contextMenuReply(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    Serial serial = StringConverter::toInt(parameters[0]);
+    unsigned int replyId = StringConverter::toInt(parameters[1]);
+    boost::shared_ptr<net::Packet> subPacket(new net::packets::bf::ContextMenuReply(serial, replyId));
+    net::packets::BF pkt(subPacket);
+    net::Manager::getSingleton()->send(pkt);
+
     return true;
 }
 

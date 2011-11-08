@@ -6,7 +6,8 @@
 #include <misc/log.hpp>
 
 #include <net/manager.hpp>
-#include <net/packets/singleclick.hpp>
+#include <net/packets/bf.hpp>
+#include <net/packets/bf/contextmenurequest.hpp>
 #include <net/packets/doubleclick.hpp>
 #include <net/packets/statskillquery.hpp>
 
@@ -51,7 +52,10 @@ void Mobile::onClick() {
 
     printRenderPriority();
 
-    net::packets::SingleClick pkt(getSerial());
+    //net::packets::SingleClick pkt(getSerial());
+
+    boost::shared_ptr<net::Packet> subPacket(new net::packets::bf::ContextMenuRequest(getSerial()));
+    net::packets::BF pkt(subPacket);
     net::Manager::getSingleton()->send(pkt);
 }
 

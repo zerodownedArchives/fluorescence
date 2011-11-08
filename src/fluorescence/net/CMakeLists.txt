@@ -72,6 +72,9 @@ set (PACKETS_HPP
 
     net/packets/bf.hpp
     net/packets/bf/changemap.hpp
+    net/packets/bf/contextmenurequest.hpp
+    net/packets/bf/opencontextmenu.hpp
+    net/packets/bf/contextmenureply.hpp
     )
 
 set (PACKETS_CPP
@@ -119,6 +122,9 @@ set (PACKETS_CPP
 
     net/packets/bf.cpp
     net/packets/bf/changemap.cpp
+    net/packets/bf/contextmenurequest.cpp
+    net/packets/bf/opencontextmenu.cpp
+    net/packets/bf/contextmenureply.cpp
     )
 
 set (MD5

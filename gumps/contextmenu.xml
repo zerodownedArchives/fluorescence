@@ -1,0 +1,6 @@
+<gump closable="1" draggable="0" background="1" width="300" height="500" y="50">
+    <repeat name="contextmenu" yincrease="24" xlimit="1">
+        <tbutton x="0" y="0" width="300" height="23" id="contextmenuentry" action="contextmenureply" param="serial" param2="entryindex" text="entrytext" />
+    </repeat>
+</gump>
+

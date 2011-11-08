@@ -12,7 +12,7 @@ TEMPLATE::TEMPLATE() : Packet(0x00) {
 bool TEMPLATE::write(int8_t* buf, unsigned int len, unsigned int& index) const {
     bool ret = true;
 
-    ret &= writePacketId(buf, len, index);
+    ret &= writeSubPacketId(buf, len, index);
 
     return ret;
 }

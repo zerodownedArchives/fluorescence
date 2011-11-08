@@ -15,6 +15,10 @@
 
 #include <net/packets/serverlist.hpp>
 #include <net/packets/characterlist.hpp>
+#include <net/packets/bf/opencontextmenu.hpp>
+
+#include <data/manager.hpp>
+#include <data/clilocloader.hpp>
 
 #include "gumpmenu.hpp"
 #include "gumpfactory.hpp"
@@ -136,6 +140,34 @@ GumpMenu* GumpMenus::openCharacterListGump(const net::packets::CharacterList* li
     GumpFactory::addRepeatContext("characterlist", context);
     GumpMenu* menu = GumpFactory::fromXmlFile("characterlist");
     GumpFactory::removeRepeatContext("characterlist");
+
+    return menu;
+}
+
+GumpMenu* GumpMenus::openContextMenu(const net::packets::bf::OpenContextMenu* pkt) {
+    std::vector<UnicodeString> nameList;
+    std::vector<UnicodeString> indexList;
+    std::vector<UnicodeString> serialList;
+
+    std::list<net::packets::bf::ContextMenuEntry>::const_iterator iter = pkt->entries_.begin();
+    std::list<net::packets::bf::ContextMenuEntry>::const_iterator end = pkt->entries_.end();
+
+    UnicodeString serialString = StringConverter::fromNumber(pkt->serial_);
+    for (; iter != end; ++iter) {
+        indexList.push_back(StringConverter::fromNumber(iter->entryId_));
+        nameList.push_back(data::Manager::getClilocLoader()->get(iter->clilocId_));
+        serialList.push_back(serialString);
+    }
+
+    GumpFactory::RepeatContext context;
+    context.repeatCount_ = nameList.size();
+    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "text", "entrytext")] = nameList;
+    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "param", "serial")] = serialList;
+    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "param2", "entryindex")] = indexList;
+
+    GumpFactory::addRepeatContext("contextmenu", context);
+    GumpMenu* menu = GumpFactory::fromXmlFile("contextmenu");
+    GumpFactory::removeRepeatContext("contextmenu");
 
     return menu;
 }
