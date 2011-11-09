@@ -21,7 +21,7 @@ public:
     ~GumpRenderQueue();
 
     virtual void preRender();
-    virtual void postRender();
+    virtual void postRender(bool renderingComplete);
 
     virtual boost::shared_ptr<world::IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopParent);
 

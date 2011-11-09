@@ -91,6 +91,8 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
 
     CL_Vec2f vertexCoords[6];
 
+    bool renderingComplete = true;
+
     for (; igIter != igEnd; ++igIter) {
         boost::shared_ptr<world::IngameObject> curObj = *igIter;
 
@@ -103,6 +105,7 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
         boost::shared_ptr<ui::Texture> tex = curObj->getGumpTexture();
 
         if (!tex || !tex->isReadComplete()) {
+            renderingComplete = false;
             continue;
         }
 
@@ -128,7 +131,7 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
     gc.reset_textures();
     gc.reset_program_object();
 
-    renderQueue_->postRender();
+    renderQueue_->postRender(renderingComplete);
 }
 
 boost::shared_ptr<RenderQueue> GumpRenderer::getRenderQueue() const {

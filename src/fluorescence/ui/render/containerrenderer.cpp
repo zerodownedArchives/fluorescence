@@ -91,6 +91,8 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
 
     CL_Vec2f vertexCoords[6];
 
+    bool renderingComplete = true;
+
     // draw background container texture
     boost::shared_ptr<ui::Texture> bgTex = containerView_->getBackgroundTexture();
     if (bgTex && bgTex->isReadComplete()) {
@@ -113,6 +115,8 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
 
         gc.set_texture(1, *bgTex->getTexture());
         gc.draw_primitives(cl_triangles, 6, primarray);
+    } else {
+        renderingComplete = false;
     }
 
     for (; igIter != igEnd; ++igIter) {
@@ -127,6 +131,7 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
         boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
 
         if (!tex || !tex->isReadComplete()) {
+            renderingComplete = false;
             continue;
         }
 
@@ -152,7 +157,7 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
     gc.reset_textures();
     gc.reset_program_object();
 
-    renderQueue_->postRender();
+    renderQueue_->postRender(renderingComplete);
 }
 
 boost::shared_ptr<RenderQueue> ContainerRenderer::getRenderQueue() const {

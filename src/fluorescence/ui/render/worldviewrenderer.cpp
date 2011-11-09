@@ -116,6 +116,8 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     RenderQueue::const_iterator igIter = renderQueue_->begin();
     RenderQueue::const_iterator igEnd = renderQueue_->end();
 
+    bool renderingComplete = true;
+
     for (; igIter != igEnd; ++igIter) {
         boost::shared_ptr<world::IngameObject> curObj = *igIter;
 
@@ -128,6 +130,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
         boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
 
         if (!tex || !tex->isReadComplete()) {
+            renderingComplete = false;
             continue;
         }
 
@@ -154,21 +157,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     gc.reset_textures();
     gc.reset_program_object();
 
-    renderQueue_->postRender();
-
-
-    //boost::shared_ptr<ui::Texture> testText1 = ui::Manager::getFontEngine()->getUniFontTexture(1, "The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 0x00FF00FF, true);
-    //CL_Draw::texture(gc, *testText1->getTexture(), CL_Rectf(30, 450, CL_Sizef(testText1->getWidth(), testText1->getHeight())));
-
-    //boost::shared_ptr<ui::Texture> testText2 = ui::Manager::getFontEngine()->getUniFontTexture(2, "The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 135, false);
-    //CL_Draw::texture(gc, *testText2->getTexture(), CL_Rectf(30, 300, CL_Sizef(testText2->getWidth(), testText2->getHeight())));
-
-    //boost::shared_ptr<ui::Texture> testText3 = ui::Manager::getFontEngine()->getUniFontTexture(1, "The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 0x00FF00FF, true, 4);
-    //CL_Draw::texture(gc, *testText3->getTexture(), CL_Rectf(30, 150, CL_Sizef(testText3->getWidth(), testText3->getHeight())));
-
-
-    //boost::shared_ptr<ui::Texture> textTexture = ui::Manager::getFontEngine()->getDefaultTexture("The quick brown fox jumps over the lazy dog 1234567890abcdefghijklmnopqrstuvwxyz01234567890", 140, 0xFFFF00FF);
-    //CL_Draw::texture(gc, *textTexture->getTexture(), CL_Rectf(30, 30, CL_Sizef(textTexture->getWidth(), textTexture->getHeight())));
+    renderQueue_->postRender(renderingComplete);
 }
 
 boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {

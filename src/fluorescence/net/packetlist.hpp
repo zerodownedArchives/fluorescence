@@ -1,6 +1,7 @@
 #ifndef FLUO_NET_PACKETLIST_HPP
 #define FLUO_NET_PACKETLIST_HPP
 
+#include "packets/movementrequest.hpp" // 0x02
 #include "packets/doubleclick.hpp" // 0x06
 #include "packets/pickupitem.hpp" // 0x07
 #include "packets/dropitem.hpp" // 0x08
@@ -11,6 +12,8 @@
 #include "packets/asciitext.hpp" // 0x1c
 #include "packets/deleteobject.hpp" // 0x1d
 #include "packets/teleport.hpp" // 0x20
+#include "packets/movementdeny.hpp" // 0x21
+#include "packets/movementaccept.hpp" // 0x22
 #include "packets/displaycontainer.hpp" // 0x24
 #include "packets/containerupdate.hpp" // 0x25
 #include "packets/pickupreject.hpp" // 0x27

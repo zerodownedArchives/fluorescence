@@ -33,7 +33,7 @@ public:
     void sort();
 
     virtual void preRender() = 0;
-    virtual void postRender() = 0;
+    virtual void postRender(bool renderingComplete) = 0;
     virtual boost::shared_ptr<world::IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopParent) = 0;
 
     unsigned int size() const;

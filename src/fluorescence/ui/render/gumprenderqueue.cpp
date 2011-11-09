@@ -74,8 +74,11 @@ void GumpRenderQueue::preRender() {
     }
 }
 
-void GumpRenderQueue::postRender() {
+void GumpRenderQueue::postRender(bool renderingComplete) {
     resetGumpRepaintIndicators();
+
+    // force repaint if the rendering was not complete (e.g. a texture not yet loaded)
+    forceRepaint_ = !renderingComplete;
 }
 
 boost::shared_ptr<world::IngameObject> GumpRenderQueue::getFirstObjectAt(int pixelX, int pixelY, bool getTopParent) {

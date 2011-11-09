@@ -62,8 +62,11 @@ void WorldRenderQueue::preRender() {
     }
 }
 
-void WorldRenderQueue::postRender() {
+void WorldRenderQueue::postRender(bool renderingComplete) {
     resetWorldRepaintIndicators();
+
+    // force repaint if the rendering was not complete (e.g. a texture not yet loaded)
+    forceRepaint_ = !renderingComplete;
 }
 
 boost::shared_ptr<world::IngameObject> WorldRenderQueue::getFirstObjectAt(int worldX, int worldY, bool getTopParent) {

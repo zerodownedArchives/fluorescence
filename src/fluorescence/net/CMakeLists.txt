@@ -69,6 +69,9 @@ set (PACKETS_HPP
     net/packets/containerupdate.hpp
     net/packets/localizedtext.hpp
     net/packets/localizedtextaffix.hpp
+    net/packets/movementrequest.hpp
+    net/packets/movementaccept.hpp
+    net/packets/movementdeny.hpp
 
     net/packets/bf.hpp
     net/packets/bf/changemap.hpp
@@ -119,6 +122,9 @@ set (PACKETS_CPP
     net/packets/containerupdate.cpp
     net/packets/localizedtext.cpp
     net/packets/localizedtextaffix.cpp
+    net/packets/movementrequest.cpp
+    net/packets/movementaccept.cpp
+    net/packets/movementdeny.cpp
 
     net/packets/bf.cpp
     net/packets/bf/changemap.cpp
