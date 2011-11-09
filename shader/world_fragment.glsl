@@ -25,7 +25,7 @@ void main(void) {
             // object is either non-partial-hue or current pixel is grey
             vec2 hueTexCoord;
             float hueId = HueInfo[1];
-            hueTexCoord.x = rgba.r; 
+            hueTexCoord.x = rgba.r;
             hueTexCoord.y = hueId / 3000.0;
 
             rgba.rgb = texture2D(HueTexture, hueTexCoord).rgb;

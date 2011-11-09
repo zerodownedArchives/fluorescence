@@ -17,10 +17,7 @@ public:
         TYPE_GUMP, // render gump images, e.g. paperdoll
     };
 
-    IngameObjectRenderer(unsigned int rendererType, bool polling);
-
-    // whether this renderer is constantly polling the objects for change or has to be notified
-    bool isPolling() const;
+    IngameObjectRenderer(unsigned int rendererType);
 
     // get the rendered objects as a texture. can be used i.e. for postprocessing or for a cached texture that does not change very often
     virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc) = 0;
@@ -34,9 +31,14 @@ public:
 
     virtual boost::shared_ptr<RenderQueue> getRenderQueue() const = 0;
 
+    // due to some strange clanlib behaviour. when opening a paperdoll for the first time, the hue texture seems
+    // not to be loaded correctly, so the gump is mostly black (with outlines). When rendering it again, all seems
+    // fine. this flag indicates wheter the renderer has to re-render the image because of this condition
+    bool requireInitialRepaint();
+
 private:
     unsigned int rendererType_;
-    bool polling_;
+    bool requireInitialRepaint_;
 };
 
 }

@@ -5,11 +5,7 @@
 namespace fluo {
 namespace ui {
 
-IngameObjectRenderer::IngameObjectRenderer(unsigned int rendererType, bool polling) : rendererType_(rendererType), polling_(polling) {
-}
-
-bool IngameObjectRenderer::isPolling() const {
-    return polling_;
+IngameObjectRenderer::IngameObjectRenderer(unsigned int rendererType) : rendererType_(rendererType), requireInitialRepaint_(true) {
 }
 
 bool IngameObjectRenderer::isWorldRenderer() const {
@@ -18,6 +14,12 @@ bool IngameObjectRenderer::isWorldRenderer() const {
 
 bool IngameObjectRenderer::isGumpRenderer() const {
     return rendererType_ == TYPE_GUMP;
+}
+
+bool IngameObjectRenderer::requireInitialRepaint() {
+    bool ret = requireInitialRepaint_;
+    requireInitialRepaint_ = false;
+    return ret;
 }
 
 }

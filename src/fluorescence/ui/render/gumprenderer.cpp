@@ -16,7 +16,7 @@
 namespace fluo {
 namespace ui {
 
-GumpRenderer::GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::GumpView* gumpView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_GUMP, true),
+GumpRenderer::GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::GumpView* gumpView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_GUMP),
             gumpView_(gumpView), renderQueue_(renderQueue) {
 
     CL_GraphicContext gc = fluo::ui::Manager::getSingleton()->getGraphicContext();
@@ -46,7 +46,7 @@ void GumpRenderer::checkTextureSize() {
 }
 
 boost::shared_ptr<Texture> GumpRenderer::getTexture(CL_GraphicContext& gc) {
-    if (renderQueue_->requireGumpRepaint() || !texture_) {
+    if (renderQueue_->requireGumpRepaint() || !texture_ || requireInitialRepaint()) {
         checkTextureSize();
         CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 
@@ -81,6 +81,7 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
         CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
         CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom)
     };
+
 
     gc.set_texture(0, *(data::Manager::getSingleton()->getHuesLoader()->getHuesTexture()->getTexture()));
     shaderProgram_->set_uniform1i("HueTexture", 0);
