@@ -12,7 +12,7 @@ namespace data {
 GumpArtLoader::GumpArtLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath) {
 
     boost::shared_ptr<IndexedOnDemandFileLoader<ui::Texture> > loader(new IndexedOnDemandFileLoader<ui::Texture>(idxPath, mulPath,
-                boost::bind(&GumpArtLoader::readCallback, this, _1, _2, _3, _4, _5, _6), 1));
+                boost::bind(&GumpArtLoader::readCallback, this, _1, _2, _3, _4, _5, _6)));
     cache_.init(loader);
 }
 

@@ -37,10 +37,12 @@ public:
     IngameObject(unsigned int objectType);
     virtual ~IngameObject();
 
-    float getLocX() const { return location_[0u]; }
-    float getLocY() const { return location_[1u]; }
-    float getLocZ() const { return location_[2u]; }
-    void setLocation(int locX, int locY, int locZ);
+    float getLocX() const;
+    float getLocY() const;
+    float getLocZ() const;
+    CL_Vec3f getLocation() const;
+    void setLocation(float locX, float locY, float locZ);
+    void setLocation(CL_Vec3f loc);
 
     bool isVisible() const;
     void setVisible(bool visible);

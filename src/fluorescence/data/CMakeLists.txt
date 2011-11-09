@@ -55,6 +55,3 @@ set(DATA_LOADERS_CPP
 set (DATA_FILES
     ${DATA_HPP} ${DATA_CPP}
     ${DATA_LOADERS_HPP} ${DATA_LOADERS_CPP} PARENT_SCOPE)
-
-#add_subdirectory(test)
-

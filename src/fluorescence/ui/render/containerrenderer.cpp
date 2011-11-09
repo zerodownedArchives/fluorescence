@@ -130,7 +130,11 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
         // check if texture is ready to be drawn
         boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
 
-        if (!tex || !tex->isReadComplete()) {
+        if (!tex) {
+            continue;
+        }
+
+        if (!tex->isReadComplete()) {
             renderingComplete = false;
             continue;
         }

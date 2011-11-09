@@ -14,8 +14,8 @@ class IndexedOnDemandFileLoader {
 
 public:
     IndexedOnDemandFileLoader(const boost::filesystem::path& indexPath, const boost::filesystem::path& dataPath,
-            typename OnDemandFileLoader<ValueType>::ReadCallback readCallback, unsigned int defaultId = 0) :
-            indexLoader_(indexPath), dataLoader_(dataPath, readCallback), defaultId_(defaultId) {
+            typename OnDemandFileLoader<ValueType>::ReadCallback readCallback) :
+            indexLoader_(indexPath), dataLoader_(dataPath, readCallback) {
     }
 
     boost::shared_ptr<ValueType> get(unsigned int index, unsigned int userData) {
@@ -24,7 +24,8 @@ public:
         // e.g. static blocks containing no data use an offset of 0xFFFFFFFFu
         if (indexBlock.offset_ == 0xFFFFFFFFu || indexBlock.length_ == 0xFFFFFFFFu) {
             //LOG_WARN << "Trying to read nonexistant index entry " << index << std::endl;
-            return dataLoader_.get(defaultId_, indexLoader_.get(defaultId_), userData);
+            boost::shared_ptr<ValueType> empty;
+            return empty;
          } else {
              return dataLoader_.get(index, indexBlock, userData);
         }
@@ -33,8 +34,6 @@ public:
 private:
     IndexLoader indexLoader_;
     OnDemandFileLoader<ValueType> dataLoader_;
-
-    unsigned int defaultId_;
 };
 
 }

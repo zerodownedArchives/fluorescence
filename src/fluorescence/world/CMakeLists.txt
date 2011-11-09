@@ -11,6 +11,8 @@ set (WORLD_HPP
     world/mobile.hpp
     world/dynamicitem.hpp
     world/overheadmessage.hpp
+    world/smoothmovement.hpp
+    world/smoothmovementmanager.hpp
     )
 
 set (WORLD_CPP
@@ -25,8 +27,8 @@ set (WORLD_CPP
     world/mobile.cpp
     world/dynamicitem.cpp
     world/overheadmessage.cpp
+    world/smoothmovement.cpp
+    world/smoothmovementmanager.cpp
     )
 
 set(WORLD_FILES ${WORLD_HPP} ${WORLD_CPP} PARENT_SCOPE)
-
-#add_subdirectory(test)

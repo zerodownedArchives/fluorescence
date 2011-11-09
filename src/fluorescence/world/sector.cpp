@@ -82,7 +82,7 @@ void Sector::update(unsigned int elapsedMillis) {
     }
 
     //LOG_DEBUG << "Sector::update " << id_ << std::endl;
-    if (true || fullUpdateRenderDataRequired_) {
+    if (fullUpdateRenderDataRequired_) {
         //LOG_DEBUG << "full update required" << std::endl;
         // the sector is not yet loaded completely (e.g. a graphic is still missing)
         bool curFullUpdateRequired = false;

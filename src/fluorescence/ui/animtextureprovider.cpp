@@ -18,7 +18,7 @@ AnimTextureProvider::AnimTextureProvider(unsigned int bodyId) : bodyId_(bodyId),
 
 boost::shared_ptr<ui::Texture> AnimTextureProvider::getTexture() const {
     std::map<unsigned int, std::vector<boost::shared_ptr<Animation> > >::const_iterator it = animations_.find(currentAnimId_);
-    if (it != animations_.end() && it->second[direction_]->isReadComplete()) {
+    if (it != animations_.end() && it->second[direction_] && it->second[direction_]->isReadComplete()) {
         return it->second[direction_]->getFrame(currentIdx_).texture_;
     } else {
         boost::shared_ptr<ui::Texture> ret;

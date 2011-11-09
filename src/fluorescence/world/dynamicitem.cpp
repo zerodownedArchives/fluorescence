@@ -242,7 +242,7 @@ const data::StaticTileInfo* DynamicItem::getTileDataInfo() const {
 
 void DynamicItem::onClick() {
     LOG_INFO << "Clicked dynamic, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
-            getLocZ() << ") name=" << tileDataInfo_->name_ << std::endl;
+            getLocZ() << ") name=" << tileDataInfo_->name_ << " equipped=" << equipped_ << std::endl;
 
     printRenderPriority();
 

@@ -32,15 +32,35 @@ void IngameObject::setVisible(bool visible) {
     }
 }
 
-void IngameObject::setLocation(int locX, int locY, int locZ) {
-    CL_Vec3<int> oldLocation = location_;
+void IngameObject::setLocation(float locX, float locY, float locZ) {
+    setLocation(CL_Vec3f(locX, locY, locZ));
+}
 
-    location_ = CL_Vec3<int>(locX, locY, locZ);
+void IngameObject::setLocation(CL_Vec3f loc) {
+    CL_Vec3f oldLocation = location_;
 
-    //LOGARG_DEBUG(LOGTYPE_WORLD, "Object location: %i %i %i", locX, locY, locZ);
+    location_ = loc;
+
+    //LOGARG_DEBUG(LOGTYPE_WORLD, "Object location: %f %f %f", locX, locY, locZ);
 
     invalidateRenderPriority();
     invalidateVertexCoordinates();
+}
+
+float IngameObject::getLocX() const {
+    return location_[0u];
+}
+
+float IngameObject::getLocY() const {
+    return location_[1u];
+}
+
+float IngameObject::getLocZ() const {
+    return location_[2u];
+}
+
+CL_Vec3f IngameObject::getLocation() const {
+    return location_;
 }
 
 void IngameObject::invalidateTextureProvider() {

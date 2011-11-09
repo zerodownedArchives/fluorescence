@@ -3,6 +3,7 @@
 
 #include "sectormanager.hpp"
 #include "lightmanager.hpp"
+#include "smoothmovementmanager.hpp"
 
 #include <misc/exception.hpp>
 #include <misc/log.hpp>
@@ -42,6 +43,7 @@ void Manager::destroy() {
 Manager::Manager(const Config& config) : currentMapId_(0) {
     sectorManager_.reset(new SectorManager(config));
     lightManager_.reset(new LightManager());
+    smoothMovementManager_.reset(new SmoothMovementManager());
 }
 
 Manager::~Manager() {
@@ -125,6 +127,8 @@ void Manager::step(unsigned int elapsedMillis) {
 }
 
 void Manager::update(unsigned int elapsedMillis) {
+    smoothMovementManager_->update(elapsedMillis);
+
     std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobIter = mobiles_.begin();
     std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobEnd = mobiles_.end();
 

@@ -78,6 +78,8 @@ set (PACKETS_HPP
     net/packets/bf/contextmenurequest.hpp
     net/packets/bf/opencontextmenu.hpp
     net/packets/bf/contextmenureply.hpp
+    net/packets/bf/fastwalkinit.hpp
+    net/packets/bf/fastwalkupdate.hpp
     )
 
 set (PACKETS_CPP
@@ -131,6 +133,8 @@ set (PACKETS_CPP
     net/packets/bf/contextmenurequest.cpp
     net/packets/bf/opencontextmenu.cpp
     net/packets/bf/contextmenureply.cpp
+    net/packets/bf/fastwalkinit.cpp
+    net/packets/bf/fastwalkupdate.cpp
     )
 
 set (MD5

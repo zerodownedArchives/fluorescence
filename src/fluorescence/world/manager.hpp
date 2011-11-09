@@ -14,6 +14,7 @@ namespace world {
 
 class SectorManager;
 class LightManager;
+class SmoothMovementManager;
 
 class Manager {
 public:
@@ -55,6 +56,8 @@ private:
     std::map<Serial, boost::shared_ptr<DynamicItem> > dynamicItems_;
 
     void update(unsigned int millis);
+
+    boost::shared_ptr<SmoothMovementManager> smoothMovementManager_;
 };
 
 }
