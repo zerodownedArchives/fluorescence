@@ -16,7 +16,6 @@ public:
 
     virtual void onReceive();
 
-private:
     uint8_t sequence_;
     uint16_t locX_;
     uint16_t locY_;

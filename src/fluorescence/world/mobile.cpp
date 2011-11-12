@@ -24,10 +24,14 @@
 
 #include <world/manager.hpp>
 
+
+#include "smoothmovement.hpp"
+#include "smoothmovementmanager.hpp"
+
 namespace fluo {
 namespace world {
 
-Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE), bodyId_(0) {
+Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE), bodyId_(0), isMounted_(false), isArmed_(false), isWarmode_(false) {
 }
 
 boost::shared_ptr<ui::Texture> Mobile::getIngameTexture() const {
@@ -115,10 +119,10 @@ void Mobile::updateVertexCoordinates() {
 void Mobile::updateRenderPriority() {
     // render prio
     // level 0 x+y
-    worldRenderData_.renderPriority_[0] = getLocX() + getLocY();
+    worldRenderData_.renderPriority_[0] = ceilf(getLocX()) + ceilf(getLocY());
 
     // level 1 z
-    worldRenderData_.renderPriority_[1] = getLocZ() + 7;
+    worldRenderData_.renderPriority_[1] = ceilf(getLocZ()) + 7;
 
     // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
     worldRenderData_.renderPriority_[2] = 30;
@@ -327,6 +331,8 @@ void Mobile::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
     for (; iter != end; ++iter) {
         obj->addToRenderQueue(*iter);
     }
+
+    checkItemLayerFlags();
 }
 
 void Mobile::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
@@ -344,6 +350,71 @@ void Mobile::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remEnd = rqsToRemove.end();
     for (; remIter != remEnd; ++remIter) {
         obj->removeFromRenderQueue(*remIter);
+    }
+
+    checkItemLayerFlags();
+}
+
+bool Mobile::isMounted() const {
+    return isMounted_;
+}
+
+bool Mobile::isArmed() const {
+    return isArmed_;
+}
+
+bool Mobile::isWarmode() const {
+    return isWarmode_;
+}
+
+void Mobile::checkItemLayerFlags() {
+    std::list<boost::shared_ptr<IngameObject> >::const_iterator iter = childObjects_.begin();
+    std::list<boost::shared_ptr<IngameObject> >::const_iterator end = childObjects_.end();
+
+    bool mnt = false;
+    bool arm = false;
+    for (; iter != end; ++iter) {
+        if ((*iter)->isDynamicItem()) {
+            unsigned int layer = boost::dynamic_pointer_cast<DynamicItem>(*iter)->getLayer();
+            switch (layer) {
+            case Layer::MOUNT:
+                mnt = true;
+                break;
+            case Layer::ONEHANDED:
+            case Layer::TWOHANDED:
+                arm = true;
+                break;
+            }
+        }
+    }
+
+    isMounted_ = mnt;
+    isArmed_ = arm;
+}
+
+unsigned int Mobile::getWalkAnim() const {
+    // TODO: at the moment this is only valid for people
+    if (isMounted_) {
+        return 23;
+    } else if (isWarmode_) {
+        return 15;
+    } else if (isArmed_) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+unsigned int Mobile::getRunAnim() const {
+    // TODO: at the moment this is only valid for people
+    if (isMounted_) {
+        return 24;
+    } else if (isWarmode_) {
+        return 15;
+    } else if (isArmed_) {
+        return 3;
+    } else {
+        return 2;
     }
 }
 

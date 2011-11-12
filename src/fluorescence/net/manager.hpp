@@ -14,6 +14,7 @@ namespace ui {
 }
 
 namespace net {
+class WalkManager;
 
 namespace packets {
     class ServerRedirect;
@@ -28,6 +29,7 @@ public:
     void step();
 
     static boost::shared_ptr<Packet> createPacket(uint8_t id);
+    static boost::shared_ptr<WalkManager> getWalkManager();
 
     bool connect(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
     void disconnect();
@@ -41,7 +43,7 @@ public:
         return socket_.write(packet);
     }
 
-    uint32_t getSeed();
+    uint32_t getSeed() const;
 
 private:
     static Manager* singleton_;
@@ -52,6 +54,7 @@ private:
 
     Socket socket_;
 
+    boost::shared_ptr<WalkManager> walkManager_;
 };
 
 }

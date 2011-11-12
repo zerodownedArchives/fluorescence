@@ -11,6 +11,7 @@
 
 #include "packetlist.hpp"
 #include "twofishencryption.hpp"
+#include "walkmanager.hpp"
 
 namespace fluo {
 namespace net {
@@ -57,6 +58,8 @@ Manager::Manager(const Config& config) {
         LOG_INFO << "WSAStartup ok" << std::endl;
     }
 #endif
+
+    walkManager_.reset(new WalkManager());
 }
 
 Manager::~Manager() {
@@ -208,8 +211,12 @@ void Manager::handleServerRedirect(const packets::ServerRedirect* packet) {
     socket_.write(loginReq);
 }
 
-uint32_t Manager::getSeed() {
+uint32_t Manager::getSeed() const {
     return socket_.getSeed();
+}
+
+boost::shared_ptr<WalkManager> Manager::getWalkManager() {
+    return getSingleton()->walkManager_;
 }
 
 }

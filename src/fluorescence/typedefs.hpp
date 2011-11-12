@@ -37,6 +37,15 @@ enum {
 };
 };
 
+struct Layer {
+public:
+enum {
+    ONEHANDED = 0x01,
+    TWOHANDED = 0x02,
+    MOUNT = 0x19,
+};
+};
+
 }
 
 

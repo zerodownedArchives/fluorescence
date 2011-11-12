@@ -54,6 +54,10 @@ boost::shared_ptr<SectorManager> Manager::getSectorManager() {
     return getSingleton()->sectorManager_;
 }
 
+boost::shared_ptr<SmoothMovementManager> Manager::getSmoothMovementManager() {
+    return getSingleton()->smoothMovementManager_;
+}
+
 unsigned int Manager::getCurrentMapId() {
     return currentMapId_;
 }

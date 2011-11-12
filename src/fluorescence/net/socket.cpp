@@ -260,7 +260,7 @@ void Socket::writeSeed(uint32_t seed) {
     PacketWriter::write(sendBuffer_, 0x10000, sendSize_, seed);
 }
 
-uint32_t Socket::getSeed() {
+uint32_t Socket::getSeed() const {
     return seed_;
 }
 

@@ -1,6 +1,9 @@
 
 #include "movementaccept.hpp"
 
+#include <net/manager.hpp>
+#include <net/walkmanager.hpp>
+
 namespace fluo {
 namespace net {
 namespace packets {
@@ -28,6 +31,9 @@ bool MovementAccept::read(const int8_t* buf, unsigned int len, unsigned int& ind
 }
 
 void MovementAccept::onReceive() {
+    net::Manager::getWalkManager()->onMovementAccept(sequence_);
+
+    // TODO: handle status
 }
 
 }

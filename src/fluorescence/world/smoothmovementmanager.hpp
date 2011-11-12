@@ -15,6 +15,9 @@ class SmoothMovementManager {
 public:
     void update(unsigned int elapsedMillis);
 
+    void add(Serial serial, SmoothMovement& movement);
+    void clear(Serial serial);
+
 private:
     std::map<Serial, std::list<SmoothMovement> > movementQueues_;
 };

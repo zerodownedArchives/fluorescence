@@ -19,6 +19,9 @@
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
 
+#include <net/manager.hpp>
+#include <net/walkmanager.hpp>
+
 #include <algorithm>
 #include <ClanLib/Display/Window/keys.h>
 
@@ -147,16 +150,16 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
 
     switch (e.id) {
     case CL_KEY_UP:
-        centerTileY_ -= .1;
+        net::Manager::getWalkManager()->onMovementRequest(Direction::N);
         break;
     case CL_KEY_DOWN:
-        centerTileY_ += .1;
+        net::Manager::getWalkManager()->onMovementRequest(Direction::S);
         break;
     case CL_KEY_LEFT:
-        centerTileX_ -= .1;
+        net::Manager::getWalkManager()->onMovementRequest(Direction::W);
         break;
     case CL_KEY_RIGHT:
-        centerTileX_ += .1;
+        net::Manager::getWalkManager()->onMovementRequest(Direction::E);
         break;
 
     case CL_KEY_ADD:

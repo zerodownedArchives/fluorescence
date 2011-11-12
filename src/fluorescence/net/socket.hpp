@@ -34,7 +34,7 @@ public:
     }
 
     void writeSeed(uint32_t seed);
-    uint32_t getSeed();
+    uint32_t getSeed() const;
 
     bool sendAll();
 

@@ -65,6 +65,14 @@ public:
     virtual void onChildObjectAdded(boost::shared_ptr<IngameObject> obj);
     virtual void onChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
 
+    bool isMounted() const;
+    bool isArmed() const;
+    unsigned int getIdleAnim() const;
+    unsigned int getWalkAnim() const;
+    unsigned int getRunAnim() const;
+
+    bool isWarmode() const;
+
 private:
     unsigned int baseBodyId_; // as sent by the server
     unsigned int bodyId_; // after transformation, e.g. by body.def
@@ -87,6 +95,12 @@ private:
 
     unsigned int race_;
     bool female_;
+
+    bool isMounted_;
+    bool isArmed_;
+    void checkItemLayerFlags();
+
+    bool isWarmode_;
 };
 
 }

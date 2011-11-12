@@ -25,6 +25,7 @@ public:
 
     static boost::shared_ptr<SectorManager> getSectorManager();
     static boost::shared_ptr<LightManager> getLightManager();
+    static boost::shared_ptr<SmoothMovementManager> getSmoothMovementManager();
 
     unsigned int getCurrentMapId();
     void setCurrentMapId(unsigned int id);

@@ -12,17 +12,22 @@ namespace world {
 class SmoothMovement {
 public:
     SmoothMovement(boost::shared_ptr<world::ServerObject> obj, CL_Vec3f diff, unsigned int durationMillis);
+    SmoothMovement(boost::shared_ptr<world::ServerObject> obj, uint8_t direction, unsigned int durationMillis);
 
     bool wasStarted() const;
-    bool isFinished() const;
     void start();
+
     void update(unsigned int elapsedMillis);
+
+    bool isFinished() const;
+    void finish();
 
 private:
     boost::shared_ptr<world::ServerObject> movingObject_;
     CL_Vec3f diff_;
     unsigned int duration_;
 
+    bool wasStarted_;
     CL_Vec3f startLoc_;
     unsigned int totalElapsedMillis_;
 };

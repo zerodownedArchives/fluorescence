@@ -1,6 +1,9 @@
 
 #include "movementdeny.hpp"
 
+#include <net/manager.hpp>
+#include <net/walkmanager.hpp>
+
 namespace fluo {
 namespace net {
 namespace packets {
@@ -21,6 +24,7 @@ bool MovementDeny::read(const int8_t* buf, unsigned int len, unsigned int& index
 }
 
 void MovementDeny::onReceive() {
+    net::Manager::getWalkManager()->onMovementDeny(this);
 }
 
 }

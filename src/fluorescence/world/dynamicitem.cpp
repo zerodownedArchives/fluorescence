@@ -5,6 +5,10 @@
 #include "statics.hpp"
 #include "mobile.hpp"
 
+#include "smoothmovement.hpp"
+#include "smoothmovementmanager.hpp"
+#include "manager.hpp"
+
 #include <typedefs.hpp>
 #include <client.hpp>
 #include <misc/config.hpp>
@@ -165,10 +169,10 @@ void DynamicItem::updateRenderPriority() {
         boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
 
         // level 0 x+y
-        worldRenderData_.renderPriority_[0] = parent->getLocX() + parent->getLocY();
+        worldRenderData_.renderPriority_[0] = ceilf(parent->getLocX()) + ceilf(parent->getLocY());
 
         // level 1 z
-        worldRenderData_.renderPriority_[1] = parent->getLocZ() + 7;
+        worldRenderData_.renderPriority_[1] = ceilf(parent->getLocZ()) + 7;
 
         // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
         worldRenderData_.renderPriority_[2] = 40;
@@ -185,10 +189,10 @@ void DynamicItem::updateRenderPriority() {
         worldRenderData_.renderPriority_[5] = getSerial();
     } else {
         // level 0 x+y
-        worldRenderData_.renderPriority_[0] = getLocX() + getLocY();
+        worldRenderData_.renderPriority_[0] = ceilf(getLocX()) + ceilf(getLocY());
 
         // level 1 z and tiledata flags
-        worldRenderData_.renderPriority_[1] = getLocZ();
+        worldRenderData_.renderPriority_[1] = ceilf(getLocZ());
         if (tileDataInfo_->background() && tileDataInfo_->surface()) {
             worldRenderData_.renderPriority_[1] += 4;
         } else if (tileDataInfo_->background()) {
