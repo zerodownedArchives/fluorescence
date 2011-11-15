@@ -5,6 +5,8 @@
 
 #include <world/manager.hpp>
 #include <world/mobile.hpp>
+#include <world/dynamicitem.hpp>
+#include <world/overheadmessage.hpp>
 
 #include <ui/manager.hpp>
 
@@ -33,7 +35,9 @@ bool BaseText::mobileMessage() {
         mob->getProperty("name").setString(speaker_);
         mob->onPropertyUpdate();
 
-        // TODO: let the mobile say this
+        boost::shared_ptr<world::OverheadMessage> msg(new world::OverheadMessage(text_, 1, 5, false));
+        world::Manager::getSingleton()->registerOverheadMessage(msg);
+        mob->addChildObject(msg);
         LOG_INFO << "Speech from " << speaker_ << ": " << text_ << std::endl;
     }
 
@@ -44,7 +48,9 @@ bool BaseText::itemMessage() {
     boost::shared_ptr<world::DynamicItem> itm = world::Manager::getSingleton()->getDynamicItem(serial_, false);
 
     if (itm) {
-        // TODO: display overhead text
+        boost::shared_ptr<world::OverheadMessage> msg(new world::OverheadMessage(text_, 1, 5, false));
+        world::Manager::getSingleton()->registerOverheadMessage(msg);
+        itm->addChildObject(msg);
         LOG_INFO << "Overhead text for " << speaker_ << ": " << text_ << std::endl;
     }
 

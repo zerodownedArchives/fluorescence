@@ -4,6 +4,9 @@
 #include "sectormanager.hpp"
 #include "lightmanager.hpp"
 #include "smoothmovementmanager.hpp"
+#include "mobile.hpp"
+#include "dynamicitem.hpp"
+#include "overheadmessage.hpp"
 
 #include <misc/exception.hpp>
 #include <misc/log.hpp>
@@ -148,6 +151,35 @@ void Manager::update(unsigned int elapsedMillis) {
     }
 
     sectorManager_->update(elapsedMillis);
+
+    std::list<boost::shared_ptr<OverheadMessage> >::iterator msgIter = overheadMessages_.begin();
+    std::list<boost::shared_ptr<OverheadMessage> >::iterator msgEnd = overheadMessages_.end();
+    std::list<boost::shared_ptr<OverheadMessage> > expiredMessages;
+
+    for (; msgIter != msgEnd; ++msgIter) {
+        (*msgIter)->updateRenderData(elapsedMillis);
+
+        if ((*msgIter)->isExpired()) {
+            expiredMessages.push_back(*msgIter);
+        }
+    }
+
+    if (!expiredMessages.empty()) {
+        msgIter = expiredMessages.begin();
+        msgEnd = expiredMessages.end();
+
+        for (; msgIter != msgEnd; ++msgIter) {
+            (*msgIter)->expire();
+        }
+    }
+}
+
+void Manager::registerOverheadMessage(boost::shared_ptr<OverheadMessage> msg) {
+    overheadMessages_.push_back(msg);
+}
+
+void Manager::unregisterOverheadMessage(boost::shared_ptr<OverheadMessage> msg) {
+    overheadMessages_.remove(msg);
 }
 
 }

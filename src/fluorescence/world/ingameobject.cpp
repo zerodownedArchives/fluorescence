@@ -273,10 +273,8 @@ bool IngameObject::isInRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
 }
 
 void IngameObject::addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
-    boost::shared_ptr<ui::RenderQueue> weakRq(rq);
-
     if (!isInRenderQueue(rq)) {
-        renderQueues_.push_back(weakRq);
+        renderQueues_.push_back(rq);
         rq->add(shared_from_this());
 
         if (!childObjects_.empty()) {
@@ -311,10 +309,21 @@ void IngameObject::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) 
 
             for (; iter != end; ++iter) {
                 if ((*iter)->isSpeech() || isMobile()) {
-                    (*iter)->addToRenderQueue(rq);
+                    (*iter)->removeFromRenderQueue(rq);
                 }
             }
         }
+    }
+}
+
+void IngameObject::removeFromAllRenderQueues() {
+    std::list<boost::shared_ptr<ui::RenderQueue> > rqCopy(renderQueues_.begin(), renderQueues_.end());
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = rqCopy.begin();
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator end = rqCopy.end();
+
+    boost::shared_ptr<IngameObject> sharedThis = shared_from_this();
+    for (; iter != end; ++iter) {
+        removeFromRenderQueue(*iter);
     }
 }
 

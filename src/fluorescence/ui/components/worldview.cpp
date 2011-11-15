@@ -9,6 +9,7 @@
 #include <world/map.hpp>
 #include <world/statics.hpp>
 #include <world/ingameobject.hpp>
+#include <world/mobile.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
@@ -35,7 +36,7 @@ WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpEleme
     renderer_.reset(new WorldViewRenderer(ui::Manager::getWorldRenderQueue(), this));
 
     world::Manager::getSectorManager()->registerWorldView(this);
-    setCenterObject(world::Manager::getSingleton()->getPlayer());
+    setCenterObject(world::Manager::getSingleton()->getPlayer()->shared_from_this());
 
     set_constant_repaint(true);
 

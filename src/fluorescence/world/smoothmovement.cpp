@@ -23,6 +23,8 @@ SmoothMovement::SmoothMovement(boost::shared_ptr<world::ServerObject> obj, uint8
         case Direction::W: diff_ = CL_Vec3f(-1, 0, 0); break;
         case Direction::NW: diff_ = CL_Vec3f(-1, -1, 0); break;
     }
+
+    // TODO: get z level of the new tile
 }
 
 bool SmoothMovement::wasStarted() const {

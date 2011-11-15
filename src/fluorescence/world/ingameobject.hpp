@@ -86,6 +86,7 @@ public:
     void addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
     void removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
     bool isInRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
+    void removeFromAllRenderQueues();
 
     void addChildObject(boost::shared_ptr<IngameObject> obj);
     void removeChildObject(boost::shared_ptr<IngameObject> obj);

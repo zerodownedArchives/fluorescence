@@ -3,10 +3,11 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <misc/config.hpp>
+#include <list>
+#include <map>
 
-#include "mobile.hpp"
-#include "dynamicitem.hpp"
+#include <typedefs.hpp>
+#include <misc/config.hpp>
 
 namespace fluo {
 
@@ -15,6 +16,9 @@ namespace world {
 class SectorManager;
 class LightManager;
 class SmoothMovementManager;
+class Mobile;
+class DynamicItem;
+class OverheadMessage;
 
 class Manager {
 public:
@@ -40,6 +44,9 @@ public:
 
     void step(unsigned int elapsedMillis);
 
+    void registerOverheadMessage(boost::shared_ptr<OverheadMessage> msg);
+    void unregisterOverheadMessage(boost::shared_ptr<OverheadMessage> msg);
+
 private:
     static Manager* singleton_;
     Manager(const Config& config);
@@ -59,6 +66,8 @@ private:
     void update(unsigned int millis);
 
     boost::shared_ptr<SmoothMovementManager> smoothMovementManager_;
+
+    std::list<boost::shared_ptr<OverheadMessage> > overheadMessages_;
 };
 
 }

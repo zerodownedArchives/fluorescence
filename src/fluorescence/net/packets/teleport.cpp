@@ -2,6 +2,7 @@
 #include "teleport.hpp"
 
 #include <world/manager.hpp>
+#include <world/mobile.hpp>
 
 namespace fluo {
 namespace net {

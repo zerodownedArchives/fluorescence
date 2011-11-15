@@ -1,6 +1,8 @@
 
 #include "overheadmessage.hpp"
 
+#include "manager.hpp"
+
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>
 #include <ui/fontengine.hpp>
@@ -11,7 +13,7 @@ namespace fluo {
 namespace world {
 
 OverheadMessage::OverheadMessage(const UnicodeString& text, unsigned int font, unsigned int color, bool useRgbColor) :
-            IngameObject(IngameObject::TYPE_SPEECH) {
+            IngameObject(IngameObject::TYPE_SPEECH), milliSecondsToLive_(5000) {
     texture_ = ui::Manager::getFontEngine()->getUniFontTexture(font, text, 180, color, useRgbColor);
 }
 
@@ -20,7 +22,6 @@ boost::shared_ptr<ui::Texture> OverheadMessage::getIngameTexture() const {
 }
 
 void OverheadMessage::updateVertexCoordinates() {
-    // do nothing
     CL_Vec2f parentCoords = parentObject_.lock()->getVertexCoordinates()[0];
 
     int x = parentCoords.x + 22 - texture_->getWidth()/2;
@@ -47,8 +48,25 @@ void OverheadMessage::updateTextureProvider() {
 }
 
 bool OverheadMessage::updateAnimation(unsigned int elapsedMillis) {
-    // do nothing
+    milliSecondsToLive_ -= elapsedMillis;
+
     return false;
+}
+
+bool OverheadMessage::isExpired() const {
+    return milliSecondsToLive_ <= 0;
+}
+
+void OverheadMessage::expire() {
+    boost::shared_ptr<IngameObject> parent = parentObject_.lock();
+    if (parent) {
+        parent->removeChildObject(shared_from_this());
+    } else {
+        removeFromAllRenderQueues();
+    }
+
+    boost::shared_ptr<OverheadMessage> sharedThis = boost::dynamic_pointer_cast<OverheadMessage>(shared_from_this());
+    world::Manager::getSingleton()->unregisterOverheadMessage(sharedThis);
 }
 
 void OverheadMessage::onClick() {

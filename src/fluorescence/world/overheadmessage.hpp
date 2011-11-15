@@ -26,6 +26,9 @@ public:
     virtual void onAddedToParent();
     virtual void onRemovedFromParent();
 
+    bool isExpired() const;
+    void expire();
+
 private:
     UnicodeString text_;
     boost::shared_ptr<ui::Texture> texture_;
@@ -36,6 +39,8 @@ private:
     bool updateAnimation(unsigned int elapsedMillis);
 
     int parentPixelOffsetY_;
+
+    int milliSecondsToLive_;
 };
 }
 }
