@@ -119,15 +119,15 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     bool renderingComplete = true;
 
     for (; igIter != igEnd; ++igIter) {
-        boost::shared_ptr<world::IngameObject> curObj = *igIter;
+        world::IngameObject* curObj = igIter->get();
 
-        // object is invisible
-        if (!curObj->isVisible()) {
+        // check if current object is in the area visible to the player
+        if (!curObj->isInDrawArea(clippingLeftPixelCoord, clippingRightPixelCoord, clippingTopPixelCoord, clippingBottomPixelCoord)) {
             continue;
         }
 
         // check if texture is ready to be drawn
-        boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
+        ui::Texture* tex = curObj->getIngameTexture().get();
 
         // happens e.g. for the equipped backpack
         if (!tex) {
@@ -139,8 +139,8 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
             continue;
         }
 
-        // check if current object is in the area visible to the player
-        if (!curObj->isInDrawArea(clippingLeftPixelCoord, clippingRightPixelCoord, clippingTopPixelCoord, clippingBottomPixelCoord)) {
+        // object is invisible
+        if (!curObj->isVisible()) {
             continue;
         }
 
