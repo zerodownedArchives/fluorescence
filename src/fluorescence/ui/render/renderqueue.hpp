@@ -28,6 +28,7 @@ public:
 
 
     RenderQueue(SortFunction sortFunction);
+    RenderQueue(SortFunction sortFunction, SortFunction batchedSortFunction_);
 
     void clear();
     void sort();
@@ -37,6 +38,12 @@ public:
     virtual boost::shared_ptr<world::IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopParent) = 0;
 
     unsigned int size() const;
+
+    RenderQueue::iterator batchedBegin();
+    RenderQueue::const_iterator batchedBegin() const;
+
+    RenderQueue::iterator batchedEnd();
+    RenderQueue::const_iterator batchedEnd() const;
 
     RenderQueue::iterator begin();
     RenderQueue::const_iterator begin() const;
@@ -62,6 +69,8 @@ public:
 
     bool requireGumpRepaint() const;
     void resetGumpRepaintIndicators();
+
+    void updateBatchedList();
 
 protected:
     void processRemoveList();
@@ -95,6 +104,9 @@ private:
 
     friend void world::IngameObject::addToRenderQueue(boost::shared_ptr<RenderQueue> rq);
     friend void world::IngameObject ::removeFromRenderQueue(boost::shared_ptr<RenderQueue> rq);
+
+    SortFunction batchedSortFunction_;
+    std::list<boost::shared_ptr<world::IngameObject> > batchedObjectList_;
 };
 
 }

@@ -9,6 +9,11 @@
 #include <ui/render/ingameobjectrenderer.hpp>
 
 namespace fluo {
+
+namespace world {
+class IngameObject;
+}
+
 namespace ui {
 
 class RenderQueue;
@@ -36,6 +41,20 @@ private:
 
     boost::shared_ptr<Texture> texture_;
     void checkTextureSize();
+
+
+    // render batching
+    static const unsigned int BATCH_NUM_VERTICES = 600; // render up to 100 objects at the same time
+    CL_Vec3f batchPositions_[BATCH_NUM_VERTICES];
+    CL_Vec3f batchNormals_[BATCH_NUM_VERTICES];
+    CL_Vec3f batchTexCoords_[BATCH_NUM_VERTICES];
+    CL_Vec3f batchHueInfos_[BATCH_NUM_VERTICES];
+
+    unsigned int batchFill_;
+    CL_Texture* lastTexture_;
+
+    void batchAdd(CL_GraphicContext& gc, boost::shared_ptr<world::IngameObject>& curObj);
+    void batchFlush(CL_GraphicContext& gc);
 };
 
 }

@@ -42,7 +42,11 @@ bool WorldRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::I
     return (unsigned long)a.get() <= (unsigned long)b.get();
 }
 
-WorldRenderQueue::WorldRenderQueue() : RenderQueue(boost::bind(&WorldRenderQueue::renderPriorityComparator, this, _1, _2)) {
+bool WorldRenderQueue::batchedComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
+    return a->getIngameTexture().get() <= b->getIngameTexture().get();
+}
+
+WorldRenderQueue::WorldRenderQueue() : RenderQueue(boost::bind(&WorldRenderQueue::renderPriorityComparator, this, _1, _2), boost::bind(&WorldRenderQueue::batchedComparator, this, _1, _2)) {
 }
 
 WorldRenderQueue::~WorldRenderQueue() {
@@ -50,15 +54,23 @@ WorldRenderQueue::~WorldRenderQueue() {
 
 
 void WorldRenderQueue::preRender() {
+    bool requireBatchedListUpdate = false;
+
     if (!removeList_.empty()) {
         processRemoveList();
         forceRepaint_ = true;
+        requireBatchedListUpdate = true;
     }
 
-    bool requireSort = processAddList();
+    bool objectsAdded = processAddList();
+    requireBatchedListUpdate |= objectsAdded;
 
-    if (requireSort || worldPriorityChanged_ ) {
+    if (objectsAdded || worldPriorityChanged_ ) {
         sort();
+    }
+
+    if (requireBatchedListUpdate) {
+        updateBatchedList();
     }
 }
 

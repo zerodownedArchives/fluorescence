@@ -52,7 +52,7 @@ public:
 
     void updateRenderData(unsigned int elapsedMillis); ///< calls updateVertexCoordinates, updateRenderPriority, updateTextureProvider and updateAnimation
 
-    const CL_Vec2f* getVertexCoordinates() const;
+    const CL_Vec3f* getVertexCoordinates() const;
 
     const CL_Vec3f* getVertexNormals() const;
     void setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const CL_Vec3f& bottom, const CL_Vec3f& left);

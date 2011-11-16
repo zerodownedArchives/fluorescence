@@ -11,6 +11,26 @@ namespace ui {
 RenderQueue::RenderQueue(SortFunction sortFunction) : sortFunction_(sortFunction) {
 }
 
+RenderQueue::RenderQueue(SortFunction sortFunction, SortFunction batchedSortFunction) : sortFunction_(sortFunction), batchedSortFunction_(batchedSortFunction) {
+}
+
+RenderQueue::iterator RenderQueue::batchedBegin() {
+    return batchedObjectList_.begin();
+}
+
+RenderQueue::const_iterator RenderQueue::batchedBegin() const {
+    return batchedObjectList_.begin();
+}
+
+RenderQueue::iterator RenderQueue::batchedEnd() {
+    return batchedObjectList_.end();
+}
+
+RenderQueue::const_iterator RenderQueue::batchedEnd() const {
+    return batchedObjectList_.end();
+}
+
+
 RenderQueue::iterator RenderQueue::begin() {
     return objectList_.begin();
 }
@@ -222,6 +242,10 @@ void RenderQueue::resetGumpRepaintIndicators() {
     forceRepaint_ = false;
 }
 
+void RenderQueue::updateBatchedList() {
+    batchedObjectList_.assign(objectList_.begin(), objectList_.end());
+    batchedObjectList_.sort(batchedSortFunction_);
+}
 
 }
 }

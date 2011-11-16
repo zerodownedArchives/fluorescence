@@ -29,6 +29,8 @@ private:
     /// used to sort the objects according to their render priority. returns true, if a should be painted before b
     bool renderPriorityComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b);
 
+    bool batchedComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b);
+
 };
 
 }

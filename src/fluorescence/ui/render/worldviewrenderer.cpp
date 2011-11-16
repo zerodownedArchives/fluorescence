@@ -49,7 +49,7 @@ void WorldViewRenderer::checkTextureSize() {
 }
 
 boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) {
-    if (renderQueue_->requireWorldRepaint() || !texture_ || requireInitialRepaint()) {
+    if (true || renderQueue_->requireWorldRepaint() || !texture_ || requireInitialRepaint()) {
         checkTextureSize();
         CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 
@@ -75,26 +75,6 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
 
     gc.set_program_object(*shaderProgram_, cl_program_matrix_modelview_projection);
 
-    CL_Rectf texture_unit1_coords(0.0f, 0.0f, 1.0f, 1.0f);
-
-    CL_Vec2f tex1_coords[6] = {
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom)
-    };
-
-    CL_Vec2f tex1_coords_mirrored[6] = {
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom)
-    };
-
     int clippingLeftPixelCoord = worldView_->getCenterPixelX() - worldView_->getWidth()/2;
     int clippingRightPixelCoord = worldView_->getCenterPixelX() + worldView_->getWidth()/2;
     int clippingTopPixelCoord = worldView_->getCenterPixelY() - worldView_->getHeight()/2;
@@ -113,10 +93,13 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     shaderProgram_->set_uniform3f("GlobalLightIntensity", lightManager->getGlobalIntensity());
     shaderProgram_->set_uniform3f("GlobalLightDirection", lightManager->getGlobalDirection());
 
-    RenderQueue::const_iterator igIter = renderQueue_->begin();
-    RenderQueue::const_iterator igEnd = renderQueue_->end();
+    RenderQueue::const_iterator igIter = renderQueue_->batchedBegin();
+    RenderQueue::const_iterator igEnd = renderQueue_->batchedEnd();
 
     bool renderingComplete = true;
+
+    batchFill_ = 0;
+    lastTexture_ = NULL;
 
     for (; igIter != igEnd; ++igIter) {
         boost::shared_ptr<world::IngameObject> curObj = *igIter;
@@ -144,29 +127,83 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
             continue;
         }
 
-        CL_PrimitivesArray primarray(gc);
-        primarray.set_attributes(0, curObj->getVertexCoordinates());
-        if (curObj->isMirrored()) {
-            primarray.set_attributes(1, tex1_coords_mirrored);
-        } else {
-            primarray.set_attributes(1, tex1_coords);
-        }
-        primarray.set_attributes(2, curObj->getVertexNormals());
-
-        primarray.set_attribute(3, curObj->getHueInfo());
-
-        gc.set_texture(1, *tex->getTexture());
-        gc.draw_primitives(cl_triangles, 6, primarray);
+        batchAdd(gc, curObj);
     }
+
+    batchFlush(gc);
 
     gc.reset_textures();
     gc.reset_program_object();
+
+    //LOG_DEBUG << "batched: " << batchedCnt << "/" << allCount << std::endl;
 
     renderQueue_->postRender(renderingComplete);
 }
 
 boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {
     return renderQueue_;
+}
+
+void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, boost::shared_ptr<world::IngameObject>& curObj) {
+    static CL_Rectf texCoordHelper(0.0f, 0.0f, 1.0f, 1.0f);
+
+    static CL_Vec2f texCoords[6] = {
+        CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
+        CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+        CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
+        CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+        CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
+        CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom)
+    };
+
+    static CL_Vec2f texCoordsMirrored[6] = {
+        CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+        CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
+        CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom),
+        CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
+        CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom),
+        CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom)
+    };
+
+
+    if (lastTexture_ != curObj->getIngameTexture()->getTexture().get()) {
+        batchFlush(gc);
+        lastTexture_ = curObj->getIngameTexture()->getTexture().get();
+    }
+
+    for (unsigned int i = 0; i < 6; ++i) {
+        batchPositions_[batchFill_ + i] = curObj->getVertexCoordinates()[i];
+        if (curObj->isMirrored()) {
+            batchTexCoords_[batchFill_ + i] = texCoords[i];
+        } else {
+            batchTexCoords_[batchFill_ + i] = texCoordsMirrored[i];
+        }
+        batchNormals_[batchFill_ + i] = curObj->getVertexNormals()[i];
+        batchHueInfos_[batchFill_ + i] = curObj->getHueInfo();
+    }
+
+    batchFill_ += 6;
+
+    if (batchFill_ == BATCH_NUM_VERTICES) {
+        batchFlush(gc);
+    }
+}
+
+void WorldViewRenderer::batchFlush(CL_GraphicContext& gc) {
+    if (batchFill_ > 0 && lastTexture_) {
+        //LOG_DEBUG << "batch flush: " << (batchFill_ / 6) << std::endl;
+        CL_PrimitivesArray primarray(gc);
+        primarray.set_attributes(0, batchPositions_);
+        primarray.set_attributes(1, batchTexCoords_);
+        primarray.set_attributes(2, batchNormals_);
+        primarray.set_attributes(3, batchHueInfos_);
+
+        gc.set_texture(1, *lastTexture_);
+
+        gc.draw_primitives(cl_triangles, batchFill_, primarray);
+
+        batchFill_ = 0;
+    }
 }
 
 }

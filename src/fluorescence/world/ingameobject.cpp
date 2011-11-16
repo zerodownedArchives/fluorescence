@@ -94,7 +94,7 @@ void IngameObject::invalidateRenderPriority() {
     }
 }
 
-const CL_Vec2f* IngameObject::getVertexCoordinates() const {
+const CL_Vec3f* IngameObject::getVertexCoordinates() const {
     return worldRenderData_.vertexCoordinates_;
 }
 
