@@ -51,9 +51,9 @@ private:
     CL_Vec3f batchHueInfos_[BATCH_NUM_VERTICES];
 
     unsigned int batchFill_;
-    CL_Texture* lastTexture_;
+    ui::Texture* lastTexture_;
 
-    void batchAdd(CL_GraphicContext& gc, boost::shared_ptr<world::IngameObject>& curObj);
+    void batchAdd(CL_GraphicContext& gc, world::IngameObject* curObj, ui::Texture* tex);
     void batchFlush(CL_GraphicContext& gc);
 };
 

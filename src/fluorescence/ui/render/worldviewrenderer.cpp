@@ -102,15 +102,15 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     lastTexture_ = NULL;
 
     for (; igIter != igEnd; ++igIter) {
-        boost::shared_ptr<world::IngameObject> curObj = *igIter;
+        world::IngameObject* curObj = igIter->get();
 
-        // object is invisible
-        if (!curObj->isVisible()) {
+        // check if current object is in the area visible to the player
+        if (!curObj->isInDrawArea(clippingLeftPixelCoord, clippingRightPixelCoord, clippingTopPixelCoord, clippingBottomPixelCoord)) {
             continue;
         }
 
         // check if texture is ready to be drawn
-        boost::shared_ptr<ui::Texture> tex = curObj->getIngameTexture();
+        ui::Texture* tex = curObj->getIngameTexture().get();
 
         // happens e.g. for the equipped backpack
         if (!tex) {
@@ -122,12 +122,12 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
             continue;
         }
 
-        // check if current object is in the area visible to the player
-        if (!curObj->isInDrawArea(clippingLeftPixelCoord, clippingRightPixelCoord, clippingTopPixelCoord, clippingBottomPixelCoord)) {
+        // object is invisible
+        if (!curObj->isVisible()) {
             continue;
         }
 
-        batchAdd(gc, curObj);
+        batchAdd(gc, curObj, tex);
     }
 
     batchFlush(gc);
@@ -144,7 +144,7 @@ boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {
     return renderQueue_;
 }
 
-void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, boost::shared_ptr<world::IngameObject>& curObj) {
+void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* curObj, ui::Texture* tex) {
     static CL_Rectf texCoordHelper(0.0f, 0.0f, 1.0f, 1.0f);
 
     static CL_Vec2f texCoords[6] = {
@@ -166,9 +166,9 @@ void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, boost::shared_ptr<world:
     };
 
 
-    if (lastTexture_ != curObj->getIngameTexture()->getTexture().get()) {
+    if (lastTexture_ != tex) {
         batchFlush(gc);
-        lastTexture_ = curObj->getIngameTexture()->getTexture().get();
+        lastTexture_ = tex;
     }
 
     for (unsigned int i = 0; i < 6; ++i) {
@@ -198,7 +198,7 @@ void WorldViewRenderer::batchFlush(CL_GraphicContext& gc) {
         primarray.set_attributes(2, batchNormals_);
         primarray.set_attributes(3, batchHueInfos_);
 
-        gc.set_texture(1, *lastTexture_);
+        gc.set_texture(1, *lastTexture_->getTexture());
 
         gc.draw_primitives(cl_triangles, batchFill_, primarray);
 
