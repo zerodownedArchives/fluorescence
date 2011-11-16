@@ -171,14 +171,15 @@ void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* cur
         lastTexture_ = tex;
     }
 
+    memcpy(&batchPositions_[batchFill_], curObj->getVertexCoordinates(), sizeof(CL_Vec3f) * 6);
+    memcpy(&batchNormals_[batchFill_], curObj->getVertexNormals(), sizeof(CL_Vec3f) * 6);
+
     for (unsigned int i = 0; i < 6; ++i) {
-        batchPositions_[batchFill_ + i] = curObj->getVertexCoordinates()[i];
         if (curObj->isMirrored()) {
             batchTexCoords_[batchFill_ + i] = texCoords[i];
         } else {
             batchTexCoords_[batchFill_ + i] = texCoordsMirrored[i];
         }
-        batchNormals_[batchFill_ + i] = curObj->getVertexNormals()[i];
         batchHueInfos_[batchFill_ + i] = curObj->getHueInfo();
     }
 
