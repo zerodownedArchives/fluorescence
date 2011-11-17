@@ -45,6 +45,10 @@ void WorldViewRenderer::checkTextureSize() {
         texture_.reset(new ui::Texture(false));
         texture_->initPixelBuffer(worldView_->getWidth(), worldView_->getHeight());
         texture_->setReadComplete();
+
+        CL_GraphicContext gc = ui::Manager::getGraphicContext();
+
+        depthTexture_ = CL_Texture(gc, gc.get_size(), cl_depth_component);
     }
 }
 
@@ -55,6 +59,7 @@ boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) 
 
         CL_FrameBuffer fb(gc);
         fb.attach_color_buffer(0, *texture_->getTexture());
+        fb.attach_depth_buffer(depthTexture_);
 
         gc.set_frame_buffer(fb);
 
@@ -72,6 +77,16 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
 
 
     gc.clear(CL_Colorf(0.f, 0.f, 0.f, 1.f));
+    gc.clear_depth(1.0);
+
+    CL_BufferControl buffer_control;
+    buffer_control.set_depth_compare_function(cl_comparefunc_lequal);
+    buffer_control.enable_depth_write(true);
+    buffer_control.enable_depth_test(true);
+    buffer_control.enable_stencil_test(false);
+    buffer_control.enable_color_write(true);
+    gc.set_buffer_control(buffer_control);
+
 
     gc.set_program_object(*shaderProgram_, cl_program_matrix_modelview_projection);
 
@@ -135,6 +150,14 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     gc.reset_textures();
     gc.reset_program_object();
 
+    gc.clear_depth(1.0);
+
+    buffer_control.enable_depth_write(false);
+    buffer_control.enable_depth_test(false);
+    buffer_control.enable_stencil_test(false);
+    buffer_control.enable_color_write(true);
+    gc.set_buffer_control(buffer_control);
+
     //LOG_DEBUG << "batched: " << batchedCnt << "/" << allCount << std::endl;
 
     renderQueue_->postRender(renderingComplete);
@@ -147,7 +170,7 @@ boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {
 void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* curObj, ui::Texture* tex) {
     static CL_Rectf texCoordHelper(0.0f, 0.0f, 1.0f, 1.0f);
 
-    static CL_Vec2f texCoords[6] = {
+    static CL_Vec2f texCoordsMirrored[6] = {
         CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
         CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
         CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
@@ -156,7 +179,7 @@ void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* cur
         CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom)
     };
 
-    static CL_Vec2f texCoordsMirrored[6] = {
+    static CL_Vec2f texCoords[6] = {
         CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
         CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
         CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom),
@@ -174,14 +197,17 @@ void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* cur
     memcpy(&batchPositions_[batchFill_], curObj->getVertexCoordinates(), sizeof(CL_Vec3f) * 6);
     memcpy(&batchNormals_[batchFill_], curObj->getVertexNormals(), sizeof(CL_Vec3f) * 6);
 
+    if (curObj->isMirrored()) {
+        memcpy(&batchTexCoords_[batchFill_], texCoordsMirrored, sizeof(CL_Vec2f) * 6);
+    } else {
+        memcpy(&batchTexCoords_[batchFill_], texCoords, sizeof(CL_Vec2f) * 6);
+    }
+
     for (unsigned int i = 0; i < 6; ++i) {
-        if (curObj->isMirrored()) {
-            batchTexCoords_[batchFill_ + i] = texCoords[i];
-        } else {
-            batchTexCoords_[batchFill_ + i] = texCoordsMirrored[i];
-        }
         batchHueInfos_[batchFill_ + i] = curObj->getHueInfo();
     }
+
+    //LOG_DEBUG << "depth: " << batchPositions_[batchFill_].z << std::endl;
 
     batchFill_ += 6;
 

@@ -3,6 +3,7 @@
 
 #include <ClanLib/Display/Render/program_object.h>
 #include <ClanLib/Display/Render/graphic_context.h>
+#include <ClanLib/Display/Render/texture.h>
 
 #include <boost/shared_ptr.hpp>
 
@@ -40,6 +41,7 @@ private:
     boost::shared_ptr<RenderQueue> renderQueue_;
 
     boost::shared_ptr<Texture> texture_;
+    CL_Texture depthTexture_;
     void checkTextureSize();
 
 
@@ -47,7 +49,7 @@ private:
     static const unsigned int BATCH_NUM_VERTICES = 600; // render up to 100 objects at the same time
     CL_Vec3f batchPositions_[BATCH_NUM_VERTICES];
     CL_Vec3f batchNormals_[BATCH_NUM_VERTICES];
-    CL_Vec3f batchTexCoords_[BATCH_NUM_VERTICES];
+    CL_Vec2f batchTexCoords_[BATCH_NUM_VERTICES];
     CL_Vec3f batchHueInfos_[BATCH_NUM_VERTICES];
 
     unsigned int batchFill_;

@@ -153,6 +153,14 @@ unsigned int RenderQueue::size() const {
 
 void RenderQueue::sort() {
     objectList_.sort(sortFunction_);
+
+    std::list<boost::shared_ptr<world::IngameObject> >::iterator iter = objectList_.begin();
+    std::list<boost::shared_ptr<world::IngameObject> >::iterator end = objectList_.end();
+
+    unsigned int curDepth = 0;
+    for (; iter != end; ++iter, ++curDepth) {
+        (*iter)->setRenderDepth(curDepth);
+    }
 }
 
 

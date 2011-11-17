@@ -522,5 +522,22 @@ const ui::WorldRenderData& IngameObject::getWorldRenderData() const {
 void IngameObject::updateGumpTextureProvider() {
 }
 
+void IngameObject::setRenderDepth(unsigned int depth) {
+    renderDepth_ = depth;
+
+    float dept = ((float)depth) / 20000.f;
+
+    worldRenderData_.vertexCoordinates_[0].z = dept;
+    worldRenderData_.vertexCoordinates_[1].z = dept;
+    worldRenderData_.vertexCoordinates_[2].z = dept;
+    worldRenderData_.vertexCoordinates_[3].z = dept;
+    worldRenderData_.vertexCoordinates_[4].z = dept;
+    worldRenderData_.vertexCoordinates_[5].z = dept;
+}
+
+unsigned int IngameObject::getRenderDepth() const {
+    return renderDepth_;
+}
+
 }
 }
