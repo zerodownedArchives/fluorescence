@@ -43,7 +43,12 @@ void IngameObject::setLocation(CL_Vec3f loc) {
 
     //LOGARG_DEBUG(LOGTYPE_WORLD, "Object location: %f %f %f", locX, locY, locZ);
 
-    invalidateRenderPriority();
+    if (ceilf(oldLocation[0u]) != ceilf(location_[0u]) ||
+            ceilf(oldLocation[1u]) != ceilf(location_[1u]) ||
+            ceilf(oldLocation[2u]) != ceilf(location_[2u])) {
+        invalidateRenderPriority();
+    }
+
     invalidateVertexCoordinates();
 }
 
