@@ -303,7 +303,7 @@ unsigned int DynamicItem::getLayer() const {
 }
 
 bool DynamicItem::isMirrored() const {
-    return direction_ < 3;
+    return equipped_ && direction_ < 3;
 }
 
 void DynamicItem::playAnim(unsigned int animId) {

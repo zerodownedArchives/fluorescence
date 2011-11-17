@@ -170,7 +170,7 @@ boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {
 void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* curObj, ui::Texture* tex) {
     static CL_Rectf texCoordHelper(0.0f, 0.0f, 1.0f, 1.0f);
 
-    static CL_Vec2f texCoordsMirrored[6] = {
+    static CL_Vec2f texCoords[6] = {
         CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
         CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
         CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
@@ -179,7 +179,7 @@ void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* cur
         CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom)
     };
 
-    static CL_Vec2f texCoords[6] = {
+    static CL_Vec2f texCoordsMirrored[6] = {
         CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
         CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
         CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom),
