@@ -165,9 +165,9 @@ bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int top
 
     // almost every texture is a rectangle, with vertexCoordinates_[0] being top left and vertexCoordinates_[5] bottom right
     // all non-rectangular cases are maptiles
-    return (worldRenderData_.vertexCoordinates_[0].x <= rightPixelCoord) &
-            (worldRenderData_.vertexCoordinates_[0].y <= bottomPixelCoord) &
-            (worldRenderData_.vertexCoordinates_[5].x >= leftPixelCoord) &
+    return (worldRenderData_.vertexCoordinates_[0].x <= rightPixelCoord) &&
+            (worldRenderData_.vertexCoordinates_[0].y <= bottomPixelCoord) &&
+            (worldRenderData_.vertexCoordinates_[5].x >= leftPixelCoord) &&
             (worldRenderData_.vertexCoordinates_[5].y >= topPixelCoord);
 }
 

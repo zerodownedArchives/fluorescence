@@ -152,7 +152,7 @@ private:
     void setParentObject();
     void setParentObject(boost::shared_ptr<IngameObject> parent);
 
-    unsigned int renderDepth_;
+    float renderDepth_;
 };
 
 }

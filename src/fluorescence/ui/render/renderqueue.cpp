@@ -157,8 +157,9 @@ void RenderQueue::sort() {
     std::list<boost::shared_ptr<world::IngameObject> >::iterator iter = objectList_.begin();
     std::list<boost::shared_ptr<world::IngameObject> >::iterator end = objectList_.end();
 
-    unsigned int curDepth = 0;
-    for (; iter != end; ++iter, ++curDepth) {
+    float increase = 0.9f / (float)objectList_.size();
+    float curDepth = increase;
+    for (; iter != end; ++iter, curDepth += increase) {
         (*iter)->setRenderDepth(curDepth);
     }
 }

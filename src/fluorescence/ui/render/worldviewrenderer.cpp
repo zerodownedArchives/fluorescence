@@ -203,9 +203,11 @@ void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* cur
         memcpy(&batchTexCoords_[batchFill_], texCoords, sizeof(CL_Vec2f) * 6);
     }
 
+    float depth = curObj->getRenderDepth();
+    CL_Vec3f hueInfo = curObj->getHueInfo();
     for (unsigned int i = 0; i < 6; ++i) {
-        batchHueInfos_[batchFill_ + i] = curObj->getHueInfo();
-        batchPositions_[batchFill_ + i].z = ((float)curObj->getRenderDepth()) / 20000.f;
+        batchHueInfos_[batchFill_ + i] = hueInfo;
+        batchPositions_[batchFill_ + i].z = depth;
     }
 
     //LOG_DEBUG << "depth: " << batchPositions_[batchFill_].z << std::endl;
