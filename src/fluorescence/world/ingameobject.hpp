@@ -114,8 +114,8 @@ public:
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqBegin();
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd();
 
-    void setRenderDepth(unsigned int depth);
-    unsigned int getRenderDepth() const;
+    void setRenderDepth(float depth);
+    float getRenderDepth() const;
 
     void printRenderPriority() const;
 
