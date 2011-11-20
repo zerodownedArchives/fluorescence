@@ -54,33 +54,19 @@ void StaticItem::updateVertexCoordinates() {
 }
 
 void StaticItem::updateRenderPriority() {
-    // render prio
-    // level 0 x+y
-    worldRenderData_.renderPriority_[0] = getLocX() + getLocY();
+    int8_t z = getLocZ();
 
-    // level 1 z and tiledata flags
-    worldRenderData_.renderPriority_[1] = getLocZ();
     if (tileDataInfo_->background() && tileDataInfo_->surface()) {
-        worldRenderData_.renderPriority_[1] += 4;
+        z += 4;
     } else if (tileDataInfo_->background()) {
-        worldRenderData_.renderPriority_[1] += 2;
+        z += 2;
     } else if (tileDataInfo_->surface()) {
-        worldRenderData_.renderPriority_[1] += 5;
+        z += 5;
     } else {
-        worldRenderData_.renderPriority_[1] += 6;
+        z += 6;
     }
 
-    // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
-    worldRenderData_.renderPriority_[2] = 10;
-
-    // level 3 tiledata value height
-    worldRenderData_.renderPriority_[3] = tileDataInfo_->height_;
-
-    // level 4 if hue is set => higher value
-    worldRenderData_.renderPriority_[4] = (hue_ != 0) ? 1 : 0;
-
-    // level 5 index in statics file
-    worldRenderData_.renderPriority_[5] = indexInBlock_;
+    worldRenderData_.setRenderPriority(getLocX() + getLocY(), z, 10, tileDataInfo_->height_, indexInBlock_);
 }
 
 void StaticItem::updateTextureProvider() {

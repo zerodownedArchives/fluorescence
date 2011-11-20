@@ -15,31 +15,14 @@ namespace fluo {
 namespace ui {
 
 bool WorldRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
-    const int* aPrio = a->getRenderPriorities();
-    const int* bPrio = b->getRenderPriorities();
+    unsigned long long aPrio = a->getRenderPriority();
+    unsigned long long bPrio = b->getRenderPriority();
 
-    if (aPrio[0] > bPrio[0]) {
-        return false;
+    if (aPrio == bPrio) {
+        return (unsigned long)a.get() <= (unsigned long)b.get();
+    } else {
+        return aPrio <= bPrio;
     }
-
-    for (int i=1; i < 6; ++i) {
-        if (aPrio[i-1] == bPrio[i-1]) {
-            if (aPrio[i] > bPrio[i]) {
-                return false;
-            }
-        } else {
-            return true;
-        }
-    }
-
-    if (aPrio[5] < bPrio[5]) {
-        return true;
-    }
-
-    /* None of the priorities differs. To make sure this function sorts the list exactly the same, no matter how the
-     * list elements were in the list before, we use the memory address of the objects as a last resort
-     */
-    return (unsigned long)a.get() <= (unsigned long)b.get();
 }
 
 WorldRenderQueue::WorldRenderQueue() : RenderQueue(boost::bind(&WorldRenderQueue::renderPriorityComparator, this, _1, _2)) {

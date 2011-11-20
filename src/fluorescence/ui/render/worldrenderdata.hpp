@@ -35,7 +35,9 @@ public:
 
     void reset();
 
-    int renderPriority_[6];
+    void setRenderPriority(uint16_t xPlusY, int8_t z, uint8_t priority, uint8_t byte5, uint8_t byte6);
+
+    unsigned long long renderPriority_;
     CL_Vec2f vertexCoordinates_[6];
     CL_Vec3f vertexNormals_[6];
     CL_Vec3f hueInfo_;

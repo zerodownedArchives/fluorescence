@@ -102,15 +102,7 @@ const CL_Vec3f& IngameObject::getHueInfo() const {
     return worldRenderData_.hueInfo_;
 }
 
-int IngameObject::getRenderPriority(unsigned int lvl) const {
-    if (lvl > 5) {
-        lvl = 0;
-    }
-
-    return worldRenderData_.renderPriority_[lvl];
-}
-
-const int* IngameObject::getRenderPriorities() const {
+unsigned long long IngameObject::getRenderPriority() const {
     return worldRenderData_.renderPriority_;
 }
 
@@ -235,12 +227,7 @@ boost::shared_ptr<IngameObject> IngameObject::getTopParent() {
 }
 
 void IngameObject::printRenderPriority() const {
-    LOG_DEBUG << "Render priority: " << worldRenderData_.renderPriority_[0] << " : "
-            << worldRenderData_.renderPriority_[1] << " : "
-            << worldRenderData_.renderPriority_[2] << " : "
-            << worldRenderData_.renderPriority_[3] << " : "
-            << worldRenderData_.renderPriority_[4] << " : "
-            << worldRenderData_.renderPriority_[5] << std::endl;
+    LOG_DEBUG << "Render priority: " << std::hex << worldRenderData_.renderPriority_ << std::dec << std::endl;
 }
 
 void IngameObject::setOverheadMessageOffsets() {

@@ -40,7 +40,7 @@ void OverheadMessage::updateVertexCoordinates() {
 void OverheadMessage::updateRenderPriority() {
     // Move to front
     // TODO: Handle mouse over
-    worldRenderData_.renderPriority_[0] = 0xFFFFFFF;
+    worldRenderData_.renderPriority_ = 0xFFFFFFFFFFFFu;
 }
 
 void OverheadMessage::updateTextureProvider() {

@@ -168,49 +168,28 @@ void DynamicItem::updateRenderPriority() {
     if (equipped_) {
         boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
 
-        // level 0 x+y
-        worldRenderData_.renderPriority_[0] = ceilf(parent->getLocX()) + ceilf(parent->getLocY());
-
-        // level 1 z
-        worldRenderData_.renderPriority_[1] = ceilf(parent->getLocZ()) + 7;
-
-        // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
-        worldRenderData_.renderPriority_[2] = 40;
-
         // level 2 layer priority
         unsigned int layerTmp = layer_ - 1;
         if (layerTmp >= layerPriorities[parent->getDirection()].size()) {
             LOG_WARN << "Rendering item with invalid layer " << layer_ << ". Unable to assign render priority" << std::endl;
             layerTmp = 0;
         }
-        worldRenderData_.renderPriority_[3] = layerPriorities[parent->getDirection()][layerTmp];
 
-        // level 5 serial
-        worldRenderData_.renderPriority_[5] = getSerial();
+        worldRenderData_.setRenderPriority(ceilf(parent->getLocX()) + ceilf(parent->getLocY()), ceilf(parent->getLocZ()) + 7, 30, layerPriorities[parent->getDirection()][layerTmp], getSerial() & 0xFF);
     } else {
-        // level 0 x+y
-        worldRenderData_.renderPriority_[0] = ceilf(getLocX()) + ceilf(getLocY());
+        int8_t z = ceilf(getLocZ());
 
-        // level 1 z and tiledata flags
-        worldRenderData_.renderPriority_[1] = ceilf(getLocZ());
         if (tileDataInfo_->background() && tileDataInfo_->surface()) {
-            worldRenderData_.renderPriority_[1] += 4;
+            z += 4;
         } else if (tileDataInfo_->background()) {
-            worldRenderData_.renderPriority_[1] += 2;
+            z += 2;
         } else if (tileDataInfo_->surface()) {
-            worldRenderData_.renderPriority_[1] += 5;
+            z += 5;
         } else {
-            worldRenderData_.renderPriority_[1] += 6;
+            z += 6;
         }
 
-        // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
-        worldRenderData_.renderPriority_[2] = 20;
-
-        // level 3 tiledata value height
-        worldRenderData_.renderPriority_[3] = tileDataInfo_->height_;
-
-        // level 4 serial
-        worldRenderData_.renderPriority_[5] = getSerial();
+        worldRenderData_.setRenderPriority(ceilf(getLocX()) + ceilf(getLocY()), z, 20, tileDataInfo_->height_, getSerial() & 0xFF);
     }
 }
 

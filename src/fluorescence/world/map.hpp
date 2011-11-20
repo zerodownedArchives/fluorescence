@@ -26,8 +26,6 @@ public:
     unsigned int getArtId();
     const data::LandTileInfo* getTileDataInfo();
 
-    bool isFlat() const;
-
     virtual bool hasPixel(int pixelX, int pixelY) const;
     virtual bool isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const;
 
@@ -57,6 +55,9 @@ private:
     void setTexture();
 
     bool isPixelInside(int pixelX, int pixelY, const CL_Vec2f& b, const CL_Vec2f& c) const;
+
+    void calculateIsFlat();
+    bool isFlat_;
 };
 
 class MapBlock : public data::OnDemandReadable {

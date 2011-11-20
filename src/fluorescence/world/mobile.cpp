@@ -117,21 +117,7 @@ void Mobile::updateVertexCoordinates() {
 }
 
 void Mobile::updateRenderPriority() {
-    // render prio
-    // level 0 x+y
-    worldRenderData_.renderPriority_[0] = ceilf(getLocX()) + ceilf(getLocY());
-
-    // level 1 z
-    worldRenderData_.renderPriority_[1] = ceilf(getLocZ()) + 7;
-
-    // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
-    worldRenderData_.renderPriority_[2] = 30;
-
-    // level 2 layer
-    worldRenderData_.renderPriority_[3] = 0;
-
-    // level 5 serial
-    worldRenderData_.renderPriority_[5] = getSerial();
+    worldRenderData_.setRenderPriority(ceilf(getLocX()) + ceilf(getLocY()), ceilf(getLocZ()) + 7, 30, 0, getSerial() & 0xFF);
 }
 
 void Mobile::updateTextureProvider() {

@@ -59,8 +59,7 @@ public:
 
     const CL_Vec3f& getHueInfo() const;
 
-    int getRenderPriority(unsigned int lvl) const;
-    const int* getRenderPriorities() const;
+    unsigned long long getRenderPriority() const;
 
     /// returns whether or not this item is currently in the drawing area of the game window
     virtual bool isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const;
