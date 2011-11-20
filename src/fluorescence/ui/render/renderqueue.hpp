@@ -39,12 +39,6 @@ public:
 
     unsigned int size() const;
 
-    RenderQueue::iterator batchedBegin();
-    RenderQueue::const_iterator batchedBegin() const;
-
-    RenderQueue::iterator batchedEnd();
-    RenderQueue::const_iterator batchedEnd() const;
-
     RenderQueue::iterator begin();
     RenderQueue::const_iterator begin() const;
 
@@ -104,9 +98,6 @@ private:
 
     friend void world::IngameObject::addToRenderQueue(boost::shared_ptr<RenderQueue> rq);
     friend void world::IngameObject ::removeFromRenderQueue(boost::shared_ptr<RenderQueue> rq);
-
-    SortFunction batchedSortFunction_;
-    std::list<boost::shared_ptr<world::IngameObject> > batchedObjectList_;
 };
 
 }

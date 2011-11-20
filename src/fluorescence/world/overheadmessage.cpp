@@ -29,18 +29,13 @@ void OverheadMessage::updateVertexCoordinates() {
 
     CL_Rectf rect(x, y, CL_Sizef(texture_->getWidth(), texture_->getHeight()));
 
-    worldRenderData_.vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
-    worldRenderData_.vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
-    worldRenderData_.vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
-    worldRenderData_.vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
-    worldRenderData_.vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
-    worldRenderData_.vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+    worldRenderData_.setVertexCoordinates(rect);
 }
 
 void OverheadMessage::updateRenderPriority() {
     // Move to front
     // TODO: Handle mouse over
-    worldRenderData_.renderPriority_[0] = 0xFFFFFFF;
+    worldRenderData_.setDepth(0.0);
 }
 
 void OverheadMessage::updateTextureProvider() {

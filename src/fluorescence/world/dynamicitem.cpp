@@ -99,6 +99,8 @@ void DynamicItem::setStackIdOffset(unsigned int offset) {
 }
 
 void DynamicItem::updateVertexCoordinates() {
+    CL_Rectf rect;
+
     if (equipped_) {
         ui::AnimationFrame frame = animTextureProvider_->getCurrentFrame();
         int texWidth = frame.texture_->getWidth();
@@ -121,14 +123,7 @@ void DynamicItem::updateVertexCoordinates() {
             px -= frame.centerX_;
         }
 
-        CL_Rectf rect(px, py, px + texWidth, py + texHeight);
-
-        worldRenderData_.vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
-        worldRenderData_.vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
-        worldRenderData_.vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
-        worldRenderData_.vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
-        worldRenderData_.vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
-        worldRenderData_.vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+        rect = CL_Rectf(px, py, px + texWidth, py + texHeight);
     } else {
         int texWidth = getIngameTexture()->getWidth();
         int texHeight = getIngameTexture()->getHeight();
@@ -137,15 +132,10 @@ void DynamicItem::updateVertexCoordinates() {
         int py = (getLocX() + getLocY()) * 22 - texHeight + 44;
         py -= getLocZ() * 4;
 
-        CL_Rectf rect(px, py, px + texWidth, py + texHeight);
-
-        worldRenderData_.vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
-        worldRenderData_.vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
-        worldRenderData_.vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
-        worldRenderData_.vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
-        worldRenderData_.vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
-        worldRenderData_.vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+        rect = CL_Rectf(px, py, px + texWidth, py + texHeight);
     }
+
+    worldRenderData_.setVertexCoordinates(rect);
 }
 
 void DynamicItem::updateRenderPriority() {
@@ -168,49 +158,34 @@ void DynamicItem::updateRenderPriority() {
     if (equipped_) {
         boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
 
-        // level 0 x+y
-        worldRenderData_.renderPriority_[0] = ceilf(parent->getLocX()) + ceilf(parent->getLocY());
-
-        // level 1 z
-        worldRenderData_.renderPriority_[1] = ceilf(parent->getLocZ()) + 7;
-
-        // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
-        worldRenderData_.renderPriority_[2] = 40;
-
         // level 2 layer priority
         unsigned int layerTmp = layer_ - 1;
         if (layerTmp >= layerPriorities[parent->getDirection()].size()) {
             LOG_WARN << "Rendering item with invalid layer " << layer_ << ". Unable to assign render priority" << std::endl;
             layerTmp = 0;
         }
-        worldRenderData_.renderPriority_[3] = layerPriorities[parent->getDirection()][layerTmp];
 
-        // level 5 serial
-        worldRenderData_.renderPriority_[5] = getSerial();
+        uint16_t xy = ceilf(parent->getLocX()) + ceilf(parent->getLocY());
+        int8_t z = ceilf(parent->getLocZ()) + 7;
+
+        worldRenderData_.setDepth(xy, z, 30, layerPriorities[parent->getDirection()][layerTmp], getSerial() & 0xFF);
     } else {
         // level 0 x+y
-        worldRenderData_.renderPriority_[0] = ceilf(getLocX()) + ceilf(getLocY());
+        uint16_t xy = ceilf(getLocX()) + ceilf(getLocY());
 
         // level 1 z and tiledata flags
-        worldRenderData_.renderPriority_[1] = ceilf(getLocZ());
+        int8_t z = ceilf(getLocZ());
         if (tileDataInfo_->background() && tileDataInfo_->surface()) {
-            worldRenderData_.renderPriority_[1] += 4;
+            z += 4;
         } else if (tileDataInfo_->background()) {
-            worldRenderData_.renderPriority_[1] += 2;
+            z += 2;
         } else if (tileDataInfo_->surface()) {
-            worldRenderData_.renderPriority_[1] += 5;
+            z += 5;
         } else {
-            worldRenderData_.renderPriority_[1] += 6;
+            z += 6;
         }
 
-        // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
-        worldRenderData_.renderPriority_[2] = 20;
-
-        // level 3 tiledata value height
-        worldRenderData_.renderPriority_[3] = tileDataInfo_->height_;
-
-        // level 4 serial
-        worldRenderData_.renderPriority_[5] = getSerial();
+        worldRenderData_.setDepth(xy, z, 20, tileDataInfo_->height_, getSerial() & 0xFF);
     }
 }
 

@@ -11,26 +11,6 @@ namespace ui {
 RenderQueue::RenderQueue(SortFunction sortFunction) : sortFunction_(sortFunction) {
 }
 
-RenderQueue::RenderQueue(SortFunction sortFunction, SortFunction batchedSortFunction) : sortFunction_(sortFunction), batchedSortFunction_(batchedSortFunction) {
-}
-
-RenderQueue::iterator RenderQueue::batchedBegin() {
-    return batchedObjectList_.begin();
-}
-
-RenderQueue::const_iterator RenderQueue::batchedBegin() const {
-    return batchedObjectList_.begin();
-}
-
-RenderQueue::iterator RenderQueue::batchedEnd() {
-    return batchedObjectList_.end();
-}
-
-RenderQueue::const_iterator RenderQueue::batchedEnd() const {
-    return batchedObjectList_.end();
-}
-
-
 RenderQueue::iterator RenderQueue::begin() {
     return objectList_.begin();
 }
@@ -154,14 +134,14 @@ unsigned int RenderQueue::size() const {
 void RenderQueue::sort() {
     objectList_.sort(sortFunction_);
 
-    std::list<boost::shared_ptr<world::IngameObject> >::iterator iter = objectList_.begin();
-    std::list<boost::shared_ptr<world::IngameObject> >::iterator end = objectList_.end();
+    //std::list<boost::shared_ptr<world::IngameObject> >::iterator iter = objectList_.begin();
+    //std::list<boost::shared_ptr<world::IngameObject> >::iterator end = objectList_.end();
 
-    float increase = 0.9f / (float)objectList_.size();
-    float curDepth = increase;
-    for (; iter != end; ++iter, curDepth += increase) {
-        (*iter)->setRenderDepth(curDepth);
-    }
+    //float increase = 0.9f / (float)objectList_.size();
+    //float curDepth = increase;
+    //for (; iter != end; ++iter, curDepth += increase) {
+        //(*iter)->setRenderDepth(curDepth);
+    //}
 }
 
 
@@ -249,11 +229,6 @@ bool RenderQueue::requireGumpRepaint() const {
 void RenderQueue::resetGumpRepaintIndicators() {
     gumpChanged_ = false;
     forceRepaint_ = false;
-}
-
-void RenderQueue::updateBatchedList() {
-    batchedObjectList_.assign(objectList_.begin(), objectList_.end());
-    batchedObjectList_.sort(batchedSortFunction_);
 }
 
 }

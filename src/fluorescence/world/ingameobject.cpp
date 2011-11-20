@@ -2,6 +2,7 @@
 #include "ingameobject.hpp"
 
 #include <stdio.h>
+#include <iomanip>
 
 #include <misc/log.hpp>
 
@@ -100,23 +101,11 @@ void IngameObject::invalidateRenderPriority() {
 }
 
 const CL_Vec3f* IngameObject::getVertexCoordinates() const {
-    return worldRenderData_.vertexCoordinates_;
+    return worldRenderData_.getVertexCoordinates();
 }
 
 const CL_Vec3f& IngameObject::getHueInfo() const {
     return worldRenderData_.hueInfo_;
-}
-
-int IngameObject::getRenderPriority(unsigned int lvl) const {
-    if (lvl > 5) {
-        lvl = 0;
-    }
-
-    return worldRenderData_.renderPriority_[lvl];
-}
-
-const int* IngameObject::getRenderPriorities() const {
-    return worldRenderData_.renderPriority_;
 }
 
 void IngameObject::updateRenderData(unsigned int elapsedMillis) {
@@ -240,12 +229,7 @@ boost::shared_ptr<IngameObject> IngameObject::getTopParent() {
 }
 
 void IngameObject::printRenderPriority() const {
-    LOG_DEBUG << "Render priority: " << worldRenderData_.renderPriority_[0] << " : "
-            << worldRenderData_.renderPriority_[1] << " : "
-            << worldRenderData_.renderPriority_[2] << " : "
-            << worldRenderData_.renderPriority_[3] << " : "
-            << worldRenderData_.renderPriority_[4] << " : "
-            << worldRenderData_.renderPriority_[5] << std::endl;
+    LOG_DEBUG << "Render priority: " << std::setprecision(15) << worldRenderData_.getDepth() << std::endl;
 }
 
 void IngameObject::setOverheadMessageOffsets() {
@@ -528,11 +512,11 @@ void IngameObject::updateGumpTextureProvider() {
 }
 
 void IngameObject::setRenderDepth(float depth) {
-    renderDepth_ = depth;
+    worldRenderData_.setDepth(depth);
 }
 
 float IngameObject::getRenderDepth() const {
-    return renderDepth_;
+    return worldRenderData_.getDepth();
 }
 
 }

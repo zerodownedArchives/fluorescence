@@ -77,10 +77,10 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
 
 
     gc.clear(CL_Colorf(0.f, 0.f, 0.f, 1.f));
-    gc.clear_depth(1.0);
+    gc.clear_depth(0.0);
 
     CL_BufferControl buffer_control;
-    buffer_control.set_depth_compare_function(cl_comparefunc_lequal);
+    buffer_control.set_depth_compare_function(cl_comparefunc_gequal);
     buffer_control.enable_depth_write(true);
     buffer_control.enable_depth_test(true);
     buffer_control.enable_stencil_test(false);
@@ -108,8 +108,8 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     shaderProgram_->set_uniform3f("GlobalLightIntensity", lightManager->getGlobalIntensity());
     shaderProgram_->set_uniform3f("GlobalLightDirection", lightManager->getGlobalDirection());
 
-    RenderQueue::const_iterator igIter = renderQueue_->batchedBegin();
-    RenderQueue::const_iterator igEnd = renderQueue_->batchedEnd();
+    RenderQueue::const_iterator igIter = renderQueue_->begin();
+    RenderQueue::const_iterator igEnd = renderQueue_->end();
 
     bool renderingComplete = true;
 
@@ -150,7 +150,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     gc.reset_textures();
     gc.reset_program_object();
 
-    gc.clear_depth(1.0);
+    gc.clear_depth(0.0);
 
     buffer_control.enable_depth_write(false);
     buffer_control.enable_depth_test(false);

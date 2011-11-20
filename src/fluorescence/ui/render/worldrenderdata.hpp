@@ -5,6 +5,7 @@
 
 #include <ClanLib/Core/Math/vec2.h>
 #include <ClanLib/Core/Math/vec3.h>
+#include <ClanLib/Core/Math/rect.h>
 
 namespace fluo {
 
@@ -35,8 +36,13 @@ public:
 
     void reset();
 
-    int renderPriority_[6];
-    CL_Vec3f vertexCoordinates_[6];
+    const CL_Vec3f* getVertexCoordinates() const;
+    void setVertexCoordinates(unsigned int idx, float x, float y);
+    void setVertexCoordinates(const CL_Rectf& rect);
+    void setDepth(float d);
+    void setDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint8_t byte5, uint8_t byte6);
+    float getDepth() const;
+
     CL_Vec3f vertexNormals_[6];
     CL_Vec3f hueInfo_;
 
@@ -56,6 +62,8 @@ private:
     bool textureProviderUpdated_;
     bool vertexCoordinatesUpdated_;
     bool renderPriorityUpdated_;
+
+    CL_Vec3f vertexCoordinates_[6];
 };
 
 }

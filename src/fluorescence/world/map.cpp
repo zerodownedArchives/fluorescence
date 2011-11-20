@@ -43,12 +43,7 @@ void MapTile::updateVertexCoordinates() {
         py -= getLocZ() * 4;
         CL_Rectf rect(px, py, px + 44, py + 44);
 
-        worldRenderData_.vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
-        worldRenderData_.vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
-        worldRenderData_.vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
-        worldRenderData_.vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
-        worldRenderData_.vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
-        worldRenderData_.vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+        worldRenderData_.setVertexCoordinates(rect);
 
         //LOG_DEBUG(LOGTYPE_UI, "Pixel coords:");
         //for (unsigned int i = 0; i < 6; ++i) {
@@ -56,12 +51,12 @@ void MapTile::updateVertexCoordinates() {
         //}
     } else {
         // stretched texture
-        worldRenderData_.vertexCoordinates_[0] = CL_Vec2f(px + 22,   py - getLocZ() * 4);
-        worldRenderData_.vertexCoordinates_[1] = CL_Vec2f(px,        py + 22 - zLeft_ * 4);
-        worldRenderData_.vertexCoordinates_[2] = CL_Vec2f(px + 44,   py + 22 - zRight_ * 4);
-        worldRenderData_.vertexCoordinates_[3] = CL_Vec2f(px,        py + 22 - zLeft_ * 4);
-        worldRenderData_.vertexCoordinates_[4] = CL_Vec2f(px + 44,   py + 22 - zRight_ * 4);
-        worldRenderData_.vertexCoordinates_[5] = CL_Vec2f(px + 22,   py + 44 - zBottom_ * 4);
+        worldRenderData_.setVertexCoordinates(0, px + 22,   py - getLocZ() * 4);
+        worldRenderData_.setVertexCoordinates(1, px,        py + 22 - zLeft_ * 4);
+        worldRenderData_.setVertexCoordinates(2, px + 44,   py + 22 - zRight_ * 4);
+        worldRenderData_.setVertexCoordinates(3, px,        py + 22 - zLeft_ * 4);
+        worldRenderData_.setVertexCoordinates(4, px + 44,   py + 22 - zRight_ * 4);
+        worldRenderData_.setVertexCoordinates(5, px + 22,   py + 44 - zBottom_ * 4);
     }
 }
 
@@ -70,12 +65,7 @@ bool MapTile::isFlat() const {
 }
 
 void MapTile::updateRenderPriority() {
-    worldRenderData_.renderPriority_[0] = getLocX() + getLocY();
-
-    worldRenderData_.renderPriority_[1] = getLocZ(); //(getLocZ() + zLeft_ + zRight_ + zBottom_)/4;
-
-    // level 2 type of object (map behind statics behind dynamics behind mobiles if on same coordinates)
-    worldRenderData_.renderPriority_[2] = 0;
+    worldRenderData_.setDepth(getLocX() + getLocY(), getLocZ(), 0, 0, 0);
 }
 
 void MapTile::updateTextureProvider() {
@@ -120,12 +110,11 @@ bool MapTile::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixel
     if (isFlat()) {
         return IngameObject::isInDrawArea(leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord);
     } else {
-        return worldRenderData_.vertexCoordinates_[1].x <= rightPixelCoord &&
-                (worldRenderData_.vertexCoordinates_[0].y <= bottomPixelCoord || worldRenderData_.vertexCoordinates_[1].y <= bottomPixelCoord ||
-                        worldRenderData_.vertexCoordinates_[2].y <= bottomPixelCoord || worldRenderData_.vertexCoordinates_[5].y <= bottomPixelCoord) &&
-                worldRenderData_.vertexCoordinates_[4].x >= leftPixelCoord &&
-                (worldRenderData_.vertexCoordinates_[0].y >= topPixelCoord || worldRenderData_.vertexCoordinates_[1].y >= topPixelCoord ||
-                        worldRenderData_.vertexCoordinates_[2].y >= topPixelCoord || worldRenderData_.vertexCoordinates_[5].y >= topPixelCoord);
+        const CL_Vec3f* vc = worldRenderData_.getVertexCoordinates();
+        return vc[1].x <= rightPixelCoord &&
+                (vc[0].y <= bottomPixelCoord || vc[1].y <= bottomPixelCoord || vc[2].y <= bottomPixelCoord || vc[5].y <= bottomPixelCoord) &&
+                vc[4].x >= leftPixelCoord &&
+                (vc[0].y >= topPixelCoord || vc[1].y >= topPixelCoord || vc[2].y >= topPixelCoord || vc[5].y >= topPixelCoord);
     }
 }
 
@@ -133,10 +122,11 @@ bool MapTile::hasPixel(int pixelX, int pixelY) const {
     if (isFlat()) {
         return IngameObject::hasPixel(pixelX, pixelY);
     } else {
-        return isPixelInside(pixelX, pixelY, worldRenderData_.vertexCoordinates_[0], worldRenderData_.vertexCoordinates_[2]) &&
-                isPixelInside(pixelX, pixelY, worldRenderData_.vertexCoordinates_[2], worldRenderData_.vertexCoordinates_[5]) &&
-                isPixelInside(pixelX, pixelY, worldRenderData_.vertexCoordinates_[5], worldRenderData_.vertexCoordinates_[3]) &&
-                isPixelInside(pixelX, pixelY, worldRenderData_.vertexCoordinates_[3], worldRenderData_.vertexCoordinates_[0]);
+        const CL_Vec3f* vc = worldRenderData_.getVertexCoordinates();
+        return isPixelInside(pixelX, pixelY, vc[0], vc[2]) &&
+                isPixelInside(pixelX, pixelY, vc[2], vc[5]) &&
+                isPixelInside(pixelX, pixelY, vc[5], vc[3]) &&
+                isPixelInside(pixelX, pixelY, vc[3], vc[0]);
     }
 
 }
@@ -168,7 +158,7 @@ void MapTile::onClick() {
             getLocZ() << ") name=" << tileDataInfo_->name_ << std::endl;
 
     //LOG_INFO << "z value: self=" << getLocZ() << " right=" << zRight_ << " bottom=" << zBottom_ << " left=" << zLeft_ << std::endl;
-    //printRenderPriority();
+    printRenderPriority();
 }
 
 

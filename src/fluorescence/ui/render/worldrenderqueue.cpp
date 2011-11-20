@@ -14,39 +14,18 @@
 namespace fluo {
 namespace ui {
 
-bool WorldRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
-    const int* aPrio = a->getRenderPriorities();
-    const int* bPrio = b->getRenderPriorities();
-
-    if (aPrio[0] > bPrio[0]) {
-        return false;
-    }
-
-    for (int i=1; i < 6; ++i) {
-        if (aPrio[i-1] == bPrio[i-1]) {
-            if (aPrio[i] > bPrio[i]) {
-                return false;
-            }
-        } else {
-            return true;
-        }
-    }
-
-    if (aPrio[5] < bPrio[5]) {
-        return true;
-    }
-
-    /* None of the priorities differs. To make sure this function sorts the list exactly the same, no matter how the
-     * list elements were in the list before, we use the memory address of the objects as a last resort
-     */
-    return (unsigned long)a.get() <= (unsigned long)b.get();
-}
-
 bool WorldRenderQueue::batchedComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
-    return a->getIngameTexture().get() <= b->getIngameTexture().get();
+    unsigned long texA = (unsigned long)a->getIngameTexture().get();
+    unsigned long texB = (unsigned long)b->getIngameTexture().get();
+
+    if (texA == texB) {
+        return (unsigned long)a.get() <= (unsigned long)b.get();
+    } else {
+        return texA <= texB;
+    }
 }
 
-WorldRenderQueue::WorldRenderQueue() : RenderQueue(boost::bind(&WorldRenderQueue::renderPriorityComparator, this, _1, _2), boost::bind(&WorldRenderQueue::batchedComparator, this, _1, _2)) {
+WorldRenderQueue::WorldRenderQueue() : RenderQueue(boost::bind(&WorldRenderQueue::batchedComparator, this, _1, _2)) {
 }
 
 WorldRenderQueue::~WorldRenderQueue() {
@@ -54,23 +33,15 @@ WorldRenderQueue::~WorldRenderQueue() {
 
 
 void WorldRenderQueue::preRender() {
-    bool requireBatchedListUpdate = false;
-
     if (!removeList_.empty()) {
         processRemoveList();
         forceRepaint_ = true;
-        requireBatchedListUpdate = true;
     }
 
     bool objectsAdded = processAddList();
-    requireBatchedListUpdate |= objectsAdded;
 
     if (objectsAdded || worldPriorityChanged_ ) {
         sort();
-    }
-
-    if (requireBatchedListUpdate) {
-        updateBatchedList();
     }
 }
 
