@@ -30,6 +30,11 @@ void MapTile::set(int locX, int locY, int locZ, unsigned int artId) {
 
     // texture is not set here, but in updateTexture
 
+    // do not print nodraw tiles
+    if (artId_ <= 2) {
+        setVisible(false);
+    }
+
     calculateIsFlat();
 
     setLocation(locX, locY, locZ);
@@ -164,7 +169,7 @@ void MapTile::setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const
 
 void MapTile::onClick() {
     LOG_INFO << "Clicked map, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
-            getLocZ() << ") name=" << tileDataInfo_->name_ << std::endl;
+            getLocZ() << ") name=" << tileDataInfo_->name_ << " flat=" << isFlat_ << std::endl;
 
     //LOG_INFO << "z value: self=" << getLocZ() << " right=" << zRight_ << " bottom=" << zBottom_ << " left=" << zLeft_ << std::endl;
     //printRenderPriority();
