@@ -34,13 +34,18 @@ WorldRenderQueue::~WorldRenderQueue() {
 
 void WorldRenderQueue::preRender() {
     if (!removeList_.empty()) {
+        sort();
         processRemoveList();
         forceRepaint_ = true;
     }
 
+    if (!addList_.empty()) {
+        updateMinMaxRenderPriority();
+    }
+
     bool objectsAdded = processAddList();
 
-    if (objectsAdded || worldPriorityChanged_ ) {
+    if (objectsAdded) {
         sort();
     }
 }

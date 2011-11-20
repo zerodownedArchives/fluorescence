@@ -1,12 +1,14 @@
 
 #include "worldrenderdata.hpp"
 
+#include <misc/log.hpp>
+
 namespace fluo {
 namespace ui {
 
 WorldRenderData::WorldRenderData() :
             textureProviderUpdateRequired_(true), vertexCoordinatesUpdateRequired_(true), renderPriorityUpdateRequired_(true),
-            textureProviderUpdated_(false), vertexCoordinatesUpdated_(false), renderPriorityUpdated_(false) {
+            textureProviderUpdated_(false), vertexCoordinatesUpdated_(false), renderPriorityUpdated_(false), depth_(0) {
     for (unsigned int i = 0; i < 6; ++i) {
         vertexNormals_[i] = CL_Vec3f(0, 0, 1);
     }
@@ -79,13 +81,8 @@ void WorldRenderData::setVertexCoordinates(unsigned int idx, float x, float y) {
     vertexCoordinates_[idx].y = y;
 }
 
-void WorldRenderData::setDepth(float d) {
-    vertexCoordinates_[0].z = d;
-    vertexCoordinates_[1].z = d;
-    vertexCoordinates_[2].z = d;
-    vertexCoordinates_[3].z = d;
-    vertexCoordinates_[4].z = d;
-    vertexCoordinates_[5].z = d;
+void WorldRenderData::setDepth(unsigned long long value) {
+    depth_ = value;
 }
 
 void WorldRenderData::setDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint8_t byte5, uint8_t byte6) {
@@ -101,14 +98,15 @@ void WorldRenderData::setDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint
 
     tmp &= 0xFFFFFFFFFFFF;
 
-    float depth = 1.0f / tmp;
+    //float depth = 1.0f / tmp;
     //depth *= 10000000;
     //depth *= 10000000;
-    setDepth(depth);
+
+    depth_ = tmp;
 }
 
-float WorldRenderData::getDepth() const {
-    return vertexCoordinates_[0].z;
+unsigned long long WorldRenderData::getDepth() const {
+    return depth_;
 }
 
 const CL_Vec3f* WorldRenderData::getVertexCoordinates() const {

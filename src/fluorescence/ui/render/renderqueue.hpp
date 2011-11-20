@@ -66,6 +66,9 @@ public:
 
     void updateBatchedList();
 
+    unsigned long long getMinRenderPriority() const;
+    unsigned long long getMaxRenderPriority() const;
+
 protected:
     void processRemoveList();
     bool processAddList();
@@ -84,12 +87,14 @@ protected:
     bool debugIngameCheckInList(boost::shared_ptr<world::IngameObject> obj);
     boost::shared_ptr<world::IngameObject> debugIngameGetByIndex(unsigned int idx);
 
-private:
-    std::list<boost::shared_ptr<world::IngameObject> > objectList_;
+    void updateMinMaxRenderPriority();
 
     // ingameobjects might be added to or deleted from the render queue asynchronously. thus, we keep an extra list for added/deleted items
     std::list<boost::shared_ptr<world::IngameObject> > addList_;
     boost::mutex addListMutex_;
+
+private:
+    std::list<boost::shared_ptr<world::IngameObject> > objectList_;
 
     SortFunction sortFunction_;
 
@@ -98,6 +103,9 @@ private:
 
     friend void world::IngameObject::addToRenderQueue(boost::shared_ptr<RenderQueue> rq);
     friend void world::IngameObject ::removeFromRenderQueue(boost::shared_ptr<RenderQueue> rq);
+
+    unsigned long long minRenderPriority_;
+    unsigned long long maxRenderPriority_;
 };
 
 }

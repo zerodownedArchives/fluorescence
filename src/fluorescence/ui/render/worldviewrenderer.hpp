@@ -55,7 +55,7 @@ private:
     unsigned int batchFill_;
     ui::Texture* lastTexture_;
 
-    void batchAdd(CL_GraphicContext& gc, world::IngameObject* curObj, ui::Texture* tex);
+    void batchAdd(CL_GraphicContext& gc, world::IngameObject* curObj, ui::Texture* tex, unsigned long long& minRenderPrio, float renderDiff);
     void batchFlush(CL_GraphicContext& gc);
 };
 

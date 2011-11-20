@@ -39,9 +39,9 @@ public:
     const CL_Vec3f* getVertexCoordinates() const;
     void setVertexCoordinates(unsigned int idx, float x, float y);
     void setVertexCoordinates(const CL_Rectf& rect);
-    void setDepth(float d);
+    void setDepth(unsigned long long d);
     void setDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint8_t byte5, uint8_t byte6);
-    float getDepth() const;
+    unsigned long long getDepth() const;
 
     CL_Vec3f vertexNormals_[6];
     CL_Vec3f hueInfo_;
@@ -64,6 +64,8 @@ private:
     bool renderPriorityUpdated_;
 
     CL_Vec3f vertexCoordinates_[6];
+
+    unsigned long long depth_;
 };
 
 }

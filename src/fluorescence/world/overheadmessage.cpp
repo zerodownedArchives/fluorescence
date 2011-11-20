@@ -9,6 +9,8 @@
 
 #include <misc/log.hpp>
 
+#include <world/mobile.hpp>
+
 namespace fluo {
 namespace world {
 
@@ -35,7 +37,12 @@ void OverheadMessage::updateVertexCoordinates() {
 void OverheadMessage::updateRenderPriority() {
     // Move to front
     // TODO: Handle mouse over
-    worldRenderData_.setDepth(0.0);
+    boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
+
+    uint16_t xy = ceilf(parent->getLocX()) + ceilf(parent->getLocY());
+    int8_t z = ceilf(parent->getLocZ()) + 7;
+
+    worldRenderData_.setDepth(xy + 40, z, 50, 0, 0);
 }
 
 void OverheadMessage::updateTextureProvider() {

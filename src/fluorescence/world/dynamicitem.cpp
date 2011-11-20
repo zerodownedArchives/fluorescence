@@ -168,7 +168,7 @@ void DynamicItem::updateRenderPriority() {
         uint16_t xy = ceilf(parent->getLocX()) + ceilf(parent->getLocY());
         int8_t z = ceilf(parent->getLocZ()) + 7;
 
-        worldRenderData_.setDepth(xy, z, 30, layerPriorities[parent->getDirection()][layerTmp], getSerial() & 0xFF);
+        worldRenderData_.setDepth(xy, z, 40, layerPriorities[parent->getDirection()][layerTmp], getSerial() & 0xFF);
     } else {
         // level 0 x+y
         uint16_t xy = ceilf(getLocX()) + ceilf(getLocY());

@@ -8,7 +8,7 @@
 namespace fluo {
 namespace ui {
 
-RenderQueue::RenderQueue(SortFunction sortFunction) : sortFunction_(sortFunction) {
+RenderQueue::RenderQueue(SortFunction sortFunction) : sortFunction_(sortFunction), minRenderPriority_(0xFFFFFFFFFFFFFFFFu), maxRenderPriority_(0) {
 }
 
 RenderQueue::iterator RenderQueue::begin() {
@@ -112,6 +112,9 @@ void RenderQueue::processRemoveList() {
     if (deleteIter != deleteEnd) {
         LOG_WARN << "RenderQueue::processRemoveList - removeList_ end not reached" << std::endl;
 
+        LOG_WARN << "List size: " << objectList_.size() << std::endl;
+        debugIngameCheckSorted();
+
         for (; deleteIter != deleteEnd; ++deleteIter) {
             objectList_.remove(*deleteIter);
         }
@@ -133,15 +136,6 @@ unsigned int RenderQueue::size() const {
 
 void RenderQueue::sort() {
     objectList_.sort(sortFunction_);
-
-    //std::list<boost::shared_ptr<world::IngameObject> >::iterator iter = objectList_.begin();
-    //std::list<boost::shared_ptr<world::IngameObject> >::iterator end = objectList_.end();
-
-    //float increase = 0.9f / (float)objectList_.size();
-    //float curDepth = increase;
-    //for (; iter != end; ++iter, curDepth += increase) {
-        //(*iter)->setRenderDepth(curDepth);
-    //}
 }
 
 
@@ -156,6 +150,7 @@ bool RenderQueue::debugIngameCheckSorted() {
             LOG_ERROR << "RenderQueue: unsorted list elements at " << idx << std::endl;
             LOG_ERROR << "Prio last: " << std::endl;
             (*last)->printRenderPriority();
+            (*last)->onClick();
             LOG_ERROR << "Prio iter: " << std::endl;
             (*iter)->printRenderPriority();
             return false;
@@ -229,6 +224,50 @@ bool RenderQueue::requireGumpRepaint() const {
 void RenderQueue::resetGumpRepaintIndicators() {
     gumpChanged_ = false;
     forceRepaint_ = false;
+}
+
+void RenderQueue::updateMinMaxRenderPriority() {
+    unsigned long long cur;
+
+    minRenderPriority_ = 0xFFFFFFFFFFFFFFFFu;
+    maxRenderPriority_ = 0;
+    RenderQueue::iterator iter = objectList_.begin();
+    RenderQueue::iterator end = objectList_.end();
+
+    for (; iter != end; ++iter) {
+        cur = (*iter)->getRenderDepth();
+        if (cur == 0) {
+            continue;
+        } else if (cur < minRenderPriority_) {
+            minRenderPriority_ = cur;
+        } else if (cur > maxRenderPriority_) {
+            maxRenderPriority_ = cur;
+        }
+    }
+
+    boost::mutex::scoped_lock myLock(addListMutex_);
+
+    iter = addList_.begin();
+    end = addList_.end();
+
+    for (; iter != end; ++iter) {
+        cur = (*iter)->getRenderDepth();
+        if (cur == 0) {
+            continue;
+        } else if (cur < minRenderPriority_) {
+            minRenderPriority_ = cur;
+        } else if (cur > maxRenderPriority_) {
+            maxRenderPriority_ = cur;
+        }
+    }
+}
+
+unsigned long long RenderQueue::getMinRenderPriority() const {
+    return minRenderPriority_;
+}
+
+unsigned long long RenderQueue::getMaxRenderPriority() const {
+    return maxRenderPriority_;
 }
 
 }

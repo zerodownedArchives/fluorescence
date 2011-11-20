@@ -77,10 +77,10 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
 
 
     gc.clear(CL_Colorf(0.f, 0.f, 0.f, 1.f));
-    gc.clear_depth(0.0);
+    gc.clear_depth(1.0);
 
     CL_BufferControl buffer_control;
-    buffer_control.set_depth_compare_function(cl_comparefunc_gequal);
+    buffer_control.set_depth_compare_function(cl_comparefunc_lequal);
     buffer_control.enable_depth_write(true);
     buffer_control.enable_depth_test(true);
     buffer_control.enable_stencil_test(false);
@@ -116,6 +116,14 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     batchFill_ = 0;
     lastTexture_ = NULL;
 
+    unsigned long long minRenderPrio = renderQueue_->getMinRenderPriority();
+    unsigned long long maxRenderPrio = renderQueue_->getMaxRenderPriority();
+    float renderDiff = maxRenderPrio - minRenderPrio;
+
+    //LOG_DEBUG << std::hex << "min=" << minRenderPrio << " diff=" << renderDiff << std::endl;
+
+    igEnd = renderQueue_->end();
+
     for (; igIter != igEnd; ++igIter) {
         world::IngameObject* curObj = igIter->get();
 
@@ -142,7 +150,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
             continue;
         }
 
-        batchAdd(gc, curObj, tex);
+        batchAdd(gc, curObj, tex, minRenderPrio, renderDiff);
     }
 
     batchFlush(gc);
@@ -150,15 +158,13 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     gc.reset_textures();
     gc.reset_program_object();
 
-    gc.clear_depth(0.0);
+    gc.clear_depth(1.0);
 
     buffer_control.enable_depth_write(false);
     buffer_control.enable_depth_test(false);
     buffer_control.enable_stencil_test(false);
     buffer_control.enable_color_write(true);
     gc.set_buffer_control(buffer_control);
-
-    //LOG_DEBUG << "batched: " << batchedCnt << "/" << allCount << std::endl;
 
     renderQueue_->postRender(renderingComplete);
 }
@@ -167,7 +173,7 @@ boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {
     return renderQueue_;
 }
 
-void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* curObj, ui::Texture* tex) {
+void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* curObj, ui::Texture* tex, unsigned long long& minRenderPrio, float renderDiff) {
     static CL_Rectf texCoordHelper(0.0f, 0.0f, 1.0f, 1.0f);
 
     static CL_Vec2f texCoords[6] = {
@@ -203,7 +209,8 @@ void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* cur
         memcpy(&batchTexCoords_[batchFill_], texCoords, sizeof(CL_Vec2f) * 6);
     }
 
-    float depth = curObj->getRenderDepth();
+    float depth = curObj->getRenderDepth() - minRenderPrio;
+    depth = depth / renderDiff;
     CL_Vec3f hueInfo = curObj->getHueInfo();
     for (unsigned int i = 0; i < 6; ++i) {
         batchHueInfos_[batchFill_ + i] = hueInfo;
