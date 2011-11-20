@@ -511,11 +511,11 @@ const ui::WorldRenderData& IngameObject::getWorldRenderData() const {
 void IngameObject::updateGumpTextureProvider() {
 }
 
-void IngameObject::setRenderDepth(float depth) {
+void IngameObject::setRenderDepth(unsigned long long depth) {
     worldRenderData_.setDepth(depth);
 }
 
-float IngameObject::getRenderDepth() const {
+unsigned long long IngameObject::getRenderDepth() const {
     return worldRenderData_.getDepth();
 }
 

@@ -113,8 +113,8 @@ public:
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqBegin();
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd();
 
-    void setRenderDepth(float depth);
-    float getRenderDepth() const;
+    void setRenderDepth(unsigned long long depth);
+    unsigned long long getRenderDepth() const;
 
     void printRenderPriority() const;
 
@@ -150,8 +150,6 @@ private:
 
     void setParentObject();
     void setParentObject(boost::shared_ptr<IngameObject> parent);
-
-    float renderDepth_;
 };
 
 }

@@ -38,7 +38,7 @@ void MapTile::updateVertexCoordinates() {
     int px = (getLocX() - getLocY()) * 22;
     int py = (getLocX() + getLocY()) * 22;
 
-    if (isFlat()) {
+    if (isFlat_) {
         // flat tile or tile without texture
         py -= getLocZ() * 4;
         CL_Rectf rect(px, py, px + 44, py + 44);
@@ -60,8 +60,8 @@ void MapTile::updateVertexCoordinates() {
     }
 }
 
-bool MapTile::isFlat() const {
-    return (zLeft_ == zRight_ && zLeft_ == zBottom_ && zLeft_ == getLocZ()) || tileDataInfo_->textureId_ <= 0;
+void MapTile::calculateIsFlat() {
+    isFlat_ = (zLeft_ == zRight_ && zLeft_ == zBottom_ && zLeft_ == getLocZ()) || tileDataInfo_->textureId_ <= 0;
 }
 
 void MapTile::updateRenderPriority() {
@@ -69,9 +69,11 @@ void MapTile::updateRenderPriority() {
 }
 
 void MapTile::updateTextureProvider() {
+    calculateIsFlat();
+
     bool hasTexture = (bool)texture_;
 
-    if (isFlat()) {
+    if (isFlat_) {
         texture_ = data::Manager::getArtLoader()->getMapTexture(artId_);
     } else {
         texture_ = data::Manager::getMapTexLoader()->get(tileDataInfo_->textureId_);
@@ -93,6 +95,8 @@ void MapTile::setSurroundingZ(int left, int right, int bottom) {
     zRight_ = right;
     zBottom_ = bottom;
 
+    calculateIsFlat();
+
     invalidateVertexCoordinates();
 }
 
@@ -107,7 +111,7 @@ const data::LandTileInfo* MapTile::getTileDataInfo() {
 bool MapTile::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {
     //LOGARG_DEBUG(LOGTYPE_WORLD, "isInDrawArea (%u %u %u %u) => x=%u y=%u\n", leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord, vertexCoordinates_[0u].x, vertexCoordinates_[0u].y);
 
-    if (isFlat()) {
+    if (isFlat_) {
         return IngameObject::isInDrawArea(leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord);
     } else {
         const CL_Vec3f* vc = worldRenderData_.getVertexCoordinates();
@@ -119,7 +123,7 @@ bool MapTile::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixel
 }
 
 bool MapTile::hasPixel(int pixelX, int pixelY) const {
-    if (isFlat()) {
+    if (isFlat_) {
         return IngameObject::hasPixel(pixelX, pixelY);
     } else {
         const CL_Vec3f* vc = worldRenderData_.getVertexCoordinates();
@@ -136,7 +140,7 @@ bool MapTile::isPixelInside(int pixelX, int pixelY, const CL_Vec2f& b, const CL_
 }
 
 void MapTile::setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const CL_Vec3f& bottom, const CL_Vec3f& left) {
-    if (isFlat()) {
+    if (isFlat_) {
         worldRenderData_.vertexNormals_[0] = CL_Vec3f(0, 0, 1);
         worldRenderData_.vertexNormals_[1] = CL_Vec3f(0, 0, 1);
         worldRenderData_.vertexNormals_[2] = CL_Vec3f(0, 0, 1);

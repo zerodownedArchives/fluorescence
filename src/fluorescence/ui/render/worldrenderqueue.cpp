@@ -58,21 +58,22 @@ void WorldRenderQueue::postRender(bool renderingComplete) {
 }
 
 boost::shared_ptr<world::IngameObject> WorldRenderQueue::getFirstObjectAt(int worldX, int worldY, bool getTopParent) {
-    RenderQueue::reverse_iterator igIter = rbegin();
-    RenderQueue::reverse_iterator igEnd = rend();
+    RenderQueue::iterator igIter = begin();
+    RenderQueue::iterator igEnd = end();
 
     boost::shared_ptr<world::IngameObject> ret;
 
+    unsigned long long maxRenderPrio = 0;
+
     for (; igIter != igEnd; ++igIter) {
         boost::shared_ptr<world::IngameObject> curObj = *igIter;
-        if (curObj->isVisible() && curObj->hasPixel(worldX, worldY)) {
-
+        if (curObj->isVisible() && curObj->hasPixel(worldX, worldY) && curObj->getRenderDepth() > maxRenderPrio) {
             if (getTopParent) {
-                curObj = curObj->getTopParent();
+                ret = curObj->getTopParent();
+            } else {
+                ret = curObj;
             }
-
-            ret = curObj;
-            break;
+            maxRenderPrio = curObj->getRenderDepth();
         }
     }
 
