@@ -1,8 +1,11 @@
 
 #include "gumprenderer.hpp"
 
+#include <ClanLib/Display/Render/program_object.h>
+
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
+#include <ui/render/shadermanager.hpp>
 #include <ui/texture.hpp>
 #include <ui/components/gumpview.hpp>
 
@@ -18,18 +21,6 @@ namespace ui {
 
 GumpRenderer::GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::GumpView* gumpView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_GUMP),
             gumpView_(gumpView), renderQueue_(renderQueue) {
-
-    CL_GraphicContext gc = fluo::ui::Manager::getSingleton()->getGraphicContext();
-
-    shaderProgram_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/gump_vertex.glsl", "shader/gump_fragment.glsl")));
-    shaderProgram_->bind_attribute_location(0, "gl_Vertex");
-    shaderProgram_->bind_attribute_location(1, "TexCoord0");
-    shaderProgram_->bind_attribute_location(2, "HueInfo0");
-
-    if (!shaderProgram_->link()) {
-        LOG_EMERGENCY << "Error while linking program:\n" << shaderProgram_->get_info_log().c_str() << std::endl;
-        throw CL_Exception("Unable to link program");
-    }
 }
 
 GumpRenderer::~GumpRenderer() {
@@ -69,7 +60,8 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
 
     gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
 
-    gc.set_program_object(*shaderProgram_, cl_program_matrix_modelview_projection);
+    boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getGumpShader();
+    gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
 
     CL_Rectf texture_unit1_coords(0.0f, 0.0f, 1.0f, 1.0f);
 
@@ -84,8 +76,8 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
 
 
     gc.set_texture(0, *(data::Manager::getSingleton()->getHuesLoader()->getHuesTexture()->getTexture()));
-    shaderProgram_->set_uniform1i("HueTexture", 0);
-    shaderProgram_->set_uniform1i("ObjectTexture", 1);
+    shader->set_uniform1i("HueTexture", 0);
+    shader->set_uniform1i("ObjectTexture", 1);
 
     RenderQueue::const_iterator igIter = renderQueue_->begin();
     RenderQueue::const_iterator igEnd = renderQueue_->end();

@@ -11,6 +11,7 @@
 #include "gumpmenus.hpp"
 #include "gumpactions.hpp"
 #include "fontengine.hpp"
+#include "render/shadermanager.hpp"
 
 #include <client.hpp>
 
@@ -109,6 +110,8 @@ bool Manager::setShardConfig(Config& config) {
     doubleClickHandler_->start();
 
     fontEngine_.reset(new FontEngine(config, getGraphicContext()));
+
+    shaderManager_.reset(new ShaderManager(getGraphicContext()));
 
     return true;
 }
@@ -333,6 +336,10 @@ void Manager::onClickEvent(boost::shared_ptr<world::IngameObject> obj) {
     } else {
         doubleClickHandler_->notify(obj);
     }
+}
+
+boost::shared_ptr<ShaderManager> Manager::getShaderManager() {
+    return getSingleton()->shaderManager_;
 }
 
 }

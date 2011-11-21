@@ -1,7 +1,6 @@
 #ifndef FLUO_UI_GUMPRENDERER_HPP
 #define FLUO_UI_GUMPRENDERER_HPP
 
-#include <ClanLib/Display/Render/program_object.h>
 #include <ClanLib/Display/Render/graphic_context.h>
 
 #include <boost/shared_ptr.hpp>
@@ -31,8 +30,6 @@ public:
     virtual boost::shared_ptr<RenderQueue> getRenderQueue() const;
 
 private:
-    boost::shared_ptr<CL_ProgramObject> shaderProgram_;
-
     components::GumpView* gumpView_;
     boost::shared_ptr<RenderQueue> renderQueue_;
 

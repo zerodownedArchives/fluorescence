@@ -1,8 +1,11 @@
 
 #include "worldviewrenderer.hpp"
 
+#include <ClanLib/Display/Render/program_object.h>
+
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
+#include <ui/render/shadermanager.hpp>
 #include <ui/texture.hpp>
 #include <ui/fontengine.hpp>
 #include <ui/components/worldview.hpp>
@@ -21,19 +24,6 @@ namespace ui {
 
 WorldViewRenderer::WorldViewRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::WorldView* worldView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_WORLD),
         worldView_(worldView), renderQueue_(renderQueue) {
-
-    CL_GraphicContext gc = fluo::ui::Manager::getSingleton()->getGraphicContext();
-
-    shaderProgram_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/world_vertex.glsl", "shader/world_fragment.glsl")));
-    shaderProgram_->bind_attribute_location(0, "gl_Vertex");
-    shaderProgram_->bind_attribute_location(1, "TexCoord0");
-    shaderProgram_->bind_attribute_location(2, "gl_Normal");
-    shaderProgram_->bind_attribute_location(3, "HueInfo0");
-
-    if (!shaderProgram_->link()) {
-        LOG_EMERGENCY << "Error while linking program:\n" << shaderProgram_->get_info_log().c_str() << std::endl;
-        throw CL_Exception("Unable to link program");
-    }
 }
 
 WorldViewRenderer::~WorldViewRenderer() {
@@ -87,8 +77,8 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     buffer_control.enable_color_write(true);
     gc.set_buffer_control(buffer_control);
 
-
-    gc.set_program_object(*shaderProgram_, cl_program_matrix_modelview_projection);
+    boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getWorldShader();
+    gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
 
     int clippingLeftPixelCoord = worldView_->getCenterPixelX() - worldView_->getWidth()/2;
     int clippingRightPixelCoord = worldView_->getCenterPixelX() + worldView_->getWidth()/2;
@@ -97,16 +87,16 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
 
 
     CL_Vec2f pixelOffsetVec(clippingLeftPixelCoord, clippingTopPixelCoord);
-    shaderProgram_->set_uniform2f("PositionOffset", pixelOffsetVec);
+    shader->set_uniform2f("PositionOffset", pixelOffsetVec);
 
     gc.set_texture(0, *(data::Manager::getSingleton()->getHuesLoader()->getHuesTexture()->getTexture()));
-    shaderProgram_->set_uniform1i("HueTexture", 0);
-    shaderProgram_->set_uniform1i("ObjectTexture", 1);
+    shader->set_uniform1i("HueTexture", 0);
+    shader->set_uniform1i("ObjectTexture", 1);
 
     boost::shared_ptr<world::LightManager> lightManager = world::Manager::getLightManager();
-    shaderProgram_->set_uniform3f("AmbientLightIntensity", lightManager->getAmbientIntensity());
-    shaderProgram_->set_uniform3f("GlobalLightIntensity", lightManager->getGlobalIntensity());
-    shaderProgram_->set_uniform3f("GlobalLightDirection", lightManager->getGlobalDirection());
+    shader->set_uniform3f("AmbientLightIntensity", lightManager->getAmbientIntensity());
+    shader->set_uniform3f("GlobalLightIntensity", lightManager->getGlobalIntensity());
+    shader->set_uniform3f("GlobalLightDirection", lightManager->getGlobalDirection());
 
     RenderQueue::const_iterator igIter = renderQueue_->begin();
     RenderQueue::const_iterator igEnd = renderQueue_->end();

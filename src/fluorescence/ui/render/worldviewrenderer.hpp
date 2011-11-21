@@ -1,7 +1,6 @@
 #ifndef FLUO_UI_WORLDVIEWRENDERER_HPP
 #define FLUO_UI_WORLDVIEWRENDERER_HPP
 
-#include <ClanLib/Display/Render/program_object.h>
 #include <ClanLib/Display/Render/graphic_context.h>
 #include <ClanLib/Display/Render/texture.h>
 
@@ -35,8 +34,6 @@ public:
     virtual boost::shared_ptr<RenderQueue> getRenderQueue() const;
 
 private:
-    boost::shared_ptr<CL_ProgramObject> shaderProgram_;
-
     components::WorldView* worldView_;
     boost::shared_ptr<RenderQueue> renderQueue_;
 

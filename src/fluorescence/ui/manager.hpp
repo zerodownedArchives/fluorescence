@@ -30,6 +30,7 @@ class CursorManager;
 class DoubleClickHandler;
 class GumpMenu;
 class FontEngine;
+class ShaderManager;
 
 class Manager {
 public:
@@ -49,6 +50,7 @@ public:
     static boost::shared_ptr<CursorManager> getCursorManager();
     static boost::shared_ptr<DoubleClickHandler> getDoubleClickHandler();
     static boost::shared_ptr<FontEngine> getFontEngine();
+    static boost::shared_ptr<ShaderManager> getShaderManager();
 
     void step();
 
@@ -119,6 +121,8 @@ private:
     std::queue<std::pair<boost::shared_ptr<world::IngameObject>, boost::shared_ptr<world::IngameObject> > > dragQueue_;
 
     boost::shared_ptr<FontEngine> fontEngine_;
+
+    boost::shared_ptr<ShaderManager> shaderManager_;
 };
 
 }

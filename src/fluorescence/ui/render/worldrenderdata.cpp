@@ -99,10 +99,6 @@ void WorldRenderData::setRenderDepth(uint16_t xPlusY, int8_t z, uint8_t priority
 
     tmp &= 0xFFFFFFFFFFFFu;
 
-    //float depth = 1.0f / tmp;
-    //depth *= 10000000;
-    //depth *= 10000000;
-
     renderDepth_ = tmp;
 }
 
