@@ -250,15 +250,7 @@ void IngameObject::setOverheadMessageOffsets() {
 }
 
 bool IngameObject::isInRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
-    std::list<boost::shared_ptr<ui::RenderQueue> >::const_iterator iter = renderQueues_.begin();
-    std::list<boost::shared_ptr<ui::RenderQueue> >::const_iterator end = renderQueues_.end();
-    for (; iter != end; ++iter) {
-        if (*iter == rq) {
-            return true;
-        }
-    }
-
-    return false;
+    return std::find(renderQueues_.begin(), renderQueues_.end(), rq) != renderQueues_.end();
 }
 
 void IngameObject::addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
@@ -280,15 +272,9 @@ void IngameObject::addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
 }
 
 void IngameObject::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
-    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = renderQueues_.begin();
-    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator end = renderQueues_.end();
-    for (; iter != end; ++iter) {
-        if (*iter == rq) {
-            break;
-        }
-    }
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = std::find(renderQueues_.begin(), renderQueues_.end(), rq);
 
-    if (iter != end) {
+    if (iter != renderQueues_.end()) {
         renderQueues_.erase(iter);
         rq->remove(shared_from_this());
 

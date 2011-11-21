@@ -39,7 +39,7 @@ DynamicItem::DynamicItem(Serial serial) : ServerObject(serial, IngameObject::TYP
 }
 
 boost::shared_ptr<ui::Texture> DynamicItem::getIngameTexture() const {
-    if (equipped_) {
+    if (equipped_ || !textureProvider_) {
         return animTextureProvider_->getTexture();
     } else {
         return textureProvider_->getTexture();

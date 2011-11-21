@@ -64,8 +64,6 @@ public:
     bool requireGumpRepaint() const;
     void resetGumpRepaintIndicators();
 
-    void updateBatchedList();
-
     unsigned long long getMinRenderPriority() const;
     unsigned long long getMaxRenderPriority() const;
 

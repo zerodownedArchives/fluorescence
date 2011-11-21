@@ -28,6 +28,10 @@ void MapTile::set(int locX, int locY, int locZ, unsigned int artId) {
     zRight_ = locZ;
     zBottom_ = locZ;
 
+    if (artId_ <= 2) {
+        setVisible(false);
+    }
+
     // texture is not set here, but in updateTexture
 
     setLocation(locX, locY, locZ);
