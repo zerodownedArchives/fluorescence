@@ -72,7 +72,7 @@ bool RenderQueue::processAddList() {
     return ret;
 }
 
-void RenderQueue::remove(boost::shared_ptr<world::IngameObject> obj) {
+void RenderQueue::remove(const boost::shared_ptr<world::IngameObject>& obj) {
     removeList_.push_back(obj);
     forceRepaint();
 }
@@ -123,7 +123,7 @@ void RenderQueue::processRemoveList() {
     removeList_.clear();
 }
 
-void RenderQueue::add(boost::shared_ptr<world::IngameObject> obj) {
+void RenderQueue::add(const boost::shared_ptr<world::IngameObject>& obj) {
     boost::mutex::scoped_lock myLock(addListMutex_);
     addList_.push_back(obj);
 

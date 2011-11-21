@@ -80,9 +80,9 @@ public:
 
     void setOverheadMessageOffsets();
 
-    void addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
-    void removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
-    bool isInRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
+    void addToRenderQueue(const boost::shared_ptr<ui::RenderQueue>& rq);
+    void removeFromRenderQueue(const boost::shared_ptr<ui::RenderQueue>& rq);
+    bool isInRenderQueue(const boost::shared_ptr<ui::RenderQueue>& rq);
     void removeFromAllRenderQueues();
 
     void addChildObject(boost::shared_ptr<IngameObject> obj);

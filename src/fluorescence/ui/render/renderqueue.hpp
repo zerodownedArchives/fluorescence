@@ -96,11 +96,11 @@ private:
 
     SortFunction sortFunction_;
 
-    void add(boost::shared_ptr<world::IngameObject> obj);
-    void remove(boost::shared_ptr<world::IngameObject> obj);
+    void add(const boost::shared_ptr<world::IngameObject>& obj);
+    void remove(const boost::shared_ptr<world::IngameObject>& obj);
 
-    friend void world::IngameObject::addToRenderQueue(boost::shared_ptr<RenderQueue> rq);
-    friend void world::IngameObject ::removeFromRenderQueue(boost::shared_ptr<RenderQueue> rq);
+    friend void world::IngameObject::addToRenderQueue(const boost::shared_ptr<RenderQueue>& rq);
+    friend void world::IngameObject ::removeFromRenderQueue(const boost::shared_ptr<RenderQueue>& rq);
 
     unsigned long long minRenderDepth_;
     unsigned long long maxRenderDepth_;

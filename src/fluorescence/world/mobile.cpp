@@ -56,6 +56,13 @@ void Mobile::onClick() {
 
     printRenderDepth();
 
+    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
+
+    for (; iter != end; ++iter) {
+        (*iter)->onClick();
+    }
+
     //net::packets::SingleClick pkt(getSerial());
 
     boost::shared_ptr<net::Packet> subPacket(new net::packets::bf::ContextMenuRequest(getSerial()));

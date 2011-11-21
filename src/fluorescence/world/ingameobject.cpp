@@ -249,11 +249,11 @@ void IngameObject::setOverheadMessageOffsets() {
     }
 }
 
-bool IngameObject::isInRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
+bool IngameObject::isInRenderQueue(const boost::shared_ptr<ui::RenderQueue>& rq) {
     return std::find(renderQueues_.begin(), renderQueues_.end(), rq) != renderQueues_.end();
 }
 
-void IngameObject::addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
+void IngameObject::addToRenderQueue(const boost::shared_ptr<ui::RenderQueue>& rq) {
     if (!isInRenderQueue(rq)) {
         renderQueues_.push_back(rq);
         rq->add(shared_from_this());
@@ -271,7 +271,7 @@ void IngameObject::addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
     }
 }
 
-void IngameObject::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
+void IngameObject::removeFromRenderQueue(const boost::shared_ptr<ui::RenderQueue>& rq) {
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = std::find(renderQueues_.begin(), renderQueues_.end(), rq);
 
     if (iter != renderQueues_.end()) {
