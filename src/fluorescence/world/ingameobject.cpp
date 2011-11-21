@@ -2,6 +2,7 @@
 #include "ingameobject.hpp"
 
 #include <stdio.h>
+#include <iomanip>
 
 #include <misc/log.hpp>
 
@@ -43,7 +44,12 @@ void IngameObject::setLocation(CL_Vec3f loc) {
 
     //LOGARG_DEBUG(LOGTYPE_WORLD, "Object location: %f %f %f", locX, locY, locZ);
 
-    invalidateRenderPriority();
+    if (ceilf(oldLocation[0u]) != ceilf(location_[0u]) ||
+            ceilf(oldLocation[1u]) != ceilf(location_[1u]) ||
+            ceilf(oldLocation[2u]) != ceilf(location_[2u])) {
+        invalidateRenderPriority();
+    }
+
     invalidateVertexCoordinates();
 }
 
@@ -94,16 +100,12 @@ void IngameObject::invalidateRenderPriority() {
     }
 }
 
-const CL_Vec2f* IngameObject::getVertexCoordinates() const {
-    return worldRenderData_.vertexCoordinates_;
+const CL_Vec3f* IngameObject::getVertexCoordinates() const {
+    return worldRenderData_.getVertexCoordinates();
 }
 
 const CL_Vec3f& IngameObject::getHueInfo() const {
     return worldRenderData_.hueInfo_;
-}
-
-unsigned long long IngameObject::getRenderPriority() const {
-    return worldRenderData_.renderPriority_;
 }
 
 void IngameObject::updateRenderData(unsigned int elapsedMillis) {
@@ -152,10 +154,10 @@ bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int top
 
     // almost every texture is a rectangle, with vertexCoordinates_[0] being top left and vertexCoordinates_[5] bottom right
     // all non-rectangular cases are maptiles
-    return worldRenderData_.vertexCoordinates_[0].x <= rightPixelCoord &&
-            worldRenderData_.vertexCoordinates_[0].y <= bottomPixelCoord &&
-            worldRenderData_.vertexCoordinates_[5].x >= leftPixelCoord &&
-            worldRenderData_.vertexCoordinates_[5].y >= topPixelCoord;
+    return (worldRenderData_.vertexCoordinates_[0].x <= rightPixelCoord) &&
+            (worldRenderData_.vertexCoordinates_[0].y <= bottomPixelCoord) &&
+            (worldRenderData_.vertexCoordinates_[5].x >= leftPixelCoord) &&
+            (worldRenderData_.vertexCoordinates_[5].y >= topPixelCoord);
 }
 
 bool IngameObject::hasPixel(int pixelX, int pixelY) const {
@@ -227,7 +229,7 @@ boost::shared_ptr<IngameObject> IngameObject::getTopParent() {
 }
 
 void IngameObject::printRenderPriority() const {
-    LOG_DEBUG << "Render priority: " << std::hex << worldRenderData_.renderPriority_ << std::dec << std::endl;
+    LOG_DEBUG << "Render priority: " << std::setprecision(15) << worldRenderData_.getDepth() << std::endl;
 }
 
 void IngameObject::setOverheadMessageOffsets() {
@@ -248,15 +250,7 @@ void IngameObject::setOverheadMessageOffsets() {
 }
 
 bool IngameObject::isInRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
-    std::list<boost::shared_ptr<ui::RenderQueue> >::const_iterator iter = renderQueues_.begin();
-    std::list<boost::shared_ptr<ui::RenderQueue> >::const_iterator end = renderQueues_.end();
-    for (; iter != end; ++iter) {
-        if (*iter == rq) {
-            return true;
-        }
-    }
-
-    return false;
+    return std::find(renderQueues_.begin(), renderQueues_.end(), rq) != renderQueues_.end();
 }
 
 void IngameObject::addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
@@ -278,15 +272,9 @@ void IngameObject::addToRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
 }
 
 void IngameObject::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
-    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = renderQueues_.begin();
-    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator end = renderQueues_.end();
-    for (; iter != end; ++iter) {
-        if (*iter == rq) {
-            break;
-        }
-    }
+    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = std::find(renderQueues_.begin(), renderQueues_.end(), rq);
 
-    if (iter != end) {
+    if (iter != renderQueues_.end()) {
         renderQueues_.erase(iter);
         rq->remove(shared_from_this());
 
@@ -507,6 +495,14 @@ const ui::WorldRenderData& IngameObject::getWorldRenderData() const {
 }
 
 void IngameObject::updateGumpTextureProvider() {
+}
+
+void IngameObject::setRenderDepth(unsigned long long depth) {
+    worldRenderData_.setDepth(depth);
+}
+
+unsigned long long IngameObject::getRenderDepth() const {
+    return worldRenderData_.getDepth();
 }
 
 }

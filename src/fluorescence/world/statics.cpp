@@ -45,17 +45,16 @@ void StaticItem::updateVertexCoordinates() {
 
     CL_Rectf rect(px, py, px + texWidth, py + texHeight);
 
-    worldRenderData_.vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
-    worldRenderData_.vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
-    worldRenderData_.vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
-    worldRenderData_.vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
-    worldRenderData_.vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
-    worldRenderData_.vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+    worldRenderData_.setVertexCoordinates(rect);
 }
 
 void StaticItem::updateRenderPriority() {
-    int8_t z = getLocZ();
+    // render prio
+    // level 0 x+y
+    uint16_t xy = ceilf(getLocX()) + ceilf(getLocY());
 
+    // level 1 z and tiledata flags
+    int8_t z = ceilf(getLocZ());
     if (tileDataInfo_->background() && tileDataInfo_->surface()) {
         z += 4;
     } else if (tileDataInfo_->background()) {
@@ -66,7 +65,7 @@ void StaticItem::updateRenderPriority() {
         z += 6;
     }
 
-    worldRenderData_.setRenderPriority(getLocX() + getLocY(), z, 10, tileDataInfo_->height_, indexInBlock_);
+    worldRenderData_.setDepth(xy, z, 10, tileDataInfo_->height_, indexInBlock_);
 }
 
 void StaticItem::updateTextureProvider() {
@@ -95,7 +94,7 @@ void StaticItem::onClick() {
     //LOG_INFO << "background=" << tileDataInfo_->background() << " surface=" << tileDataInfo_->surface() << " height=" << (unsigned int)tileDataInfo_->height_ <<
             //" hue=" << hue_ << " indexInBlock=" << indexInBlock_ << std::endl;
 
-    //printRenderPriority();
+    printRenderPriority();
 }
 
 bool StaticItem::requireRenderUpdate() const {

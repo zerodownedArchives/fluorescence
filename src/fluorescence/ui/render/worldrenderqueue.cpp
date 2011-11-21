@@ -14,18 +14,18 @@
 namespace fluo {
 namespace ui {
 
-bool WorldRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
-    unsigned long long aPrio = a->getRenderPriority();
-    unsigned long long bPrio = b->getRenderPriority();
+bool WorldRenderQueue::batchedComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
+    unsigned long texA = (unsigned long)a->getIngameTexture().get();
+    unsigned long texB = (unsigned long)b->getIngameTexture().get();
 
-    if (aPrio == bPrio) {
+    if (texA == texB) {
         return (unsigned long)a.get() <= (unsigned long)b.get();
     } else {
-        return aPrio <= bPrio;
+        return texA <= texB;
     }
 }
 
-WorldRenderQueue::WorldRenderQueue() : RenderQueue(boost::bind(&WorldRenderQueue::renderPriorityComparator, this, _1, _2)) {
+WorldRenderQueue::WorldRenderQueue() : RenderQueue(boost::bind(&WorldRenderQueue::batchedComparator, this, _1, _2)) {
 }
 
 WorldRenderQueue::~WorldRenderQueue() {
@@ -34,13 +34,18 @@ WorldRenderQueue::~WorldRenderQueue() {
 
 void WorldRenderQueue::preRender() {
     if (!removeList_.empty()) {
+        sort();
         processRemoveList();
         forceRepaint_ = true;
     }
 
-    bool requireSort = processAddList();
+    if (!addList_.empty()) {
+        updateMinMaxRenderPriority();
+    }
 
-    if (requireSort || worldPriorityChanged_ ) {
+    bool objectsAdded = processAddList();
+
+    if (objectsAdded) {
         sort();
     }
 }
@@ -53,21 +58,22 @@ void WorldRenderQueue::postRender(bool renderingComplete) {
 }
 
 boost::shared_ptr<world::IngameObject> WorldRenderQueue::getFirstObjectAt(int worldX, int worldY, bool getTopParent) {
-    RenderQueue::reverse_iterator igIter = rbegin();
-    RenderQueue::reverse_iterator igEnd = rend();
+    RenderQueue::iterator igIter = begin();
+    RenderQueue::iterator igEnd = end();
 
     boost::shared_ptr<world::IngameObject> ret;
 
+    unsigned long long maxRenderPrio = 0;
+
     for (; igIter != igEnd; ++igIter) {
         boost::shared_ptr<world::IngameObject> curObj = *igIter;
-        if (curObj->isVisible() && curObj->hasPixel(worldX, worldY)) {
-
+        if (curObj->isVisible() && curObj->hasPixel(worldX, worldY) && curObj->getRenderDepth() > maxRenderPrio) {
             if (getTopParent) {
-                curObj = curObj->getTopParent();
+                ret = curObj->getTopParent();
+            } else {
+                ret = curObj;
             }
-
-            ret = curObj;
-            break;
+            maxRenderPrio = curObj->getRenderDepth();
         }
     }
 

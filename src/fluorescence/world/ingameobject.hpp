@@ -52,7 +52,7 @@ public:
 
     void updateRenderData(unsigned int elapsedMillis); ///< calls updateVertexCoordinates, updateRenderPriority, updateTextureProvider and updateAnimation
 
-    const CL_Vec2f* getVertexCoordinates() const;
+    const CL_Vec3f* getVertexCoordinates() const;
 
     const CL_Vec3f* getVertexNormals() const;
     void setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const CL_Vec3f& bottom, const CL_Vec3f& left);
@@ -113,6 +113,8 @@ public:
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqBegin();
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd();
 
+    void setRenderDepth(unsigned long long depth);
+    unsigned long long getRenderDepth() const;
 
     void printRenderPriority() const;
 
@@ -145,7 +147,6 @@ private:
     void notifyRenderQueuesWorldCoordinates();
     void notifyRenderQueuesWorldPriority();
     void notifyRenderQueuesGump();
-
 
     void setParentObject();
     void setParentObject(boost::shared_ptr<IngameObject> parent);

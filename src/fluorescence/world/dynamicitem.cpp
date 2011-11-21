@@ -39,7 +39,7 @@ DynamicItem::DynamicItem(Serial serial) : ServerObject(serial, IngameObject::TYP
 }
 
 boost::shared_ptr<ui::Texture> DynamicItem::getIngameTexture() const {
-    if (equipped_) {
+    if (equipped_ || !textureProvider_) {
         return animTextureProvider_->getTexture();
     } else {
         return textureProvider_->getTexture();
@@ -99,6 +99,8 @@ void DynamicItem::setStackIdOffset(unsigned int offset) {
 }
 
 void DynamicItem::updateVertexCoordinates() {
+    CL_Rectf rect;
+
     if (equipped_) {
         ui::AnimationFrame frame = animTextureProvider_->getCurrentFrame();
         int texWidth = frame.texture_->getWidth();
@@ -121,14 +123,7 @@ void DynamicItem::updateVertexCoordinates() {
             px -= frame.centerX_;
         }
 
-        CL_Rectf rect(px, py, px + texWidth, py + texHeight);
-
-        worldRenderData_.vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
-        worldRenderData_.vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
-        worldRenderData_.vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
-        worldRenderData_.vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
-        worldRenderData_.vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
-        worldRenderData_.vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+        rect = CL_Rectf(px, py, px + texWidth, py + texHeight);
     } else {
         int texWidth = getIngameTexture()->getWidth();
         int texHeight = getIngameTexture()->getHeight();
@@ -137,15 +132,10 @@ void DynamicItem::updateVertexCoordinates() {
         int py = (getLocX() + getLocY()) * 22 - texHeight + 44;
         py -= getLocZ() * 4;
 
-        CL_Rectf rect(px, py, px + texWidth, py + texHeight);
-
-        worldRenderData_.vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
-        worldRenderData_.vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
-        worldRenderData_.vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
-        worldRenderData_.vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
-        worldRenderData_.vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
-        worldRenderData_.vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+        rect = CL_Rectf(px, py, px + texWidth, py + texHeight);
     }
+
+    worldRenderData_.setVertexCoordinates(rect);
 }
 
 void DynamicItem::updateRenderPriority() {
@@ -175,10 +165,16 @@ void DynamicItem::updateRenderPriority() {
             layerTmp = 0;
         }
 
-        worldRenderData_.setRenderPriority(ceilf(parent->getLocX()) + ceilf(parent->getLocY()), ceilf(parent->getLocZ()) + 7, 30, layerPriorities[parent->getDirection()][layerTmp], getSerial() & 0xFF);
-    } else {
-        int8_t z = ceilf(getLocZ());
+        uint16_t xy = ceilf(parent->getLocX()) + ceilf(parent->getLocY());
+        int8_t z = ceilf(parent->getLocZ()) + 7;
 
+        worldRenderData_.setDepth(xy, z, 40, layerPriorities[parent->getDirection()][layerTmp], getSerial() & 0xFF);
+    } else {
+        // level 0 x+y
+        uint16_t xy = ceilf(getLocX()) + ceilf(getLocY());
+
+        // level 1 z and tiledata flags
+        int8_t z = ceilf(getLocZ());
         if (tileDataInfo_->background() && tileDataInfo_->surface()) {
             z += 4;
         } else if (tileDataInfo_->background()) {
@@ -189,7 +185,7 @@ void DynamicItem::updateRenderPriority() {
             z += 6;
         }
 
-        worldRenderData_.setRenderPriority(ceilf(getLocX()) + ceilf(getLocY()), z, 20, tileDataInfo_->height_, getSerial() & 0xFF);
+        worldRenderData_.setDepth(xy, z, 20, tileDataInfo_->height_, getSerial() & 0xFF);
     }
 }
 
@@ -282,7 +278,7 @@ unsigned int DynamicItem::getLayer() const {
 }
 
 bool DynamicItem::isMirrored() const {
-    return direction_ < 3;
+    return equipped_ && direction_ < 3;
 }
 
 void DynamicItem::playAnim(unsigned int animId) {

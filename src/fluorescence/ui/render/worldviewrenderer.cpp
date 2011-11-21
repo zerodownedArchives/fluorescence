@@ -45,6 +45,10 @@ void WorldViewRenderer::checkTextureSize() {
         texture_.reset(new ui::Texture(false));
         texture_->initPixelBuffer(worldView_->getWidth(), worldView_->getHeight());
         texture_->setReadComplete();
+
+        CL_GraphicContext gc = ui::Manager::getGraphicContext();
+
+        depthTexture_ = CL_Texture(gc, gc.get_size(), cl_depth_component);
     }
 }
 
@@ -55,6 +59,7 @@ boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) 
 
         CL_FrameBuffer fb(gc);
         fb.attach_color_buffer(0, *texture_->getTexture());
+        fb.attach_depth_buffer(depthTexture_);
 
         gc.set_frame_buffer(fb);
 
@@ -72,28 +77,18 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
 
 
     gc.clear(CL_Colorf(0.f, 0.f, 0.f, 1.f));
+    gc.clear_depth(1.0);
+
+    CL_BufferControl buffer_control;
+    buffer_control.set_depth_compare_function(cl_comparefunc_lequal);
+    buffer_control.enable_depth_write(true);
+    buffer_control.enable_depth_test(true);
+    buffer_control.enable_stencil_test(false);
+    buffer_control.enable_color_write(true);
+    gc.set_buffer_control(buffer_control);
+
 
     gc.set_program_object(*shaderProgram_, cl_program_matrix_modelview_projection);
-
-    CL_Rectf texture_unit1_coords(0.0f, 0.0f, 1.0f, 1.0f);
-
-    CL_Vec2f tex1_coords[6] = {
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom)
-    };
-
-    CL_Vec2f tex1_coords_mirrored[6] = {
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom)
-    };
 
     int clippingLeftPixelCoord = worldView_->getCenterPixelX() - worldView_->getWidth()/2;
     int clippingRightPixelCoord = worldView_->getCenterPixelX() + worldView_->getWidth()/2;
@@ -117,6 +112,17 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     RenderQueue::const_iterator igEnd = renderQueue_->end();
 
     bool renderingComplete = true;
+
+    batchFill_ = 0;
+    lastTexture_ = NULL;
+
+    unsigned long long minRenderPrio = renderQueue_->getMinRenderPriority();
+    unsigned long long maxRenderPrio = renderQueue_->getMaxRenderPriority();
+    float renderDiff = maxRenderPrio - minRenderPrio;
+
+    //LOG_DEBUG << std::hex << "min=" << minRenderPrio << " diff=" << renderDiff << std::endl;
+
+    igEnd = renderQueue_->end();
 
     for (; igIter != igEnd; ++igIter) {
         world::IngameObject* curObj = igIter->get();
@@ -144,29 +150,97 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
             continue;
         }
 
-        CL_PrimitivesArray primarray(gc);
-        primarray.set_attributes(0, curObj->getVertexCoordinates());
-        if (curObj->isMirrored()) {
-            primarray.set_attributes(1, tex1_coords_mirrored);
-        } else {
-            primarray.set_attributes(1, tex1_coords);
-        }
-        primarray.set_attributes(2, curObj->getVertexNormals());
-
-        primarray.set_attribute(3, curObj->getHueInfo());
-
-        gc.set_texture(1, *tex->getTexture());
-        gc.draw_primitives(cl_triangles, 6, primarray);
+        batchAdd(gc, curObj, tex, minRenderPrio, renderDiff);
     }
+
+    batchFlush(gc);
 
     gc.reset_textures();
     gc.reset_program_object();
+
+    gc.clear_depth(1.0);
+
+    buffer_control.enable_depth_write(false);
+    buffer_control.enable_depth_test(false);
+    buffer_control.enable_stencil_test(false);
+    buffer_control.enable_color_write(true);
+    gc.set_buffer_control(buffer_control);
 
     renderQueue_->postRender(renderingComplete);
 }
 
 boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {
     return renderQueue_;
+}
+
+void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* curObj, ui::Texture* tex, unsigned long long& minRenderPrio, float renderDiff) {
+    static CL_Rectf texCoordHelper(0.0f, 0.0f, 1.0f, 1.0f);
+
+    static CL_Vec2f texCoords[6] = {
+        CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
+        CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+        CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
+        CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+        CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
+        CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom)
+    };
+
+    static CL_Vec2f texCoordsMirrored[6] = {
+        CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+        CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
+        CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom),
+        CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
+        CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom),
+        CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom)
+    };
+
+
+    if (lastTexture_ != tex) {
+        batchFlush(gc);
+        lastTexture_ = tex;
+    }
+
+    memcpy(&batchPositions_[batchFill_], curObj->getVertexCoordinates(), sizeof(CL_Vec3f) * 6);
+    memcpy(&batchNormals_[batchFill_], curObj->getVertexNormals(), sizeof(CL_Vec3f) * 6);
+
+    if (curObj->isMirrored()) {
+        memcpy(&batchTexCoords_[batchFill_], texCoordsMirrored, sizeof(CL_Vec2f) * 6);
+    } else {
+        memcpy(&batchTexCoords_[batchFill_], texCoords, sizeof(CL_Vec2f) * 6);
+    }
+
+    float depth = curObj->getRenderDepth() - minRenderPrio;
+    depth = depth / renderDiff;
+    CL_Vec3f hueInfo = curObj->getHueInfo();
+    for (unsigned int i = 0; i < 6; ++i) {
+        batchHueInfos_[batchFill_ + i] = hueInfo;
+        batchPositions_[batchFill_ + i].z = depth;
+    }
+
+    //LOG_DEBUG << "depth: " << batchPositions_[batchFill_].z << std::endl;
+
+    batchFill_ += 6;
+
+    if (batchFill_ == BATCH_NUM_VERTICES) {
+        batchFlush(gc);
+    }
+}
+
+void WorldViewRenderer::batchFlush(CL_GraphicContext& gc) {
+    if (batchFill_ > 0 && lastTexture_) {
+        //LOG_DEBUG << "batch flush: " << (batchFill_ / 6) << std::endl;
+        CL_PrimitivesArray primarray(gc);
+        primarray.set_attributes(0, batchPositions_);
+        primarray.set_attributes(1, batchTexCoords_);
+        primarray.set_attributes(2, batchNormals_);
+        primarray.set_attributes(3, batchHueInfos_);
+
+        gc.set_texture(1, *lastTexture_->getTexture());
+
+        gc.draw_primitives(cl_triangles, batchFill_, primarray);
+
+        batchFill_ = 0;
+    }
 }
 
 }

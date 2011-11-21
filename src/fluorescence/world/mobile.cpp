@@ -108,16 +108,14 @@ void Mobile::updateVertexCoordinates() {
 
     CL_Rectf rect(px, py, px + texWidth, py + texHeight);
 
-    worldRenderData_.vertexCoordinates_[0] = CL_Vec2f(rect.left, rect.top);
-    worldRenderData_.vertexCoordinates_[1] = CL_Vec2f(rect.right, rect.top);
-    worldRenderData_.vertexCoordinates_[2] = CL_Vec2f(rect.left, rect.bottom);
-    worldRenderData_.vertexCoordinates_[3] = CL_Vec2f(rect.right, rect.top);
-    worldRenderData_.vertexCoordinates_[4] = CL_Vec2f(rect.left, rect.bottom);
-    worldRenderData_.vertexCoordinates_[5] = CL_Vec2f(rect.right, rect.bottom);
+    worldRenderData_.setVertexCoordinates(rect);
 }
 
 void Mobile::updateRenderPriority() {
-    worldRenderData_.setRenderPriority(ceilf(getLocX()) + ceilf(getLocY()), ceilf(getLocZ()) + 7, 30, 0, getSerial() & 0xFF);
+    uint16_t xy = ceilf(getLocX()) + ceilf(getLocY());
+    int8_t z = ceilf(getLocZ()) + 7;
+
+    worldRenderData_.setDepth(xy, z, 30, 0, getSerial() & 0xFF);
 }
 
 void Mobile::updateTextureProvider() {
