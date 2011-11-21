@@ -53,7 +53,7 @@ private:
     void set(int locX, int locY, int locZ, unsigned int artId, unsigned int hue);
 
     void updateVertexCoordinates();
-    void updateRenderPriority();
+    void updateRenderDepth();
     void updateTextureProvider();
     bool updateAnimation(unsigned int elapsedMillis);
 };

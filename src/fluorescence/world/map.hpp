@@ -48,7 +48,7 @@ private:
     void setSurroundingZ(int left, int right, int bottom);
 
     void updateVertexCoordinates();
-    void updateRenderPriority();
+    void updateRenderDepth();
     void updateTextureProvider();
     bool updateAnimation(unsigned int elapsedMillis);
 

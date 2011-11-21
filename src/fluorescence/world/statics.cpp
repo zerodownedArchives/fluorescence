@@ -48,7 +48,7 @@ void StaticItem::updateVertexCoordinates() {
     worldRenderData_.setVertexCoordinates(rect);
 }
 
-void StaticItem::updateRenderPriority() {
+void StaticItem::updateRenderDepth() {
     // render prio
     // level 0 x+y
     uint16_t xy = ceilf(getLocX()) + ceilf(getLocY());
@@ -65,7 +65,7 @@ void StaticItem::updateRenderPriority() {
         z += 6;
     }
 
-    worldRenderData_.setDepth(xy, z, 10, tileDataInfo_->height_, indexInBlock_);
+    worldRenderData_.setRenderDepth(xy, z, 10, tileDataInfo_->height_, indexInBlock_);
 }
 
 void StaticItem::updateTextureProvider() {
@@ -94,7 +94,7 @@ void StaticItem::onClick() {
     //LOG_INFO << "background=" << tileDataInfo_->background() << " surface=" << tileDataInfo_->surface() << " height=" << (unsigned int)tileDataInfo_->height_ <<
             //" hue=" << hue_ << " indexInBlock=" << indexInBlock_ << std::endl;
 
-    printRenderPriority();
+    printRenderDepth();
 }
 
 bool StaticItem::requireRenderUpdate() const {

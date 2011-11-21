@@ -34,7 +34,7 @@ private:
     boost::shared_ptr<ui::Texture> texture_;
 
     void updateVertexCoordinates();
-    void updateRenderPriority();
+    void updateRenderDepth();
     void updateTextureProvider();
     bool updateAnimation(unsigned int elapsedMillis);
 

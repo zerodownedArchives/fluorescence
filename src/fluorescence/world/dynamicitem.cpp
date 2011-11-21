@@ -138,7 +138,7 @@ void DynamicItem::updateVertexCoordinates() {
     worldRenderData_.setVertexCoordinates(rect);
 }
 
-void DynamicItem::updateRenderPriority() {
+void DynamicItem::updateRenderDepth() {
     static bool initialized = false;
     static std::vector<int> layerPriorities[8];
     if (!initialized) {
@@ -158,7 +158,6 @@ void DynamicItem::updateRenderPriority() {
     if (equipped_) {
         boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
 
-        // level 2 layer priority
         unsigned int layerTmp = layer_ - 1;
         if (layerTmp >= layerPriorities[parent->getDirection()].size()) {
             LOG_WARN << "Rendering item with invalid layer " << layer_ << ". Unable to assign render priority" << std::endl;
@@ -168,12 +167,10 @@ void DynamicItem::updateRenderPriority() {
         uint16_t xy = ceilf(parent->getLocX()) + ceilf(parent->getLocY());
         int8_t z = ceilf(parent->getLocZ()) + 7;
 
-        worldRenderData_.setDepth(xy, z, 40, layerPriorities[parent->getDirection()][layerTmp], getSerial() & 0xFF);
+        worldRenderData_.setRenderDepth(xy, z, 40, layerPriorities[parent->getDirection()][layerTmp], getSerial() & 0xFF);
     } else {
-        // level 0 x+y
         uint16_t xy = ceilf(getLocX()) + ceilf(getLocY());
 
-        // level 1 z and tiledata flags
         int8_t z = ceilf(getLocZ());
         if (tileDataInfo_->background() && tileDataInfo_->surface()) {
             z += 4;
@@ -185,7 +182,7 @@ void DynamicItem::updateRenderPriority() {
             z += 6;
         }
 
-        worldRenderData_.setDepth(xy, z, 20, tileDataInfo_->height_, getSerial() & 0xFF);
+        worldRenderData_.setRenderDepth(xy, z, 20, tileDataInfo_->height_, getSerial() & 0xFF);
     }
 }
 
@@ -223,7 +220,7 @@ void DynamicItem::onClick() {
     LOG_INFO << "Clicked dynamic, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
             getLocZ() << ") name=" << tileDataInfo_->name_ << " equipped=" << equipped_ << std::endl;
 
-    printRenderPriority();
+    printRenderDepth();
 
     net::packets::SingleClick pkt(getSerial());
     net::Manager::getSingleton()->send(pkt);
@@ -291,7 +288,7 @@ void DynamicItem::onAddedToParent() {
     if (parentObject_.lock()->isMobile()) {
         equipped_ = true;
         invalidateTextureProvider();
-        invalidateRenderPriority();
+        invalidateRenderDepth();
     }
 }
 
@@ -299,7 +296,7 @@ void DynamicItem::onRemovedFromParent() {
     if (equipped_) {
         equipped_ = false;
         invalidateTextureProvider();
-        invalidateRenderPriority();
+        invalidateRenderDepth();
     }
 }
 

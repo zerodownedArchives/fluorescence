@@ -80,7 +80,7 @@ private:
     bool isRunning_;
 
     void updateVertexCoordinates();
-    void updateRenderPriority();
+    void updateRenderDepth();
     void updateTextureProvider();
     bool updateAnimation(unsigned int elapsedMillis);
     void updateGumpTextureProvider();

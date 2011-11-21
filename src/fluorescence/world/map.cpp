@@ -75,8 +75,8 @@ void MapTile::calculateIsFlat() {
     isFlat_ = (zLeft_ == zRight_ && zLeft_ == zBottom_ && zLeft_ == getLocZ()) || tileDataInfo_->textureId_ <= 0;
 }
 
-void MapTile::updateRenderPriority() {
-    worldRenderData_.setDepth(getLocX() + getLocY(), getLocZ(), 0, 0, 0);
+void MapTile::updateRenderDepth() {
+    worldRenderData_.setRenderDepth(getLocX() + getLocY(), getLocZ(), 0, 0, 0);
 }
 
 void MapTile::updateTextureProvider() {
@@ -173,7 +173,7 @@ void MapTile::onClick() {
             getLocZ() << ") name=" << tileDataInfo_->name_ << " flat=" << isFlat_ << std::endl;
 
     //LOG_INFO << "z value: self=" << getLocZ() << " right=" << zRight_ << " bottom=" << zBottom_ << " left=" << zLeft_ << std::endl;
-    printRenderPriority();
+    printRenderDepth();
 }
 
 

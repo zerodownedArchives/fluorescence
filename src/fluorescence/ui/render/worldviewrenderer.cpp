@@ -116,9 +116,9 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     batchFill_ = 0;
     lastTexture_ = NULL;
 
-    unsigned long long minRenderPrio = renderQueue_->getMinRenderPriority();
-    unsigned long long maxRenderPrio = renderQueue_->getMaxRenderPriority();
-    float renderDiff = maxRenderPrio - minRenderPrio;
+    unsigned long long minRenderDepth = renderQueue_->getMinRenderDepth();
+    unsigned long long maxRenderDepth = renderQueue_->getMaxRenderDepth();
+    float renderDiff = maxRenderDepth - minRenderDepth;
 
     //LOG_DEBUG << std::hex << "min=" << minRenderPrio << " diff=" << renderDiff << std::endl;
 
@@ -150,7 +150,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
             continue;
         }
 
-        batchAdd(gc, curObj, tex, minRenderPrio, renderDiff);
+        batchAdd(gc, curObj, tex, minRenderDepth, renderDiff);
     }
 
     batchFlush(gc);
@@ -173,7 +173,7 @@ boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {
     return renderQueue_;
 }
 
-void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* curObj, ui::Texture* tex, unsigned long long& minRenderPrio, float renderDiff) {
+void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* curObj, ui::Texture* tex, unsigned long long& minRenderDepth, float renderDiff) {
     static CL_Rectf texCoordHelper(0.0f, 0.0f, 1.0f, 1.0f);
 
     static CL_Vec2f texCoords[6] = {
@@ -209,7 +209,7 @@ void WorldViewRenderer::batchAdd(CL_GraphicContext& gc, world::IngameObject* cur
         memcpy(&batchTexCoords_[batchFill_], texCoords, sizeof(CL_Vec2f) * 6);
     }
 
-    float depth = curObj->getRenderDepth() - minRenderPrio;
+    float depth = curObj->getRenderDepth() - minRenderDepth;
     depth = depth / renderDiff;
     CL_Vec3f hueInfo = curObj->getHueInfo();
     for (unsigned int i = 0; i < 6; ++i) {

@@ -47,7 +47,7 @@ void IngameObject::setLocation(CL_Vec3f loc) {
     if (ceilf(oldLocation[0u]) != ceilf(location_[0u]) ||
             ceilf(oldLocation[1u]) != ceilf(location_[1u]) ||
             ceilf(oldLocation[2u]) != ceilf(location_[2u])) {
-        invalidateRenderPriority();
+        invalidateRenderDepth();
     }
 
     invalidateVertexCoordinates();
@@ -87,15 +87,15 @@ void IngameObject::invalidateVertexCoordinates() {
     }
 }
 
-void IngameObject::invalidateRenderPriority() {
-    worldRenderData_.invalidateRenderPriority();
+void IngameObject::invalidateRenderDepth() {
+    worldRenderData_.invalidateRenderDepth();
 
     if (!childObjects_.empty()) {
         std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
         std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
 
         for (; iter != end; ++iter) {
-            (*iter)->invalidateRenderPriority();
+            (*iter)->invalidateRenderDepth();
         }
     }
 }
@@ -141,10 +141,10 @@ void IngameObject::updateRenderData(unsigned int elapsedMillis) {
             }
         }
 
-        if (worldRenderData_.renderPriorityUpdateRequired()) {
-            updateRenderPriority();
-            worldRenderData_.onRenderPriorityUpdate();
-            notifyRenderQueuesWorldPriority();
+        if (worldRenderData_.renderDepthUpdateRequired()) {
+            updateRenderDepth();
+            worldRenderData_.onRenderDepthUpdate();
+            notifyRenderQueuesWorldDepth();
         }
     }
 }
@@ -228,8 +228,8 @@ boost::shared_ptr<IngameObject> IngameObject::getTopParent() {
     }
 }
 
-void IngameObject::printRenderPriority() const {
-    LOG_DEBUG << "Render priority: " << std::setprecision(15) << worldRenderData_.getDepth() << std::endl;
+void IngameObject::printRenderDepth() const {
+    LOG_DEBUG << "Render depth: " << std::setprecision(15) << worldRenderData_.getRenderDepth() << std::endl;
 }
 
 void IngameObject::setOverheadMessageOffsets() {
@@ -431,19 +431,19 @@ void IngameObject::notifyRenderQueuesWorldCoordinates() {
     }
 }
 
-void IngameObject::notifyRenderQueuesWorldPriority() {
+void IngameObject::notifyRenderQueuesWorldDepth() {
     switch (renderQueues_.size()) {
     case 0:
         // do nothing
         break;
     case 1:
-        renderQueues_.front()->onObjectWorldPriorityChanged();
+        renderQueues_.front()->onObjectWorldDepthChanged();
         break;
     default:
         std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqIter = renderQueues_.begin();
         std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd = renderQueues_.end();
         for (; rqIter != rqEnd; ++rqIter) {
-            (*rqIter)->onObjectWorldPriorityChanged();
+            (*rqIter)->onObjectWorldDepthChanged();
         }
     }
 }
@@ -498,11 +498,11 @@ void IngameObject::updateGumpTextureProvider() {
 }
 
 void IngameObject::setRenderDepth(unsigned long long depth) {
-    worldRenderData_.setDepth(depth);
+    worldRenderData_.setRenderDepth(depth);
 }
 
 unsigned long long IngameObject::getRenderDepth() const {
-    return worldRenderData_.getDepth();
+    return worldRenderData_.getRenderDepth();
 }
 
 }

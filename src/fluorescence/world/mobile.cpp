@@ -54,7 +54,7 @@ void Mobile::onClick() {
     LOG_INFO << "Clicked mobile, id=" << std::hex << getBodyId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
             getLocZ() << ")" << std::endl;
 
-    printRenderPriority();
+    printRenderDepth();
 
     //net::packets::SingleClick pkt(getSerial());
 
@@ -111,11 +111,11 @@ void Mobile::updateVertexCoordinates() {
     worldRenderData_.setVertexCoordinates(rect);
 }
 
-void Mobile::updateRenderPriority() {
+void Mobile::updateRenderDepth() {
     uint16_t xy = ceilf(getLocX()) + ceilf(getLocY());
     int8_t z = ceilf(getLocZ()) + 7;
 
-    worldRenderData_.setDepth(xy, z, 30, 0, getSerial() & 0xFF);
+    worldRenderData_.setRenderDepth(xy, z, 30, 0, getSerial() & 0xFF);
 }
 
 void Mobile::updateTextureProvider() {

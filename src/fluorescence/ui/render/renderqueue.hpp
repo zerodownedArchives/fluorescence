@@ -54,7 +54,7 @@ public:
 
     void onObjectWorldTextureChanged();
     void onObjectWorldCoordinatesChanged();
-    void onObjectWorldPriorityChanged();
+    void onObjectWorldDepthChanged();
     void onGumpChanged();
     void forceRepaint();
 
@@ -64,8 +64,8 @@ public:
     bool requireGumpRepaint() const;
     void resetGumpRepaintIndicators();
 
-    unsigned long long getMinRenderPriority() const;
-    unsigned long long getMaxRenderPriority() const;
+    unsigned long long getMinRenderDepth() const;
+    unsigned long long getMaxRenderDepth() const;
 
 protected:
     void processRemoveList();
@@ -76,7 +76,7 @@ protected:
 
     bool worldTextureChanged_;
     bool worldCoordinatesChanged_;
-    bool worldPriorityChanged_;
+    bool worldDepthChanged_;
     bool forceRepaint_;
 
     bool gumpChanged_;
@@ -85,7 +85,7 @@ protected:
     bool debugIngameCheckInList(boost::shared_ptr<world::IngameObject> obj);
     boost::shared_ptr<world::IngameObject> debugIngameGetByIndex(unsigned int idx);
 
-    void updateMinMaxRenderPriority();
+    void updateMinMaxRenderDepth();
 
     // ingameobjects might be added to or deleted from the render queue asynchronously. thus, we keep an extra list for added/deleted items
     std::list<boost::shared_ptr<world::IngameObject> > addList_;
@@ -102,8 +102,8 @@ private:
     friend void world::IngameObject::addToRenderQueue(boost::shared_ptr<RenderQueue> rq);
     friend void world::IngameObject ::removeFromRenderQueue(boost::shared_ptr<RenderQueue> rq);
 
-    unsigned long long minRenderPriority_;
-    unsigned long long maxRenderPriority_;
+    unsigned long long minRenderDepth_;
+    unsigned long long maxRenderDepth_;
 };
 
 }

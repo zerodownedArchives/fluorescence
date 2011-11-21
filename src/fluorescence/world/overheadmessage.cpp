@@ -34,7 +34,7 @@ void OverheadMessage::updateVertexCoordinates() {
     worldRenderData_.setVertexCoordinates(rect);
 }
 
-void OverheadMessage::updateRenderPriority() {
+void OverheadMessage::updateRenderDepth() {
     // Move to front
     // TODO: Handle mouse over
     boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
@@ -42,7 +42,7 @@ void OverheadMessage::updateRenderPriority() {
     uint16_t xy = ceilf(parent->getLocX()) + ceilf(parent->getLocY());
     int8_t z = ceilf(parent->getLocZ()) + 7;
 
-    worldRenderData_.setDepth(xy + 40, z, 50, 0, 0);
+    worldRenderData_.setRenderDepth(xy + 40, z, 50, 0, 0);
 }
 
 void OverheadMessage::updateTextureProvider() {

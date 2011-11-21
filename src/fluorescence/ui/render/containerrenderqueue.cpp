@@ -15,7 +15,7 @@
 namespace fluo {
 namespace ui {
 
-bool ContainerRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
+bool ContainerRenderQueue::renderDepthComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
     if (!a->isDynamicItem() || !b->isDynamicItem()) {
         // why is that in this queue?
         LOG_WARN << "Object other than item in ContainerRenderQueue" << std::endl;
@@ -28,7 +28,7 @@ bool ContainerRenderQueue::renderPriorityComparator(const boost::shared_ptr<worl
     return aDyn->getSerial() <= bDyn->getSerial();
 }
 
-ContainerRenderQueue::ContainerRenderQueue() : RenderQueue(boost::bind(&ContainerRenderQueue::renderPriorityComparator, this, _1, _2)) {
+ContainerRenderQueue::ContainerRenderQueue() : RenderQueue(boost::bind(&ContainerRenderQueue::renderDepthComparator, this, _1, _2)) {
 }
 
 ContainerRenderQueue::~ContainerRenderQueue() {

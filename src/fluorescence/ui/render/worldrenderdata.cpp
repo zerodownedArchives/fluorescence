@@ -7,9 +7,8 @@ namespace fluo {
 namespace ui {
 
 WorldRenderData::WorldRenderData() :
-            renderPriority_(0),
-            textureProviderUpdateRequired_(true), vertexCoordinatesUpdateRequired_(true), renderPriorityUpdateRequired_(true),
-            textureProviderUpdated_(false), vertexCoordinatesUpdated_(false), renderPriorityUpdated_(false), depth_(0) {
+            textureProviderUpdateRequired_(true), vertexCoordinatesUpdateRequired_(true), renderDepthUpdateRequired_(true),
+            textureProviderUpdated_(false), vertexCoordinatesUpdated_(false), renderDepthUpdated_(false), renderDepth_(0) {
     for (unsigned int i = 0; i < 6; ++i) {
         vertexNormals_[i] = CL_Vec3f(0, 0, 1);
     }
@@ -24,12 +23,12 @@ void WorldRenderData::invalidateVertexCoordinates() {
     vertexCoordinatesUpdateRequired_ = true;
 }
 
-void WorldRenderData::invalidateRenderPriority() {
-    renderPriorityUpdateRequired_ = true;
+void WorldRenderData::invalidateRenderDepth() {
+    renderDepthUpdateRequired_ = true;
 }
 
 bool WorldRenderData::renderDataValid() const {
-    return !textureProviderUpdateRequired_ && !vertexCoordinatesUpdateRequired_ && !renderPriorityUpdateRequired_;
+    return !textureProviderUpdateRequired_ && !vertexCoordinatesUpdateRequired_ && !renderDepthUpdateRequired_;
 }
 
 bool WorldRenderData::textureProviderUpdateRequired() const {
@@ -40,8 +39,8 @@ bool WorldRenderData::vertexCoordinatesUpdateRequired() const {
     return vertexCoordinatesUpdateRequired_;
 }
 
-bool WorldRenderData::renderPriorityUpdateRequired() const {
-    return renderPriorityUpdateRequired_;
+bool WorldRenderData::renderDepthUpdateRequired() const {
+    return renderDepthUpdateRequired_;
 }
 
 void WorldRenderData::onTextureProviderUpdate() {
@@ -54,9 +53,9 @@ void WorldRenderData::onVertexCoordinatesUpdate() {
     vertexCoordinatesUpdated_ = true;
 }
 
-void WorldRenderData::onRenderPriorityUpdate() {
-    renderPriorityUpdateRequired_ = false;
-    renderPriorityUpdated_ = true;
+void WorldRenderData::onRenderDepthUpdate() {
+    renderDepthUpdateRequired_ = false;
+    renderDepthUpdated_ = true;
 }
 
 bool WorldRenderData::textureProviderUpdated() const {
@@ -67,14 +66,14 @@ bool WorldRenderData::vertexCoordinatesUpdated() const {
     return vertexCoordinatesUpdated_;
 }
 
-bool WorldRenderData::renderPriorityUpdated() const {
-    return renderPriorityUpdated_;
+bool WorldRenderData::renderDepthUpdated() const {
+    return renderDepthUpdated_;
 }
 
 void WorldRenderData::reset() {
     textureProviderUpdated_ = false;
     vertexCoordinatesUpdated_ = false;
-    renderPriorityUpdated_ = false;
+    renderDepthUpdated_ = false;
 }
 
 void WorldRenderData::setVertexCoordinates(unsigned int idx, float x, float y) {
@@ -82,11 +81,11 @@ void WorldRenderData::setVertexCoordinates(unsigned int idx, float x, float y) {
     vertexCoordinates_[idx].y = y;
 }
 
-void WorldRenderData::setDepth(unsigned long long value) {
-    depth_ = value;
+void WorldRenderData::setRenderDepth(unsigned long long value) {
+    renderDepth_ = value;
 }
 
-void WorldRenderData::setDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint8_t byte5, uint8_t byte6) {
+void WorldRenderData::setRenderDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint8_t byte5, uint8_t byte6) {
     unsigned long long tmp = xPlusY;
     tmp <<= 16;
     tmp |= z;
@@ -103,11 +102,11 @@ void WorldRenderData::setDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint
     //depth *= 10000000;
     //depth *= 10000000;
 
-    depth_ = tmp;
+    renderDepth_ = tmp;
 }
 
-unsigned long long WorldRenderData::getDepth() const {
-    return depth_;
+unsigned long long WorldRenderData::getRenderDepth() const {
+    return renderDepth_;
 }
 
 const CL_Vec3f* WorldRenderData::getVertexCoordinates() const {

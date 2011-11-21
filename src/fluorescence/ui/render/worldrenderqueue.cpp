@@ -40,7 +40,7 @@ void WorldRenderQueue::preRender() {
     }
 
     if (!addList_.empty()) {
-        updateMinMaxRenderPriority();
+        updateMinMaxRenderDepth();
     }
 
     bool objectsAdded = processAddList();

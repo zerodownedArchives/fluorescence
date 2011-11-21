@@ -50,7 +50,7 @@ public:
     virtual boost::shared_ptr<ui::Texture> getIngameTexture() const = 0;
     virtual boost::shared_ptr<ui::Texture> getGumpTexture() const;
 
-    void updateRenderData(unsigned int elapsedMillis); ///< calls updateVertexCoordinates, updateRenderPriority, updateTextureProvider and updateAnimation
+    void updateRenderData(unsigned int elapsedMillis); ///< calls updateVertexCoordinates, updateRenderDepth, updateTextureProvider and updateAnimation
 
     const CL_Vec3f* getVertexCoordinates() const;
 
@@ -58,8 +58,6 @@ public:
     void setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const CL_Vec3f& bottom, const CL_Vec3f& left);
 
     const CL_Vec3f& getHueInfo() const;
-
-    unsigned long long getRenderPriority() const;
 
     /// returns whether or not this item is currently in the drawing area of the game window
     virtual bool isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const;
@@ -108,7 +106,7 @@ public:
 
     void invalidateTextureProvider();
     void invalidateVertexCoordinates();
-    void invalidateRenderPriority();
+    void invalidateRenderDepth();
 
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqBegin();
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd();
@@ -116,7 +114,7 @@ public:
     void setRenderDepth(unsigned long long depth);
     unsigned long long getRenderDepth() const;
 
-    void printRenderPriority() const;
+    void printRenderDepth() const;
 
 protected:
     ui::WorldRenderData worldRenderData_;
@@ -124,7 +122,7 @@ protected:
     virtual void updateTextureProvider() = 0;
     virtual bool updateAnimation(unsigned int elapsedMillis) = 0;
     virtual void updateVertexCoordinates() = 0;
-    virtual void updateRenderPriority() = 0;
+    virtual void updateRenderDepth() = 0;
 
 
     virtual void updateGumpTextureProvider();
@@ -145,7 +143,7 @@ private:
 
     void notifyRenderQueuesWorldTexture();
     void notifyRenderQueuesWorldCoordinates();
-    void notifyRenderQueuesWorldPriority();
+    void notifyRenderQueuesWorldDepth();
     void notifyRenderQueuesGump();
 
     void setParentObject();

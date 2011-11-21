@@ -8,7 +8,7 @@
 namespace fluo {
 namespace ui {
 
-RenderQueue::RenderQueue(SortFunction sortFunction) : sortFunction_(sortFunction), minRenderPriority_(0xFFFFFFFFFFFFFFFFu), maxRenderPriority_(0) {
+RenderQueue::RenderQueue(SortFunction sortFunction) : sortFunction_(sortFunction), minRenderDepth_(0xFFFFFFFFFFFFFFFFu), maxRenderDepth_(0) {
 }
 
 RenderQueue::iterator RenderQueue::begin() {
@@ -149,10 +149,10 @@ bool RenderQueue::debugIngameCheckSorted() {
         if (!sortFunction_(*last, *iter)) {
             LOG_ERROR << "RenderQueue: unsorted list elements at " << idx << std::endl;
             LOG_ERROR << "Prio last: " << std::endl;
-            (*last)->printRenderPriority();
+            (*last)->printRenderDepth();
             (*last)->onClick();
             LOG_ERROR << "Prio iter: " << std::endl;
-            (*iter)->printRenderPriority();
+            (*iter)->printRenderDepth();
             return false;
         }
     }
@@ -194,8 +194,8 @@ void RenderQueue::onObjectWorldCoordinatesChanged() {
     worldCoordinatesChanged_ = true;
 }
 
-void RenderQueue::onObjectWorldPriorityChanged() {
-    worldPriorityChanged_ = true;
+void RenderQueue::onObjectWorldDepthChanged() {
+    worldDepthChanged_ = true;
 }
 
 void RenderQueue::onGumpChanged() {
@@ -207,13 +207,13 @@ void RenderQueue::forceRepaint() {
 }
 
 bool RenderQueue::requireWorldRepaint() const {
-    return worldTextureChanged_ || worldCoordinatesChanged_ || worldPriorityChanged_ || forceRepaint_;
+    return worldTextureChanged_ || worldCoordinatesChanged_ || worldDepthChanged_ || forceRepaint_;
 }
 
 void RenderQueue::resetWorldRepaintIndicators() {
     worldTextureChanged_ = false;
     worldCoordinatesChanged_ = false;
-    worldPriorityChanged_ = false;
+    worldDepthChanged_ = false;
     forceRepaint_ = false;
 }
 
@@ -226,11 +226,11 @@ void RenderQueue::resetGumpRepaintIndicators() {
     forceRepaint_ = false;
 }
 
-void RenderQueue::updateMinMaxRenderPriority() {
+void RenderQueue::updateMinMaxRenderDepth() {
     unsigned long long cur;
 
-    minRenderPriority_ = 0xFFFFFFFFFFFFFFFFu;
-    maxRenderPriority_ = 0;
+    minRenderDepth_ = 0xFFFFFFFFFFFFFFFFu;
+    maxRenderDepth_ = 0;
     RenderQueue::iterator iter = objectList_.begin();
     RenderQueue::iterator end = objectList_.end();
 
@@ -238,10 +238,10 @@ void RenderQueue::updateMinMaxRenderPriority() {
         cur = (*iter)->getRenderDepth();
         if (cur == 0) {
             continue;
-        } else if (cur < minRenderPriority_) {
-            minRenderPriority_ = cur;
-        } else if (cur > maxRenderPriority_) {
-            maxRenderPriority_ = cur;
+        } else if (cur < minRenderDepth_) {
+            minRenderDepth_ = cur;
+        } else if (cur > maxRenderDepth_) {
+            maxRenderDepth_ = cur;
         }
     }
 
@@ -254,20 +254,20 @@ void RenderQueue::updateMinMaxRenderPriority() {
         cur = (*iter)->getRenderDepth();
         if (cur == 0) {
             continue;
-        } else if (cur < minRenderPriority_) {
-            minRenderPriority_ = cur;
-        } else if (cur > maxRenderPriority_) {
-            maxRenderPriority_ = cur;
+        } else if (cur < minRenderDepth_) {
+            minRenderDepth_ = cur;
+        } else if (cur > maxRenderDepth_) {
+            maxRenderDepth_ = cur;
         }
     }
 }
 
-unsigned long long RenderQueue::getMinRenderPriority() const {
-    return minRenderPriority_;
+unsigned long long RenderQueue::getMinRenderDepth() const {
+    return minRenderDepth_;
 }
 
-unsigned long long RenderQueue::getMaxRenderPriority() const {
-    return maxRenderPriority_;
+unsigned long long RenderQueue::getMaxRenderDepth() const {
+    return maxRenderDepth_;
 }
 
 }

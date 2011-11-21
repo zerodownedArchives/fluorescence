@@ -15,7 +15,7 @@
 namespace fluo {
 namespace ui {
 
-bool GumpRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
+bool GumpRenderQueue::renderDepthComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
     // mobile is always rendered first;
     if (a->isMobile()) {
         return true;
@@ -46,14 +46,14 @@ bool GumpRenderQueue::renderPriorityComparator(const boost::shared_ptr<world::In
     }
 
     if (layerPriorities_[aLayer] == layerPriorities_[bLayer]) {
-        LOG_WARN << "2 Items at same layer in GumpRenderQueue::renderPriorityComparator" << std::endl;
+        LOG_WARN << "2 Items at same layer in GumpRenderQueue::renderDepthComparator" << std::endl;
         return true;
     }
 
     return layerPriorities_[aLayer] <= layerPriorities_[bLayer];
 }
 
-GumpRenderQueue::GumpRenderQueue() : RenderQueue(boost::bind(&GumpRenderQueue::renderPriorityComparator, this, _1, _2)) {
+GumpRenderQueue::GumpRenderQueue() : RenderQueue(boost::bind(&GumpRenderQueue::renderDepthComparator, this, _1, _2)) {
     layerPriorities_ = Client::getSingleton()->getConfig()["/fluo/ui/layer-priorities@paperdoll"].asIntList();
 }
 
