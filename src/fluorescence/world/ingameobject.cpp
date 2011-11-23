@@ -377,6 +377,10 @@ bool IngameObject::isSpeech() const {
     return objectType_ == TYPE_SPEECH;
 }
 
+bool IngameObject::isParticleEffect() const {
+    return objectType_ == TYPE_PARTICLE_EFFECT;
+}
+
 void IngameObject::onDelete() {
     boost::shared_ptr<IngameObject> parent = parentObject_.lock();
     if (parent) {

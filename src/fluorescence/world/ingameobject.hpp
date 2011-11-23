@@ -32,6 +32,7 @@ public:
         TYPE_DYNAMIC_ITEM,
         TYPE_MOBILE,
         TYPE_SPEECH,
+        TYPE_PARTICLE_EFFECT,
     };
 
     IngameObject(unsigned int objectType);
@@ -101,6 +102,7 @@ public:
     bool isDynamicItem() const;
     bool isMobile() const;
     bool isSpeech() const;
+    bool isParticleEffect() const;
 
     const ui::WorldRenderData& getWorldRenderData() const;
 

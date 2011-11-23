@@ -20,6 +20,7 @@ public:
 private:
     boost::shared_ptr<CL_ProgramObject> worldShader_;
     boost::shared_ptr<CL_ProgramObject> gumpShader_;
+    boost::shared_ptr<CL_ProgramObject> particleShader_;
 };
 
 }

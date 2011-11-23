@@ -104,6 +104,22 @@ set (TARGETING_CPP
     ui/targeting/servertarget.cpp
     )
 
+set (PARTICLES_HPP
+    ui/particles/emittable.hpp
+    ui/particles/emitter.hpp
+    ui/particles/particle.hpp
+    ui/particles/particleemitter.hpp
+    ui/particles/emitteremitter.hpp
+    )
 
-SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${RENDER_HPP} ${RENDER_CPP} ${TARGETING_HPP} ${TARGETING_CPP} PARENT_SCOPE)
+set (PARTICLES_CPP
+    ui/particles/emittable.cpp
+    ui/particles/emitter.cpp
+    ui/particles/particle.cpp
+    ui/particles/particleemitter.cpp
+    ui/particles/emitteremitter.cpp
+    )
+
+
+SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${RENDER_HPP} ${RENDER_CPP} ${TARGETING_HPP} ${TARGETING_CPP} ${PARTICLES_HPP} ${PARTICLES_CPP} PARENT_SCOPE)
 

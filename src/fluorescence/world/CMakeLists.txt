@@ -13,6 +13,7 @@ set (WORLD_HPP
     world/overheadmessage.hpp
     world/smoothmovement.hpp
     world/smoothmovementmanager.hpp
+    world/particleeffect.hpp
     )
 
 set (WORLD_CPP
@@ -29,6 +30,7 @@ set (WORLD_CPP
     world/overheadmessage.cpp
     world/smoothmovement.cpp
     world/smoothmovementmanager.cpp
+    world/particleeffect.cpp
     )
 
 set(WORLD_FILES ${WORLD_HPP} ${WORLD_CPP} PARENT_SCOPE)
