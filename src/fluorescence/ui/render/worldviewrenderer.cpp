@@ -170,24 +170,37 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
 
 
     static particles::ParticleEmitter testEmitter(
-            CL_Vec3f(300, 300, 0),
+            CL_Vec3f(330, 270, 0),
             CL_Vec3f(0, 0, 0),
             CL_Vec3f(0, 0, 0),
             0,
             15,
             10000,
-            500,
+            200,
             false
     );
     testEmitter.update(0.01); // simulate 10 ms
     shader = ui::Manager::getShaderManager()->getParticleShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
 
+    CL_Pen defPen = gc.get_pen();
+    CL_Pen pen;
+    pen.set_point_size(1.0);
+    pen.enable_vertex_program_point_size(true);
+    pen.enable_point_sprite(true);
+    gc.set_pen(pen);
+
+    CL_PixelBuffer buf("small.png");
+    CL_Texture tex(gc, buf.get_width(), buf.get_height());
+    tex.set_image(buf);
+    gc.set_texture(0, tex);
+
     testEmitter.render(gc, shader);
 
     ++renderDiff;
     //fluo::sleepMs(20);
 
+    gc.set_pen(defPen);
     gc.reset_program_object();
 }
 

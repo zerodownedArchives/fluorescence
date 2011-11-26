@@ -1,4 +1,6 @@
 uniform mat4 cl_ModelViewProjectionMatrix;
+
+uniform sampler2D Texture0;
 uniform bool EmittedMoveWithEmitter;
 uniform float CurrentTime;
 
@@ -19,16 +21,15 @@ void main(void) {
     float normalizedAge = age / (Lifetime[1] - Lifetime[0]);
     
     // interpolate position
-    // vec3 positionDelta = VelocityStart * normalizedAge + 
+    vec3 positionDelta = VelocityStart * normalizedAge + 
             (VelocityEnd - VelocityStart) * normalizedAge * normalizedAge / 2.0;
-    
-    vec3 positionDelta = VelocityStart;
     
     gl_Position.xyz = PositionStart + positionDelta * age;
     gl_Position.w = 1;
     
     gl_Position = cl_ModelViewProjectionMatrix * gl_Position;
     
+    gl_PointSize = 10.0;
     
     // interpolate color
     Color = mix(ColorStart, ColorEnd, normalizedAge);
