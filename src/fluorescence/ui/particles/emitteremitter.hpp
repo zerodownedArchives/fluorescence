@@ -3,7 +3,7 @@
 
 #include "emitter.hpp"
 
-#include <vector>
+#include <list>
 #include <boost/shared_ptr.hpp>
 
 namespace fluo {
@@ -13,13 +13,11 @@ namespace particles {
 class EmitterEmitter : public Emitter {
 public:
     virtual unsigned int emittedCount() const;
-    virtual void emit(unsigned int count);
+    virtual void updateSet(unsigned int newCount, float elapsedSeconds);
     virtual void render(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader);
 
 private:
-    std::vector<boost::shared_ptr<Emitter> > emitters_;
-
-    virtual void onUpdate(unsigned int elapsedMillis);
+    std::list<boost::shared_ptr<Emitter> > emitters_;
 };
 
 }

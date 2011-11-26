@@ -19,6 +19,10 @@
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
 
+
+
+#include <ui/particles/particleemitter.hpp>
+
 namespace fluo {
 namespace ui {
 
@@ -157,6 +161,34 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     gc.set_buffer_control(buffer_control);
 
     renderQueue_->postRender(renderingComplete);
+
+
+
+
+
+
+
+
+    static particles::ParticleEmitter testEmitter(
+            CL_Vec3f(300, 300, 0),
+            CL_Vec3f(0, 0, 0),
+            CL_Vec3f(0, 0, 0),
+            0,
+            15,
+            10000,
+            500,
+            false
+    );
+    testEmitter.update(0.01); // simulate 10 ms
+    shader = ui::Manager::getShaderManager()->getParticleShader();
+    gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
+
+    testEmitter.render(gc, shader);
+
+    ++renderDiff;
+    //fluo::sleepMs(20);
+
+    gc.reset_program_object();
 }
 
 boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {

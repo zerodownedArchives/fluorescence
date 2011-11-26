@@ -3,7 +3,9 @@
 
 #include "emittable.hpp"
 
-#include "ClanLib/Display/Render/graphic_context.h"
+#include <boost/shared_ptr.hpp>
+#include <ClanLib/Display/Render/graphic_context.h>
+class CL_ProgramObject;
 
 namespace fluo {
 namespace ui {
@@ -11,30 +13,40 @@ namespace particles {
 
 class Emitter : public Emittable {
 public:
-    unsigned int emittedMaxCount_;
-    float emitPerSecond_;
-    float elapsedSecondsStore_;
-    float age_;
+    Emitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
+            float emitPerSec, bool emittedMoveWithEmitter);
+    void reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
+            float emitPerSec, bool emittedMoveWithEmitter);
 
-    bool emittedMoveWithEmitter_;
-
-    CL_Vec3f position_;
-
-    // overloaded from ingameobject
-    virtual void update(unsigned int elapsedMillis);
-
-    // to pass on to children
-    virtual void onUpdate(unsigned int elapsedMillis) = 0;
+    // updateSet is used to propagate the change internally (e.g. to children)
+    virtual void update(float elapsedSeconds);
 
     virtual unsigned int emittedCount() const = 0;
-
-    bool isExpired() const;
 
     virtual void render(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader) = 0;
 
 
 protected:
-    virtual void emit(unsigned int count) = 0;
+    virtual void updateSet(unsigned int newCount, float elapsedSeconds) = 0;
+
+    unsigned int emittedMaxCount_;
+    float emitPerSecond_;
+
+    CL_Vec3f position_;
+
+    float age_;
+    float emittedFractionStore_;
+
+
+    // parameters for the emitted objects
+    CL_Vec3f emittedVelocityStartMin_;
+    CL_Vec3f emittedVelocityStartMax_;
+    CL_Vec3f emittedVelocityEndMin_;
+    CL_Vec3f emittedVelocityEndMax_;
+    float emittedLifetimeMin_;
+    float emittedLifetimeMax_;
+
+    bool emittedMoveWithEmitter_;
 };
 
 }

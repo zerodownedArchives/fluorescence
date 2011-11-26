@@ -16,6 +16,7 @@ public:
 
     boost::shared_ptr<CL_ProgramObject> getWorldShader();
     boost::shared_ptr<CL_ProgramObject> getGumpShader();
+    boost::shared_ptr<CL_ProgramObject> getParticleShader();
 
 private:
     boost::shared_ptr<CL_ProgramObject> worldShader_;
