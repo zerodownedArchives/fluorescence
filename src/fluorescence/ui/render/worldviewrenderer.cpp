@@ -173,20 +173,20 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     ++cnt;
 
 
-    static boost::shared_ptr<particles::StartPositionProviderOvalOutline> posProv(new particles::StartPositionProviderOvalOutline());
-    posProv->setSize(40, 20, 70, 70);
+    static boost::shared_ptr<particles::StartPositionProviderBoxOutline> posProv(new particles::StartPositionProviderBoxOutline());
+    posProv->setSize(100, 40, 40, 100);
     static boost::shared_ptr<particles::MotionModelStartEndVelocity> moMo(new particles::MotionModelStartEndVelocity());
-    moMo->setStartVelocities(CL_Vec3f(40, 0, 0), CL_Vec3f(50, 0, 0), CL_Vec3f(30, 0, 0), CL_Vec3f(40, 0, 0));
-    moMo->setEndVelocities(CL_Vec3f(0, 0, 0), CL_Vec3f(0, 0, 0), CL_Vec3f(0, 0, 0), CL_Vec3f(0, 0, 0));
+    moMo->setVelocityAndAccelerationT0(CL_Vec3f(-20, -20, 0), CL_Vec3f(20, 20, 0), 0.3f, 0.4f);
+    moMo->setVelocityAndAccelerationT1(CL_Vec3f(-10, -10, 0), CL_Vec3f(10, 10, 0), 0.3f, 0.4f);
     static particles::ParticleEmitter testEmitter(
             CL_Vec3f(100, 205, 0),
             CL_Vec3f(0, 0, 0),
             CL_Vec3f(0, 0, 0),
             0,
-            5,
-            100,
+            8,
+            1000,
             10000,
-            200,
+            1000,
             false,
             boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv),
             boost::dynamic_pointer_cast<particles::MotionModel>(moMo)
@@ -194,7 +194,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
 
     static boost::shared_ptr<particles::StartPositionProviderOval> posProv2(new particles::StartPositionProviderOval());
     posProv2->setSize(30, 30, 20, 20);
-    static boost::shared_ptr<particles::MotionModelStartEndVelocity> moMo2(new particles::MotionModelStartEndVelocity());
+    static boost::shared_ptr<particles::MotionModelStatic> moMo2(new particles::MotionModelStatic());
     static particles::ParticleEmitter testEmitter2(
             CL_Vec3f(100, 255, 0),
             CL_Vec3f(200, 30, 0),
@@ -203,7 +203,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
             5,
             200,
             10000,
-            500,
+            1000,
             true,
             boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv2),
             boost::dynamic_pointer_cast<particles::MotionModel>(moMo2)
@@ -212,8 +212,8 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     static boost::shared_ptr<particles::StartPositionProviderOvalOutline> posProv3(new particles::StartPositionProviderOvalOutline());
     posProv3->setSize(40, 40, 100, 100);
     static boost::shared_ptr<particles::MotionModelAwayFromEmitter> moMo3(new particles::MotionModelAwayFromEmitter());
-    moMo3->setStartAcceleration(30, 35, 8, 10);
-    moMo3->setEndAcceleration(10, 12, 3, 4);
+    moMo3->setAccelerationT0(30, 35, 8, 10);
+    moMo3->setAccelerationT1(10, 12, 3, 4);
 
     static particles::ParticleEmitter testEmitter3(
             CL_Vec3f(500, 305, 0),
@@ -223,7 +223,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
             14,
             200,
             10000,
-            200,
+            700,
             false,
             boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv3),
             boost::dynamic_pointer_cast<particles::MotionModel>(moMo3)

@@ -23,13 +23,8 @@ ParticleEmitter::ParticleEmitter(const CL_Vec3f& startPos, const CL_Vec3f& velSt
 
     particles_ = new Particle[maxCount];
 
-    emittedMoveWithEmitter_ = false;
-
     emittedLifetimeMin_ = 1.0;
     emittedLifetimeMax_ = 2.0;
-
-    emitPerSecond_ = 1000;
-
 
     emittedColorStartMin_ = CL_Vec4f(0.9, 0.65, 0.0, 0.4);
     emittedColorStartMax_ = CL_Vec4f(1.0, 0.85, 0.0, 0.6);

@@ -10,8 +10,9 @@ namespace particles {
 class MotionModel {
 public:
     enum {
-        TYPE_START_END_VELOCITY = 0,
-        TYPE_AWAY_FROM_EMITTER = 1,
+        TYPE_STATIC = 0,
+        TYPE_START_END_VELOCITY = 1,
+        TYPE_AWAY_FROM_EMITTER = 2,
     };
 
 
@@ -27,30 +28,42 @@ private:
 };
 
 
+class MotionModelStatic : public MotionModel {
+public:
+    MotionModelStatic();
+
+    virtual void setNormalizedAge(float age);
+    virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const;
+};
+
+
 class MotionModelStartEndVelocity : public MotionModel {
 public:
     MotionModelStartEndVelocity();
 
-    void setStartVelocities(const CL_Vec3f& startMin, const CL_Vec3f& startMax, const CL_Vec3f& endMin, const CL_Vec3f& endMax);
-    void setEndVelocities(const CL_Vec3f& startMin, const CL_Vec3f& startMax, const CL_Vec3f& endMin, const CL_Vec3f& endMax);
+    void setVelocitiesT0(const CL_Vec3f& startMin, const CL_Vec3f& startMax, const CL_Vec3f& endMin, const CL_Vec3f& endMax);
+    void setVelocitiesT1(const CL_Vec3f& startMin, const CL_Vec3f& startMax, const CL_Vec3f& endMin, const CL_Vec3f& endMax);
+
+    void setVelocityAndAccelerationT0(const CL_Vec3f& startMin, const CL_Vec3f& startMax, float accelMin, float accelMax);
+    void setVelocityAndAccelerationT1(const CL_Vec3f& startMin, const CL_Vec3f& startMax, float accelMin, float accelMax);
 
     virtual void setNormalizedAge(float age);
     virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const;
 
 private:
-    CL_Vec3f startVelocityMinStart_;
-    CL_Vec3f startVelocityMinEnd_;
-    CL_Vec3f startVelocityMaxStart_;
-    CL_Vec3f startVelocityMaxEnd_;
-    CL_Vec3f endVelocityMinStart_;
-    CL_Vec3f endVelocityMinEnd_;
-    CL_Vec3f endVelocityMaxStart_;
-    CL_Vec3f endVelocityMaxEnd_;
+    CL_Vec3f startVelocityMinT0_;
+    CL_Vec3f startVelocityMinT1_;
+    CL_Vec3f startVelocityMaxT0_;
+    CL_Vec3f startVelocityMaxT1_;
+    CL_Vec3f endVelocityMinT0_;
+    CL_Vec3f endVelocityMinT1_;
+    CL_Vec3f endVelocityMaxT0_;
+    CL_Vec3f endVelocityMaxT1_;
 
-    CL_Vec3f startVelocityMinCur_;
-    CL_Vec3f startVelocityMaxCur_;
-    CL_Vec3f endVelocityMinCur_;
-    CL_Vec3f endVelocityMaxCur_;
+    CL_Vec3f startVelocityMinTx_;
+    CL_Vec3f startVelocityMaxTx_;
+    CL_Vec3f endVelocityMinTx_;
+    CL_Vec3f endVelocityMaxTx_;
 };
 
 
@@ -58,27 +71,28 @@ class MotionModelAwayFromEmitter : public MotionModel {
 public:
     MotionModelAwayFromEmitter();
 
-    void setStartAcceleration(float startMin, float startMax, float endMin, float endMax);
-    void setEndAcceleration(float startMin, float startMax, float endMin, float endMax);
+    void setAccelerationT0(float startMin, float startMax, float endMin, float endMax);
+    void setAccelerationT1(float startMin, float startMax, float endMin, float endMax);
 
     virtual void setNormalizedAge(float age);
     virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const;
 
 private:
-    float startAccelerationMinStart_;
-    float startAccelerationMinEnd_;
-    float startAccelerationMaxStart_;
-    float startAccelerationMaxEnd_;
-    float endAccelerationMinStart_;
-    float endAccelerationMinEnd_;
-    float endAccelerationMaxStart_;
-    float endAccelerationMaxEnd_;
+    float startAccelerationMinT0_;
+    float startAccelerationMinT1_;
+    float startAccelerationMaxT0_;
+    float startAccelerationMaxT1_;
+    float endAccelerationMinT0_;
+    float endAccelerationMinT1_;
+    float endAccelerationMaxT0_;
+    float endAccelerationMaxT1_;
 
-    float startAccelerationMinCur_;
-    float startAccelerationMaxCur_;
-    float endAccelerationMinCur_;
-    float endAccelerationMaxCur_;
+    float startAccelerationMinTx_;
+    float startAccelerationMaxTx_;
+    float endAccelerationMinTx_;
+    float endAccelerationMaxTx_;
 };
+
 
 }
 }
