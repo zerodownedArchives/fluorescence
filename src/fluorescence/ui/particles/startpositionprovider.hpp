@@ -37,23 +37,23 @@ private:
     float heightHalfEnd_;
 };
 
-class StartPositionProviderRandomBox : public StartPositionProviderWithSize {
+class StartPositionProviderBox : public StartPositionProviderWithSize {
 public:
     virtual CL_Vec3f get(const CL_Vec3f& emitterPosition) const;
 };
 
-class StartPositionProviderRandomBoxOutline : public StartPositionProviderWithSize {
+class StartPositionProviderBoxOutline : public StartPositionProviderWithSize {
 public:
     virtual CL_Vec3f get(const CL_Vec3f& emitterPosition) const;
 };
 
 
-class StartPositionProviderRandomOval : public StartPositionProviderWithSize {
+class StartPositionProviderOval : public StartPositionProviderWithSize {
 public:
     virtual CL_Vec3f get(const CL_Vec3f& emitterPosition) const;
 };
 
-class StartPositionProviderRandomOvalOutline : public StartPositionProviderWithSize {
+class StartPositionProviderOvalOutline : public StartPositionProviderWithSize {
 public:
     virtual CL_Vec3f get(const CL_Vec3f& emitterPosition) const;
 };

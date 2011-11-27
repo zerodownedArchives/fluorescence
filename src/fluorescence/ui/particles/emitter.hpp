@@ -12,13 +12,22 @@ namespace ui {
 namespace particles {
 
 class StartPositionProvider;
+class MotionModel;
 
 class Emitter : public Emittable {
 public:
-    Emitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
-            float emitPerSec, bool emittedMoveWithEmitter, const boost::shared_ptr<StartPositionProvider>& startPosProvider);
-    void reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
-            float emitPerSec, bool emittedMoveWithEmitter, const boost::shared_ptr<StartPositionProvider>& startPosProvider);
+    Emitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
+            float creationTime, float expireTime,
+            unsigned int startCount, unsigned int maxCount, float emitPerSec,
+            bool emittedMoveWithEmitter,
+            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
+            const boost::shared_ptr<MotionModel>& emittedMotionModel);
+    void reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
+            float creationTime, float expireTime,
+            unsigned int startCount, unsigned int maxCount, float emitPerSec,
+            bool emittedMoveWithEmitter,
+            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
+            const boost::shared_ptr<MotionModel>& emittedMotionModel);
 
     // updateSet is used to propagate the change internally (e.g. to children)
     virtual void update(float elapsedSeconds);
@@ -31,6 +40,7 @@ public:
 protected:
     virtual void updateSet(unsigned int newCount, float elapsedSeconds) = 0;
 
+    unsigned int emittedStartCount_;
     unsigned int emittedMaxCount_;
     float emitPerSecond_;
 
@@ -42,16 +52,13 @@ protected:
 
 
     // parameters for the emitted objects
-    CL_Vec3f emittedVelocityStartMin_;
-    CL_Vec3f emittedVelocityStartMax_;
-    CL_Vec3f emittedVelocityEndMin_;
-    CL_Vec3f emittedVelocityEndMax_;
     float emittedLifetimeMin_;
     float emittedLifetimeMax_;
 
     bool emittedMoveWithEmitter_;
 
-    boost::shared_ptr<StartPositionProvider> startPositionProvider_;
+    boost::shared_ptr<StartPositionProvider> emittedStartPositionProvider_;
+    boost::shared_ptr<MotionModel> emittedMotionModel_;
 };
 
 }

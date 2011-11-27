@@ -4,37 +4,50 @@
 #include <algorithm>
 
 #include "startpositionprovider.hpp"
+#include "motionmodel.hpp"
 
 namespace fluo {
 namespace ui {
 namespace particles {
 
 
-Emitter::Emitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
-        float emitPerSec, bool emittedMoveWithEmitter, const boost::shared_ptr<StartPositionProvider>& startPosProvider) :
+Emitter::Emitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
+            float creationTime, float expireTime,
+            unsigned int startCount, unsigned int maxCount, float emitPerSec,
+            bool emittedMoveWithEmitter,
+            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
+            const boost::shared_ptr<MotionModel>& emittedMotionModel) :
     Emittable(startPos, velStart, velEnd, creationTime, expireTime),
+    emittedStartCount_(startCount),
     emittedMaxCount_(maxCount),
     emitPerSecond_(emitPerSec),
     position_(startPosition_),
     age_(0),
     emittedFractionStore_(0.99999f), // to emit at least one child at the start
     emittedMoveWithEmitter_(emittedMoveWithEmitter),
-    startPositionProvider_(startPosProvider)
+    emittedStartPositionProvider_(emittedStartPosProvider),
+    emittedMotionModel_(emittedMotionModel)
     {
 
 }
 
-void Emitter::reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
-        float emitPerSec, bool emittedMoveWithEmitter, const boost::shared_ptr<StartPositionProvider>& startPosProvider) {
+void Emitter::reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
+            float creationTime, float expireTime,
+            unsigned int startCount, unsigned int maxCount, float emitPerSec,
+            bool emittedMoveWithEmitter,
+            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
+            const boost::shared_ptr<MotionModel>& emittedMotionModel) {
 
     Emittable::reset(startPos, velStart, velEnd, creationTime, expireTime);
+    emittedStartCount_ = emittedStartCount_;
     emittedMaxCount_ = maxCount;
     emitPerSecond_ = emitPerSec;
     position_ = startPosition_;
     emittedMoveWithEmitter = emittedMoveWithEmitter;
     age_ = 0;
     emittedFractionStore_ = 0.99999f; // to emit at least one child at the start
-    startPositionProvider_ = startPosProvider;
+    emittedStartPositionProvider_ = emittedStartPosProvider;
+    emittedMotionModel_ = emittedMotionModel;
 }
 
 void Emitter::update(float elapsedSeconds) {
@@ -47,7 +60,9 @@ void Emitter::update(float elapsedSeconds) {
     CL_Vec3f positionDelta = velocityStart_ * normalizedAge_ +
             (velocityEnd_ - velocityStart_) * normalizedAge_ * normalizedAge_ / 2.0;
     position_ = startPosition_ + positionDelta * expireAge;
-    startPositionProvider_->setNormalizedAge(normalizedAge_);
+
+    emittedStartPositionProvider_->setNormalizedAge(normalizedAge_);
+    emittedMotionModel_->setNormalizedAge(normalizedAge_);
 
 
     float newCountF  = elapsedSeconds * emitPerSecond_ + emittedFractionStore_;

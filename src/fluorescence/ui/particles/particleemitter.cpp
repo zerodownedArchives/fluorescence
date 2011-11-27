@@ -6,25 +6,24 @@
 #include <misc/random.hpp>
 
 #include "startpositionprovider.hpp"
+#include "motionmodel.hpp"
 
 namespace fluo {
 namespace ui {
 namespace particles {
 
-ParticleEmitter::ParticleEmitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
-            float emitPerSec, bool emittedMoveWithEmitter, const boost::shared_ptr<StartPositionProvider>& startPosProvider) :
-        Emitter(startPos, velStart, velEnd, creationTime, expireTime, maxCount, emitPerSec, emittedMoveWithEmitter, startPosProvider),
+ParticleEmitter::ParticleEmitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
+            float creationTime, float expireTime,
+            unsigned int startCount, unsigned int maxCount, float emitPerSec,
+            bool emittedMoveWithEmitter,
+            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
+            const boost::shared_ptr<MotionModel>& emittedMotionModel) :
+        Emitter(startPos, velStart, velEnd, creationTime, expireTime, startCount, maxCount, emitPerSec, emittedMoveWithEmitter, emittedStartPosProvider, emittedMotionModel),
         particleCount_(0) {
 
     particles_ = new Particle[maxCount];
 
     emittedMoveWithEmitter_ = false;
-
-    emittedVelocityStartMin_ = CL_Vec3f(-25, -25, 0);
-    emittedVelocityStartMax_ = CL_Vec3f(25, 25, 0);
-
-    emittedVelocityEndMin_ = CL_Vec3f(-5, -5, 0);
-    emittedVelocityEndMax_ = CL_Vec3f(5, 5, 0);
 
     emittedLifetimeMin_ = 1.0;
     emittedLifetimeMax_ = 2.0;
@@ -43,8 +42,12 @@ ParticleEmitter::~ParticleEmitter() {
     particleCount_ = 0;
 }
 
-void ParticleEmitter::reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
-        float emitPerSec, bool emittedMoveWithEmitter, const boost::shared_ptr<StartPositionProvider>& startPosProvider) {
+void ParticleEmitter::reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
+            float creationTime, float expireTime,
+            unsigned int startCount, unsigned int maxCount, float emitPerSec,
+            bool emittedMoveWithEmitter,
+            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
+            const boost::shared_ptr<MotionModel>& emittedMotionModel) {
 
     if (maxCount != emittedMaxCount_) {
         delete [] particles_;
@@ -52,7 +55,7 @@ void ParticleEmitter::reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, 
         particleCount_ = 0;
     }
 
-    Emitter::reset(startPos, velStart, velEnd, creationTime, expireTime, maxCount, emitPerSec, emittedMoveWithEmitter, startPosProvider);
+    Emitter::reset(startPos, velStart, velEnd, creationTime, expireTime, startCount, maxCount, emitPerSec, emittedMoveWithEmitter, emittedStartPosProvider, emittedMotionModel);
 }
 
 unsigned int ParticleEmitter::emittedCount() const {
@@ -60,6 +63,14 @@ unsigned int ParticleEmitter::emittedCount() const {
 }
 
 void ParticleEmitter::updateSet(unsigned int newCount, float elapsedSeconds) {
+    if (emittedStartCount_ > 0) {
+        for (unsigned int i = 0; i < emittedStartCount_; ++i) {
+            initParticle(i);
+            ++particleCount_;
+        }
+        emittedStartCount_ = 0;
+    }
+
     for (unsigned int i = 0; i < particleCount_; ++i) {
         if (particles_[i].isExpired(age_)) {
             if (!isExpired(age_)) {
@@ -111,12 +122,9 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
 
 void ParticleEmitter::initParticle(unsigned int index) {
     particles_[index].reset(
-        //position_ + Random::randomMinMax(CL_Vec3f(-7, -5, 0), CL_Vec3f(7, 5, 0)),
-        //Random::randomMinMax(emittedVelocityStartMin_, emittedVelocityStartMax_),
-        //Random::randomMinMax(emittedVelocityEndMin_, emittedVelocityEndMax_),
-        startPositionProvider_->get(position_),
-        CL_Vec3f(0, 0, 0),
-        CL_Vec3f(0, 0, 0),
+        emittedStartPositionProvider_->get(position_),
+        emittedMotionModel_->getParam1(position_),
+        emittedMotionModel_->getParam2(position_),
         age_, // creation time
         age_ + Random::randomMinMax(emittedLifetimeMin_, emittedLifetimeMax_),
         Random::randomMinMax(emittedColorStartMin_, emittedColorStartMax_),

@@ -31,7 +31,7 @@ void StartPositionProviderWithSize::setNormalizedAge(float age) {
 }
 
 
-CL_Vec3f StartPositionProviderRandomBox::get(const CL_Vec3f& emitterPosition) const {
+CL_Vec3f StartPositionProviderBox::get(const CL_Vec3f& emitterPosition) const {
     CL_Vec3f ret(emitterPosition);
 
     ret.x += Random::randomMinMax(-curWidthHalf_, curWidthHalf_);
@@ -41,7 +41,7 @@ CL_Vec3f StartPositionProviderRandomBox::get(const CL_Vec3f& emitterPosition) co
 }
 
 
-CL_Vec3f StartPositionProviderRandomBoxOutline::get(const CL_Vec3f& emitterPosition) const {
+CL_Vec3f StartPositionProviderBoxOutline::get(const CL_Vec3f& emitterPosition) const {
     CL_Vec3f ret(emitterPosition);
 
     if (Random::randomBool()) {
@@ -56,7 +56,7 @@ CL_Vec3f StartPositionProviderRandomBoxOutline::get(const CL_Vec3f& emitterPosit
 }
 
 
-CL_Vec3f StartPositionProviderRandomOval::get(const CL_Vec3f& emitterPosition) const {
+CL_Vec3f StartPositionProviderOval::get(const CL_Vec3f& emitterPosition) const {
     CL_Vec3f ret(emitterPosition);
 
     float theta = Random::random01() * 6.283185;
@@ -69,7 +69,7 @@ CL_Vec3f StartPositionProviderRandomOval::get(const CL_Vec3f& emitterPosition) c
 }
 
 
-CL_Vec3f StartPositionProviderRandomOvalOutline::get(const CL_Vec3f& emitterPosition) const {
+CL_Vec3f StartPositionProviderOvalOutline::get(const CL_Vec3f& emitterPosition) const {
     CL_Vec3f ret(emitterPosition);
 
     float theta = Random::random01() * 6.283185;

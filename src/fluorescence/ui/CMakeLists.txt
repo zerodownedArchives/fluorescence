@@ -111,6 +111,7 @@ set (PARTICLES_HPP
     ui/particles/particleemitter.hpp
     ui/particles/emitteremitter.hpp
     ui/particles/startpositionprovider.hpp
+    ui/particles/motionmodel.hpp
     )
 
 set (PARTICLES_CPP
@@ -120,6 +121,7 @@ set (PARTICLES_CPP
     ui/particles/particleemitter.cpp
     ui/particles/emitteremitter.cpp
     ui/particles/startpositionprovider.cpp
+    ui/particles/motionmodel.cpp
     )
 
 

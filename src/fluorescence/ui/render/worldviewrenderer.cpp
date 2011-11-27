@@ -23,6 +23,7 @@
 
 #include <ui/particles/particleemitter.hpp>
 #include <ui/particles/startpositionprovider.hpp>
+#include <ui/particles/motionmodel.hpp>
 
 namespace fluo {
 namespace ui {
@@ -172,46 +173,57 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     ++cnt;
 
 
-    static boost::shared_ptr<particles::StartPositionProviderRandomBoxOutline> posProv(new particles::StartPositionProviderRandomBoxOutline());
-    posProv->setSize(100, 40, 40, 100);
+    static boost::shared_ptr<particles::StartPositionProviderOvalOutline> posProv(new particles::StartPositionProviderOvalOutline());
+    posProv->setSize(40, 20, 70, 70);
+    static boost::shared_ptr<particles::MotionModelStartEndVelocity> moMo(new particles::MotionModelStartEndVelocity());
+    moMo->setStartVelocities(CL_Vec3f(40, 0, 0), CL_Vec3f(50, 0, 0), CL_Vec3f(30, 0, 0), CL_Vec3f(40, 0, 0));
+    moMo->setEndVelocities(CL_Vec3f(0, 0, 0), CL_Vec3f(0, 0, 0), CL_Vec3f(0, 0, 0), CL_Vec3f(0, 0, 0));
     static particles::ParticleEmitter testEmitter(
             CL_Vec3f(100, 205, 0),
             CL_Vec3f(0, 0, 0),
             CL_Vec3f(0, 0, 0),
             0,
             5,
+            100,
             10000,
             200,
             false,
-            boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv)
+            boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv),
+            boost::dynamic_pointer_cast<particles::MotionModel>(moMo)
     );
 
-    static boost::shared_ptr<particles::StartPositionProviderRandomOvalOutline> posProv2(new particles::StartPositionProviderRandomOvalOutline());
-    posProv2->setSize(50, 50, 20, 20);
+    static boost::shared_ptr<particles::StartPositionProviderOval> posProv2(new particles::StartPositionProviderOval());
+    posProv2->setSize(30, 30, 20, 20);
+    static boost::shared_ptr<particles::MotionModelStartEndVelocity> moMo2(new particles::MotionModelStartEndVelocity());
     static particles::ParticleEmitter testEmitter2(
-            CL_Vec3f(300, 255, 0),
-            CL_Vec3f(100, 30, 0),
+            CL_Vec3f(100, 255, 0),
+            CL_Vec3f(200, 30, 0),
             CL_Vec3f(0, 0, 0),
             0,
-            12,
-            10000,
+            5,
             200,
+            10000,
+            500,
             true,
-            boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv2)
+            boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv2),
+            boost::dynamic_pointer_cast<particles::MotionModel>(moMo2)
     );
 
-    static boost::shared_ptr<particles::StartPositionProviderRandomOvalOutline> posProv3(new particles::StartPositionProviderRandomOvalOutline());
+    static boost::shared_ptr<particles::StartPositionProviderOvalOutline> posProv3(new particles::StartPositionProviderOvalOutline());
     posProv3->setSize(40, -40, 100, 100);
+    static boost::shared_ptr<particles::MotionModelStartEndVelocity> moMo3(new particles::MotionModelStartEndVelocity());
     static particles::ParticleEmitter testEmitter3(
             CL_Vec3f(500, 305, 0),
             CL_Vec3f(0, 0, 0),
             CL_Vec3f(0, 0, 0),
             0,
             14,
+            200,
             10000,
             200,
             false,
-            boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv3)
+            boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv3),
+            boost::dynamic_pointer_cast<particles::MotionModel>(moMo3)
     );
 
     if (cnt >= 300) {
