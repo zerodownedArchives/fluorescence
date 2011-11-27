@@ -36,9 +36,13 @@ void Emitter::reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL
 void Emitter::update(float elapsedSeconds) {
     //float elapsedSeconds = ((float)elapsedMillis / 1000.f);
 
-    // TODO: update own properties (position etc)
-
+    // update own properties
     age_ += elapsedSeconds;
+    float expireAge = (lifetimes_[1u] - lifetimes_[0u]);
+    float normalizedAge = age_ / expireAge;
+    CL_Vec3f positionDelta = velocityStart_ * normalizedAge +
+            (velocityEnd_ - velocityStart_) * normalizedAge * normalizedAge / 2.0;
+    position_ = startPosition_ + positionDelta * expireAge;
 
 
     float newCountF  = elapsedSeconds * emitPerSecond_ + emittedFractionStore_;

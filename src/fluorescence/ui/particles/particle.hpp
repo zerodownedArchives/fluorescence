@@ -21,10 +21,16 @@ public:
     Particle(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, const CL_Vec4f colStart, const CL_Vec4f& colEnd);
     void reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, const CL_Vec4f colStart, const CL_Vec4f& colEnd);
 
+    bool isRemoved() const;
+
+    // does not destroy the particle, but moves it out of sight
+    void remove();
 
 protected:
     CL_Vec4f colorStart_;
     CL_Vec4f colorEnd_;
+
+    bool isRemoved_;
 };
 
 }

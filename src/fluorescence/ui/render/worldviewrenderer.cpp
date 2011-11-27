@@ -167,19 +167,53 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
 
 
 
+    static unsigned int cnt = 0;
+    ++cnt;
 
 
     static particles::ParticleEmitter testEmitter(
-            CL_Vec3f(330, 270, 0),
-            CL_Vec3f(0, 0, 0),
-            CL_Vec3f(0, 0, 0),
+            CL_Vec3f(0, 205, 0),
+            CL_Vec3f(300, -60, 0),
+            CL_Vec3f(275, -60, 0),
             0,
-            15,
+            1,
             10000,
             200,
             false
     );
-    testEmitter.update(0.01); // simulate 10 ms
+    static particles::ParticleEmitter testEmitter2(
+            CL_Vec3f(0, 255, 0),
+            CL_Vec3f(220, 5, 0),
+            CL_Vec3f(200, 5, 0),
+            0,
+            2.2,
+            10000,
+            200,
+            false
+    );
+    static particles::ParticleEmitter testEmitter3(
+            CL_Vec3f(0, 305, 0),
+            CL_Vec3f(250, 30, 0),
+            CL_Vec3f(230, 30, 0),
+            0,
+            1.4,
+            10000,
+            200,
+            false
+    );
+
+    if (cnt >= 300) {
+        testEmitter.update(0.01); // simulate 10 ms
+    }
+
+    if (cnt >= 340) {
+        testEmitter2.update(0.01);
+    }
+
+    if (cnt >= 400) {
+        testEmitter3.update(0.01);
+    }
+
     shader = ui::Manager::getShaderManager()->getParticleShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
 
@@ -196,6 +230,8 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     gc.set_texture(0, tex);
 
     testEmitter.render(gc, shader);
+    testEmitter2.render(gc, shader);
+    testEmitter3.render(gc, shader);
 
     ++renderDiff;
     //fluo::sleepMs(20);
