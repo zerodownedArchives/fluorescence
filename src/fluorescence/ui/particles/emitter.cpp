@@ -56,7 +56,7 @@ void Emitter::update(float elapsedSeconds) {
     // update own properties
     age_ += elapsedSeconds;
     float expireAge = (lifetimes_[1u] - lifetimes_[0u]);
-    normalizedAge_ = age_ / expireAge;
+    normalizedAge_ = (std::min)(1.0f, age_ / expireAge); // limit to 1.0
     CL_Vec3f positionDelta = velocityStart_ * normalizedAge_ +
             (velocityEnd_ - velocityStart_) * normalizedAge_ * normalizedAge_ / 2.0;
     position_ = startPosition_ + positionDelta * expireAge;

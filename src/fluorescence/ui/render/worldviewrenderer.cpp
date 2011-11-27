@@ -200,7 +200,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
             CL_Vec3f(200, 30, 0),
             CL_Vec3f(0, 0, 0),
             0,
-            5,
+            3,
             200,
             10000,
             1000,
