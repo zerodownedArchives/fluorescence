@@ -21,12 +21,6 @@ public:
 
     bool isExpired(float emitterAge) const;
 
-    static float randMinMax(float min, float max);
-    static unsigned int randMinMax(unsigned int min, unsigned int max);
-    static CL_Vec3f randMinMax(const CL_Vec3f& min, const CL_Vec3f& max);
-    static CL_Vec4f randMinMax(const CL_Vec4f& min, const CL_Vec4f& max);
-
-
 protected:
     CL_Vec3f startPosition_;
 

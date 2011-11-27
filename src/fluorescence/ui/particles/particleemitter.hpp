@@ -11,9 +11,9 @@ namespace particles {
 class ParticleEmitter : public Emitter {
 public:
     ParticleEmitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
-            float emitPerSec, bool emittedMoveWithEmitter);
+            float emitPerSec, bool emittedMoveWithEmitter, const boost::shared_ptr<StartPositionProvider>& startPosProvider);
     void reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
-            float emitPerSec, bool emittedMoveWithEmitter);
+            float emitPerSec, bool emittedMoveWithEmitter, const boost::shared_ptr<StartPositionProvider>& startPosProvider);
 
     ~ParticleEmitter();
 

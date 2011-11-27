@@ -5,6 +5,7 @@ set(MISC_HPP
     misc/variable.hpp
     misc/config.hpp
     misc/exception.hpp
+    misc/random.hpp
     )
 
 set(MISC_CPP
@@ -12,6 +13,7 @@ set(MISC_CPP
     misc/string.cpp
     misc/variable.cpp
     misc/config.cpp
+    misc/random.cpp
     )
 
 set(PUGIXML

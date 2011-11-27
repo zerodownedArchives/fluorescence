@@ -22,6 +22,7 @@
 
 
 #include <ui/particles/particleemitter.hpp>
+#include <ui/particles/startpositionprovider.hpp>
 
 namespace fluo {
 namespace ui {
@@ -171,35 +172,46 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     ++cnt;
 
 
+    static boost::shared_ptr<particles::StartPositionProviderRandomBoxOutline> posProv(new particles::StartPositionProviderRandomBoxOutline());
+    posProv->setSize(100, 40, 40, 100);
     static particles::ParticleEmitter testEmitter(
-            CL_Vec3f(0, 205, 0),
-            CL_Vec3f(300, -60, 0),
-            CL_Vec3f(275, -60, 0),
+            CL_Vec3f(100, 205, 0),
+            CL_Vec3f(0, 0, 0),
+            CL_Vec3f(0, 0, 0),
             0,
-            1,
+            5,
             10000,
             200,
-            false
+            false,
+            boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv)
     );
+
+    static boost::shared_ptr<particles::StartPositionProviderRandomOvalOutline> posProv2(new particles::StartPositionProviderRandomOvalOutline());
+    posProv2->setSize(50, 50, 20, 20);
     static particles::ParticleEmitter testEmitter2(
-            CL_Vec3f(0, 255, 0),
-            CL_Vec3f(220, 5, 0),
-            CL_Vec3f(200, 5, 0),
+            CL_Vec3f(300, 255, 0),
+            CL_Vec3f(100, 30, 0),
+            CL_Vec3f(0, 0, 0),
             0,
-            2.2,
+            12,
             10000,
             200,
-            false
+            true,
+            boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv2)
     );
+
+    static boost::shared_ptr<particles::StartPositionProviderRandomOvalOutline> posProv3(new particles::StartPositionProviderRandomOvalOutline());
+    posProv3->setSize(40, -40, 100, 100);
     static particles::ParticleEmitter testEmitter3(
-            CL_Vec3f(0, 305, 0),
-            CL_Vec3f(250, 30, 0),
-            CL_Vec3f(230, 30, 0),
+            CL_Vec3f(500, 305, 0),
+            CL_Vec3f(0, 0, 0),
+            CL_Vec3f(0, 0, 0),
             0,
-            1.4,
+            14,
             10000,
             200,
-            false
+            false,
+            boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv3)
     );
 
     if (cnt >= 300) {

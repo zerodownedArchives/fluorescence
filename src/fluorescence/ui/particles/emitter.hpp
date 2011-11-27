@@ -11,12 +11,14 @@ namespace fluo {
 namespace ui {
 namespace particles {
 
+class StartPositionProvider;
+
 class Emitter : public Emittable {
 public:
     Emitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
-            float emitPerSec, bool emittedMoveWithEmitter);
+            float emitPerSec, bool emittedMoveWithEmitter, const boost::shared_ptr<StartPositionProvider>& startPosProvider);
     void reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
-            float emitPerSec, bool emittedMoveWithEmitter);
+            float emitPerSec, bool emittedMoveWithEmitter, const boost::shared_ptr<StartPositionProvider>& startPosProvider);
 
     // updateSet is used to propagate the change internally (e.g. to children)
     virtual void update(float elapsedSeconds);
@@ -35,6 +37,7 @@ protected:
     CL_Vec3f position_;
 
     float age_;
+    float normalizedAge_;
     float emittedFractionStore_;
 
 
@@ -47,6 +50,8 @@ protected:
     float emittedLifetimeMax_;
 
     bool emittedMoveWithEmitter_;
+
+    boost::shared_ptr<StartPositionProvider> startPositionProvider_;
 };
 
 }

@@ -30,7 +30,7 @@ void main(void) {
     
     gl_Position = cl_ModelViewProjectionMatrix * gl_Position;
     
-    gl_PointSize = 15.0;
+    gl_PointSize = 5.0;
     
     // interpolate color
     Color = mix(ColorStart, ColorEnd, normalizedAge);

@@ -3,13 +3,17 @@
 
 #include <ClanLib/Display/Render/program_object.h>
 
+#include <misc/random.hpp>
+
+#include "startpositionprovider.hpp"
+
 namespace fluo {
 namespace ui {
 namespace particles {
 
 ParticleEmitter::ParticleEmitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
-            float emitPerSec, bool emittedMoveWithEmitter) :
-        Emitter(startPos, velStart, velEnd, creationTime, expireTime, maxCount, emitPerSec, emittedMoveWithEmitter),
+            float emitPerSec, bool emittedMoveWithEmitter, const boost::shared_ptr<StartPositionProvider>& startPosProvider) :
+        Emitter(startPos, velStart, velEnd, creationTime, expireTime, maxCount, emitPerSec, emittedMoveWithEmitter, startPosProvider),
         particleCount_(0) {
 
     particles_ = new Particle[maxCount];
@@ -40,7 +44,7 @@ ParticleEmitter::~ParticleEmitter() {
 }
 
 void ParticleEmitter::reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime, unsigned int maxCount,
-        float emitPerSec, bool emittedMoveWithEmitter) {
+        float emitPerSec, bool emittedMoveWithEmitter, const boost::shared_ptr<StartPositionProvider>& startPosProvider) {
 
     if (maxCount != emittedMaxCount_) {
         delete [] particles_;
@@ -48,7 +52,7 @@ void ParticleEmitter::reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, 
         particleCount_ = 0;
     }
 
-    Emitter::reset(startPos, velStart, velEnd, creationTime, expireTime, maxCount, emitPerSec, emittedMoveWithEmitter);
+    Emitter::reset(startPos, velStart, velEnd, creationTime, expireTime, maxCount, emitPerSec, emittedMoveWithEmitter, startPosProvider);
 }
 
 unsigned int ParticleEmitter::emittedCount() const {
@@ -107,13 +111,16 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
 
 void ParticleEmitter::initParticle(unsigned int index) {
     particles_[index].reset(
-        position_ + randMinMax(CL_Vec3f(-7, -5, 0), CL_Vec3f(7, 5, 0)),
-        randMinMax(emittedVelocityStartMin_, emittedVelocityStartMax_),
-        randMinMax(emittedVelocityEndMin_, emittedVelocityEndMax_),
+        //position_ + Random::randomMinMax(CL_Vec3f(-7, -5, 0), CL_Vec3f(7, 5, 0)),
+        //Random::randomMinMax(emittedVelocityStartMin_, emittedVelocityStartMax_),
+        //Random::randomMinMax(emittedVelocityEndMin_, emittedVelocityEndMax_),
+        startPositionProvider_->get(position_),
+        CL_Vec3f(0, 0, 0),
+        CL_Vec3f(0, 0, 0),
         age_, // creation time
-        age_ + randMinMax(emittedLifetimeMin_, emittedLifetimeMax_),
-        randMinMax(emittedColorStartMin_, emittedColorStartMax_),
-        randMinMax(emittedColorEndMin_, emittedColorEndMax_)
+        age_ + Random::randomMinMax(emittedLifetimeMin_, emittedLifetimeMax_),
+        Random::randomMinMax(emittedColorStartMin_, emittedColorStartMax_),
+        Random::randomMinMax(emittedColorEndMin_, emittedColorEndMax_)
     );
 }
 
