@@ -11,6 +11,7 @@ class MotionModel {
 public:
     enum {
         TYPE_START_END_VELOCITY = 0,
+        TYPE_AWAY_FROM_EMITTER = 1,
     };
 
 
@@ -19,11 +20,7 @@ public:
     unsigned int getId() const;
 
     virtual void setNormalizedAge(float age) = 0;
-    virtual CL_Vec3f getParam1(const CL_Vec3f& emitterPosition) const = 0;
-    virtual CL_Vec3f getParam2(const CL_Vec3f& emitterPosition) const = 0;
-
-protected:
-    static CL_Vec3f interpolate(const CL_Vec3f& a, const CL_Vec3f& b, float factor);
+    virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const = 0;
 
 private:
     unsigned int id_;
@@ -38,8 +35,7 @@ public:
     void setEndVelocities(const CL_Vec3f& startMin, const CL_Vec3f& startMax, const CL_Vec3f& endMin, const CL_Vec3f& endMax);
 
     virtual void setNormalizedAge(float age);
-    virtual CL_Vec3f getParam1(const CL_Vec3f& emitterPosition) const;
-    virtual CL_Vec3f getParam2(const CL_Vec3f& emitterPosition) const;
+    virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const;
 
 private:
     CL_Vec3f startVelocityMinStart_;
@@ -55,6 +51,33 @@ private:
     CL_Vec3f startVelocityMaxCur_;
     CL_Vec3f endVelocityMinCur_;
     CL_Vec3f endVelocityMaxCur_;
+};
+
+
+class MotionModelAwayFromEmitter : public MotionModel {
+public:
+    MotionModelAwayFromEmitter();
+
+    void setStartAcceleration(float startMin, float startMax, float endMin, float endMax);
+    void setEndAcceleration(float startMin, float startMax, float endMin, float endMax);
+
+    virtual void setNormalizedAge(float age);
+    virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const;
+
+private:
+    float startAccelerationMinStart_;
+    float startAccelerationMinEnd_;
+    float startAccelerationMaxStart_;
+    float startAccelerationMaxEnd_;
+    float endAccelerationMinStart_;
+    float endAccelerationMinEnd_;
+    float endAccelerationMaxStart_;
+    float endAccelerationMaxEnd_;
+
+    float startAccelerationMinCur_;
+    float startAccelerationMaxCur_;
+    float endAccelerationMinCur_;
+    float endAccelerationMaxCur_;
 };
 
 }

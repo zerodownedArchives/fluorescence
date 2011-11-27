@@ -13,6 +13,7 @@ set (DATA_HPP
 set (DATA_CPP
     data/fullfileloader.cpp
     data/manager.cpp
+    data/util.cpp
     )
 
 set(DATA_LOADERS_HPP

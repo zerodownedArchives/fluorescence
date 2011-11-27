@@ -121,10 +121,15 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
 }
 
 void ParticleEmitter::initParticle(unsigned int index) {
+    CL_Vec3f particlePosition = emittedStartPositionProvider_->get(position_);
+
+    CL_Vec3f velocity1, velocity2;
+    emittedMotionModel_->get(position_, particlePosition, velocity1, velocity2);
+
     particles_[index].reset(
-        emittedStartPositionProvider_->get(position_),
-        emittedMotionModel_->getParam1(position_),
-        emittedMotionModel_->getParam2(position_),
+        particlePosition,
+        velocity1,
+        velocity2,
         age_, // creation time
         age_ + Random::randomMinMax(emittedLifetimeMin_, emittedLifetimeMax_),
         Random::randomMinMax(emittedColorStartMin_, emittedColorStartMax_),

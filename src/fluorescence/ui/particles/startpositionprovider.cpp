@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include <misc/random.hpp>
+#include <misc/interpolation.hpp>
 
 namespace fluo {
 namespace ui {
@@ -26,8 +27,8 @@ void StartPositionProviderWithSize::setSize(float widthStart, float widthEnd, fl
 }
 
 void StartPositionProviderWithSize::setNormalizedAge(float age) {
-    curWidthHalf_ = widthHalfStart_ + (widthHalfEnd_ - widthHalfStart_) * age;
-    curHeightHalf_ = heightHalfStart_ + (heightHalfEnd_ - heightHalfStart_) * age;
+    curWidthHalf_ = Interpolation::linear(widthHalfStart_, widthHalfEnd_, age);
+    curHeightHalf_ = Interpolation::linear(heightHalfStart_, heightHalfEnd_, age);
 }
 
 

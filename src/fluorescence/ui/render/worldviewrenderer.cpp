@@ -210,8 +210,11 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     );
 
     static boost::shared_ptr<particles::StartPositionProviderOvalOutline> posProv3(new particles::StartPositionProviderOvalOutline());
-    posProv3->setSize(40, -40, 100, 100);
-    static boost::shared_ptr<particles::MotionModelStartEndVelocity> moMo3(new particles::MotionModelStartEndVelocity());
+    posProv3->setSize(40, 40, 100, 100);
+    static boost::shared_ptr<particles::MotionModelAwayFromEmitter> moMo3(new particles::MotionModelAwayFromEmitter());
+    moMo3->setStartAcceleration(30, 35, 8, 10);
+    moMo3->setEndAcceleration(10, 12, 3, 4);
+
     static particles::ParticleEmitter testEmitter3(
             CL_Vec3f(500, 305, 0),
             CL_Vec3f(0, 0, 0),
