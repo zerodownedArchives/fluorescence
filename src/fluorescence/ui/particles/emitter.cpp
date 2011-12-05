@@ -63,6 +63,8 @@ void Emitter::update(float elapsedSeconds) {
 
     emittedStartPositionProvider_->setNormalizedAge(normalizedAge_);
     emittedMotionModel_->setNormalizedAge(normalizedAge_);
+    emittedLifetimeMin_.setNormalizedAge(normalizedAge_);
+    emittedLifetimeMax_.setNormalizedAge(normalizedAge_);
 
 
     float newCountF  = elapsedSeconds * emitPerSecond_ + emittedFractionStore_;

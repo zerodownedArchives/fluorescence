@@ -7,6 +7,8 @@
 #include <ClanLib/Display/Render/graphic_context.h>
 class CL_ProgramObject;
 
+#include <misc/interpolation.hpp>
+
 namespace fluo {
 namespace ui {
 namespace particles {
@@ -52,8 +54,8 @@ protected:
 
 
     // parameters for the emitted objects
-    float emittedLifetimeMin_;
-    float emittedLifetimeMax_;
+    InterpolatedValue<float> emittedLifetimeMin_;
+    InterpolatedValue<float> emittedLifetimeMax_;
 
     bool emittedMoveWithEmitter_;
 

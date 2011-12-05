@@ -37,10 +37,10 @@ private:
 
 
     // parameters for the emitted particles
-    CL_Vec4f emittedColorStartMin_;
-    CL_Vec4f emittedColorStartMax_;
-    CL_Vec4f emittedColorEndMin_;
-    CL_Vec4f emittedColorEndMax_;
+    InterpolatedValue<CL_Vec4f> emittedColorStartMin_;
+    InterpolatedValue<CL_Vec4f> emittedColorStartMax_;
+    InterpolatedValue<CL_Vec4f> emittedColorEndMin_;
+    InterpolatedValue<CL_Vec4f> emittedColorEndMax_;
 };
 
 }

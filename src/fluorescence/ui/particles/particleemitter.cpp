@@ -23,13 +23,13 @@ ParticleEmitter::ParticleEmitter(const CL_Vec3f& startPos, const CL_Vec3f& velSt
 
     particles_ = new Particle[maxCount];
 
-    emittedLifetimeMin_ = 1.0;
-    emittedLifetimeMax_ = 2.0;
+    emittedLifetimeMin_ = InterpolatedValue<float>(0.02, 0.04);
+    emittedLifetimeMax_ = InterpolatedValue<float>(8.0, 10.0);
 
-    emittedColorStartMin_ = CL_Vec4f(0.9, 0.65, 0.0, 0.4);
-    emittedColorStartMax_ = CL_Vec4f(1.0, 0.85, 0.0, 0.6);
-    emittedColorEndMin_ = CL_Vec4f(0.8, 0.0, 0.0, 0.0);
-    emittedColorEndMax_ = CL_Vec4f(1.0, 0.1, 0.0, 0.2);
+    emittedColorStartMin_ = InterpolatedValue<CL_Vec4f>(CL_Vec4f(0.9, 0.65, 0.0, 0.4), CL_Vec4f(0.0, 0.65, 0.0, 0.4));
+    emittedColorStartMax_ = InterpolatedValue<CL_Vec4f>(CL_Vec4f(1.0, 0.85, 0.0, 0.6), CL_Vec4f(0.0, 0.85, 0.0, 0.6));
+    emittedColorEndMin_ = InterpolatedValue<CL_Vec4f>(CL_Vec4f(0.8, 0.0, 0.0, 0.0), CL_Vec4f(0.0, 0.0, 0.8, 0.0));
+    emittedColorEndMax_ = InterpolatedValue<CL_Vec4f>(CL_Vec4f(1.0, 0.1, 0.0, 0.2), CL_Vec4f(0.0, 0.1, 1.0, 0.2));
 }
 
 ParticleEmitter::~ParticleEmitter() {
@@ -58,6 +58,11 @@ unsigned int ParticleEmitter::emittedCount() const {
 }
 
 void ParticleEmitter::updateSet(unsigned int newCount, float elapsedSeconds) {
+    emittedColorStartMin_.setNormalizedAge(normalizedAge_);
+    emittedColorStartMax_.setNormalizedAge(normalizedAge_);
+    emittedColorEndMin_.setNormalizedAge(normalizedAge_);
+    emittedColorEndMax_.setNormalizedAge(normalizedAge_);
+
     if (emittedStartCount_ > 0) {
         for (unsigned int i = 0; i < emittedStartCount_; ++i) {
             initParticle(i);
