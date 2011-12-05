@@ -223,7 +223,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
             14,
             200,
             10000,
-            700,
+            1500,
             false,
             boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv3),
             boost::dynamic_pointer_cast<particles::MotionModel>(moMo3)

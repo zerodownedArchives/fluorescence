@@ -3,6 +3,8 @@
 
 #include <ClanLib/Core/Math/vec3.h>
 
+#include <misc/interpolation.hpp>
+
 namespace fluo {
 namespace ui {
 namespace particles {
@@ -27,14 +29,8 @@ public:
     virtual void setNormalizedAge(float age);
 
 protected:
-    float curWidthHalf_;
-    float curHeightHalf_;
-
-private:
-    float widthHalfStart_;
-    float widthHalfEnd_;
-    float heightHalfStart_;
-    float heightHalfEnd_;
+    InterpolatedValue<float> widthHalf_;
+    InterpolatedValue<float> heightHalf_;
 };
 
 class StartPositionProviderBox : public StartPositionProviderWithSize {

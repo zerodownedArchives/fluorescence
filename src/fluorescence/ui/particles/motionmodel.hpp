@@ -3,6 +3,8 @@
 
 #include <ClanLib/Core/Math/vec3.h>
 
+#include <misc/interpolation.hpp>
+
 namespace fluo {
 namespace ui {
 namespace particles {
@@ -51,19 +53,10 @@ public:
     virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const;
 
 private:
-    CL_Vec3f startVelocityMinT0_;
-    CL_Vec3f startVelocityMinT1_;
-    CL_Vec3f startVelocityMaxT0_;
-    CL_Vec3f startVelocityMaxT1_;
-    CL_Vec3f endVelocityMinT0_;
-    CL_Vec3f endVelocityMinT1_;
-    CL_Vec3f endVelocityMaxT0_;
-    CL_Vec3f endVelocityMaxT1_;
-
-    CL_Vec3f startVelocityMinTx_;
-    CL_Vec3f startVelocityMaxTx_;
-    CL_Vec3f endVelocityMinTx_;
-    CL_Vec3f endVelocityMaxTx_;
+    InterpolatedValue<CL_Vec3f> startVelocityMin_;
+    InterpolatedValue<CL_Vec3f> startVelocityMax_;
+    InterpolatedValue<CL_Vec3f> endVelocityMin_;
+    InterpolatedValue<CL_Vec3f> endVelocityMax_;
 };
 
 
@@ -78,19 +71,10 @@ public:
     virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const;
 
 private:
-    float startAccelerationMinT0_;
-    float startAccelerationMinT1_;
-    float startAccelerationMaxT0_;
-    float startAccelerationMaxT1_;
-    float endAccelerationMinT0_;
-    float endAccelerationMinT1_;
-    float endAccelerationMaxT0_;
-    float endAccelerationMaxT1_;
-
-    float startAccelerationMinTx_;
-    float startAccelerationMaxTx_;
-    float endAccelerationMinTx_;
-    float endAccelerationMaxTx_;
+    InterpolatedValue<float> startAccelerationMin_;
+    InterpolatedValue<float> startAccelerationMax_;
+    InterpolatedValue<float> endAccelerationMin_;
+    InterpolatedValue<float> endAccelerationMax_;
 };
 
 

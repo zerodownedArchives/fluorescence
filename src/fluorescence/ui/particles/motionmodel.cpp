@@ -2,7 +2,6 @@
 #include "motionmodel.hpp"
 
 #include <misc/random.hpp>
-#include <misc/interpolation.hpp>
 
 namespace fluo {
 namespace ui {
@@ -34,17 +33,17 @@ MotionModelStartEndVelocity::MotionModelStartEndVelocity() :
 }
 
 void MotionModelStartEndVelocity::setVelocitiesT0(const CL_Vec3f& startMin, const CL_Vec3f& startMax, const CL_Vec3f& endMin, const CL_Vec3f& endMax) {
-    startVelocityMinT0_ = startMin;
-    startVelocityMaxT0_ = startMax;
-    endVelocityMinT0_ = endMin;
-    endVelocityMaxT0_ = endMax;
+    startVelocityMin_.setT0(startMin);
+    startVelocityMax_.setT0(startMax);
+    endVelocityMin_.setT0(endMin);
+    endVelocityMax_.setT0(endMax);
 }
 
 void MotionModelStartEndVelocity::setVelocitiesT1(const CL_Vec3f& startMin, const CL_Vec3f& startMax, const CL_Vec3f& endMin, const CL_Vec3f& endMax) {
-    startVelocityMinT1_ = startMin;
-    startVelocityMaxT1_ = startMax;
-    endVelocityMinT1_ = endMin;
-    endVelocityMaxT1_ = endMax;
+    startVelocityMin_.setT1(startMin);
+    startVelocityMax_.setT1(startMax);
+    endVelocityMin_.setT1(endMin);
+    endVelocityMax_.setT1(endMax);
 }
 
 void MotionModelStartEndVelocity::setVelocityAndAccelerationT0(const CL_Vec3f& startMin, const CL_Vec3f& startMax, float accelMin, float accelMax) {
@@ -56,15 +55,15 @@ void MotionModelStartEndVelocity::setVelocityAndAccelerationT1(const CL_Vec3f& s
 }
 
 void MotionModelStartEndVelocity::setNormalizedAge(float age) {
-    startVelocityMinTx_ = Interpolation::linear(startVelocityMinT0_, startVelocityMinT1_, age);
-    startVelocityMaxTx_ = Interpolation::linear(startVelocityMaxT0_, startVelocityMaxT1_, age);
-    endVelocityMinTx_ = Interpolation::linear(endVelocityMinT0_, endVelocityMinT1_, age);
-    endVelocityMaxTx_ = Interpolation::linear(endVelocityMaxT0_, endVelocityMaxT1_, age);
+    startVelocityMin_.setNormalizedAge(age);
+    startVelocityMax_.setNormalizedAge(age);
+    endVelocityMin_.setNormalizedAge(age);
+    endVelocityMax_.setNormalizedAge(age);
 }
 
 void MotionModelStartEndVelocity::get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const {
-    param1 = Random::randomMinMax(startVelocityMinTx_, startVelocityMaxTx_);
-    param2 = Random::randomMinMax(endVelocityMinTx_, endVelocityMaxTx_);
+    param1 = Random::randomMinMax(startVelocityMin_, startVelocityMax_);
+    param2 = Random::randomMinMax(endVelocityMin_, endVelocityMax_);
 }
 
 
@@ -73,32 +72,32 @@ MotionModelAwayFromEmitter::MotionModelAwayFromEmitter() :
 }
 
 void MotionModelAwayFromEmitter::setAccelerationT0(float startMin, float startMax, float endMin, float endMax) {
-    startAccelerationMinT0_ = startMin;
-    startAccelerationMaxT0_ = startMax;
-    endAccelerationMinT0_ = endMin;
-    endAccelerationMaxT0_ = endMax;
+    startAccelerationMin_.setT0(startMin);
+    startAccelerationMax_.setT0(startMax);
+    endAccelerationMin_.setT0(endMin);
+    endAccelerationMax_.setT0(endMax);
 }
 
 void MotionModelAwayFromEmitter::setAccelerationT1(float startMin, float startMax, float endMin, float endMax) {
-    startAccelerationMinT1_ = startMin;
-    startAccelerationMaxT1_ = startMax;
-    endAccelerationMinT1_ = endMin;
-    endAccelerationMaxT1_ = endMax;
+    startAccelerationMin_.setT1(startMin);
+    startAccelerationMax_.setT1(startMax);
+    endAccelerationMin_.setT1(endMin);
+    endAccelerationMax_.setT1(endMax);
 }
 
 void MotionModelAwayFromEmitter::setNormalizedAge(float age) {
-    startAccelerationMinTx_ = Interpolation::linear(startAccelerationMinT0_, startAccelerationMinT1_, age);
-    startAccelerationMaxTx_ = Interpolation::linear(startAccelerationMaxT0_, startAccelerationMaxT1_, age);
-    endAccelerationMinTx_ = Interpolation::linear(endAccelerationMinT0_, endAccelerationMinT1_, age);
-    endAccelerationMaxTx_ = Interpolation::linear(endAccelerationMaxT0_, endAccelerationMaxT1_, age);
+    startAccelerationMin_.setNormalizedAge(age);
+    startAccelerationMax_.setNormalizedAge(age);
+    endAccelerationMin_.setNormalizedAge(age);
+    endAccelerationMax_.setNormalizedAge(age);
 }
 
 void MotionModelAwayFromEmitter::get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const {
     CL_Vec3f direction = particlePosition - emitterPosition;
     direction.normalize();
 
-    param1 = direction * Random::randomMinMax(startAccelerationMinTx_, startAccelerationMaxTx_);
-    param2 = direction * Random::randomMinMax(endAccelerationMinTx_, endAccelerationMaxTx_);
+    param1 = direction * Random::randomMinMax(startAccelerationMin_, startAccelerationMax_);
+    param2 = direction * Random::randomMinMax(endAccelerationMin_, endAccelerationMax_);
 }
 
 }
