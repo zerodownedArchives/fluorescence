@@ -10,6 +10,7 @@ namespace fluo {
 namespace ui {
 namespace particles {
 
+// does not work yet.
 class EmitterEmitter : public Emitter {
 public:
     virtual unsigned int emittedCount() const;

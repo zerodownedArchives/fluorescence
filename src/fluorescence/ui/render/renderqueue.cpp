@@ -178,7 +178,6 @@ bool RenderQueue::debugIngameCheckInList(boost::shared_ptr<world::IngameObject> 
 
 boost::shared_ptr<world::IngameObject> RenderQueue::debugIngameGetByIndex(unsigned int idx) {
     std::list<boost::shared_ptr<world::IngameObject> >::const_iterator iter = objectList_.begin();
-    std::list<boost::shared_ptr<world::IngameObject> >::const_iterator end = objectList_.end();
 
     for (unsigned int i = 0; i < idx; ++iter, ++i);
 

@@ -10,6 +10,7 @@
 
 #include <net/manager.hpp>
 #include <net/packets/speechrequest.hpp>
+#include <net/packets/createcharacter.hpp>
 #include <net/packets/bf.hpp>
 #include <net/packets/bf/contextmenureply.hpp>
 
@@ -44,6 +45,8 @@ void GumpActions::buildFullActionTable() {
 
     actionTable_["sendspeech"] = GumpAction(false, boost::bind(&GumpActions::sendSpeech, _1, _2, _3, _4));
     actionTable_["contextmenureply"] = GumpAction(true, boost::bind(&GumpActions::contextMenuReply, _1, _2, _3, _4));
+    
+    actionTable_["createdummychar"] = GumpAction(true, boost::bind(&GumpActions::createDummyCharacter, _1, _2, _3, _4));
 }
 
 
@@ -127,6 +130,18 @@ bool GumpActions::contextMenuReply(GumpMenu* menu, const UnicodeString& action, 
     unsigned int replyId = StringConverter::toInt(parameters[1]);
     boost::shared_ptr<net::Packet> subPacket(new net::packets::bf::ContextMenuReply(serial, replyId));
     net::packets::BF pkt(subPacket);
+    net::Manager::getSingleton()->send(pkt);
+
+    return true;
+}
+
+bool GumpActions::createDummyCharacter(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    net::packets::CreateCharacter pkt;
+    
+    pkt.name_ = "Dummy";
+    pkt.slot_ = 0;
+    
+    
     net::Manager::getSingleton()->send(pkt);
 
     return true;

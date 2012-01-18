@@ -18,7 +18,7 @@ Sector::Sector(unsigned int mapId, unsigned int sectorId) :
     location_[0u] = sectorId / mapHeight;
     location_[1u] = sectorId % mapHeight;
 
-    //LOG_DEBUG << "Sector construct, map=" << mapId_ << " x=" << location_[0u] << " y=" << location_[1u] << std::endl;
+    LOG_DEBUG << "Sector construct, map=" << mapId_ << " x=" << location_[0u] << " y=" << location_[1u] << std::endl;
 
     mapBlock_ = data::Manager::getMapLoader(mapId_)->get(location_[0u], location_[1u]);
     staticBlock_ = data::Manager::getStaticsLoader(mapId_)->get(location_[0u], location_[1u]);
@@ -55,23 +55,27 @@ unsigned int Sector::getSectorId() const {
 }
 
 void Sector::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
-    std::list<boost::shared_ptr<world::StaticItem> > staticList = staticBlock_->getItemList();
-    std::list<boost::shared_ptr<world::StaticItem> >::const_iterator it = staticList.begin();
-    std::list<boost::shared_ptr<world::StaticItem> >::const_iterator end = staticList.end();
+    if (staticBlock_) {
+        std::list<boost::shared_ptr<world::StaticItem> > staticList = staticBlock_->getItemList();
+        std::list<boost::shared_ptr<world::StaticItem> >::const_iterator it = staticList.begin();
+        std::list<boost::shared_ptr<world::StaticItem> >::const_iterator end = staticList.end();
 
-    for (; it != end; ++it) {
-        (*it)->removeFromRenderQueue(rq);
+        for (; it != end; ++it) {
+            (*it)->removeFromRenderQueue(rq);
+        }
     }
 
-    for (unsigned int x = 0; x < 8; ++x) {
-        for (unsigned int y = 0; y < 8; ++y) {
-            mapBlock_->get(x, y)->removeFromRenderQueue(rq);
+    if (mapBlock_) {
+        for (unsigned int x = 0; x < 8; ++x) {
+            for (unsigned int y = 0; y < 8; ++y) {
+                mapBlock_->get(x, y)->removeFromRenderQueue(rq);
+            }
         }
     }
 }
 
 void Sector::update(unsigned int elapsedMillis) {
-    if (!staticBlock_->isReadComplete() || !mapBlock_->isReadComplete()) {
+    if (!staticBlock_ || !staticBlock_->isReadComplete() || !mapBlock_ || !mapBlock_->isReadComplete()) {
         // not fully loaded yet
         return;
     }

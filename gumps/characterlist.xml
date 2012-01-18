@@ -6,6 +6,6 @@
         </repeat>
     </tscrollarea>
 
-    <tbutton x="center" y="175" width="210" height="25" text="Disconnect" action="disconnect" />
+    <tbutton x="center" y="175" width="210" height="25" text="Create dummy" action="createdummychar" />
     <tbutton x="center" y="203" width="210" height="25" text="Close fluorescence" action="shutdown" />
 </gump>

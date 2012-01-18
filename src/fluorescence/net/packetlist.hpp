@@ -1,6 +1,7 @@
 #ifndef FLUO_NET_PACKETLIST_HPP
 #define FLUO_NET_PACKETLIST_HPP
 
+#include "packets/createcharacter.hpp" // 0x00
 #include "packets/movementrequest.hpp" // 0x02
 #include "packets/doubleclick.hpp" // 0x06
 #include "packets/pickupitem.hpp" // 0x07

@@ -150,7 +150,7 @@ bool GumpMenu::onInputPressed(const CL_InputEvent& msg) {
         break;
     }
 
-    return false;
+    return consumed;
 }
 
 bool GumpMenu::onInputReleased(const CL_InputEvent& msg) {
