@@ -15,15 +15,14 @@
 #include <world/ingameobject.hpp>
 #include <world/lightmanager.hpp>
 #include <world/manager.hpp>
+#include <world/particleeffect.hpp>
 
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
 
 
 
-#include <ui/particles/particleemitter.hpp>
-#include <ui/particles/startpositionprovider.hpp>
-#include <ui/particles/motionmodel.hpp>
+#include <ui/particles/xmlloader.hpp>
 
 namespace fluo {
 namespace ui {
@@ -166,105 +165,34 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
 
 
 
-
-
-
     static unsigned int cnt = 0;
+    static boost::shared_ptr<world::ParticleEffect> testEmitter3 = particles::XmlLoader::fromFile("gate");
+    
+    if (cnt >= 150) {
+        testEmitter3->update(20);
+        
+        // render particle effects
+        shader = ui::Manager::getShaderManager()->getParticleShader();
+        gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
+
+        CL_Pen defPen = gc.get_pen();
+        CL_Pen pen;
+        pen.set_point_size(1.0); // TODO: make this dynamic
+        pen.enable_vertex_program_point_size(true);
+        pen.enable_point_sprite(true);
+        gc.set_pen(pen);
+
+        testEmitter3->renderAll(gc, shader);
+
+        ++renderDiff;
+        //fluo::sleepMs(20);
+
+        gc.set_pen(defPen);
+        gc.reset_program_object();
+    }
+
     ++cnt;
-
-
-    static boost::shared_ptr<particles::StartPositionProviderBoxOutline> posProv(new particles::StartPositionProviderBoxOutline());
-    posProv->setSize(100, 40, 40, 100);
-    static boost::shared_ptr<particles::MotionModelStartEndVelocity> moMo(new particles::MotionModelStartEndVelocity());
-    moMo->setVelocityAndAccelerationT0(CL_Vec3f(-20, -20, 0), CL_Vec3f(20, 20, 0), 0.3f, 0.4f);
-    moMo->setVelocityAndAccelerationT1(CL_Vec3f(-10, -10, 0), CL_Vec3f(10, 10, 0), 0.3f, 0.4f);
-    static particles::ParticleEmitter testEmitter(
-            CL_Vec3f(100, 205, 0),
-            CL_Vec3f(0, 0, 0),
-            CL_Vec3f(0, 0, 0),
-            0,
-            8,
-            1000,
-            10000,
-            1000,
-            false,
-            boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv),
-            boost::dynamic_pointer_cast<particles::MotionModel>(moMo)
-    );
-
-    static boost::shared_ptr<particles::StartPositionProviderOval> posProv2(new particles::StartPositionProviderOval());
-    posProv2->setSize(30, 30, 20, 20);
-    static boost::shared_ptr<particles::MotionModelStatic> moMo2(new particles::MotionModelStatic());
-    static particles::ParticleEmitter testEmitter2(
-            CL_Vec3f(100, 255, 0),
-            CL_Vec3f(200, 30, 0),
-            CL_Vec3f(0, 0, 0),
-            0,
-            3,
-            200,
-            10000,
-            1000,
-            true,
-            boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv2),
-            boost::dynamic_pointer_cast<particles::MotionModel>(moMo2)
-    );
-
-    static boost::shared_ptr<particles::StartPositionProviderOvalOutline> posProv3(new particles::StartPositionProviderOvalOutline());
-    posProv3->setSize(40, 40, 100, 100);
-    static boost::shared_ptr<particles::MotionModelAwayFromEmitter> moMo3(new particles::MotionModelAwayFromEmitter());
-    moMo3->setAccelerationT0(30, 35, 8, 10);
-    moMo3->setAccelerationT1(10, 12, 3, 4);
-
-    static particles::ParticleEmitter testEmitter3(
-            CL_Vec3f(500, 305, 0),
-            CL_Vec3f(0, 0, 0),
-            CL_Vec3f(0, 0, 0),
-            0,
-            14,
-            200,
-            10000,
-            1500,
-            false,
-            boost::dynamic_pointer_cast<particles::StartPositionProvider>(posProv3),
-            boost::dynamic_pointer_cast<particles::MotionModel>(moMo3)
-    );
-
-    if (cnt >= 300) {
-        testEmitter.update(0.01); // simulate 10 ms
-    }
-
-    if (cnt >= 340) {
-        testEmitter2.update(0.01);
-    }
-
-    if (cnt >= 400) {
-        testEmitter3.update(0.01);
-    }
-
-    shader = ui::Manager::getShaderManager()->getParticleShader();
-    gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
-
-    CL_Pen defPen = gc.get_pen();
-    CL_Pen pen;
-    pen.set_point_size(1.0);
-    pen.enable_vertex_program_point_size(true);
-    pen.enable_point_sprite(true);
-    gc.set_pen(pen);
-
-    CL_PixelBuffer buf("small.png");
-    CL_Texture tex(gc, buf.get_width(), buf.get_height());
-    tex.set_image(buf);
-    gc.set_texture(0, tex);
-
-    testEmitter.render(gc, shader);
-    testEmitter2.render(gc, shader);
-    testEmitter3.render(gc, shader);
-
-    ++renderDiff;
-    //fluo::sleepMs(20);
-
-    gc.set_pen(defPen);
-    gc.reset_program_object();
+    
 }
 
 boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {

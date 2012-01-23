@@ -23,6 +23,11 @@ void StartPositionProviderWithSize::setSize(float widthStart, float widthEnd, fl
     heightHalf_ =  InterpolatedValue<float>(heightStart / 2, heightEnd / 2);
 }
 
+void StartPositionProviderWithSize::setSizeT1(float width, float height) {
+    widthHalf_.setT1(width / 2);
+    heightHalf_.setT1(height / 2);
+}
+
 void StartPositionProviderWithSize::setNormalizedAge(float age) {
     widthHalf_.setNormalizedAge(age);
     heightHalf_.setNormalizedAge(age);

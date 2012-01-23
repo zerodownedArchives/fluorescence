@@ -18,6 +18,8 @@
 #include "equipconvdefloader.hpp"
 #include "clilocloader.hpp"
 
+#include <client.hpp>
+
 #include <ui/singletextureprovider.hpp>
 #include <ui/animdatatextureprovider.hpp>
 
@@ -324,7 +326,7 @@ boost::shared_ptr<MapLoader> Manager::getMapLoader(unsigned int index) {
     if (ret) {
         return ret;
     } else {
-        LOG_WARN << "Trying to access uninitialized map index " << index << std::endl;
+        LOG_WARN << "Trying to access uninitialized map loader for map index " << index << std::endl;
         return sing->fallbackMapLoader_;
     }
 }
@@ -341,7 +343,7 @@ boost::shared_ptr<StaticsLoader> Manager::getStaticsLoader(unsigned int index) {
     if (ret) {
         return ret;
     } else {
-        LOG_WARN << "Trying to access uninitialized statics index " << index << std::endl;
+        LOG_WARN << "Trying to access uninitialized statics loader for map index " << index << std::endl;
         return sing->fallbackStaticsLoader_;
     }
 }
@@ -540,6 +542,51 @@ unsigned int Manager::getGumpIdForItem(unsigned int itemId, unsigned int parentB
 
 boost::shared_ptr<ClilocLoader> Manager::getClilocLoader() {
     return getSingleton()->clilocLoader_;
+}
+
+boost::filesystem::path Manager::getShardFilePath(const boost::filesystem::path& innerPath) {
+    boost::filesystem::path ret;
+    
+    if (Client::getSingleton()->getConfig().exists("/fluo/shard@name")) {
+        ret = "shards" / Client::getSingleton()->getConfig()["/fluo/shard@name"].asPath() / innerPath;
+    }
+
+    if (!boost::filesystem::exists(ret)) {
+        ret = innerPath;
+
+        if (!boost::filesystem::exists(ret)) {
+            LOG_ERROR << "File not found: " << innerPath << std::endl;
+            return boost::filesystem::path();
+        }
+    }
+    
+    return ret;
+}
+
+boost::shared_ptr<ui::Texture> Manager::getTexture(const UnicodeString& source, const UnicodeString& id) {
+    if (source == "file") {
+        boost::filesystem::path idPath(StringConverter::toUtf8String(id));
+        idPath = getShardFilePath(idPath);
+        
+        if (!boost::filesystem::exists(idPath)) {
+            boost::shared_ptr<ui::Texture> ret;
+            return ret;
+        } else {
+            CL_PixelBuffer buf(idPath.string());
+            boost::shared_ptr<ui::Texture> tex(new ui::Texture(false));
+            tex->setTexture(buf);
+            return tex;
+        }
+    } 
+    
+    // TODO: more resources
+    
+    else {
+        LOG_ERROR << "Unknown texture resource \"" << source << "\"" << std::endl;
+        boost::shared_ptr<ui::Texture> ret;
+        return ret;
+    }
+    
 }
 
 }

@@ -6,28 +6,27 @@
 
 namespace fluo {
 namespace ui {
+
+class Texture;
+    
 namespace particles {
+    
+class XmlLoader;
 
 class ParticleEmitter : public Emitter {
+
+friend class XmlLoader;
+
 public:
-    ParticleEmitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
-            float creationTime, float expireTime,
-            unsigned int startCount, unsigned int maxCount, float emitPerSec,
-            bool emittedMoveWithEmitter,
-            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
-            const boost::shared_ptr<MotionModel>& emittedMotionModel);
-    void reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
-            float creationTime, float expireTime,
-            unsigned int startCount, unsigned int maxCount, float emitPerSec,
-            bool emittedMoveWithEmitter,
-            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
-            const boost::shared_ptr<MotionModel>& emittedMotionModel);
+    ParticleEmitter(unsigned int maxSize);
 
     ~ParticleEmitter();
 
     virtual unsigned int emittedCount() const;
     virtual void updateSet(unsigned int newCount, float elapsedSeconds);
     virtual void render(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader);
+    
+    virtual bool isExpired() const;
 
 private:
     unsigned int particleCount_;
@@ -35,12 +34,13 @@ private:
 
     void initParticle(unsigned int index);
 
-
     // parameters for the emitted particles
     InterpolatedValue<CL_Vec4f> emittedColorStartMin_;
     InterpolatedValue<CL_Vec4f> emittedColorStartMax_;
     InterpolatedValue<CL_Vec4f> emittedColorEndMin_;
     InterpolatedValue<CL_Vec4f> emittedColorEndMax_;
+    
+    boost::shared_ptr<ui::Texture> emittedTexture_;
 };
 
 }

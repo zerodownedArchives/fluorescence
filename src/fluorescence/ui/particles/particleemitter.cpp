@@ -4,6 +4,7 @@
 #include <ClanLib/Display/Render/program_object.h>
 
 #include <misc/random.hpp>
+#include <ui/texture.hpp>
 
 #include "startpositionprovider.hpp"
 #include "motionmodel.hpp"
@@ -12,45 +13,16 @@ namespace fluo {
 namespace ui {
 namespace particles {
 
-ParticleEmitter::ParticleEmitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
-            float creationTime, float expireTime,
-            unsigned int startCount, unsigned int maxCount, float emitPerSec,
-            bool emittedMoveWithEmitter,
-            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
-            const boost::shared_ptr<MotionModel>& emittedMotionModel) :
-        Emitter(startPos, velStart, velEnd, creationTime, expireTime, startCount, maxCount, emitPerSec, emittedMoveWithEmitter, emittedStartPosProvider, emittedMotionModel),
+ParticleEmitter::ParticleEmitter(unsigned int maxSize) :
         particleCount_(0) {
 
-    particles_ = new Particle[maxCount];
-
-    emittedLifetimeMin_ = InterpolatedValue<float>(0.02, 0.04);
-    emittedLifetimeMax_ = InterpolatedValue<float>(8.0, 10.0);
-
-    emittedColorStartMin_ = InterpolatedValue<CL_Vec4f>(CL_Vec4f(0.9, 0.65, 0.0, 0.4), CL_Vec4f(0.0, 0.65, 0.0, 0.4));
-    emittedColorStartMax_ = InterpolatedValue<CL_Vec4f>(CL_Vec4f(1.0, 0.85, 0.0, 0.6), CL_Vec4f(0.0, 0.85, 0.0, 0.6));
-    emittedColorEndMin_ = InterpolatedValue<CL_Vec4f>(CL_Vec4f(0.8, 0.0, 0.0, 0.0), CL_Vec4f(0.0, 0.0, 0.8, 0.0));
-    emittedColorEndMax_ = InterpolatedValue<CL_Vec4f>(CL_Vec4f(1.0, 0.1, 0.0, 0.2), CL_Vec4f(0.0, 0.1, 1.0, 0.2));
+    particles_ = new Particle[maxSize];
+    startPosition_ = CL_Vec3f(422, 300, 0); // TODO: remove this from here
 }
 
 ParticleEmitter::~ParticleEmitter() {
     delete [] particles_;
     particleCount_ = 0;
-}
-
-void ParticleEmitter::reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
-            float creationTime, float expireTime,
-            unsigned int startCount, unsigned int maxCount, float emitPerSec,
-            bool emittedMoveWithEmitter,
-            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
-            const boost::shared_ptr<MotionModel>& emittedMotionModel) {
-
-    if (maxCount != emittedMaxCount_) {
-        delete [] particles_;
-        particles_ = new Particle[maxCount];
-        particleCount_ = 0;
-    }
-
-    Emitter::reset(startPos, velStart, velEnd, creationTime, expireTime, startCount, maxCount, emitPerSec, emittedMoveWithEmitter, emittedStartPosProvider, emittedMotionModel);
 }
 
 unsigned int ParticleEmitter::emittedCount() const {
@@ -71,9 +43,11 @@ void ParticleEmitter::updateSet(unsigned int newCount, float elapsedSeconds) {
         emittedStartCount_ = 0;
     }
 
+    bool shouldEmitNew = isEmitting();
+
     for (unsigned int i = 0; i < particleCount_; ++i) {
         if (particles_[i].isExpired(age_)) {
-            if (!isExpired(age_)) {
+            if (shouldEmitNew) {
                 // if still emitting, reset particle
                 initParticle(i);
 
@@ -90,7 +64,7 @@ void ParticleEmitter::updateSet(unsigned int newCount, float elapsedSeconds) {
     }
 
     // create new particles, if necessary
-    if (!isExpired(age_)) {
+    if (shouldEmitNew) {
         int remainingNew = (std::min)(newCount, emittedMaxCount_ - emittedCount());
         for (; remainingNew > 0; --remainingNew) {
             initParticle(particleCount_);
@@ -100,11 +74,17 @@ void ParticleEmitter::updateSet(unsigned int newCount, float elapsedSeconds) {
 }
 
 void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader) {
+    if (!emittedTexture_ || !emittedTexture_->isReadComplete()) {
+        return;
+    }
+    
     // set shader uniform variables
     shader->set_uniform1i("Texture0", 0);
     CL_Vec3f emitterMovement = emittedMoveWithEmitter_ ? (position_ - startPosition_) : CL_Vec3f(0, 0, 0);
     shader->set_uniform3f("EmitterMovement", emitterMovement);
     shader->set_uniform1f("CurrentTime", age_);
+    
+    gc.set_texture(0, *(emittedTexture_->getTexture()));
 
     // collect particle data in primarray
     CL_PrimitivesArray primarray(gc);
@@ -135,6 +115,10 @@ void ParticleEmitter::initParticle(unsigned int index) {
         Random::randomMinMax(emittedColorStartMin_, emittedColorStartMax_),
         Random::randomMinMax(emittedColorEndMin_, emittedColorEndMax_)
     );
+}
+
+bool ParticleEmitter::isExpired() const {
+    return lifetimes_[0u] + age_ >= lifetimes_[1u] + emittedLifetimeMax_.get();
 }
 
 }

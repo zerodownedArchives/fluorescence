@@ -9,45 +9,11 @@
 namespace fluo {
 namespace ui {
 namespace particles {
-
-
-Emitter::Emitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
-            float creationTime, float expireTime,
-            unsigned int startCount, unsigned int maxCount, float emitPerSec,
-            bool emittedMoveWithEmitter,
-            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
-            const boost::shared_ptr<MotionModel>& emittedMotionModel) :
-    Emittable(startPos, velStart, velEnd, creationTime, expireTime),
-    emittedStartCount_(startCount),
-    emittedMaxCount_(maxCount),
-    emitPerSecond_(emitPerSec),
-    position_(startPosition_),
-    age_(0),
-    emittedFractionStore_(0.99999f), // to emit at least one child at the start
-    emittedMoveWithEmitter_(emittedMoveWithEmitter),
-    emittedStartPositionProvider_(emittedStartPosProvider),
-    emittedMotionModel_(emittedMotionModel)
-    {
-
-}
-
-void Emitter::reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
-            float creationTime, float expireTime,
-            unsigned int startCount, unsigned int maxCount, float emitPerSec,
-            bool emittedMoveWithEmitter,
-            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
-            const boost::shared_ptr<MotionModel>& emittedMotionModel) {
-
-    Emittable::reset(startPos, velStart, velEnd, creationTime, expireTime);
-    emittedStartCount_ = emittedStartCount_;
-    emittedMaxCount_ = maxCount;
-    emitPerSecond_ = emitPerSec;
-    position_ = startPosition_;
-    emittedMoveWithEmitter = emittedMoveWithEmitter;
-    age_ = 0;
-    emittedFractionStore_ = 0.99999f; // to emit at least one child at the start
-    emittedStartPositionProvider_ = emittedStartPosProvider;
-    emittedMotionModel_ = emittedMotionModel;
+    
+Emitter::Emitter() : 
+        age_(0),
+        emittedFractionStore_(0.99999f) // to emit at least one child at the start
+        {
 }
 
 void Emitter::update(float elapsedSeconds) {
@@ -61,6 +27,7 @@ void Emitter::update(float elapsedSeconds) {
             (velocityEnd_ - velocityStart_) * normalizedAge_ * normalizedAge_ / 2.0;
     position_ = startPosition_ + positionDelta * expireAge;
 
+    emitPerSecond_.setNormalizedAge(normalizedAge_);
     emittedStartPositionProvider_->setNormalizedAge(normalizedAge_);
     emittedMotionModel_->setNormalizedAge(normalizedAge_);
     emittedLifetimeMin_.setNormalizedAge(normalizedAge_);
@@ -75,6 +42,10 @@ void Emitter::update(float elapsedSeconds) {
     }
 
     emittedFractionStore_ = newCountF - newCount;
+}
+
+bool Emitter::isEmitting() const {
+    return lifetimes_[0u] + age_ <= lifetimes_[1u];
 }
 
 }

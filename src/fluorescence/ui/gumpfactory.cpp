@@ -93,21 +93,15 @@ void GumpFactory::removeRepeatContext(const UnicodeString& name) {
 }
 
 GumpMenu* GumpFactory::fromXmlFile(const UnicodeString& name, GumpMenu* menu) {
-    // can be called before a shard is set
-    boost::filesystem::path path;
+    boost::filesystem::path path = "gumps";
     std::string utf8FileName = StringConverter::toUtf8String(name) + ".xml";
-    if (Client::getSingleton()->getConfig().exists("/fluo/shard@name")) {
-        path = "shards" / Client::getSingleton()->getConfig()["/fluo/shard@name"].asPath() / "gumps" / utf8FileName;
-    }
-
+    path = path / utf8FileName;
+    
+    path = data::Manager::getShardFilePath(path);
+    
     if (!boost::filesystem::exists(path)) {
-        path = "gumps";
-        path = path / utf8FileName;
-
-        if (!boost::filesystem::exists(path)) {
-            LOG_ERROR << "Unable to gump xml, file not found: " << utf8FileName << std::endl;
-            return menu;
-        }
+        LOG_ERROR << "Unable to gump xml, file not found: " << utf8FileName << std::endl;
+        return menu;
     }
 
     LOG_DEBUG << "Parsing xml gump file: " << path << std::endl;
@@ -127,7 +121,7 @@ GumpMenu* GumpFactory::fromXmlFile(const UnicodeString& name, GumpMenu* menu) {
 
         return ret;
     } else {
-        LOG_ERROR << "Error parsing file at offset " << result.offset << ": " << result.description() << std::endl;
+        LOG_ERROR << "Error parsing gump xml file at offset " << result.offset << ": " << result.description() << std::endl;
         return menu;
     }
 }
@@ -142,7 +136,7 @@ GumpMenu* GumpFactory::fromXmlString(const UnicodeString& str, GumpMenu* menu) {
 
         return ret;
     } else {
-        LOG_ERROR << "Error parsing string at offset " << result.offset << ": " << result.description() << std::endl;
+        LOG_ERROR << "Error parsing gump xml string at offset " << result.offset << ": " << result.description() << std::endl;
         return menu;
     }
 }

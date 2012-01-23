@@ -16,6 +16,8 @@ public:
     virtual unsigned int emittedCount() const;
     virtual void updateSet(unsigned int newCount, float elapsedSeconds);
     virtual void render(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader);
+    
+    virtual bool isExpired() const;
 
 private:
     std::list<boost::shared_ptr<Emitter> > emitters_;

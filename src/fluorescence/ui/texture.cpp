@@ -39,6 +39,19 @@ boost::shared_ptr<CL_Texture> Texture::getTexture() {
     return texture_;
 }
 
+void Texture::setTexture(CL_PixelBuffer& pixBuf) {
+    if (!texture_.get()) {
+        texture_.reset(ui::Manager::getSingleton()->provideTexture(pixBuf.get_width(), pixBuf.get_height()));
+        texture_->set_image(pixBuf);
+
+        if (useBitMask_) {
+            bitMask_.init(pixBuf);
+        }
+        
+        setReadComplete();
+    }
+}
+
 unsigned int Texture::getWidth() {
     if (texture_) {
         return texture_->get_width();

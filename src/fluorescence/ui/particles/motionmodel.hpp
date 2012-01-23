@@ -11,29 +11,13 @@ namespace particles {
 
 class MotionModel {
 public:
-    enum {
-        TYPE_STATIC = 0,
-        TYPE_START_END_VELOCITY = 1,
-        TYPE_AWAY_FROM_EMITTER = 2,
-    };
-
-
-    MotionModel(unsigned int id);
-
-    unsigned int getId() const;
-
     virtual void setNormalizedAge(float age) = 0;
     virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const = 0;
-
-private:
-    unsigned int id_;
 };
 
 
 class MotionModelStatic : public MotionModel {
 public:
-    MotionModelStatic();
-
     virtual void setNormalizedAge(float age);
     virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const;
 };

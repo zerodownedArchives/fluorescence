@@ -75,6 +75,8 @@ Manager::Manager() {
 
     path = "fonts";
     loadFontDirectory(path);
+    
+    LOG_DEBUG << "OpenGL extensions: " << getOpenGLExtensions() << std::endl;
 }
 
 bool Manager::setShardConfig(Config& config) {
@@ -341,6 +343,12 @@ void Manager::onClickEvent(boost::shared_ptr<world::IngameObject> obj) {
 boost::shared_ptr<ShaderManager> Manager::getShaderManager() {
     return getSingleton()->shaderManager_;
 }
+
+UnicodeString Manager::getOpenGLExtensions() const {
+    const GLubyte* sExtensions = glGetString(GL_EXTENSIONS);
+    return UnicodeString((const char*)sExtensions);
+}
+    
 
 }
 }

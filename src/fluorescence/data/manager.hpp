@@ -40,6 +40,10 @@ public:
     static void destroy();
     static Manager* getSingleton();
     ~Manager();
+    
+    // return the path to the file inside the current shard directory, if the file exists there.
+    // if not, return default path
+    static boost::filesystem::path getShardFilePath(const boost::filesystem::path& innerPath);
 
     static PaperdollDef getPaperdollDef(unsigned int bodyId);
     static BodyDef getBodyDef(unsigned int baseBodyId);
@@ -61,6 +65,8 @@ public:
     static boost::shared_ptr<MobTypesLoader> getMobTypesLoader() { return getSingleton()->mobTypesLoader_; }
     static boost::shared_ptr<UniFontLoader> getUniFontLoader(unsigned int index);
     static boost::shared_ptr<ClilocLoader> getClilocLoader();
+    
+    static boost::shared_ptr<ui::Texture> getTexture(const UnicodeString& source, const UnicodeString& id);
 
 private:
     static Manager* singleton_;

@@ -18,18 +18,7 @@ class MotionModel;
 
 class Emitter : public Emittable {
 public:
-    Emitter(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
-            float creationTime, float expireTime,
-            unsigned int startCount, unsigned int maxCount, float emitPerSec,
-            bool emittedMoveWithEmitter,
-            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
-            const boost::shared_ptr<MotionModel>& emittedMotionModel);
-    void reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd,
-            float creationTime, float expireTime,
-            unsigned int startCount, unsigned int maxCount, float emitPerSec,
-            bool emittedMoveWithEmitter,
-            const boost::shared_ptr<StartPositionProvider>& emittedStartPosProvider,
-            const boost::shared_ptr<MotionModel>& emittedMotionModel);
+    Emitter();
 
     // updateSet is used to propagate the change internally (e.g. to children)
     virtual void update(float elapsedSeconds);
@@ -37,6 +26,9 @@ public:
     virtual unsigned int emittedCount() const = 0;
 
     virtual void render(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader) = 0;
+    
+    virtual bool isExpired() const = 0;
+    bool isEmitting() const;
 
 
 protected:
@@ -44,7 +36,7 @@ protected:
 
     unsigned int emittedStartCount_;
     unsigned int emittedMaxCount_;
-    float emitPerSecond_;
+    InterpolatedValue<float> emitPerSecond_;
 
     CL_Vec3f position_;
 

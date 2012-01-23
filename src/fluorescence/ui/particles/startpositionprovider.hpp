@@ -26,6 +26,7 @@ public:
 class StartPositionProviderWithSize : public StartPositionProvider {
 public:
     void setSize(float widthStart, float widthEnd, float heightStart, float heightEnd);
+    void setSizeT1(float width, float height);
     virtual void setNormalizedAge(float age);
 
 protected:

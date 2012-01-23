@@ -16,6 +16,7 @@ public:
     ~BitMask();
 
     void init(boost::shared_ptr<CL_PixelBuffer> pixBuf);
+    void init(const CL_PixelBuffer& pixBuf);
 
     bool hasPixel(unsigned int pixelX, unsigned int pixelY);
 

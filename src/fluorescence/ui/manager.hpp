@@ -123,6 +123,8 @@ private:
     boost::shared_ptr<FontEngine> fontEngine_;
 
     boost::shared_ptr<ShaderManager> shaderManager_;
+    
+    UnicodeString getOpenGLExtensions() const;
 };
 
 }

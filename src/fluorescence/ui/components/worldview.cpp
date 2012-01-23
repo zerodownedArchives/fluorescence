@@ -212,6 +212,10 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
         data::Manager::getArtLoader()->printStats();
         LOG_DEBUG << "Render queue count: " << ui::Manager::getWorldRenderQueue()->size() << std::endl;
         break;
+        
+    case CL_KEY_P:
+        
+        break;
 
 
     case CL_MOUSE_LEFT:

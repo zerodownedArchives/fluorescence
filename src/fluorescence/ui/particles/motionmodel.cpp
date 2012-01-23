@@ -7,17 +7,6 @@ namespace fluo {
 namespace ui {
 namespace particles {
 
-MotionModel::MotionModel(unsigned int id) : id_(id) {
-}
-
-unsigned int MotionModel::getId() const {
-    return id_;
-}
-
-
-MotionModelStatic::MotionModelStatic() : MotionModel(TYPE_STATIC) {
-}
-
 void MotionModelStatic::setNormalizedAge(float age) {
     // do nothing
 }
@@ -28,8 +17,7 @@ void MotionModelStatic::get(const CL_Vec3f& emitterPosition, const CL_Vec3f& par
 }
 
 
-MotionModelStartEndVelocity::MotionModelStartEndVelocity() :
-        MotionModel(MotionModel::TYPE_START_END_VELOCITY) {
+MotionModelStartEndVelocity::MotionModelStartEndVelocity() {
 }
 
 void MotionModelStartEndVelocity::setVelocitiesT0(const CL_Vec3f& startMin, const CL_Vec3f& startMax, const CL_Vec3f& endMin, const CL_Vec3f& endMax) {
@@ -67,8 +55,7 @@ void MotionModelStartEndVelocity::get(const CL_Vec3f& emitterPosition, const CL_
 }
 
 
-MotionModelAwayFromEmitter::MotionModelAwayFromEmitter() :
-        MotionModel(MotionModel::TYPE_AWAY_FROM_EMITTER) {
+MotionModelAwayFromEmitter::MotionModelAwayFromEmitter() {
 }
 
 void MotionModelAwayFromEmitter::setAccelerationT0(float startMin, float startMax, float endMin, float endMax) {
