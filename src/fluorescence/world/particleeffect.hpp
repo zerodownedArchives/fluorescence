@@ -32,7 +32,7 @@ public:
     virtual void updateVertexCoordinates();
     virtual void updateRenderDepth();
     
-    
+    bool isExpired() const;
     void renderAll(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader);
     void addEmitter(boost::shared_ptr<ui::particles::Emitter> emitter);
     

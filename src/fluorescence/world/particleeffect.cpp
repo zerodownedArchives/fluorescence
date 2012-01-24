@@ -66,6 +66,10 @@ void ParticleEffect::updateVertexCoordinates() {
 void ParticleEffect::updateRenderDepth() {
 }
 
+bool ParticleEffect::isExpired() const {
+    return emitters_.empty();
+}
+
 
 }
 }

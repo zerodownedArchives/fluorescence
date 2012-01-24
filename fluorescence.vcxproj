@@ -92,12 +92,10 @@
     <ClCompile Include="src\fluorescence\data\maptexloader.cpp" />
     <ClCompile Include="src\fluorescence\data\mobtypesloader.cpp" />
     <ClCompile Include="src\fluorescence\data\staticsloader.cpp" />
-    <ClCompile Include="src\fluorescence\data\test\testbed.cpp" />
     <ClCompile Include="src\fluorescence\data\tiledataloader.cpp" />
     <ClCompile Include="src\fluorescence\data\unifontloader.cpp" />
     <ClCompile Include="src\fluorescence\main.cpp" />
     <ClCompile Include="src\fluorescence\misc\config.cpp" />
-    <ClCompile Include="src\fluorescence\misc\filenamecaseconverter.cpp" />
     <ClCompile Include="src\fluorescence\misc\log.cpp" />
     <ClCompile Include="src\fluorescence\misc\pugixml\pugixml.cpp" />
     <ClCompile Include="src\fluorescence\misc\string.cpp" />
@@ -217,7 +215,6 @@
     <ClInclude Include="src\fluorescence\data\weakptrcache.hpp" />
     <ClInclude Include="src\fluorescence\misc\config.hpp" />
     <ClInclude Include="src\fluorescence\misc\exception.hpp" />
-    <ClInclude Include="src\fluorescence\misc\filenamecaseconverter.hpp" />
     <ClInclude Include="src\fluorescence\misc\log.hpp" />
     <ClInclude Include="src\fluorescence\misc\pugixml\pugiconfig.hpp" />
     <ClInclude Include="src\fluorescence\misc\pugixml\pugixml.hpp" />

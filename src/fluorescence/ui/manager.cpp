@@ -63,6 +63,7 @@ Manager::Manager() {
     description.set_title("fluorescence");
     description.set_allow_resize(true);
     description.set_depth_size(16);
+    description.set_version(2, 1, false);
     mainWindow_.reset(new CL_DisplayWindow(description));
 
     slotCloseWindow = mainWindow_->sig_window_close().connect(Client::getSingleton(), &Client::shutdown);
