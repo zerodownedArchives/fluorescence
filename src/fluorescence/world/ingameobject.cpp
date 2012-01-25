@@ -229,7 +229,7 @@ boost::shared_ptr<IngameObject> IngameObject::getTopParent() {
 }
 
 void IngameObject::printRenderDepth() const {
-    LOG_DEBUG << "Render depth: " << std::setprecision(15) << worldRenderData_.getRenderDepth() << std::endl;
+    LOG_DEBUG << "Render depth: " << std::hex << worldRenderData_.getRenderDepth() << std::dec << std::endl;
 }
 
 void IngameObject::setOverheadMessageOffsets() {
