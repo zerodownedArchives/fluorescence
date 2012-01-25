@@ -226,15 +226,10 @@ CL_Vec4f XmlLoader::parseColor(pugi::xml_node node) const {
     
     CL_Vec4f ret;
     
-    pugi::xml_attribute r = node.attribute("r");
-    pugi::xml_attribute g = node.attribute("g");
-    pugi::xml_attribute b = node.attribute("b");
-    pugi::xml_attribute a = node.attribute("a");
-    
-    ret.r = r ? r.as_float() : 0;
-    ret.g = g ? g.as_float() : 0;
-    ret.b = b ? b.as_float() : 0;
-    ret.a = a ? a.as_float() : 0;
+    ret.r = node.attribute("r").as_float();
+    ret.g = node.attribute("g").as_float();
+    ret.b = node.attribute("b").as_float();
+    ret.a = node.attribute("a").as_float();
     
     return ret;
 }
@@ -246,13 +241,9 @@ CL_Vec3f XmlLoader::parseVelocity(pugi::xml_node node) const {
     
     CL_Vec3f ret;
     
-    pugi::xml_attribute x = node.attribute("x");
-    pugi::xml_attribute y = node.attribute("y");
-    pugi::xml_attribute z = node.attribute("z");
-    
-    ret.x = x ? x.as_float() : 0;
-    ret.y = y ? y.as_float() : 0;
-    ret.z = z ? z.as_float() : 0;
+    ret.x = node.attribute("x").as_float();
+    ret.y = node.attribute("y").as_float();
+    ret.z = node.attribute("z").as_float();
     
     return ret;
 }

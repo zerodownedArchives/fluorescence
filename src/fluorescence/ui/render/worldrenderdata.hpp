@@ -1,6 +1,8 @@
 #ifndef FLUO_UI_WORLDRENDERDATA_HPP
 #define FLUO_UI_WORLDRENDERDATA_HPP
 
+#include <stdint.h>
+
 #include <boost/shared_ptr.hpp>
 
 #include <ClanLib/Core/Math/vec2.h>

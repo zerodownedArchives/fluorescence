@@ -231,6 +231,7 @@ float Client::calculateFps(unsigned int elapsedMillis) {
 int Client::main(const std::vector<CL_String8>& args) {
     LOG_INFO << "Client::main" << std::endl;
     setlocale(LC_ALL, "");
+    setlocale(LC_NUMERIC, "C");
 
     if (!initBase(args)) {
         cleanUp();

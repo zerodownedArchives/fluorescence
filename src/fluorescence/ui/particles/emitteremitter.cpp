@@ -10,9 +10,12 @@ unsigned int EmitterEmitter::emittedCount() const {
 }
 
 void EmitterEmitter::updateSet(unsigned int newCount, float elapsedSeconds) {
-    for (boost::shared_ptr<Emitter>& em : emitters_) {
-        if (!em->isExpired()) {
-            em->update(elapsedSeconds);
+    std::list<boost::shared_ptr<Emitter> >::iterator iter = emitters_.begin();
+    std::list<boost::shared_ptr<Emitter> >::iterator end = emitters_.end();
+
+    for (; iter != end; ++iter) {
+        if (!(*iter)->isExpired()) {
+            (*iter)->update(elapsedSeconds);
         }
     }
 
@@ -20,9 +23,12 @@ void EmitterEmitter::updateSet(unsigned int newCount, float elapsedSeconds) {
 }
 
 void EmitterEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader) {
-    for (boost::shared_ptr<Emitter>& em : emitters_) {
-        if (!em->isExpired()) {
-            em->render(gc, shader);
+    std::list<boost::shared_ptr<Emitter> >::iterator iter = emitters_.begin();
+    std::list<boost::shared_ptr<Emitter> >::iterator end = emitters_.end();
+
+    for (; iter != end; ++iter) {
+        if (!(*iter)->isExpired()) {
+            (*iter)->render(gc, shader);
         }
     }
 }

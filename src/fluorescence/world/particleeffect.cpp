@@ -27,25 +27,34 @@ void ParticleEffect::update(unsigned int elapsedMillis) {
     float elapsedSeconds = elapsedMillis / 1000.f;
     
     std::list<boost::shared_ptr<ui::particles::Emitter> > expired;
+
+    std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator iter = emitters_.begin();
+    std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator end = emitters_.end();
     
-    for (boost::shared_ptr<ui::particles::Emitter>& em : emitters_) {
-        em->update(elapsedSeconds);
+    for (; iter != end; ++iter) {
+        (*iter)->update(elapsedSeconds);
         
-        if (em->isExpired()) {
-            expired.push_back(em);
+        if ((*iter)->isExpired()) {
+            expired.push_back(*iter);
         }
     }
-    
+
     if (!expired.empty()) {
-        for (boost::shared_ptr<ui::particles::Emitter>& ex : expired) {
-            emitters_.remove(ex);
+        iter = expired.begin();
+        end = expired.end();
+
+        for (; iter != end; ++iter) {
+            emitters_.remove(*iter);
         }
     }
 }
 
 void ParticleEffect::renderAll(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader) {
-    for (boost::shared_ptr<ui::particles::Emitter>& em : emitters_) {
-        em->render(gc, shader);
+    std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator iter = emitters_.begin();
+    std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator end = emitters_.end();
+
+    for (; iter != end; ++iter) {
+        (*iter)->render(gc, shader);
     }
 }
 

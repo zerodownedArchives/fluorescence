@@ -90,9 +90,10 @@ void ClilocLoader::indexFile(const boost::filesystem::path& path, bool isEnu) {
     uint32_t id;
     uint16_t len;
 
-    while (stream->tellg() != filesize) {
-        if (stream->tellg() == -1) {
-            exit(1);
+    while (stream->tellg() != (std::streampos)filesize) {
+        if (stream->tellg() == (std::streampos)-1) {
+            LOG_ERROR << "Received value -1 from stream->tellg() in ClilocLoader::indexFile" << std::endl;
+            break;
         }
         stream->read(reinterpret_cast<char*>(indexBuffer), 7);
         ClilocEntry curEntry;

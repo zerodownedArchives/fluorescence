@@ -7,7 +7,7 @@
         <particles>
             <movewithemitter value="false" />
             <motion model="explosion" />
-            <texture source="file" id="small.png" />
+            <texture source="file" id="effects/textures/small.png" />
         </particles>
 
         <t0>

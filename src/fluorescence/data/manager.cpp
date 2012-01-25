@@ -131,7 +131,7 @@ void Manager::init(Config& config) {
 
         ss.str(""); ss.clear();
         ss << "/fluo/files/map" << index << "@width";
-        LOG_DEBUG << "key: " << ss.str().c_str() << std::endl;
+        // LOG_DEBUG << "key: " << ss.str().c_str() << std::endl;
         blockCountX = config[ss.str().c_str()].asInt();
 
         ss.str(""); ss.clear();
