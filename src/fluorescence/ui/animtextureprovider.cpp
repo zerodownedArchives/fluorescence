@@ -55,19 +55,19 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
 
         if (it == animations_.end()) {
             animations_[nextAnimId_] = data::Manager::getAnim(bodyId_, nextAnimId_);
+            it = animations_.find(nextAnimId_);
         }
 
-        it = animations_.find(nextAnimId_);
-
-        if (!it->second.empty() && it->second[direction_]->isReadComplete()) {
+        if (!it->second[direction_]) {
+            //LOG_DEBUG << "Request for invalid anim id " << nextAnimId_ << " on body id " << bodyId_ << std::endl;
+        } else if (it->second[direction_]->isReadComplete()) {
             currentAnimId_ = nextAnimId_;
             currentIdx_ = 0;
             millis_ = 0;
             elapsedMillis = 0;
 
-            nextAnimId_ = 0xFFFFFFFFu;
-
             frameChanged = true;
+            nextAnimId_ = 0xFFFFFFFFu;
         }
     }
 

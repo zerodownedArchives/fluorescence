@@ -35,7 +35,8 @@
 namespace fluo {
 namespace world {
 
-DynamicItem::DynamicItem(Serial serial) : ServerObject(serial, IngameObject::TYPE_DYNAMIC_ITEM), artId_(0), equipped_(false), containerGump_(NULL) {
+DynamicItem::DynamicItem(Serial serial) : ServerObject(serial, IngameObject::TYPE_DYNAMIC_ITEM), 
+        artId_(0), tileDataInfo_(NULL), equipped_(false), containerGump_(NULL) {
 }
 
 boost::shared_ptr<ui::Texture> DynamicItem::getIngameTexture() const {
@@ -55,7 +56,7 @@ unsigned int DynamicItem::getArtId() const {
 }
 
 void DynamicItem::setArtId(unsigned int artId) {
-    if (artId_ != artId) {
+    if (!tileDataInfo_ || artId_ != artId) { // not initialized or other art id
         artId_ = artId;
         tileDataInfo_ = data::Manager::getTileDataLoader()->getStaticTileInfo(artId_);
         worldRenderData_.hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;

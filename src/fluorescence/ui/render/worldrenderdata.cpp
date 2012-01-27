@@ -88,8 +88,9 @@ void WorldRenderData::setRenderDepth(unsigned long long value) {
 void WorldRenderData::setRenderDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint8_t byte5, uint8_t byte6) { 
     unsigned long long tmp = 0;
     tmp |= (xPlusY & 0xFFFF);
-    tmp <<= 16;
-    tmp |= (z & 0xFF);
+    tmp <<= 8;
+    uint8_t tmpZ = (((int)z) + 128) & 0xFF;
+    tmp |= (tmpZ);
     tmp <<= 8;
     tmp |= (priority & 0xFF);
     tmp <<= 8;

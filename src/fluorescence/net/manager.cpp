@@ -75,7 +75,7 @@ void Manager::step() {
         // handle received packets
         boost::shared_ptr<Packet> packet = socket_.getNextPacket();
         while (packet) {
-            //LOG_DEBUG << "Calling handler for packet " << std::hex << (unsigned int)packet->getId() << std::dec << std::endl;
+            LOG_DEBUG << "Calling handler for packet " << std::hex << (unsigned int)packet->getId() << std::dec << std::endl;
             packet->onReceive();
             packet = socket_.getNextPacket();
         }
