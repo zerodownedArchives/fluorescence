@@ -53,6 +53,16 @@ class ClilocLoader;
 template<typename ValueType>
 class DefFileLoader;
 
+struct TextureSource {
+enum {
+	FILE = 1,
+	MAPART = 2,
+	STATICART = 3,
+	GUMPART = 4,
+};
+};
+
+
 class Manager {
 public:
     static bool create(Config& config);
@@ -85,6 +95,8 @@ public:
     static boost::shared_ptr<UniFontLoader> getUniFontLoader(unsigned int index);
     static boost::shared_ptr<ClilocLoader> getClilocLoader();
     
+    static boost::shared_ptr<ui::Texture> getTexture(unsigned int source, unsigned int id);
+    static boost::shared_ptr<ui::Texture> getTexture(unsigned int source, const UnicodeString& id);
     static boost::shared_ptr<ui::Texture> getTexture(const UnicodeString& source, const UnicodeString& id);
 
 private:

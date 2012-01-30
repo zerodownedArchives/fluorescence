@@ -582,30 +582,81 @@ boost::filesystem::path Manager::getShardFilePath(const boost::filesystem::path&
     return ret;
 }
 
-boost::shared_ptr<ui::Texture> Manager::getTexture(const UnicodeString& source, const UnicodeString& id) {
-    if (source == "file") {
-        boost::filesystem::path idPath(StringConverter::toUtf8String(id));
+boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, unsigned int id) {
+    boost::shared_ptr<ui::Texture> ret;
+	switch (source) {
+	case TextureSource::FILE:
+		LOG_ERROR << "Unable to handle getTexture(int, int) for file source" << std::endl;
+        return ret;
+        
+	case TextureSource::MAPART:
+		return getArtLoader()->getMapTexture(id);
+		
+	case TextureSource::STATICART:
+		return getArtLoader()->getItemTexture(id);
+	
+	case TextureSource::GUMPART:
+		return getGumpArtLoader()->getTexture(id);
+	
+	default:
+		LOG_ERROR << "Unknown texture source \"" << source << "\"" << std::endl;
+        return ret;
+	}
+}
+
+boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, const UnicodeString& id) {
+    boost::shared_ptr<ui::Texture> ret;
+	switch (source) {
+	case TextureSource::FILE: {
+		boost::filesystem::path idPath(StringConverter::toUtf8String(id));
         idPath = getShardFilePath(idPath);
         
         if (!boost::filesystem::exists(idPath)) {
-            boost::shared_ptr<ui::Texture> ret;
             return ret;
         } else {
+            // TODO: threaded file loader
             CL_PixelBuffer buf(idPath.string());
             boost::shared_ptr<ui::Texture> tex(new ui::Texture(false));
             tex->setTexture(buf);
             return tex;
         }
-    } 
+    }
+        
+    case TextureSource::MAPART:
+    case TextureSource::STATICART:
+    case TextureSource::GUMPART: {
+		int idInt = StringConverter::toInt(id);
+		return getTexture(source, idInt);
+    }
+		
+    default:
+		LOG_ERROR << "Unknown texture source \"" << source << "\"" << std::endl;
+        return ret;
+    }
+}
+
+boost::shared_ptr<ui::Texture> Manager::getTexture(const UnicodeString& source, const UnicodeString& id) {
+    UnicodeString lowerSource(source);
+    lowerSource.toLower();
+	unsigned int sourceId = 0;
+    if (lowerSource == "file") {
+		sourceId = TextureSource::FILE;
+	} else if (lowerSource == "mapart") {
+		sourceId = TextureSource::MAPART;
+	} else if (lowerSource == "staticart") {
+		sourceId = TextureSource::STATICART;
+	} else if (lowerSource == "gumpart") {
+		sourceId = TextureSource::GUMPART;
+	}
     
-    // TODO: more resources
-    
-    else {
-        LOG_ERROR << "Unknown texture resource \"" << source << "\"" << std::endl;
+    if (sourceId != 0) {
+        return getTexture(sourceId, id);
+    } else {
+		// TODO: more resources ?
+        LOG_ERROR << "Unknown texture source \"" << source << "\"" << std::endl;
         boost::shared_ptr<ui::Texture> ret;
         return ret;
     }
-    
 }
 
 }
