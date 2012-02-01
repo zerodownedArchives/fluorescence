@@ -53,8 +53,8 @@ public:
     unsigned int getBlockCountY();
 
 private:
-    WeakPtrCache<world::MapBlock, FixedSizeOnDemandFileLoader> mulCache_;
-    WeakPtrCache<world::MapBlock, FixedSizeOnDemandFileLoader> difCache_;
+    WeakPtrCache<unsigned int, world::MapBlock, FixedSizeOnDemandFileLoader> mulCache_;
+    WeakPtrCache<unsigned int, world::MapBlock, FixedSizeOnDemandFileLoader> difCache_;
 
     // stores block idx - file offset in dif file pairs
     std::map<unsigned int, unsigned int> difEntries_;

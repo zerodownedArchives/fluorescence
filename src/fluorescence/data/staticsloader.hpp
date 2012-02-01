@@ -47,8 +47,8 @@ public:
 
 
 private:
-    WeakPtrCache<world::StaticBlock, IndexedOnDemandFileLoader> mulCache_;
-    WeakPtrCache<world::StaticBlock, IndexedOnDemandFileLoader> difCache_;
+    WeakPtrCache<unsigned int, world::StaticBlock, IndexedOnDemandFileLoader> mulCache_;
+    WeakPtrCache<unsigned int, world::StaticBlock, IndexedOnDemandFileLoader> difCache_;
 
     // stores block idx - file offset in dif file pairs
     std::map<unsigned int, unsigned int> difEntries_;

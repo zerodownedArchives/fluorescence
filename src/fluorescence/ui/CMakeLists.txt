@@ -48,6 +48,7 @@ set (GUMPMENU_HPP
     ui/components/propertylabel.hpp
     ui/components/gumpview.hpp
     ui/components/containerview.hpp
+    ui/components/image.hpp
     )
 
 set (GUMPMENU_CPP
@@ -66,6 +67,7 @@ set (GUMPMENU_CPP
     ui/components/propertylabel.cpp
     ui/components/gumpview.cpp
     ui/components/containerview.cpp
+    ui/components/image.cpp
     )
 
 set (RENDER_HPP

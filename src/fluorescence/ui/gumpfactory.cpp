@@ -44,6 +44,7 @@
 #include "components/propertylabel.hpp"
 #include "components/gumpview.hpp"
 #include "components/containerview.hpp"
+#include "components/image.hpp"
 
 namespace fluo {
 namespace ui {
@@ -608,78 +609,40 @@ bool GumpFactory::parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent, 
 }
 
 bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    std::string path = node.attribute("path").value();
-    unsigned int gumpId = node.attribute("gumpid").as_uint();
-    unsigned int artId = node.attribute("artid").as_uint();
+    UnicodeString imgSource = StringConverter::fromUtf8(node.attribute("source").value());
+    UnicodeString imgId = StringConverter::fromUtf8(node.attribute("imgid").value());
 
     int locX = node.attribute("x").as_int();
     int locY = node.attribute("y").as_int();
     unsigned int width = node.attribute("width").as_uint();
     unsigned int height = node.attribute("height").as_uint();
 
-    CL_ImageView* img = new CL_ImageView(parent);
+    components::Image* img = new components::Image(parent);
     parseId(node, img);
-
-    // path takes precedence over gumpid, gumpid over artid
-    if (path.length() > 0) {
-        try {
-            CL_PixelBuffer buf(path);
-            img->set_image(buf);
-
-            if (width == 0) {
-                width = buf.get_width();
-            }
-
-            if (height == 0) {
-                height = buf.get_height();
-            }
-        } catch (const CL_Exception& ex) {
-            LOG_ERROR << "Unable to load image from path " << path << ": " << ex.what() << std::endl;
-            return false;
-        }
-    } else if (gumpId) {
-        boost::shared_ptr<ui::Texture> texture = data::Manager::getGumpArtLoader()->getTexture(gumpId);
-        // TODO: find something better than busy waiting here
-        while(!texture->isReadComplete()) {
-            fluo::sleepMs(1);
-        }
-
-        img->set_image(*(texture->getPixelBuffer()));
-
-        if (width == 0) {
-            width = texture->getPixelBuffer()->get_width();
-        }
-
-        if (height == 0) {
-            height = texture->getPixelBuffer()->get_height();
-        }
-
-        //LOG_DEBUG << "width=" << width << " height=" << height << std::endl;
-    } else if (artId) {
-        boost::shared_ptr<ui::Texture> texture = data::Manager::getArtLoader()->getItemTexture(artId);
-        // TODO: find something better than busy waiting here
-        while(!texture->isReadComplete()) {
-            fluo::sleepMs(1);
-        }
-
-        img->set_image(*(texture->getPixelBuffer()));
-
-        if (width == 0) {
-            width = texture->getPixelBuffer()->get_width();
-        }
-
-        if (height == 0) {
-            height = texture->getPixelBuffer()->get_height();
-        }
-    } else {
-        LOG_WARN << "Image component without image information! Please supply path, gumpid or artid" << std::endl;
+    
+    boost::shared_ptr<ui::Texture> texture = data::Manager::getTexture(imgSource, imgId);
+    
+    if (!texture) {
+        LOG_ERROR << "Unable to parse gump image, source=" << imgSource << " imgid=" << imgId << std::endl;
         return false;
     }
-
+    
+    if (width == 0 || height == 0) {
+        if (texture->getWidth() != 0) {
+            width = texture->getWidth();
+            height = texture->getHeight();
+        } else {
+            img->autoResize_ = true;
+            width = 1;
+            height = 1;
+        }
+    }
+    
+    img->setTexture(texture);
 
     CL_Rect bounds(locX, locY, CL_Size(width, height));
     img->set_geometry(bounds);
-    img->set_scale_to_fit();
+    // img->set_scale_to_fit();
 
     top->addToCurrentPage(img);
     return true;

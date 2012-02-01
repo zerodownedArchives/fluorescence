@@ -8,6 +8,7 @@ set (DATA_HPP
     data/indexedondemandfileloader.hpp
     data/fixedsizeondemandfileloader.hpp
     data/util.hpp
+    data/ondemandurlloader.hpp
     )
 
 set (DATA_CPP
@@ -29,6 +30,9 @@ set(DATA_LOADERS_HPP
     data/animloader.hpp
     data/unifontloader.hpp
     data/clilocloader.hpp
+    
+    data/httploader.hpp
+    data/filepathloader.hpp
 
     data/mobtypesloader.hpp
     data/deffileloader.hpp
@@ -48,6 +52,9 @@ set(DATA_LOADERS_CPP
     data/animloader.cpp
     data/unifontloader.cpp
     data/clilocloader.cpp
+    
+    data/httploader.cpp
+    data/filepathloader.cpp
 
     data/mobtypesloader.cpp
     data/equipconvdefloader.cpp

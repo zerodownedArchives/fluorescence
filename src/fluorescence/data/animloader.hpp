@@ -44,7 +44,7 @@ public:
 private:
     unsigned int highDetailCount_;
     unsigned int lowDetailCount_;
-    WeakPtrCache<ui::Animation, IndexedOnDemandFileLoader> cache_;
+    WeakPtrCache<unsigned int, ui::Animation, IndexedOnDemandFileLoader> cache_;
 };
 
 }

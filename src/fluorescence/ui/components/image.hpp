@@ -17,37 +17,40 @@
  */
 
 
-#ifndef FLUO_DATA_GUMPARTLOADER_HPP
-#define FLUO_DATA_GUMPARTLOADER_HPP
+#ifndef FLUO_UI_COMPONENTS_IMAGE_HPP
+#define FLUO_UI_COMPONENTS_IMAGE_HPP
 
-#include "weakptrcache.hpp"
-#include "indexedondemandfileloader.hpp"
-
-#include <boost/filesystem.hpp>
+#include <ClanLib/GUI/gui_component.h>
+#include <ClanLib/Display/Render/graphic_context.h>
+#include <boost/shared_ptr.hpp>
 
 namespace fluo {
-
 namespace ui {
-    class Texture;
-}
 
-namespace data {
+class Texture;
+class GumpFactory;
+    
+namespace components {
 
-class GumpArtLoader {
+class Image : public CL_GUIComponent {
+
+friend class ui::GumpFactory;
+
 public:
-    GumpArtLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath);
+    Image(CL_GUIComponent* parent);
 
-    boost::shared_ptr<ui::Texture> getTexture(unsigned int id);
-
-    void readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture>, unsigned int extra, unsigned int userData);
-
-    bool hasTexture(unsigned int id);
-
+    void setTexture(boost::shared_ptr<ui::Texture> tex);
+    void render(CL_GraphicContext& gc, const CL_Rect& clipRect);
+    
 private:
-    WeakPtrCache<unsigned int, ui::Texture, IndexedOnDemandFileLoader> cache_;
+    boost::shared_ptr<ui::Texture> texture_;
+    
+    bool autoResize_;
 };
 
 }
 }
+}
 
 #endif
+

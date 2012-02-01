@@ -31,7 +31,7 @@ include_directories(${ClanLib_INCLUDE_DIRS})
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost 1.42.0 REQUIRED COMPONENTS filesystem system thread program_options)
 
-set(FLUO_LIBRARIES ${ClanLib_LIBRARIES} ${Boost_LIBRARIES} ${ICU_LIBRARIES} -lXcursor)
+set(FLUO_LIBRARIES ${ClanLib_LIBRARIES} ${Boost_LIBRARIES} ${ICU_LIBRARIES} -lXcursor -lcurl)
 
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}")

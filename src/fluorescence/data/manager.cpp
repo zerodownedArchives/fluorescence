@@ -36,6 +36,8 @@
 #include "deffileloader.hpp"
 #include "equipconvdefloader.hpp"
 #include "clilocloader.hpp"
+#include "httploader.hpp"
+#include "filepathloader.hpp"
 
 #include <client.hpp>
 
@@ -327,6 +329,12 @@ void Manager::init(Config& config) {
         LOG_INFO << "Opening " << ss.str() << " from path=" << path << std::endl;
         clilocLoader_->indexFile(path, false);
     }
+    
+    
+    LOG_INFO << "Initializing http loader" << std::endl;
+    httpLoader_.reset(new HttpLoader());
+    
+    filePathLoader_.reset(new FilePathLoader());
 }
 
 Manager::~Manager() {
@@ -585,8 +593,9 @@ boost::filesystem::path Manager::getShardFilePath(const boost::filesystem::path&
 boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, unsigned int id) {
     boost::shared_ptr<ui::Texture> ret;
 	switch (source) {
+    case TextureSource::HTTP:
 	case TextureSource::FILE:
-		LOG_ERROR << "Unable to handle getTexture(int, int) for file source" << std::endl;
+		LOG_ERROR << "Unable to handle getTexture(int, int) for file or http source" << std::endl;
         return ret;
         
 	case TextureSource::MAPART:
@@ -610,17 +619,11 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, const Un
 	case TextureSource::FILE: {
 		boost::filesystem::path idPath(StringConverter::toUtf8String(id));
         idPath = getShardFilePath(idPath);
-        
-        if (!boost::filesystem::exists(idPath)) {
-            return ret;
-        } else {
-            // TODO: threaded file loader
-            CL_PixelBuffer buf(idPath.string());
-            boost::shared_ptr<ui::Texture> tex(new ui::Texture(false));
-            tex->setTexture(buf);
-            return tex;
-        }
+        return getSingleton()->filePathLoader_->getTexture(idPath);
     }
+    
+    case TextureSource::HTTP:
+        return getSingleton()->httpLoader_->getTexture(id);
         
     case TextureSource::MAPART:
     case TextureSource::STATICART:
@@ -647,7 +650,9 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(const UnicodeString& source, 
 		sourceId = TextureSource::STATICART;
 	} else if (lowerSource == "gumpart") {
 		sourceId = TextureSource::GUMPART;
-	}
+	} else if (lowerSource == "http") {
+        sourceId = TextureSource::HTTP;
+    }
     
     if (sourceId != 0) {
         return getTexture(sourceId, id);

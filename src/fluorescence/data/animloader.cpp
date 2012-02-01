@@ -32,7 +32,7 @@ namespace data {
 AnimLoader::AnimLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath, unsigned int highDetailCount, unsigned int lowDetailCount) :
     highDetailCount_(highDetailCount), lowDetailCount_(lowDetailCount) {
 
-    boost::shared_ptr<IndexedOnDemandFileLoader<ui::Animation> > loader(new IndexedOnDemandFileLoader<ui::Animation>(idxPath, mulPath,
+    boost::shared_ptr<IndexedOnDemandFileLoader<unsigned int, ui::Animation> > loader(new IndexedOnDemandFileLoader<unsigned int, ui::Animation>(idxPath, mulPath,
                 boost::bind(&AnimLoader::readCallback, this, _1, _2, _3, _4, _5, _6)));
     cache_.init(loader);
 }

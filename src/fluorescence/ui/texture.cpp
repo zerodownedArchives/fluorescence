@@ -60,11 +60,11 @@ boost::shared_ptr<CL_Texture> Texture::getTexture() {
 
 void Texture::setTexture(CL_PixelBuffer& pixBuf) {
     if (!texture_.get()) {
-        texture_.reset(ui::Manager::getSingleton()->provideTexture(pixBuf.get_width(), pixBuf.get_height()));
-        texture_->set_image(pixBuf);
-
+        pixelBuffer_.reset(new CL_PixelBuffer(pixBuf.get_width(), pixBuf.get_height(), cl_rgba8));
+        memcpy(pixelBuffer_->get_data(), pixBuf.get_data(), pixBuf.get_width() * pixBuf.get_height() * 4);
+        
         if (useBitMask_) {
-            bitMask_.init(pixBuf);
+            bitMask_.init(pixelBuffer_);
         }
         
         setReadComplete();

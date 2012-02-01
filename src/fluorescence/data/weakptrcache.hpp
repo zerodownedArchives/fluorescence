@@ -35,24 +35,25 @@ namespace data {
  * \brief This class provides caching based on weak pointers. Additionally, it provides support for fixing items in the memory
  */
 template <
+typename KeyType,
 typename ValueType,
-template <typename> class FileLoader
+template <typename, typename> class FileLoader
 >
 class WeakPtrCache {
 private:
-    typedef std::map<unsigned int, boost::weak_ptr<ValueType> > MapType;
+    typedef std::map<KeyType, boost::weak_ptr<ValueType> > MapType;
     typedef std::list<boost::shared_ptr<ValueType> > FixedListType;
 
 public:
     WeakPtrCache() {
     }
 
-    void init(boost::shared_ptr<FileLoader<ValueType> > loader) {
+    void init(boost::shared_ptr<FileLoader<KeyType, ValueType> > loader) {
         loader_ = loader;
     }
 
     /// Fixes an item in the memory
-    void fixItem(unsigned int id) {
+    void fixItem(const KeyType& id) {
         boost::shared_ptr<ValueType> toFix = get(id);
         fixedList_.push_back(toFix);
     }
@@ -63,7 +64,7 @@ public:
     }
 
     /// Removes the memory fixation for a given id
-    void removeFixed(unsigned int id) {
+    void removeFixed(const KeyType& id) {
         boost::shared_ptr<ValueType> toRemove = get(id);
         fixedList_.remove(toRemove);
     }
@@ -73,7 +74,7 @@ public:
         fixedList_.remove(item);
     }
 
-    boost::shared_ptr<ValueType> getNoCreate(unsigned int id) {
+    boost::shared_ptr<ValueType> getNoCreate(const KeyType& id) {
         typename MapType::iterator iter = this->cache_.find(id);
         if (iter != this->cache_.end()) {
             // was loaded at some point
@@ -84,7 +85,7 @@ public:
     }
 
 
-    boost::shared_ptr<ValueType> get(unsigned int id, unsigned int userData = 0) {
+    boost::shared_ptr<ValueType> get(const KeyType& id, unsigned int userData = 0) {
         typename MapType::iterator iter = this->cache_.find(id);
         if (iter != this->cache_.end()) {
             // was loaded at some point - is it still valid?
@@ -101,7 +102,7 @@ public:
         }
     }
 
-    bool hasId(unsigned int id) {
+    bool hasId(const KeyType& id) {
         return cache_.find(id) != cache_.end();
     }
 
@@ -127,9 +128,9 @@ private:
     MapType cache_;
     FixedListType fixedList_; ///< Keeps a shared_ptr to fixed items. May contain duplicates
 
-    boost::shared_ptr<FileLoader<ValueType> > loader_;
+    boost::shared_ptr<FileLoader<KeyType, ValueType> > loader_;
 
-    boost::shared_ptr<ValueType> load(unsigned int id, unsigned int userData) {
+    boost::shared_ptr<ValueType> load(const KeyType& id, unsigned int userData) {
         boost::shared_ptr<ValueType> smPtr = loader_->get(id, userData);
         cache_[id] = boost::weak_ptr<ValueType>(smPtr);
         return smPtr;

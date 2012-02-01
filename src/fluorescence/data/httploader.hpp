@@ -17,37 +17,48 @@
  */
 
 
-#ifndef FLUO_DATA_GUMPARTLOADER_HPP
-#define FLUO_DATA_GUMPARTLOADER_HPP
+#ifndef FLUO_DATA_HTTP_LOADER_HPP
+#define FLUO_DATA_HTTP_LOADER_HPP
 
+#include <curl/curl.h>
+#include <boost/shared_ptr.hpp>
+#include <ClanLib/Core/IOData/iodevice_memory.h>
+#include <ClanLib/Core/System/databuffer.h>
+
+#include <misc/string.hpp>
+
+#include "ondemandurlloader.hpp"
 #include "weakptrcache.hpp"
-#include "indexedondemandfileloader.hpp"
-
-#include <boost/filesystem.hpp>
 
 namespace fluo {
-
-namespace ui {
+namespace ui { 
     class Texture;
 }
 
 namespace data {
 
-class GumpArtLoader {
+class HttpLoader {
 public:
-    GumpArtLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath);
+    HttpLoader();
+    ~HttpLoader();
+    
+    boost::shared_ptr<ui::Texture> getTexture(const UnicodeString& url);
 
-    boost::shared_ptr<ui::Texture> getTexture(unsigned int id);
-
-    void readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture>, unsigned int extra, unsigned int userData);
-
-    bool hasTexture(unsigned int id);
-
+    void readTextureCallback(const UnicodeString& url, boost::shared_ptr<ui::Texture> tex);
+    
 private:
-    WeakPtrCache<unsigned int, ui::Texture, IndexedOnDemandFileLoader> cache_;
-};
+    CURL* handle_;
+    
+    CL_DataBuffer dataBuffer_;
+    CL_IODevice_Memory memoryIO_;
+    
+    static size_t curlRecvCallback(void* ptr, size_t size, size_t nmemb, void* stream);
+    
+    WeakPtrCache<UnicodeString, ui::Texture, OnDemandUrlLoader> cache_;
+};    
 
 }
 }
 
 #endif
+

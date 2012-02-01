@@ -27,17 +27,18 @@ namespace fluo {
 namespace data {
 
 template <
+typename KeyType,
 typename ValueType
 >
 class IndexedOnDemandFileLoader {
 
 public:
     IndexedOnDemandFileLoader(const boost::filesystem::path& indexPath, const boost::filesystem::path& dataPath,
-            typename OnDemandFileLoader<ValueType>::ReadCallback readCallback) :
+            typename OnDemandFileLoader<KeyType, ValueType>::ReadCallback readCallback) :
             indexLoader_(indexPath), dataLoader_(dataPath, readCallback) {
     }
 
-    boost::shared_ptr<ValueType> get(unsigned int index, unsigned int userData) {
+    boost::shared_ptr<ValueType> get(KeyType index, unsigned int userData) {
         const IndexBlock indexBlock = indexLoader_.get(index);
 
         // e.g. static blocks containing no data use an offset of 0xFFFFFFFFu
@@ -52,7 +53,7 @@ public:
 
 private:
     IndexLoader indexLoader_;
-    OnDemandFileLoader<ValueType> dataLoader_;
+    OnDemandFileLoader<KeyType, ValueType> dataLoader_;
 };
 
 }

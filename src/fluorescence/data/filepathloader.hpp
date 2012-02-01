@@ -17,37 +17,38 @@
  */
 
 
-#ifndef FLUO_DATA_FIXEDSIZEONDEMANDFILELOADER_HPP
-#define FLUO_DATA_FIXEDSIZEONDEMANDFILELOADER_HPP
+#ifndef FLUO_DATA_FILE_PATH_LOADER_HPP
+#define FLUO_DATA_FILE_PATH_LOADER_HPP
 
-#include "ondemandfileloader.hpp"
+#include <boost/shared_ptr.hpp>
+#include <boost/filesystem/path.hpp>
+
+#include <misc/string.hpp>
+
+#include "ondemandurlloader.hpp"
+#include "weakptrcache.hpp"
 
 namespace fluo {
+namespace ui { 
+    class Texture;
+}
+
 namespace data {
 
-template <
-typename KeyType,
-typename ValueType
->
-class FixedSizeOnDemandFileLoader : public OnDemandFileLoader<KeyType, ValueType> {
-
+class FilePathLoader {
 public:
-    FixedSizeOnDemandFileLoader(const boost::filesystem::path& path, unsigned int size, typename OnDemandFileLoader<KeyType, ValueType>::ReadCallback readCallback) :
-            OnDemandFileLoader<KeyType, ValueType>(path, readCallback), size_(size) {
-    }
+    FilePathLoader();
+    
+    boost::shared_ptr<ui::Texture> getTexture(const boost::filesystem::path& url);
 
-    boost::shared_ptr<ValueType> get(unsigned int index, unsigned int userData) {
-        unsigned int startOffset = index * size_;
-        return this->OnDemandFileLoader<KeyType, ValueType>::get(index, startOffset, size_, userData);
-    }
-
+    void readTextureCallback(const boost::filesystem::path& url, boost::shared_ptr<ui::Texture> tex);
+    
 private:
-    unsigned int size_;
-
-};
+    WeakPtrCache<boost::filesystem::path, ui::Texture, OnDemandUrlLoader> cache_;
+};    
 
 }
 }
-
 
 #endif
+

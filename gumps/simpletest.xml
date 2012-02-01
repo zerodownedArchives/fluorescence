@@ -50,20 +50,21 @@
         <tlabel x="0" y="425" width="600" height="25" align="right" text="Right aligned" />
         <tlabel x="100" y="450" width="120" height="25" text="Big text" id="label-bigfont" />
 
-        <image x="5" y="480" path="themes/default/Images/CheckBoxIndeterminatedHot.png" />
-        <image x="25" y="480" width="30" height="30" path="themes/default/Images/CheckBoxIndeterminatedHot.png" />
-        <image x="65" y="480" artid="16" />
-        <image x="120" y="480" width="100" artid="16" />
-        <image x="230" y="480" gumpid="230" />
-        <image x="300" y="480" width="50" height="10" gumpid="230" />
+        <image x="5" y="480" source="file" imgid="themes/default/Images/CheckBoxIndeterminatedHot.png" />
+        <image x="25" y="480" width="30" height="30" source="file" imgid="themes/default/Images/CheckBoxIndeterminatedHot.png" />
+        <image x="65" y="480" source="staticart" imgid="16" />
+        <image x="120" y="480" source="mapart" width="100" imgid="16" />
+        <image x="230" y="480" source="gumpart" imgid="230" />
+        <image x="300" y="480" width="50" height="10" source="gumpart" imgid="230" />
     </page>
   
     <page number="14">
         <tscrollarea x="5" y="100" width="200" height="200"
                 hvisible="ondemand" vvisible="always"
                 marginleft="20" marginbottom="5">
-            <image x="70" y="70" gumpid="10" />
-        
+            <image x="30" y="30" source="gumpart" imgid="10" />
         </tscrollarea>
+        <image x="30" y="290" source="http" imgid="http://wiseheartdesign.com/page_attachments/0000/0062/default-avatar.png" />
+        <image x="280" y="230" source="http" imgid="http://avatar.hq-picture.com/avatars/img25/sully_monsters_inc_avatar_picture_96245.jpg" />
     </page>
 </gump>

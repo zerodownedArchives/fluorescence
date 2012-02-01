@@ -38,7 +38,7 @@ StaticsLoader::StaticsLoader(const boost::filesystem::path& idxPath, const boost
         FullFileLoader difOffsetsLoader(difOffsetsPath);
         difOffsetsLoader.read(boost::bind(&StaticsLoader::readCallbackDifOffsets, this, _1, _2));
 
-        boost::shared_ptr<IndexedOnDemandFileLoader<world::StaticBlock> > difStream(new IndexedOnDemandFileLoader<world::StaticBlock>(difIdxPath, difPath,
+        boost::shared_ptr<IndexedOnDemandFileLoader<unsigned int, world::StaticBlock> > difStream(new IndexedOnDemandFileLoader<unsigned int, world::StaticBlock>(difIdxPath, difPath,
             boost::bind(&StaticsLoader::readCallbackMul, this, _1, _2, _3, _4, _5, _6)));
 
         difCache_.init(difStream);
@@ -49,7 +49,7 @@ StaticsLoader::StaticsLoader(const boost::filesystem::path& idxPath, const boost
 
 
 
-    boost::shared_ptr<IndexedOnDemandFileLoader<world::StaticBlock> > mulStream(new IndexedOnDemandFileLoader<world::StaticBlock>(idxPath, mulPath,
+    boost::shared_ptr<IndexedOnDemandFileLoader<unsigned int, world::StaticBlock> > mulStream(new IndexedOnDemandFileLoader<unsigned int, world::StaticBlock>(idxPath, mulPath,
             boost::bind(&StaticsLoader::readCallbackMul, this, _1, _2, _3, _4, _5, _6)));
 
     mulCache_.init(mulStream);
@@ -59,7 +59,7 @@ StaticsLoader::StaticsLoader(const boost::filesystem::path& idxPath, const boost
                              unsigned int blockCountX, unsigned int blockCountY) :
         blockCountX_(blockCountX), blockCountY_(blockCountY), difEnabled_(true) {
 
-    boost::shared_ptr<IndexedOnDemandFileLoader<world::StaticBlock> > mulStream(new IndexedOnDemandFileLoader<world::StaticBlock>(idxPath, mulPath,
+    boost::shared_ptr<IndexedOnDemandFileLoader<unsigned int, world::StaticBlock> > mulStream(new IndexedOnDemandFileLoader<unsigned int, world::StaticBlock>(idxPath, mulPath,
             boost::bind(&StaticsLoader::readCallbackMul, this, _1, _2, _3, _4, _5, _6)));
     mulCache_.init(mulStream);
 }

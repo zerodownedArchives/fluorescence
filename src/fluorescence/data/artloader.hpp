@@ -47,7 +47,7 @@ public:
     void printStats();
 
 private:
-    WeakPtrCache<ui::Texture, IndexedOnDemandFileLoader> cache_;
+    WeakPtrCache<unsigned int, ui::Texture, IndexedOnDemandFileLoader> cache_;
 };
 
 }

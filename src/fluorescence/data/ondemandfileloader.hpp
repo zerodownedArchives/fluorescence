@@ -44,12 +44,13 @@ namespace data {
  * \brief Used to load parts of files on demand (e.g. animations, arts, ...)
  */
 template <
+typename KeyType,
 typename ValueType
 >
 class OnDemandFileLoader {
 public:
 
-    typedef boost::function<void (unsigned int, int8_t*, unsigned int, boost::shared_ptr<ValueType>, unsigned int, unsigned int)> ReadCallback;
+    typedef boost::function<void (KeyType, int8_t*, unsigned int, boost::shared_ptr<ValueType>, unsigned int, unsigned int)> ReadCallback;
 
     OnDemandFileLoader(const boost::filesystem::path& path, ReadCallback readCallback) : path_(path), readCallback_(readCallback) {
         if (!boost::filesystem::exists(path) || !boost::filesystem::is_regular_file(path)) {
@@ -80,7 +81,7 @@ public:
         }
     }
 
-    boost::shared_ptr<ValueType> get(unsigned int index, const IndexBlock& indexBlock, unsigned int userData) {
+    boost::shared_ptr<ValueType> get(KeyType index, const IndexBlock& indexBlock, unsigned int userData) {
         // return dummy object, enqueue for decoding
         boost::shared_ptr<ValueType> obj(new ValueType);
 
@@ -92,7 +93,7 @@ public:
         return obj;
     }
 
-    boost::shared_ptr<ValueType> get(unsigned int index, unsigned int offset, unsigned int len, unsigned int userData) {
+    boost::shared_ptr<ValueType> get(KeyType index, unsigned int offset, unsigned int len, unsigned int userData) {
         // return dummy object, enqueue for decoding
         boost::shared_ptr<ValueType> obj(new ValueType);
 
@@ -111,7 +112,7 @@ public:
 
 private:
     struct ReadInformation {
-        unsigned int index_;
+        KeyType index_;
         unsigned int offset_;
         unsigned int readLen_;
         unsigned int extra_;
@@ -121,11 +122,11 @@ private:
         ReadInformation() {
         }
 
-        ReadInformation(unsigned int index, const IndexBlock& indexBlock, boost::shared_ptr<ValueType> item, unsigned int userData) :
+        ReadInformation(KeyType index, const IndexBlock& indexBlock, boost::shared_ptr<ValueType> item, unsigned int userData) :
                 index_(index), offset_(indexBlock.offset_), readLen_(indexBlock.length_), extra_(indexBlock.extra_), item_(item), userData_(userData) {
         }
 
-        ReadInformation(unsigned int index, unsigned int offset, unsigned int readLen, boost::shared_ptr<ValueType> item, unsigned int userData) :
+        ReadInformation(KeyType index, unsigned int offset, unsigned int readLen, boost::shared_ptr<ValueType> item, unsigned int userData) :
             index_(index), offset_(offset), readLen_(readLen), extra_(0), item_(item), userData_(userData) {
         }
     };

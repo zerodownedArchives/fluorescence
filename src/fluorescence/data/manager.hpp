@@ -49,6 +49,8 @@ class MobTypesLoader;
 class UniFontLoader;
 class EquipConvDefLoader;
 class ClilocLoader;
+class HttpLoader;
+class FilePathLoader;
 
 template<typename ValueType>
 class DefFileLoader;
@@ -59,6 +61,7 @@ enum {
 	MAPART = 2,
 	STATICART = 3,
 	GUMPART = 4,
+    HTTP = 5,
 };
 };
 
@@ -141,6 +144,9 @@ private:
     boost::shared_ptr<EquipConvDefLoader> equipConvDefLoader_;
 
     boost::shared_ptr<ClilocLoader> clilocLoader_;
+    
+    boost::shared_ptr<HttpLoader> httpLoader_;
+    boost::shared_ptr<FilePathLoader> filePathLoader_;
 };
 
 }
