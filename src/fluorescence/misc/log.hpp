@@ -25,9 +25,10 @@
 #include <iostream>
 #include <unicode/ustream.h>
 
+#include <ClanLib/Core/Math/rect.h>
 #include <boost/thread/mutex.hpp>
 
-#include "../platform.hpp"
+#include <platform.hpp>
 
 
 #define LOG_DEBUG \
@@ -90,6 +91,8 @@ public:
     Log& operator<<(std::ostream& ( *manip )(std::ostream &));
     Log& operator<<(std::ios_base& ( *manip )(std::ios_base &));
     Log& operator<<(const struct timeval& v);
+    
+    Log& operator<<(const CL_Rectf& rect);
 
 private:
     Log();

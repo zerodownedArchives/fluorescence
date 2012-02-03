@@ -616,6 +616,10 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     int locY = node.attribute("y").as_int();
     unsigned int width = node.attribute("width").as_uint();
     unsigned int height = node.attribute("height").as_uint();
+    
+    unsigned int hue = node.attribute("hue").as_uint();
+    std::string rgba = node.attribute("rgba").value();
+    float alpha = node.attribute("alpha").as_float();
 
     components::Image* img = new components::Image(parent);
     parseId(node, img);
@@ -643,6 +647,15 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     CL_Rect bounds(locX, locY, CL_Size(width, height));
     img->set_geometry(bounds);
     // img->set_scale_to_fit();
+    
+    img->setHue(hue);
+    if (rgba.length() > 0) {
+        img->setColorRGBA(CL_Colorf(rgba));
+    }
+    
+    if (alpha) {
+        img->setAlpha(alpha);
+    }
 
     top->addToCurrentPage(img);
     return true;

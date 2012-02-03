@@ -42,10 +42,24 @@ public:
     void setTexture(boost::shared_ptr<ui::Texture> tex);
     void render(CL_GraphicContext& gc, const CL_Rect& clipRect);
     
+    void setColorRGBA(const CL_Colorf& color);
+    void setHue(unsigned int hue);
+    void setAlpha(float alpha);
+    
 private:
     boost::shared_ptr<ui::Texture> texture_;
     
     bool autoResize_;
+    
+    CL_Vec3f hueInfo_;
+    CL_Colorf colorRgba_;
+    
+    void renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect);
+    
+    // due to some strange clanlib behaviour. when opening a paperdoll for the first time, the hue texture seems
+    // not to be loaded correctly, so the gump is mostly black (with outlines). When rendering it again, all seems
+    // fine. this flag indicates wheter the renderer has to re-render the image because of this condition
+    bool requireInitialRepaint_;
 };
 
 }
