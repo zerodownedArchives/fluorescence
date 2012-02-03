@@ -59,11 +59,12 @@
     </page>
   
     <page number="14">
-        <tscrollarea x="5" y="100" width="200" height="200"
+        <tscrollarea x="5" y="80" width="200" height="200"
                 hvisible="ondemand" vvisible="always"
                 marginleft="20" marginbottom="5">
             <image x="30" y="30" source="gumpart" imgid="10" />
         </tscrollarea>
+        <background x="10" y="280" width="300" height="200" gumpid="1010" />
         <image x="30" y="290" source="http" imgid="http://wiseheartdesign.com/page_attachments/0000/0062/default-avatar.png" hue="13" />
         <image x="280" y="230" source="http" imgid="http://avatar.hq-picture.com/avatars/img25/sully_monsters_inc_avatar_picture_96245.jpg" rgba="#1188ee22" />
     </page>

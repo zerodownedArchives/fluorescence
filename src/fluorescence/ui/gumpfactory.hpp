@@ -107,11 +107,12 @@ private:
 
     // uo components
     bool parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    // TODO
 
     bool parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    // TODO
 
 
     std::map<UnicodeString, boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> > functionTable_;

@@ -45,6 +45,7 @@
 #include "components/gumpview.hpp"
 #include "components/containerview.hpp"
 #include "components/image.hpp"
+#include "components/background.hpp"
 
 namespace fluo {
 namespace ui {
@@ -97,6 +98,7 @@ GumpFactory::GumpFactory() {
     functionTable_["propertylabel"] = boost::bind(&GumpFactory::parsePropertyLabel, this, _1, _2, _3);
 
     functionTable_["page"] = boost::bind(&GumpFactory::parsePage, this, _1, _2, _3);
+    functionTable_["background"] = boost::bind(&GumpFactory::parseBackground, this, _1, _2, _3);
 
     functionTable_["image"] = boost::bind(&GumpFactory::parseImage, this, _1, _2, _3);
     functionTable_["worldview"] = boost::bind(&GumpFactory::parseWorldView, this, _1, _2, _3);
@@ -647,6 +649,44 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     CL_Rect bounds(locX, locY, CL_Size(width, height));
     img->set_geometry(bounds);
     // img->set_scale_to_fit();
+    
+    img->setHue(hue);
+    if (rgba.length() > 0) {
+        img->setColorRGBA(CL_Colorf(rgba));
+    }
+    
+    if (alpha) {
+        img->setAlpha(alpha);
+    }
+
+    top->addToCurrentPage(img);
+    return true;
+}
+
+bool GumpFactory::parseBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    int locX = node.attribute("x").as_int();
+    int locY = node.attribute("y").as_int();
+    unsigned int width = node.attribute("width").as_uint();
+    unsigned int height = node.attribute("height").as_uint();
+    
+    unsigned int hue = node.attribute("hue").as_uint();
+    std::string rgba = node.attribute("rgba").value();
+    float alpha = node.attribute("alpha").as_float();
+    
+    unsigned int gumpId = node.attribute("gumpid").as_uint();
+    
+    if (!gumpId) {
+        LOG_ERROR << "Unable to parse background, gumpid not found, not a number or zero" << std::endl;
+        return false;
+    }
+
+    components::Background* img = new components::Background(parent);
+    parseId(node, img);
+    
+    CL_Rect bounds(locX, locY, CL_Size(width, height));
+    img->set_geometry(bounds);
+    
+    img->setBaseId(gumpId);
     
     img->setHue(hue);
     if (rgba.length() > 0) {

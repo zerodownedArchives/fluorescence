@@ -49,6 +49,7 @@ set (GUMPMENU_HPP
     ui/components/gumpview.hpp
     ui/components/containerview.hpp
     ui/components/image.hpp
+    ui/components/background.hpp
     )
 
 set (GUMPMENU_CPP
@@ -68,6 +69,7 @@ set (GUMPMENU_CPP
     ui/components/gumpview.cpp
     ui/components/containerview.cpp
     ui/components/image.cpp
+    ui/components/background.cpp
     )
 
 set (RENDER_HPP
