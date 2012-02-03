@@ -51,9 +51,9 @@
         <tlabel x="100" y="450" width="120" height="25" text="Big text" id="label-bigfont" />
 
         <image x="5" y="480" source="file" imgid="themes/default/Images/CheckBoxIndeterminatedHot.png" />
-        <image x="25" y="480" width="30" height="30" source="file" imgid="themes/default/Images/CheckBoxIndeterminatedHot.png" />
+        <image x="25" y="480" width="30" height="30" source="file" imgid="themes/default/Images/CheckBoxIndeterminatedHot.png" tiled="true" />
         <image x="65" y="480" source="staticart" imgid="16" hue="100" />
-        <image x="120" y="480" source="mapart" width="100" imgid="16" />
+        <image x="120" y="480" source="mapart" width="100" height="100" imgid="16" tiled="1" />
         <image x="230" y="480" source="gumpart" imgid="230" />
         <image x="300" y="480" width="50" height="10" source="gumpart" imgid="230" />
     </page>

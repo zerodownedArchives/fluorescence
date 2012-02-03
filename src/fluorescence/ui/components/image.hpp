@@ -46,6 +46,8 @@ public:
     void setHue(unsigned int hue);
     void setAlpha(float alpha);
     
+    void setTiled(bool value);
+    
 private:
     boost::shared_ptr<ui::Texture> texture_;
     
@@ -60,6 +62,9 @@ private:
     // not to be loaded correctly, so the gump is mostly black (with outlines). When rendering it again, all seems
     // fine. this flag indicates wheter the renderer has to re-render the image because of this condition
     bool requireInitialRepaint_;
+    
+    bool tiled_;
+    CL_Rectf textureRect_;
 };
 
 }

@@ -34,7 +34,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-Image::Image(CL_GUIComponent* parent) : CL_GUIComponent(parent), autoResize_(false), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white), requireInitialRepaint_(true) {
+Image::Image(CL_GUIComponent* parent) : CL_GUIComponent(parent), autoResize_(false), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white), requireInitialRepaint_(true), tiled_(false) {
     func_render().set(this, &Image::render);
 }
 
@@ -46,6 +46,19 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     if (!texture_ || !texture_->isReadComplete()) {
         request_repaint();
     } else {
+        if (requireInitialRepaint_) {
+            if (tiled_) {
+                textureRect_ = CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight());
+                texture_->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
+            } else {
+                textureRect_ = CL_Rectf(0.0f, 0.0f, 1.0f, 1.0f);
+            }
+            
+            if (hueInfo_[1u] != 0) {
+                requireInitialRepaint_ = false;
+                request_repaint();
+            }
+        }
         CL_Rectf geom = get_geometry();
         if (autoResize_ && (geom.get_width() != texture_->getWidth() || geom.get_height() != texture_->getHeight())) {
             geom.set_width(texture_->getWidth());
@@ -54,16 +67,10 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
             request_repaint();
         } else {
             if (hueInfo_[1u] == 0) {
-                CL_Draw::texture(gc, *(texture_->getTexture()), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_);
+                CL_Draw::texture(gc, *(texture_->getTexture()), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_, textureRect_);
             } else {
                 renderShader(gc, clipRect);
-                
-                if (requireInitialRepaint_) {
-                    requireInitialRepaint_ = false;
-                    request_repaint();
-                }
             }
-            
         }
     }
 }
@@ -81,27 +88,29 @@ void Image::setAlpha(float alpha) {
     colorRgba_.a = alpha;
 }
 
+void Image::setTiled(bool tiled) {
+    tiled_ = tiled;
+}
+
 void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     //gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
 
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getGumpShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
 
-    CL_Rectf texture_unit1_coords(0.0f, 0.0f, 1.0f, 1.0f);
-
-    CL_Vec2f tex1_coords[6] = {
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom)
-    };
-
 
     gc.set_texture(0, *(data::Manager::getSingleton()->getHuesLoader()->getHuesTexture()->getTexture()));
     shader->set_uniform1i("HueTexture", 0);
     shader->set_uniform1i("ObjectTexture", 1);
+    
+	CL_Vec2f tex1_coords[6] = {
+        CL_Vec2f(textureRect_.left, textureRect_.top),
+        CL_Vec2f(textureRect_.right, textureRect_.top),
+        CL_Vec2f(textureRect_.left, textureRect_.bottom),
+        CL_Vec2f(textureRect_.right, textureRect_.top),
+        CL_Vec2f(textureRect_.left, textureRect_.bottom),
+        CL_Vec2f(textureRect_.right, textureRect_.bottom)
+	};
 
     CL_Vec2f vertexCoords[6];
 

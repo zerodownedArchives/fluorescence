@@ -622,6 +622,8 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     unsigned int hue = node.attribute("hue").as_uint();
     std::string rgba = node.attribute("rgba").value();
     float alpha = node.attribute("alpha").as_float();
+    
+    bool tiled = node.attribute("tiled").as_bool();
 
     components::Image* img = new components::Image(parent);
     parseId(node, img);
@@ -658,6 +660,8 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     if (alpha) {
         img->setAlpha(alpha);
     }
+    
+    img->setTiled(tiled);
 
     top->addToCurrentPage(img);
     return true;

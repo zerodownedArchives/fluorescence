@@ -106,7 +106,7 @@ void Background::calculateVertexCoordinates() {
     // middle left bar
     setVertexCoordinates(3, CL_Rectf(0, texHeights[0], CL_Sizef(texWidths[3], middleBarHeight)));
     setTextureCoordinates(3, middleBarTexCoords);
-    textures_[3]->getTexture()->set_wrap_mode(cl_wrap_repeat);
+    textures_[3]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     // center piece
     setVertexCoordinates(4, CL_Rectf(texWidths[0], texHeights[0], CL_Sizef(centerBarWidth, middleBarHeight)));
@@ -116,7 +116,7 @@ void Background::calculateVertexCoordinates() {
     // middle right bar
     setVertexCoordinates(5, CL_Rectf(width - texWidths[2], texHeights[0], CL_Sizef(texWidths[5], middleBarHeight)));
     setTextureCoordinates(5, middleBarTexCoords);
-    textures_[5]->getTexture()->set_wrap_mode(cl_wrap_repeat);
+    textures_[5]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     // bottom left corner
     setVertexCoordinates(6, CL_Rectf(0, height - texHeights[6], CL_Sizef(texWidths[6], texHeights[6])));
@@ -125,7 +125,7 @@ void Background::calculateVertexCoordinates() {
     // bottom center bar
     setVertexCoordinates(7, CL_Rectf(texWidths[0], height - texHeights[6], CL_Sizef(centerBarWidth, texHeights[7])));
     setTextureCoordinates(7, centerBarTexCoords);
-    textures_[7]->getTexture()->set_wrap_mode(cl_wrap_repeat);
+    textures_[7]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     // bottom right corner
     setVertexCoordinates(8, CL_Rectf(width - texWidths[8], height - texHeights[8], CL_Sizef(texWidths[8], texHeights[8])));
