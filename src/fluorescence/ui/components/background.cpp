@@ -74,7 +74,6 @@ void Background::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
 }
 
 void Background::calculateQuadCoordinates() {
-    LOG_DEBUG << "calc quads" << std::endl;
     float width = get_geometry().get_width();
     float height = get_geometry().get_height();
     CL_Rectf defaultTexCoords(0.0f, 0.0f, 1.0f, 1.0f);
