@@ -55,18 +55,71 @@ void Background::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     
     if (requireInitialRepaint_) {
         // drawing this the first time - calculate texture coordinates
-        calculateVertexCoordinates();
-        //if (hueInfo_[1u] == 0) {
+        if (hueInfo_[1u] == 0) {
+            calculateQuadCoordinates();
+        } else {
             request_repaint();
-        //}
+            calculateVertexCoordinates();
+        }
         requireInitialRepaint_ = false;
     }
     
-    //if (hueInfo_[1u] == 0) {
-        //CL_Draw::texture(gc, *(texture_->getTexture()), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_);
-    //} else {
+    if (hueInfo_[1u] == 0) {
+        for (unsigned int i = 0; i < 9; ++i) {
+            CL_Draw::texture(gc, *(textures_[i]->getTexture()), quadCoords_[i], colorRgba_, quadTextureCoords_[i]);
+        }
+    } else {
         renderShader(gc, clipRect);
-    //}
+    }
+}
+
+void Background::calculateQuadCoordinates() {
+    LOG_DEBUG << "calc quads" << std::endl;
+    float width = get_geometry().get_width();
+    float height = get_geometry().get_height();
+    CL_Rectf defaultTexCoords(0.0f, 0.0f, 1.0f, 1.0f);
+    
+    float texWidths[9];
+    float texHeights[9];
+    
+    for (unsigned int i = 0; i < 9; ++i) {
+        texWidths[i] = textures_[i]->getWidth();
+        texHeights[i] = textures_[i]->getHeight();
+    }
+    
+    float centerBarWidth = width - (texWidths[0] + texWidths[2]);
+    float middleBarHeight = height - (texHeights[0] + texHeights[6]);
+    
+    CL_Rectf centerBarTexCoords(0.0f, 0.0f, centerBarWidth / texWidths[1], 1.0);    
+    CL_Rectf middleBarTexCoords(0.0f, 0.0f, 1.0, middleBarHeight / texHeights[3]);
+    CL_Rectf centerPieceTexCoords(0.0f, 0.0f, centerBarWidth / texWidths[4], middleBarHeight / texHeights[4]);
+    
+    quadCoords_[0] = CL_Rectf(0, 0, CL_Sizef(texWidths[0], texHeights[0]));
+    quadTextureCoords_[0] = defaultTexCoords;
+    
+    quadCoords_[1] = CL_Rectf(texWidths[0], 0, CL_Sizef(centerBarWidth, texHeights[1]));
+    quadTextureCoords_[1] = centerBarTexCoords;
+    
+    quadCoords_[2] = CL_Rectf(width - texWidths[2], 0, CL_Sizef(texWidths[2], texHeights[2]));
+    quadTextureCoords_[2] = defaultTexCoords;
+    
+    quadCoords_[3] = CL_Rectf(0, texHeights[0], CL_Sizef(texWidths[3], middleBarHeight));
+    quadTextureCoords_[3] = middleBarTexCoords;
+    
+    quadCoords_[4] = CL_Rectf(texWidths[0], texHeights[0], CL_Sizef(centerBarWidth, middleBarHeight));
+    quadTextureCoords_[4] = centerPieceTexCoords;
+    
+    quadCoords_[5] = CL_Rectf(width - texWidths[2], texHeights[0], CL_Sizef(texWidths[5], middleBarHeight));
+    quadTextureCoords_[5] = middleBarTexCoords;
+    
+    quadCoords_[6] = CL_Rectf(0, height - texHeights[6], CL_Sizef(texWidths[6], texHeights[6]));
+    quadTextureCoords_[6] = defaultTexCoords;
+    
+    quadCoords_[7] = CL_Rectf(texWidths[0], height - texHeights[6], CL_Sizef(centerBarWidth, texHeights[7]));
+    quadTextureCoords_[7] = centerBarTexCoords;
+    
+    quadCoords_[8] = CL_Rectf(width - texWidths[8], height - texHeights[8], CL_Sizef(texWidths[8], texHeights[8]));
+    quadTextureCoords_[8] = defaultTexCoords;
 }
 
 void Background::calculateVertexCoordinates() {

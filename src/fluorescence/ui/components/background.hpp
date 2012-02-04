@@ -20,6 +20,7 @@
 #ifndef FLUO_UI_COMPONENTS_BACKGROUND_HPP
 #define FLUO_UI_COMPONENTS_BACKGROUND_HPP
 
+#include <ClanLib/Core/Math/quad.h>
 #include <ClanLib/GUI/gui_component.h>
 #include <ClanLib/Display/Render/graphic_context.h>
 #include <boost/shared_ptr.hpp>
@@ -64,6 +65,10 @@ private:
     void calculateVertexCoordinates();
     void setVertexCoordinates(unsigned int index, const CL_Rectf& rect);
     void setTextureCoordinates(unsigned int index, const CL_Rectf& rect);
+    
+    void calculateQuadCoordinates();
+    CL_Quadf quadCoords_[9];
+    CL_Rectf quadTextureCoords_[9];
 };
 
 }
