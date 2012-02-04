@@ -33,6 +33,10 @@
 
 namespace fluo {
 namespace ui {
+    
+namespace components {
+class UoButton;
+}
 
 class GumpFactory {
 public:
@@ -108,11 +112,14 @@ private:
     // uo components
     bool parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     // TODO
 
     bool parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    
+    bool parseButtonImage(pugi::xml_node& node, components::UoButton* button, unsigned int index);
 
 
     std::map<UnicodeString, boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> > functionTable_;

@@ -20,7 +20,6 @@
 #ifndef FLUO_UI_GUMPACTIONS_HPP
 #define FLUO_UI_GUMPACTIONS_HPP
 
-#include <ui/components/localbutton.hpp>
 #include <ui/gumpmenu.hpp>
 
 #include <boost/function.hpp>
@@ -28,18 +27,20 @@
 
 namespace fluo {
 namespace ui {
+    
+namespace components {
+class BaseButton;
+}
 
 typedef boost::function<bool (GumpMenu*, const UnicodeString&, unsigned int, const UnicodeString*)> GumpActionCallback;
 
 class GumpActions {
 public:
-    static const unsigned int MAX_PARAMETER_COUNT = 5;
-
     static void buildBasicActionTable();
     static void buildFullActionTable();
 
     static void doAction(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
-    static void doAction(components::LocalButton* button);
+    static void doAction(components::BaseButton* button);
 
 private:
 

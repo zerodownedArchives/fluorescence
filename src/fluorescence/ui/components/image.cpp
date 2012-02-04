@@ -40,6 +40,10 @@ Image::Image(CL_GUIComponent* parent) : CL_GUIComponent(parent), autoResize_(fal
 
 void Image::setTexture(boost::shared_ptr<ui::Texture> tex) {
     texture_ = tex;
+    request_repaint();
+    if (tiled_) {
+        requireInitialRepaint_ = true; // to recalculate texture coordinates
+    }
 }
 
 void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
@@ -55,9 +59,9 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
             }
             
             if (hueInfo_[1u] != 0) {
-                requireInitialRepaint_ = false;
                 request_repaint();
             }
+            requireInitialRepaint_ = false;
         }
         CL_Rectf geom = get_geometry();
         if (autoResize_ && (geom.get_width() != texture_->getWidth() || geom.get_height() != texture_->getHeight())) {
@@ -90,6 +94,10 @@ void Image::setAlpha(float alpha) {
 
 void Image::setTiled(bool tiled) {
     tiled_ = tiled;
+}
+
+void Image::setHueInfo(const CL_Vec3f& info) {
+    hueInfo_ = info;
 }
 
 void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {

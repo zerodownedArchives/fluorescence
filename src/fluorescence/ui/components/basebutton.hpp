@@ -20,22 +20,58 @@
 #ifndef FLUO_UI_COMPONENTS_BASEBUTTON_HPP
 #define FLUO_UI_COMPONENTS_BASEBUTTON_HPP
 
-#include <ClanLib/GUI/Components/push_button.h>
-
 #include <misc/string.hpp>
 
 namespace fluo {
 namespace ui {
+
+class GumpMenu;
+
 namespace components {
 
-class BaseButton : public CL_PushButton {
+class BaseButton {
 public:
-    BaseButton(CL_GUIComponent* parent);
+    static const unsigned int MAX_PARAMETER_COUNT = 5;
+    enum ButtonType {
+        TYPE_UNDEFINED = 0,
+        TYPE_PAGE = 1,
+        TYPE_SERVER = 2,
+        TYPE_LOCAL = 3,
+    };
+    
+    void setServerButton(unsigned int buttonId);
+    void setPageButton(unsigned int pageId);
+    void setLocalButton(const UnicodeString& action);
 
-    UnicodeString getText();
-    void setText(const UnicodeString& string);
+    void handleClick();
+    
+    const UnicodeString& getAction() const;
+    void setParameter(const UnicodeString& value, unsigned int index = 0);
+    const UnicodeString* getParameterPtr() const;
+    
+    virtual GumpMenu* getTopLevelMenu() = 0;
+    
+protected:
+    BaseButton() = default;
+    BaseButton(const BaseButton& other) = default;
+    BaseButton& operator=(const BaseButton& other) = default;
 
-    virtual void onClicked(BaseButton* self) = 0;
+private:
+    unsigned int buttonType_;
+    
+    // for server button
+    unsigned int buttonId_;
+    
+    // for page button
+    unsigned int pageId_;
+    
+    // for local button
+    UnicodeString action_;
+    UnicodeString parameter_[MAX_PARAMETER_COUNT];
+    
+    void onClickPage();
+    void onClickLocal();
+    void onClickServer();
 };
 
 }
@@ -43,3 +79,4 @@ public:
 }
 
 #endif
+

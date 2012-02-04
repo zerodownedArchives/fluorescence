@@ -36,11 +36,11 @@ set (GUMPMENU_HPP
     ui/gumpfactory.hpp
     ui/gumpmenu.hpp
     ui/gumpelement.hpp
-
+    
+    ui/components/multitextureimage.hpp
     ui/components/basebutton.hpp
-    ui/components/serverbutton.hpp
-    ui/components/localbutton.hpp
-    ui/components/pagebutton.hpp
+    ui/components/templatebutton.hpp
+    ui/components/uobutton.hpp
     ui/components/scrollarea.hpp
     ui/components/lineedit.hpp
     ui/components/label.hpp
@@ -58,9 +58,8 @@ set (GUMPMENU_CPP
     ui/gumpelement.cpp
 
     ui/components/basebutton.cpp
-    ui/components/serverbutton.cpp
-    ui/components/localbutton.cpp
-    ui/components/pagebutton.cpp
+    ui/components/templatebutton.cpp
+    ui/components/uobutton.cpp
     ui/components/scrollarea.cpp
     ui/components/lineedit.cpp
     ui/components/label.cpp

@@ -41,7 +41,6 @@
 
 #include "gumpmenu.hpp"
 #include "gumpfactory.hpp"
-#include "components/localbutton.hpp"
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
 

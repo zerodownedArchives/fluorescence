@@ -20,20 +20,91 @@
 
 #include "basebutton.hpp"
 
+#include <ui/manager.hpp>
+#include <ui/gumpmenu.hpp>
+#include <ui/gumpactions.hpp>
+
+#include <misc/log.hpp>
+
 namespace fluo {
 namespace ui {
 namespace components {
 
-BaseButton::BaseButton(CL_GUIComponent* parent) : CL_PushButton(parent) {
-    func_clicked().set(this, &BaseButton::onClicked, this);
+BaseButton::BaseButton() : buttonType_(TYPE_UNDEFINED) {
 }
 
-UnicodeString BaseButton::getText() {
-    return StringConverter::fromUtf8(get_text());
+void BaseButton::setServerButton(unsigned int buttonId) {
+    buttonType_ = TYPE_SERVER;
+    buttonId_ = buttonId;
 }
 
-void BaseButton::setText(const UnicodeString& text) {
-    set_text(StringConverter::toUtf8String(text));
+void BaseButton::setPageButton(unsigned int pageId) {
+    buttonType_ = TYPE_PAGE;
+    pageId_ = pageId;
+}
+
+void BaseButton::setLocalButton(const UnicodeString& action) {
+    buttonType_ = TYPE_LOCAL;
+    action_ = action;
+}
+
+void BaseButton::handleClick() {
+    switch (buttonType_) {
+    case TYPE_UNDEFINED:
+        LOG_ERROR << "Button type not defined" << std::endl;
+        break;
+    case TYPE_PAGE:
+        onClickPage();
+        break;
+    case TYPE_SERVER:
+        onClickServer();
+        break;
+    case TYPE_LOCAL:
+        onClickLocal();
+        break;
+    }
+}
+
+void BaseButton::onClickPage() {
+    GumpMenu* gump = getTopLevelMenu();
+    if (gump) {
+        gump->activatePage(pageId_);
+    } else {
+        LOG_ERROR << "BaseButton inside something other than GumpMenu" << std::endl;
+    }
+}
+
+void BaseButton::onClickServer() {
+    GumpMenu* gump = getTopLevelMenu();
+    if (gump) {
+        if (buttonId_ == 0) {
+            ui::Manager::getSingleton()->closeGumpMenu(gump);
+        } else {
+            // TODO: send gump reply to server
+        }
+    } else {
+        LOG_ERROR << "BaseButton inside something other than GumpMenu" << std::endl;
+    }
+}
+
+void BaseButton::onClickLocal() {
+    GumpActions::doAction(this);
+}
+
+void BaseButton::setParameter(const UnicodeString& value, unsigned int index) {
+    if (index >= MAX_PARAMETER_COUNT) {
+        LOG_INFO << "LocalButton::setParameter index too high: " << index << ": " << value << std::endl;
+    } else {
+        parameter_[index] = value;
+    }
+}
+
+const UnicodeString* BaseButton::getParameterPtr() const {
+    return parameter_;
+}
+
+const UnicodeString& BaseButton::getAction() const {
+    return action_;
 }
 
 }

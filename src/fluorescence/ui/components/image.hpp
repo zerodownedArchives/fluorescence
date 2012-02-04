@@ -48,6 +48,9 @@ public:
     
     void setTiled(bool value);
     
+protected:
+    void setHueInfo(const CL_Vec3f& hueInfo);
+    
 private:
     boost::shared_ptr<ui::Texture> texture_;
     

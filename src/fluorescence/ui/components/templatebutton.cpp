@@ -17,29 +17,36 @@
  */
 
 
-#ifndef FLUO_UI_COMPONENTS_PAGEBUTTON_HPP
-#define FLUO_UI_COMPONENTS_PAGEBUTTON_HPP
 
-#include "basebutton.hpp"
+#include "templatebutton.hpp"
+
+#include <ui/gumpmenu.hpp>
 
 namespace fluo {
 namespace ui {
 namespace components {
 
-class PageButton : public BaseButton {
-public:
-    PageButton(CL_GUIComponent* parent, unsigned int pageId);
+TemplateButton::TemplateButton(CL_GUIComponent* parent) : CL_PushButton(parent) {
+    func_clicked().set(this, &TemplateButton::onClick);
+}
 
-    unsigned int getPageId();
+UnicodeString TemplateButton::getText() const {
+    return StringConverter::fromUtf8(get_text());
+}
 
-    virtual void onClicked(BaseButton* self);
+void TemplateButton::setText(const UnicodeString& text) {
+    set_text(StringConverter::toUtf8String(text));
+}
 
-private:
-    unsigned int pageId_;
-};
+void TemplateButton::onClick() {
+    handleClick();
+}
+
+GumpMenu* TemplateButton::getTopLevelMenu() {
+    CL_GUIComponent* topLevel = get_top_level_component();
+    return dynamic_cast<GumpMenu*>(topLevel);
+}
 
 }
 }
 }
-
-#endif

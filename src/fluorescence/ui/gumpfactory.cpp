@@ -33,10 +33,8 @@
 
 #include "manager.hpp"
 #include "texture.hpp"
-#include "components/basebutton.hpp"
-#include "components/pagebutton.hpp"
-#include "components/serverbutton.hpp"
-#include "components/localbutton.hpp"
+#include "components/templatebutton.hpp"
+#include "components/uobutton.hpp"
 #include "components/scrollarea.hpp"
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
@@ -99,6 +97,7 @@ GumpFactory::GumpFactory() {
 
     functionTable_["page"] = boost::bind(&GumpFactory::parsePage, this, _1, _2, _3);
     functionTable_["background"] = boost::bind(&GumpFactory::parseBackground, this, _1, _2, _3);
+    functionTable_["button"] = boost::bind(&GumpFactory::parseButton, this, _1, _2, _3);
 
     functionTable_["image"] = boost::bind(&GumpFactory::parseImage, this, _1, _2, _3);
     functionTable_["worldview"] = boost::bind(&GumpFactory::parseWorldView, this, _1, _2, _3);
@@ -280,19 +279,18 @@ bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     UnicodeString param4 = StringConverter::fromUtf8(node.attribute("param4").value());
     UnicodeString param5 = StringConverter::fromUtf8(node.attribute("param5").value());
 
-    components::BaseButton* button;
+    components::TemplateButton* button = new components::TemplateButton(parent);
     if (action.length() > 0) {
-        components::LocalButton* lb = new components::LocalButton(parent, action);
-        lb->setParameter(param, 0);
-        lb->setParameter(param2, 1);
-        lb->setParameter(param3, 2);
-        lb->setParameter(param4, 3);
-        lb->setParameter(param5, 4);
-        button = lb;
+        button->setLocalButton(action);
+        button->setParameter(param, 0);
+        button->setParameter(param2, 1);
+        button->setParameter(param3, 2);
+        button->setParameter(param4, 3);
+        button->setParameter(param5, 4);
     } else if (!node.attribute("buttonid").empty()) {
-        button = new components::ServerButton(parent, buttonId);
+        button->setServerButton(buttonId);
     } else if (!node.attribute("page").empty()) {
-        button = new components::PageButton(parent, pageId);
+        button->setPageButton(pageId);
     } else {
         LOG_WARN << "Button without action, id or page" << std::endl;
         return false;
@@ -303,6 +301,90 @@ bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     button->setText(text);
 
     top->addToCurrentPage(button);
+    return true;
+}
+
+bool GumpFactory::parseButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, parent);
+    unsigned int buttonId = node.attribute("buttonid").as_uint();
+    unsigned int pageId = node.attribute("page").as_uint();
+    UnicodeString action = StringConverter::fromUtf8(node.attribute("action").value());
+    UnicodeString param = StringConverter::fromUtf8(node.attribute("param").value());
+    UnicodeString param2 = StringConverter::fromUtf8(node.attribute("param2").value());
+    UnicodeString param3 = StringConverter::fromUtf8(node.attribute("param3").value());
+    UnicodeString param4 = StringConverter::fromUtf8(node.attribute("param4").value());
+    UnicodeString param5 = StringConverter::fromUtf8(node.attribute("param5").value());
+
+    components::UoButton* button = new components::UoButton(parent);
+    if (action.length() > 0) {
+        button->setLocalButton(action);
+        button->setParameter(param, 0);
+        button->setParameter(param2, 1);
+        button->setParameter(param3, 2);
+        button->setParameter(param4, 3);
+        button->setParameter(param5, 4);
+    } else if (!node.attribute("buttonid").empty()) {
+        button->setServerButton(buttonId);
+    } else if (!node.attribute("page").empty()) {
+        button->setPageButton(pageId);
+    } else {
+        LOG_WARN << "Button without action, id or page" << std::endl;
+        return false;
+    }
+
+    parseId(node, button);
+    
+    pugi::xml_node normalNode = node.child("normal");
+    pugi::xml_node mouseOverNode = node.child("mouseover");
+    pugi::xml_node mouseDownNode = node.child("mousedown");
+    
+    if (normalNode) {
+        parseButtonImage(normalNode, button, 0);
+    } else {
+        LOG_ERROR << "Normal image for uo button not defined" << std::endl;
+        return false;
+    }
+    
+    if (mouseOverNode) {
+        parseButtonImage(mouseOverNode, button, 1);
+    }
+    if (mouseDownNode) {
+        parseButtonImage(mouseDownNode, button, 2);
+    }
+    
+    if (bounds.get_width() == 0 || bounds.get_height() == 0) {
+        button->autoResize_ = true;
+        bounds.set_width(1);
+        bounds.set_height(1);
+    }
+    
+    button->updateTexture();
+    
+    button->set_geometry(bounds);
+
+    top->addToCurrentPage(button);
+    return true;
+}
+
+bool GumpFactory::parseButtonImage(pugi::xml_node& node, components::UoButton* button, unsigned int index) {
+    UnicodeString imgSource = StringConverter::fromUtf8(node.attribute("source").value());
+    UnicodeString imgId = StringConverter::fromUtf8(node.attribute("imgid").value());
+    
+    boost::shared_ptr<ui::Texture> texture = data::Manager::getTexture(imgSource, imgId);
+    
+    if (!texture) {
+        LOG_ERROR << "Unable to parse gump button image, source=" << imgSource << " imgid=" << imgId << std::endl;
+        return false;
+    }
+
+    unsigned int hue = node.attribute("hue").as_uint();
+    std::string rgba = node.attribute("rgba").value();
+    float alpha = node.attribute("alpha").as_float();
+    
+    bool tiled = node.attribute("tiled").as_bool();
+    
+    button->addTexture(index, texture, hue, rgba, alpha, tiled);
+    
     return true;
 }
 
@@ -614,10 +696,7 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     UnicodeString imgSource = StringConverter::fromUtf8(node.attribute("source").value());
     UnicodeString imgId = StringConverter::fromUtf8(node.attribute("imgid").value());
 
-    int locX = node.attribute("x").as_int();
-    int locY = node.attribute("y").as_int();
-    unsigned int width = node.attribute("width").as_uint();
-    unsigned int height = node.attribute("height").as_uint();
+    CL_Rect bounds = getBoundsFromNode(node, parent);
     
     unsigned int hue = node.attribute("hue").as_uint();
     std::string rgba = node.attribute("rgba").value();
@@ -635,22 +714,19 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
         return false;
     }
     
-    if (width == 0 || height == 0) {
+    if (bounds.get_width() == 0 || bounds.get_height() == 0) {
         if (texture->getWidth() != 0) {
-            width = texture->getWidth();
-            height = texture->getHeight();
+            bounds.set_width(texture->getWidth());
+            bounds.set_height(texture->getHeight());
         } else {
             img->autoResize_ = true;
-            width = 1;
-            height = 1;
+            bounds.set_width(1);
+            bounds.set_height(1);
         }
     }
     
     img->setTexture(texture);
-
-    CL_Rect bounds(locX, locY, CL_Size(width, height));
     img->set_geometry(bounds);
-    // img->set_scale_to_fit();
     
     img->setHue(hue);
     if (rgba.length() > 0) {
@@ -668,10 +744,7 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
 }
 
 bool GumpFactory::parseBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    int locX = node.attribute("x").as_int();
-    int locY = node.attribute("y").as_int();
-    unsigned int width = node.attribute("width").as_uint();
-    unsigned int height = node.attribute("height").as_uint();
+    CL_Rect bounds = getBoundsFromNode(node, parent);
     
     unsigned int hue = node.attribute("hue").as_uint();
     std::string rgba = node.attribute("rgba").value();
@@ -687,7 +760,6 @@ bool GumpFactory::parseBackground(pugi::xml_node& node, CL_GUIComponent* parent,
     components::Background* img = new components::Background(parent);
     parseId(node, img);
     
-    CL_Rect bounds(locX, locY, CL_Size(width, height));
     img->set_geometry(bounds);
     
     img->setBaseId(gumpId);
