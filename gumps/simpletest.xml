@@ -73,5 +73,12 @@
             <mouseover source="gumpart" imgid="18" hue="13" alpha="0.5" />
             <mousedown source="gumpart" imgid="17" rgba="#ff5555" />
         </button>
+        
+        <checkbox x="200" y="530" switchid="4" checked="1">
+            <unchecked source="gumpart" imgid="210" />
+            <unchecked-mouseover source="gumpart" imgid="210" hue="13" />
+            <checked source="gumpart" imgid="211" />
+            <checked-mouseover source="gumpart" imgid="211" rgba="#997700" />
+        </checkbox>
     </page>
 </gump>

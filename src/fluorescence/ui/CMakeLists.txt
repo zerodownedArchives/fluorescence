@@ -50,6 +50,7 @@ set (GUMPMENU_HPP
     ui/components/containerview.hpp
     ui/components/image.hpp
     ui/components/background.hpp
+    ui/components/uocheckbox.hpp
     )
 
 set (GUMPMENU_CPP
@@ -69,6 +70,7 @@ set (GUMPMENU_CPP
     ui/components/containerview.cpp
     ui/components/image.cpp
     ui/components/background.cpp
+    ui/components/uocheckbox.cpp
     )
 
 set (RENDER_HPP

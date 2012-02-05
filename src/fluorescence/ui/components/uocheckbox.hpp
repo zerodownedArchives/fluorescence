@@ -17,8 +17,8 @@
  */
 
 
-#ifndef FLUO_UI_COMPONENTS_UOBUTTON_HPP
-#define FLUO_UI_COMPONENTS_UOBUTTON_HPP
+#ifndef FLUO_UI_COMPONENTS_UOCHECKBOX_HPP
+#define FLUO_UI_COMPONENTS_UOCHECKBOX_HPP
 
 #include <boost/shared_ptr.hpp>
 #include <ClanLib/Display/Window/input_event.h>
@@ -30,26 +30,28 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-class UoButton : public MultiTextureImage<3>, public BaseButton {
+class UoCheckbox : public MultiTextureImage<4> {
 
 friend class ui::GumpFactory;
 
 public:
-    UoButton(CL_GUIComponent* parent);
-    
-    virtual GumpMenu* getTopLevelMenu();
+    UoCheckbox(CL_GUIComponent* parent);
     
     void updateTexture();
     
+    void setChecked(bool value);
+    bool isChecked() const;
+    
 private:
     bool onInputPressed(const CL_InputEvent & e);
-    bool onInputReleased(const CL_InputEvent & e);
     
     bool onPointerEnter();
     bool onPointerExit();
     
     bool mouseOver_;
-    bool mouseDown_;
+    bool checked_;
+    
+    unsigned int switchId_;
     
     unsigned int calcTextureId() const;
 };

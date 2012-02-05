@@ -29,7 +29,9 @@
 
 #include <misc/pugixml/pugixml.hpp>
 
+#include <data/manager.hpp>
 #include "gumpmenu.hpp"
+#include "components/multitextureimage.hpp"
 
 namespace fluo {
 namespace ui {
@@ -113,19 +115,41 @@ private:
     bool parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     // TODO
 
     bool parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     
-    bool parseButtonImage(pugi::xml_node& node, components::UoButton* button, unsigned int index);
-
-
+    
     std::map<UnicodeString, boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> > functionTable_;
     std::map<UnicodeString, RepeatContext> repeatContexts_;
 
     bool gameViewFindHelper(pugi::xml_node& node) const;
+    
+    template<int N>
+    bool parseMultiTextureImage(pugi::xml_node& node, components::MultiTextureImage<N>* button, unsigned int index) {
+        UnicodeString imgSource = StringConverter::fromUtf8(node.attribute("source").value());
+        UnicodeString imgId = StringConverter::fromUtf8(node.attribute("imgid").value());
+        
+        boost::shared_ptr<ui::Texture> texture = data::Manager::getTexture(imgSource, imgId);
+        
+        if (!texture) {
+            LOG_ERROR << "Unable to parse gump button image, source=" << imgSource << " imgid=" << imgId << std::endl;
+            return false;
+        }
+
+        unsigned int hue = node.attribute("hue").as_uint();
+        std::string rgba = node.attribute("rgba").value();
+        float alpha = node.attribute("alpha").as_float();
+        
+        bool tiled = node.attribute("tiled").as_bool();
+        
+        button->addTexture(index, texture, hue, rgba, alpha, tiled);
+        
+        return true;
+    }
 };
 
 }

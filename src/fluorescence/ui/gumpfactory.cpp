@@ -23,13 +23,11 @@
 #include <ClanLib/Display/Image/pixel_buffer.h>
 
 #include <boost/bind.hpp>
+#include <boost/filesystem/operations.hpp>
 
 #include <platform.hpp>
 #include <misc/log.hpp>
 #include <client.hpp>
-#include <data/artloader.hpp>
-#include <data/gumpartloader.hpp>
-#include <data/manager.hpp>
 
 #include "manager.hpp"
 #include "texture.hpp"
@@ -44,6 +42,7 @@
 #include "components/containerview.hpp"
 #include "components/image.hpp"
 #include "components/background.hpp"
+#include "components/uocheckbox.hpp"
 
 namespace fluo {
 namespace ui {
@@ -98,6 +97,7 @@ GumpFactory::GumpFactory() {
     functionTable_["page"] = boost::bind(&GumpFactory::parsePage, this, _1, _2, _3);
     functionTable_["background"] = boost::bind(&GumpFactory::parseBackground, this, _1, _2, _3);
     functionTable_["button"] = boost::bind(&GumpFactory::parseButton, this, _1, _2, _3);
+    functionTable_["checkbox"] = boost::bind(&GumpFactory::parseCheckbox, this, _1, _2, _3);
 
     functionTable_["image"] = boost::bind(&GumpFactory::parseImage, this, _1, _2, _3);
     functionTable_["worldview"] = boost::bind(&GumpFactory::parseWorldView, this, _1, _2, _3);
@@ -339,17 +339,17 @@ bool GumpFactory::parseButton(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     pugi::xml_node mouseDownNode = node.child("mousedown");
     
     if (normalNode) {
-        parseButtonImage(normalNode, button, 0);
+        parseMultiTextureImage(normalNode, button, 0);
     } else {
         LOG_ERROR << "Normal image for uo button not defined" << std::endl;
         return false;
     }
     
     if (mouseOverNode) {
-        parseButtonImage(mouseOverNode, button, 1);
+        parseMultiTextureImage(mouseOverNode, button, 1);
     }
     if (mouseDownNode) {
-        parseButtonImage(mouseDownNode, button, 2);
+        parseMultiTextureImage(mouseDownNode, button, 2);
     }
     
     if (bounds.get_width() == 0 || bounds.get_height() == 0) {
@@ -363,28 +363,6 @@ bool GumpFactory::parseButton(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     button->set_geometry(bounds);
 
     top->addToCurrentPage(button);
-    return true;
-}
-
-bool GumpFactory::parseButtonImage(pugi::xml_node& node, components::UoButton* button, unsigned int index) {
-    UnicodeString imgSource = StringConverter::fromUtf8(node.attribute("source").value());
-    UnicodeString imgId = StringConverter::fromUtf8(node.attribute("imgid").value());
-    
-    boost::shared_ptr<ui::Texture> texture = data::Manager::getTexture(imgSource, imgId);
-    
-    if (!texture) {
-        LOG_ERROR << "Unable to parse gump button image, source=" << imgSource << " imgid=" << imgId << std::endl;
-        return false;
-    }
-
-    unsigned int hue = node.attribute("hue").as_uint();
-    std::string rgba = node.attribute("rgba").value();
-    float alpha = node.attribute("alpha").as_float();
-    
-    bool tiled = node.attribute("tiled").as_bool();
-    
-    button->addTexture(index, texture, hue, rgba, alpha, tiled);
-    
     return true;
 }
 
@@ -972,6 +950,50 @@ bool GumpFactory::parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, 
 
 bool GumpFactory::gameViewFindHelper(pugi::xml_node& node) const {
     return strcmp(node.name(), "worldview") == 0;
+}
+
+bool GumpFactory::parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, parent);
+    unsigned int switchId = node.attribute("switchid").as_uint();
+    bool isChecked = node.attribute("checked").as_bool();
+
+    components::UoCheckbox* cb = new components::UoCheckbox(parent);
+    cb->switchId_ = switchId;
+
+    parseId(node, cb);
+    
+    pugi::xml_node uncheckedNode = node.child("unchecked");
+    pugi::xml_node uncheckedMoNode = node.child("unchecked-mouseover");
+    pugi::xml_node checkedNode = node.child("checked");
+    pugi::xml_node checkedMoNode = node.child("checked-mouseover");
+    
+    if (checkedNode && uncheckedNode) {
+        parseMultiTextureImage(uncheckedNode, cb, 0);
+        parseMultiTextureImage(checkedNode, cb, 2);
+    } else {
+        LOG_ERROR << "Checkbox needs to have checked and unchecked image node" << std::endl;
+        return false;
+    }
+    
+    if (uncheckedMoNode) {
+        parseMultiTextureImage(uncheckedMoNode, cb, 1);
+    }
+    if (checkedMoNode) {
+        parseMultiTextureImage(checkedMoNode, cb, 3);
+    }
+    
+    if (bounds.get_width() == 0 || bounds.get_height() == 0) {
+        cb->autoResize_ = true;
+        bounds.set_width(1);
+        bounds.set_height(1);
+    }
+    
+    cb->setChecked(isChecked);
+    
+    cb->set_geometry(bounds);
+
+    top->addToCurrentPage(cb);
+    return true;
 }
 
 }
