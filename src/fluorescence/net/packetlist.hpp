@@ -59,6 +59,7 @@
 #include "packets/characterlist.hpp" // 0xa9
 #include "packets/speechrequest.hpp" // 0xad
 #include "packets/unicodetext.hpp" // 0xae
+#include "packets/gumpmenu.hpp" // 0xb0
 #include "packets/clientversion.hpp" // 0xbd
 #include "packets/bf.hpp" // 0xbf
 #include "packets/localizedtext.hpp" // 0xc1

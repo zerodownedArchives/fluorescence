@@ -26,6 +26,8 @@ extern "C" {
 #include <unicode/ustdio.h>
 }
 
+#include <boost/thread/mutex.hpp>
+
 namespace fluo {
 
 class StringConverter {
@@ -55,6 +57,9 @@ private:
     static UConverter* getUnicodeConverter();
     static UConverter* getUnicodeConverterLE();
     static NumberFormat* getNumberFormat();
+    
+    static boost::mutex* unicodeConverterMutex_;
+    static boost::mutex* unicodeConverterLeMutex_;
 };
 
 }

@@ -26,6 +26,9 @@
 #include <string.h>
 
 namespace fluo {
+    
+boost::mutex* StringConverter::unicodeConverterMutex_ = new boost::mutex();
+boost::mutex* StringConverter::unicodeConverterLeMutex_ = new boost::mutex;
 
 UnicodeString StringConverter::fromUtf8(const std::string& string) {
     UnicodeString ret = UnicodeString::fromUTF8(string);
@@ -50,7 +53,7 @@ UnicodeString StringConverter::fromUtf8(const char* buffer, int bufferSize) {
 
     // a little strange, but otherwise a unicode string might be returned that is just filled with 0x00, but still
     // has length > 0 and is != "" etc
-    UnicodeString ret(tmp.getBuffer());
+    UnicodeString ret(tmp.getTerminatedBuffer());
     if (ret.isBogus()) {
         ret = UnicodeString("##FLUOERROR"); // set error string
         LOG_WARN << "Unable to convert from utf-8 string" << std::endl;
@@ -59,24 +62,26 @@ UnicodeString StringConverter::fromUtf8(const char* buffer, int bufferSize) {
 }
 
 UnicodeString StringConverter::fromUnicode(const char* buffer, int bufferSize) {
+    boost::mutex::scoped_lock myLock(*unicodeConverterMutex_);
     UErrorCode error = U_ZERO_ERROR;
     UnicodeString tmp(buffer, bufferSize, getUnicodeConverter(), error);
     if (U_FAILURE(error)) {
         tmp = UnicodeString("##FLUOERROR"); // set error string
         LOG_WARN << "Unable to convert from utf-16-be string" << std::endl;
     }
-    UnicodeString ret(tmp.getBuffer());
+    UnicodeString ret(tmp.getTerminatedBuffer());
     return ret;
 }
 
 UnicodeString StringConverter::fromUnicodeLE(const char* buffer, int bufferSize) {
+    boost::mutex::scoped_lock myLock(*unicodeConverterLeMutex_);
     UErrorCode error = U_ZERO_ERROR;
     UnicodeString tmp(buffer, bufferSize, getUnicodeConverterLE(), error);
     if (U_FAILURE(error)) {
         tmp = UnicodeString("##FLUOERROR"); // set error string
         LOG_WARN << "Unable to convert from utf-16-le string" << std::endl;
     }
-    UnicodeString ret(tmp.getBuffer());
+    UnicodeString ret(tmp.getTerminatedBuffer());
     return ret;
 }
 
@@ -118,6 +123,7 @@ std::string StringConverter::toUtf8String(const UnicodeString& str) {
 }
 
 int StringConverter::toUnicode(const UnicodeString& str, char* buffer, int bufferSize, bool nullTerminated) {
+    boost::mutex::scoped_lock myLock(*unicodeConverterMutex_);
     UErrorCode error = U_ZERO_ERROR;
     int ret = str.extract(buffer, bufferSize, getUnicodeConverter(), error);
     if (U_FAILURE(error)) {

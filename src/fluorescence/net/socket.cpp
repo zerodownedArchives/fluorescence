@@ -318,8 +318,9 @@ void Socket::parsePackets() {
         }
 
         if (decompressedSize_ < lastPacketStart + packetSize) {
-            LOG_DEBUG << "Packet not received completely id=" << std::hex << (unsigned int)packetId << std::dec <<
-                    " should-be-len=" << packetSize << " received=" << (decompressedSize_ - lastPacketStart) << std::endl;
+            //LOG_DEBUG << "Packet not received completely id=" << std::hex << (unsigned int)packetId << std::dec <<
+                    //" should-be-len=" << packetSize << " received=" << (decompressedSize_ - lastPacketStart) << std::endl;
+            // dumpBuffer(decompressedBuffer_, decompressedSize_);
             break;
         }
 
@@ -336,6 +337,7 @@ void Socket::parsePackets() {
                     " trying to read more bytes than received" << std::endl;
             // set idx to start of next packet
             idx = lastPacketStart + packetSize;
+            dumpBuffer(decompressedBuffer_, decompressedSize_);
         } else {
             LOG_DEBUG << "Not successful reading packet id=" << std::hex << (unsigned int)packetId << std::dec << " len=" << packetSize <<
                     " read bytes=" << (idx - lastPacketStart) << std::endl;

@@ -108,16 +108,17 @@ bool PacketReader::readUnicodeNullLE(const int8_t* buf, unsigned int len, unsign
     }
 }
 
-bool PacketReader::readUnicodeFixed(const int8_t* buf, unsigned int len, unsigned int& index, UnicodeString& value, unsigned int fixed) {
-    if (index + (fixed*2) <= len) {
-        value = StringConverter::fromUnicode(&buf[index], fixed);
+bool PacketReader::readUnicodeFixed(const int8_t* buf, unsigned int len, unsigned int& index, UnicodeString& value, unsigned int numChars) {
+    unsigned int numBytes = numChars * 2; // 2 bytes per char
+    if (index + numBytes <= len) {
+        value = StringConverter::fromUnicode(&buf[index], numBytes);
 
         static UnicodeString errorIndicator("##FLUOERROR");
 
         if (value == errorIndicator) {
             return false;
         } else {
-            index += fixed;
+            index += numBytes;
             return true;
         }
     } else {
