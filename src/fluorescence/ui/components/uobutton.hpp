@@ -32,7 +32,7 @@ namespace components {
 
 class UoButton : public MultiTextureImage<3>, public BaseButton {
 
-friend class ui::GumpFactory;
+friend class ui::XmlParser;
 
 public:
     UoButton(CL_GUIComponent* parent);

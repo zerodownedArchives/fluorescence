@@ -33,7 +33,8 @@ set (UI_CPP
     )
 
 set (GUMPMENU_HPP
-    ui/gumpfactory.hpp
+    ui/xmlparser.hpp
+    ui/stringparser.hpp
     ui/gumpmenu.hpp
     ui/gumpelement.hpp
     
@@ -54,7 +55,8 @@ set (GUMPMENU_HPP
     )
 
 set (GUMPMENU_CPP
-    ui/gumpfactory.cpp
+    ui/xmlparser.cpp
+    ui/stringparser.cpp
     ui/gumpmenu.cpp
     ui/gumpelement.cpp
 

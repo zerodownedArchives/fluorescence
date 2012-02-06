@@ -35,7 +35,6 @@
 
 #include <ui/manager.hpp>
 #include <ui/gumpmenu.hpp>
-#include <ui/gumpfactory.hpp>
 #include <ui/cursormanager.hpp>
 #include <ui/components/gumpview.hpp>
 #include <ui/singletextureprovider.hpp>

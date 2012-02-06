@@ -21,6 +21,8 @@
 #include "gumpmenu.hpp"
 
 #include <misc/log.hpp>
+#include <ui/stringparser.hpp>
+#include <ui/gumpmenu.hpp>
 
 namespace fluo {
 namespace net {
@@ -64,12 +66,11 @@ bool GumpMenu::read(const int8_t* buf, unsigned int len, unsigned int& index) {
 }
 
 void GumpMenu::onReceive() {
-    LOG_INFO << "Gump data: " << std::endl;
-    LOG_INFO << gumpData_ << std::endl;
-    LOG_INFO << "Additional lines: " << textLines_.size() << std::endl;
-    for (unsigned int i = 0; i < textLines_.size(); ++i) {
-        LOG_INFO << "\t" << i << ": " << *textLines_[i] << std::endl;
-    }
+    ui::GumpMenu* menu = ui::StringParser::fromString(gumpData_, textLines_);
+    menu->setSerial(gumpSerial_);
+    CL_Rectf geom = menu->get_geometry();
+    geom.translate(locX_, locY_);
+    menu->set_geometry(geom);
 }
 
 }

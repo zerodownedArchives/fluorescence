@@ -17,8 +17,8 @@
  */
 
 
-#ifndef FLUO_UI_GUMPFACTORY_HPP
-#define FLUO_UI_GUMPFACTORY_CPP
+#ifndef FLUO_UI_XMLPARSER_HPP
+#define FLUO_UI_XMLPARSER_HPP
 
 #include <boost/shared_ptr.hpp>
 #include <boost/filesystem/path.hpp>
@@ -40,7 +40,7 @@ namespace components {
 class UoButton;
 }
 
-class GumpFactory {
+class XmlParser {
 public:
     struct RepeatKeyword {
         RepeatKeyword(const UnicodeString& node, const UnicodeString& attribute, const UnicodeString& search);
@@ -77,12 +77,12 @@ public:
     static GumpMenu* fromXmlString(const UnicodeString& str, GumpMenu* menu = NULL);
 
 private:
-    static GumpFactory* singleton_;
-    static GumpFactory* getSingleton();
+    static XmlParser* singleton_;
+    static XmlParser* getSingleton();
 
-    GumpFactory();
-    GumpFactory(const GumpFactory& factory) { }
-    GumpFactory& operator=(const GumpFactory& factory) { return *this; }
+    XmlParser();
+    XmlParser(const XmlParser& factory) = delete;
+    XmlParser& operator=(const XmlParser& factory) = delete;
 
     GumpMenu* fromXml(pugi::xml_document& doc, GumpMenu* menu);
 
@@ -123,7 +123,8 @@ private:
     bool parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     
     
-    std::map<UnicodeString, boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> > functionTable_;
+    typedef boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> XmlParseFunction;
+    std::map<UnicodeString, XmlParseFunction> functionTable_;
     std::map<UnicodeString, RepeatContext> repeatContexts_;
 
     bool gameViewFindHelper(pugi::xml_node& node) const;

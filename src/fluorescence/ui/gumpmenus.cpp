@@ -40,7 +40,7 @@
 #include <data/clilocloader.hpp>
 
 #include "gumpmenu.hpp"
-#include "gumpfactory.hpp"
+#include "xmlparser.hpp"
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
 
@@ -48,7 +48,7 @@ namespace fluo {
 namespace ui {
 
 GumpMenu* GumpMenus::openMessageBox(const UnicodeString& message) {
-    GumpMenu* menu = GumpFactory::fromXmlFile("messagebox");
+    GumpMenu* menu = XmlParser::fromXmlFile("messagebox");
     if (menu) {
         menu->setComponentText<components::Label>("messagetext", message);
     }
@@ -59,7 +59,7 @@ GumpMenu* GumpMenus::openMessageBox(const UnicodeString& message) {
 }
 
 GumpMenu* GumpMenus::openLoginGump() {
-    GumpMenu* menu = GumpFactory::fromXmlFile("login");
+    GumpMenu* menu = XmlParser::fromXmlFile("login");
 
     if (menu) {
         Config& config = Client::getSingleton()->getConfig();
@@ -100,14 +100,14 @@ GumpMenu* GumpMenus::openShardSelectionGump() {
         }
     }
 
-    GumpFactory::RepeatContext context;
+    XmlParser::RepeatContext context;
     context.repeatCount_ = nameList.size();
-    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "param", "shardname")] = nameList;
-    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "text", "shardname")] = nameList;
+    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "param", "shardname")] = nameList;
+    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "text", "shardname")] = nameList;
 
-    GumpFactory::addRepeatContext("shardlist", context);
-    GumpMenu* menu = GumpFactory::fromXmlFile("shardselection");
-    GumpFactory::removeRepeatContext("shardlist");
+    XmlParser::addRepeatContext("shardlist", context);
+    GumpMenu* menu = XmlParser::fromXmlFile("shardselection");
+    XmlParser::removeRepeatContext("shardlist");
 
     return menu;
 }
@@ -126,14 +126,14 @@ GumpMenu* GumpMenus::openServerListGump(const net::packets::ServerList* list) {
         indexList.push_back(StringConverter::fromNumber(entryIter->index_));
     }
 
-    GumpFactory::RepeatContext context;
+    XmlParser::RepeatContext context;
     context.repeatCount_ = nameList.size();
-    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "param", "serverindex")] = indexList;
-    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "text", "servername")] = nameList;
+    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "param", "serverindex")] = indexList;
+    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "text", "servername")] = nameList;
 
-    GumpFactory::addRepeatContext("serverlist", context);
-    GumpMenu* menu = GumpFactory::fromXmlFile("serverlist");
-    GumpFactory::removeRepeatContext("serverlist");
+    XmlParser::addRepeatContext("serverlist", context);
+    GumpMenu* menu = XmlParser::fromXmlFile("serverlist");
+    XmlParser::removeRepeatContext("serverlist");
 
     return menu;
 }
@@ -149,15 +149,15 @@ GumpMenu* GumpMenus::openCharacterListGump(const net::packets::CharacterList* li
         passwordList.push_back(list->charPasswords_[i]);
     }
 
-    GumpFactory::RepeatContext context;
+    XmlParser::RepeatContext context;
     context.repeatCount_ = nameList.size();
-    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "param", "characterindex")] = indexList;
-    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "text", "charactername")] = nameList;
-    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "param2", "characterpassword")] = nameList;
+    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "param", "characterindex")] = indexList;
+    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "text", "charactername")] = nameList;
+    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "param2", "characterpassword")] = nameList;
 
-    GumpFactory::addRepeatContext("characterlist", context);
-    GumpMenu* menu = GumpFactory::fromXmlFile("characterlist");
-    GumpFactory::removeRepeatContext("characterlist");
+    XmlParser::addRepeatContext("characterlist", context);
+    GumpMenu* menu = XmlParser::fromXmlFile("characterlist");
+    XmlParser::removeRepeatContext("characterlist");
 
     return menu;
 }
@@ -177,15 +177,15 @@ GumpMenu* GumpMenus::openContextMenu(const net::packets::bf::OpenContextMenu* pk
         serialList.push_back(serialString);
     }
 
-    GumpFactory::RepeatContext context;
+    XmlParser::RepeatContext context;
     context.repeatCount_ = nameList.size();
-    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "text", "entrytext")] = nameList;
-    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "param", "serial")] = serialList;
-    context.keywordReplacments_[GumpFactory::RepeatKeyword("tbutton", "param2", "entryindex")] = indexList;
+    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "text", "entrytext")] = nameList;
+    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "param", "serial")] = serialList;
+    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "param2", "entryindex")] = indexList;
 
-    GumpFactory::addRepeatContext("contextmenu", context);
-    GumpMenu* menu = GumpFactory::fromXmlFile("contextmenu");
-    GumpFactory::removeRepeatContext("contextmenu");
+    XmlParser::addRepeatContext("contextmenu", context);
+    GumpMenu* menu = XmlParser::fromXmlFile("contextmenu");
+    XmlParser::removeRepeatContext("contextmenu");
 
     return menu;
 }

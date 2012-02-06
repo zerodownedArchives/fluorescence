@@ -32,7 +32,7 @@ namespace components {
 
 class UoCheckbox : public MultiTextureImage<4> {
 
-friend class ui::GumpFactory;
+friend class ui::XmlParser;
 
 public:
     UoCheckbox(CL_GUIComponent* parent);

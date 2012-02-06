@@ -36,7 +36,7 @@ namespace ui {
 
 GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
     CL_Window(ui::Manager::getSingleton()->getGuiManager().get(), desc),
-    activePageId_(0), firstPageId_(0),
+    serial_(0), activePageId_(0), firstPageId_(0),
     closable_(true),
     draggable_(true), isDragged_(false),
     linkedMobile_(NULL) {
@@ -284,6 +284,41 @@ void GumpMenu::startDragging(const CL_Point& mousePos) {
     capture_mouse(true);
     lastMousePos_ = mousePos;
     isDragged_ = true;
+}
+
+void GumpMenu::fitSizeToChildren() {
+    int childWidth = 0;
+    int childHeight = 0;
+    
+    std::vector<CL_GUIComponent*> children = get_child_components();
+    std::vector<CL_GUIComponent*>::const_iterator iter = children.begin();
+    std::vector<CL_GUIComponent*>::const_iterator end = children.end();
+    for (; iter != end; ++iter) {
+        CL_Pointx<int> cur = (*iter)->get_geometry().get_bottom_right();
+        if (cur.x > childWidth) {
+            childWidth = cur.x;
+        }
+
+        if (cur.y > childHeight) {
+            childHeight = cur.y;
+        }
+    }
+    
+    childWidth = (std::max)(1, childWidth);
+    childHeight = (std::max)(1, childHeight);
+    
+    CL_Rectf geom = get_geometry();
+    geom.set_width(childWidth);
+    geom.set_height(childHeight);
+    set_geometry(geom);
+}
+
+void GumpMenu::setSerial(Serial serial) {
+    if (serial_ == 0) {
+        serial_ = serial;
+    
+        // TODO: register somewhere?
+    }
 }
 
 }

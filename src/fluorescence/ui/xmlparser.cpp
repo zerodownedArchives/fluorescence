@@ -18,7 +18,7 @@
 
 
 
-#include "gumpfactory.hpp"
+#include "xmlparser.hpp"
 
 #include <ClanLib/Display/Image/pixel_buffer.h>
 
@@ -47,11 +47,11 @@
 namespace fluo {
 namespace ui {
 
-GumpFactory::RepeatKeyword::RepeatKeyword(const UnicodeString& node, const UnicodeString& attribute, const UnicodeString& search) :
+XmlParser::RepeatKeyword::RepeatKeyword(const UnicodeString& node, const UnicodeString& attribute, const UnicodeString& search) :
             nodeText_(node), attributeText_(attribute), searchText_(search) {
 }
 
-bool GumpFactory::RepeatKeyword::operator<(const RepeatKeyword& rhs) const {
+bool XmlParser::RepeatKeyword::operator<(const RepeatKeyword& rhs) const {
     if (nodeText_ == rhs.nodeText_) {
         if (attributeText_ == rhs.attributeText_) {
             if (searchText_ == rhs.searchText_) {
@@ -68,52 +68,52 @@ bool GumpFactory::RepeatKeyword::operator<(const RepeatKeyword& rhs) const {
 }
 
 
-GumpFactory* GumpFactory::singleton_ = NULL;
+XmlParser* XmlParser::singleton_ = NULL;
 
-GumpFactory* GumpFactory::getSingleton() {
+XmlParser* XmlParser::getSingleton() {
     if (!singleton_) {
-        singleton_ = new GumpFactory();
+        singleton_ = new XmlParser();
     }
 
     return singleton_;
 }
 
-GumpFactory::GumpFactory() {
-    functionTable_["tbutton"] = boost::bind(&GumpFactory::parseTButton, this, _1, _2, _3);
-    functionTable_["tcheckbox"] = boost::bind(&GumpFactory::parseTCheckBox, this, _1, _2, _3);
-    functionTable_["tradiobutton"] = boost::bind(&GumpFactory::parseTRadioButton, this, _1, _2, _3);
-    functionTable_["tlineedit"] = boost::bind(&GumpFactory::parseTLineEdit, this, _1, _2, _3);
-    functionTable_["tcombobox"] = boost::bind(&GumpFactory::parseTComboBox, this, _1, _2, _3);
-    functionTable_["tgroupbox"] = boost::bind(&GumpFactory::parseTGroupBox, this, _1, _2, _3);
-    functionTable_["tspin"] = boost::bind(&GumpFactory::parseTSpin, this, _1, _2, _3);
-    functionTable_["ttabs"] = boost::bind(&GumpFactory::parseTTabs, this, _1, _2, _3);
-    functionTable_["tslider"] = boost::bind(&GumpFactory::parseTSlider, this, _1, _2, _3);
-    functionTable_["tlabel"] = boost::bind(&GumpFactory::parseTLabel, this, _1, _2, _3);
-    functionTable_["ttextedit"] = boost::bind(&GumpFactory::parseTTextEdit, this, _1, _2, _3);
-    functionTable_["tscrollarea"] = boost::bind(&GumpFactory::parseTScrollArea, this, _1, _2, _3);
-    functionTable_["repeat"] = boost::bind(&GumpFactory::parseRepeat, this, _1, _2, _3);
-    functionTable_["propertylabel"] = boost::bind(&GumpFactory::parsePropertyLabel, this, _1, _2, _3);
+XmlParser::XmlParser() {
+    functionTable_["tbutton"] = boost::bind(&XmlParser::parseTButton, this, _1, _2, _3);
+    functionTable_["tcheckbox"] = boost::bind(&XmlParser::parseTCheckBox, this, _1, _2, _3);
+    functionTable_["tradiobutton"] = boost::bind(&XmlParser::parseTRadioButton, this, _1, _2, _3);
+    functionTable_["tlineedit"] = boost::bind(&XmlParser::parseTLineEdit, this, _1, _2, _3);
+    functionTable_["tcombobox"] = boost::bind(&XmlParser::parseTComboBox, this, _1, _2, _3);
+    functionTable_["tgroupbox"] = boost::bind(&XmlParser::parseTGroupBox, this, _1, _2, _3);
+    functionTable_["tspin"] = boost::bind(&XmlParser::parseTSpin, this, _1, _2, _3);
+    functionTable_["ttabs"] = boost::bind(&XmlParser::parseTTabs, this, _1, _2, _3);
+    functionTable_["tslider"] = boost::bind(&XmlParser::parseTSlider, this, _1, _2, _3);
+    functionTable_["tlabel"] = boost::bind(&XmlParser::parseTLabel, this, _1, _2, _3);
+    functionTable_["ttextedit"] = boost::bind(&XmlParser::parseTTextEdit, this, _1, _2, _3);
+    functionTable_["tscrollarea"] = boost::bind(&XmlParser::parseTScrollArea, this, _1, _2, _3);
+    functionTable_["repeat"] = boost::bind(&XmlParser::parseRepeat, this, _1, _2, _3);
+    functionTable_["propertylabel"] = boost::bind(&XmlParser::parsePropertyLabel, this, _1, _2, _3);
 
-    functionTable_["page"] = boost::bind(&GumpFactory::parsePage, this, _1, _2, _3);
-    functionTable_["background"] = boost::bind(&GumpFactory::parseBackground, this, _1, _2, _3);
-    functionTable_["button"] = boost::bind(&GumpFactory::parseButton, this, _1, _2, _3);
-    functionTable_["checkbox"] = boost::bind(&GumpFactory::parseCheckbox, this, _1, _2, _3);
+    functionTable_["page"] = boost::bind(&XmlParser::parsePage, this, _1, _2, _3);
+    functionTable_["background"] = boost::bind(&XmlParser::parseBackground, this, _1, _2, _3);
+    functionTable_["button"] = boost::bind(&XmlParser::parseButton, this, _1, _2, _3);
+    functionTable_["checkbox"] = boost::bind(&XmlParser::parseCheckbox, this, _1, _2, _3);
 
-    functionTable_["image"] = boost::bind(&GumpFactory::parseImage, this, _1, _2, _3);
-    functionTable_["worldview"] = boost::bind(&GumpFactory::parseWorldView, this, _1, _2, _3);
-    functionTable_["paperdoll"] = boost::bind(&GumpFactory::parsePaperdoll, this, _1, _2, _3);
-    functionTable_["container"] = boost::bind(&GumpFactory::parseContainer, this, _1, _2, _3);
+    functionTable_["image"] = boost::bind(&XmlParser::parseImage, this, _1, _2, _3);
+    functionTable_["worldview"] = boost::bind(&XmlParser::parseWorldView, this, _1, _2, _3);
+    functionTable_["paperdoll"] = boost::bind(&XmlParser::parsePaperdoll, this, _1, _2, _3);
+    functionTable_["container"] = boost::bind(&XmlParser::parseContainer, this, _1, _2, _3);
 }
 
-void GumpFactory::addRepeatContext(const UnicodeString& name, const RepeatContext& context) {
+void XmlParser::addRepeatContext(const UnicodeString& name, const RepeatContext& context) {
     getSingleton()->repeatContexts_[name] = context;
 }
 
-void GumpFactory::removeRepeatContext(const UnicodeString& name) {
+void XmlParser::removeRepeatContext(const UnicodeString& name) {
     getSingleton()->repeatContexts_.erase(name);
 }
 
-GumpMenu* GumpFactory::fromXmlFile(const UnicodeString& name, GumpMenu* menu) {
+GumpMenu* XmlParser::fromXmlFile(const UnicodeString& name, GumpMenu* menu) {
     boost::filesystem::path path = "gumps";
     std::string utf8FileName = StringConverter::toUtf8String(name) + ".xml";
     path = path / utf8FileName;
@@ -147,7 +147,7 @@ GumpMenu* GumpFactory::fromXmlFile(const UnicodeString& name, GumpMenu* menu) {
     }
 }
 
-GumpMenu* GumpFactory::fromXmlString(const UnicodeString& str, GumpMenu* menu) {
+GumpMenu* XmlParser::fromXmlString(const UnicodeString& str, GumpMenu* menu) {
     pugi::xml_document doc;
     std::string utf8String = StringConverter::toUtf8String(str);
     pugi::xml_parse_result result = doc.load_buffer(utf8String.c_str(), utf8String.length());
@@ -163,7 +163,7 @@ GumpMenu* GumpFactory::fromXmlString(const UnicodeString& str, GumpMenu* menu) {
 }
 
 
-GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
+GumpMenu* XmlParser::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
 
     pugi::xml_node rootNode = doc.child("gump");
 
@@ -196,7 +196,7 @@ GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
             ret->setCancelAction(cancelAction);
         }
 
-        if (doc.find_node(boost::bind(&GumpFactory::gameViewFindHelper, this, _1))) {
+        if (doc.find_node(boost::bind(&XmlParser::gameViewFindHelper, this, _1))) {
             ret->set_stay_in_background(true);
         } else {
             ret->set_stay_in_background(false);
@@ -210,14 +210,14 @@ GumpMenu* GumpFactory::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
     return ret;
 }
 
-bool GumpFactory::parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent, GumpMenu* top) {
     pugi::xml_node_iterator iter = rootNode.begin();
     pugi::xml_node_iterator iterEnd = rootNode.end();
 
     bool ret = true;
 
     for (; iter != iterEnd && ret; ++iter) {
-        std::map<UnicodeString, boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> >::iterator function = functionTable_.find(iter->name());
+        std::map<UnicodeString, XmlParseFunction>::iterator function = functionTable_.find(iter->name());
 
         if (function != functionTable_.end()) {
             ret = (function->second)(*iter, parent, top);
@@ -229,11 +229,11 @@ bool GumpFactory::parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* paren
     return ret;
 }
 
-CL_Rect GumpFactory::getBoundsFromNode(pugi::xml_node& node, const CL_GUIComponent* parent) {
+CL_Rect XmlParser::getBoundsFromNode(pugi::xml_node& node, const CL_GUIComponent* parent) {
     return getBoundsFromNode(node, parent->get_geometry());
 }
 
-CL_Rect GumpFactory::getBoundsFromNode(pugi::xml_node& node, const CL_Rect& parentGeometry) {
+CL_Rect XmlParser::getBoundsFromNode(pugi::xml_node& node, const CL_Rect& parentGeometry) {
     unsigned int width = node.attribute("width").as_uint();
     unsigned int height = node.attribute("height").as_uint();
 
@@ -258,7 +258,7 @@ CL_Rect GumpFactory::getBoundsFromNode(pugi::xml_node& node, const CL_Rect& pare
     return bounds;
 }
 
-bool GumpFactory::parseId(pugi::xml_node& node, CL_GUIComponent* component) {
+bool XmlParser::parseId(pugi::xml_node& node, CL_GUIComponent* component) {
     std::string cssid = node.attribute("id").value();
     if (cssid.length() > 0) {
         component->set_id_name(cssid);
@@ -267,7 +267,7 @@ bool GumpFactory::parseId(pugi::xml_node& node, CL_GUIComponent* component) {
     return true;
 }
 
-bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
     UnicodeString text = StringConverter::fromUtf8(node.attribute("text").value());
     unsigned int buttonId = node.attribute("buttonid").as_uint();
@@ -304,7 +304,7 @@ bool GumpFactory::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     return true;
 }
 
-bool GumpFactory::parseButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
     unsigned int buttonId = node.attribute("buttonid").as_uint();
     unsigned int pageId = node.attribute("page").as_uint();
@@ -366,7 +366,7 @@ bool GumpFactory::parseButton(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     return true;
 }
 
-bool GumpFactory::parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
     std::string text = node.attribute("text").value();
     int checked = node.attribute("checked").as_int();
@@ -384,7 +384,7 @@ bool GumpFactory::parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent, 
     return true;
 }
 
-bool GumpFactory::parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
     std::string text = node.attribute("text").value();
     std::string group = node.attribute("group").value();
@@ -409,7 +409,7 @@ bool GumpFactory::parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* paren
     return true;
 }
 
-bool GumpFactory::parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
     UnicodeString text = StringConverter::fromUtf8(node.attribute("text").value());
     int numeric = node.attribute("numeric").as_int();
@@ -443,7 +443,7 @@ bool GumpFactory::parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent, 
     return true;
 }
 
-bool GumpFactory::parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
 
     CL_ComboBox* box = new CL_ComboBox(parent);
@@ -479,7 +479,7 @@ bool GumpFactory::parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent, 
     return true;
 }
 
-bool GumpFactory::parseTGroupBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseTGroupBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
 
     CL_GroupBox* box = new CL_GroupBox(parent);
@@ -492,7 +492,7 @@ bool GumpFactory::parseTGroupBox(pugi::xml_node& node, CL_GUIComponent* parent, 
     return true;
 }
 
-bool GumpFactory::parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
     std::string type = node.attribute("type").value();
 
@@ -530,7 +530,7 @@ bool GumpFactory::parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     return true;
 }
 
-bool GumpFactory::parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
 
     CL_Tab* tabs = new CL_Tab(parent);
@@ -557,7 +557,7 @@ bool GumpFactory::parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     return true;
 }
 
-bool GumpFactory::parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
     std::string type = node.attribute("type").value();
     int min = node.attribute("min").as_int();
@@ -589,7 +589,7 @@ bool GumpFactory::parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     return true;
 }
 
-bool GumpFactory::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
     std::string align = node.attribute("align").value();
     std::string text = node.attribute("text").value();
@@ -617,7 +617,7 @@ bool GumpFactory::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     return true;
 }
 
-bool GumpFactory::parsePropertyLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parsePropertyLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
     std::string align = node.attribute("align").value();
     UnicodeString link = StringConverter::fromUtf8(node.attribute("link").value());
@@ -649,7 +649,7 @@ bool GumpFactory::parsePropertyLabel(pugi::xml_node& node, CL_GUIComponent* pare
     return true;
 }
 
-bool GumpFactory::parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     // does not seem to work currently (clanlib problem)
 
     //CL_Rect bounds = getBoundsFromNode(node);
@@ -670,7 +670,7 @@ bool GumpFactory::parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent, 
     return false;
 }
 
-bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     UnicodeString imgSource = StringConverter::fromUtf8(node.attribute("source").value());
     UnicodeString imgId = StringConverter::fromUtf8(node.attribute("imgid").value());
 
@@ -721,7 +721,7 @@ bool GumpFactory::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     return true;
 }
 
-bool GumpFactory::parseBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
     
     unsigned int hue = node.attribute("hue").as_uint();
@@ -755,7 +755,7 @@ bool GumpFactory::parseBackground(pugi::xml_node& node, CL_GUIComponent* parent,
     return true;
 }
 
-bool GumpFactory::parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     unsigned int number = node.attribute("number").as_uint();
 
     if (top->getActivePageId() != 0) {
@@ -774,7 +774,7 @@ bool GumpFactory::parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpM
     return ret;
 }
 
-bool GumpFactory::parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
     std::string hVisibilityStr = node.attribute("hvisible").value();
     std::string vVisibilityStr = node.attribute("vvisible").value();
@@ -832,7 +832,7 @@ bool GumpFactory::parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent
     return true;
 }
 
-bool GumpFactory::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     UnicodeString name(node.attribute("name").value());
 
     if (repeatContexts_.count(name) == 0) {
@@ -918,7 +918,7 @@ bool GumpFactory::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     return true;
 }
 
-bool GumpFactory::parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
 
     ui::components::WorldView* worldView = new ui::components::WorldView(parent, bounds);
@@ -928,7 +928,7 @@ bool GumpFactory::parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, 
     return true;
 }
 
-bool GumpFactory::parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
 
     ui::components::GumpView* worldView = new ui::components::GumpView(parent, bounds);
@@ -938,7 +938,7 @@ bool GumpFactory::parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, 
     return true;
 }
 
-bool GumpFactory::parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
 
     ui::components::ContainerView* worldView = new ui::components::ContainerView(parent, bounds);
@@ -948,11 +948,11 @@ bool GumpFactory::parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, 
     return true;
 }
 
-bool GumpFactory::gameViewFindHelper(pugi::xml_node& node) const {
+bool XmlParser::gameViewFindHelper(pugi::xml_node& node) const {
     return strcmp(node.name(), "worldview") == 0;
 }
 
-bool GumpFactory::parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlParser::parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
     unsigned int switchId = node.attribute("switchid").as_uint();
     bool isChecked = node.attribute("checked").as_bool();

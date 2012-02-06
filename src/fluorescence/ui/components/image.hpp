@@ -28,13 +28,13 @@ namespace fluo {
 namespace ui {
 
 class Texture;
-class GumpFactory;
+class XmlParser;
     
 namespace components {
 
 class Image : public CL_GUIComponent {
 
-friend class ui::GumpFactory;
+friend class ui::XmlParser;
 
 public:
     Image(CL_GUIComponent* parent);

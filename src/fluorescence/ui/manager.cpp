@@ -26,7 +26,7 @@
 #include "cursormanager.hpp"
 #include "doubleclickhandler.hpp"
 #include "gumpmenu.hpp"
-#include "gumpfactory.hpp"
+#include "xmlparser.hpp"
 #include "gumpmenus.hpp"
 #include "gumpactions.hpp"
 #include "fontengine.hpp"
@@ -292,7 +292,7 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
 }
 
 GumpMenu* Manager::openXmlGump(const UnicodeString& name) {
-    return GumpFactory::fromXmlFile(name);
+    return XmlParser::fromXmlFile(name);
 }
 
 void Manager::registerGumpMenu(GumpMenu* menu) {

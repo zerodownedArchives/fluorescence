@@ -24,6 +24,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <map>
 
+#include <typedefs.hpp>
 #include <misc/config.hpp>
 
 #include "components/basebutton.hpp"
@@ -102,8 +103,14 @@ public:
     void onClose();
 
     void startDragging(const CL_Point& mousePos);
+    
+    void fitSizeToChildren();
+    
+    void setSerial(Serial serial);
 
 private:
+    Serial serial_;
+    
     unsigned int activePageId_;
     std::map<unsigned int, std::vector<CL_GUIComponent*> > pages_;
     unsigned int firstPageId_;
