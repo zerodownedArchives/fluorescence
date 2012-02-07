@@ -65,15 +65,15 @@ void UoCheckbox::updateTexture() {
 unsigned int UoCheckbox::calcTextureId() const {
     if (checked_) {
         if (mouseOver_) {
-            return 3;
+            return TEX_INDEX_CHECKED_MOUSEOVER;
         } else {
-            return 2;
+            return TEX_INDEX_CHECKED;
         }
     } else {
         if (mouseOver_) {
-            return 1;
+            return TEX_INDEX_UNCHECKED_MOUSEOVER;
         } else {
-            return 0;
+            return TEX_INDEX_UNCHECKED;
         }
     }
 }
@@ -85,6 +85,14 @@ void UoCheckbox::setChecked(bool value) {
 
 bool UoCheckbox::isChecked() const {
     return checked_;
+}
+
+void UoCheckbox::setSwitchId(unsigned int id) {
+    switchId_ = id;
+}
+
+unsigned int UoCheckbox::getSwitchId() const {
+    return switchId_;
 }
 
 }

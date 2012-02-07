@@ -968,18 +968,18 @@ bool XmlParser::parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     pugi::xml_node checkedMoNode = node.child("checked-mouseover");
     
     if (checkedNode && uncheckedNode) {
-        parseMultiTextureImage(uncheckedNode, cb, 0);
-        parseMultiTextureImage(checkedNode, cb, 2);
+        parseMultiTextureImage(uncheckedNode, cb, components::UoCheckbox::TEX_INDEX_UNCHECKED);
+        parseMultiTextureImage(checkedNode, cb, components::UoCheckbox::TEX_INDEX_CHECKED);
     } else {
         LOG_ERROR << "Checkbox needs to have checked and unchecked image node" << std::endl;
         return false;
     }
     
     if (uncheckedMoNode) {
-        parseMultiTextureImage(uncheckedMoNode, cb, 1);
+        parseMultiTextureImage(uncheckedMoNode, cb, components::UoCheckbox::TEX_INDEX_UNCHECKED_MOUSEOVER);
     }
     if (checkedMoNode) {
-        parseMultiTextureImage(checkedMoNode, cb, 3);
+        parseMultiTextureImage(checkedMoNode, cb, components::UoCheckbox::TEX_INDEX_CHECKED_MOUSEOVER);
     }
     
     if (bounds.get_width() == 0 || bounds.get_height() == 0) {

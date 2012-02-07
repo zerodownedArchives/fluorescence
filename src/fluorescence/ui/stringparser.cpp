@@ -31,6 +31,7 @@
 #include "components/background.hpp"
 #include "components/image.hpp"
 #include "components/uobutton.hpp"
+#include "components/uocheckbox.hpp"
 
 namespace fluo {
 namespace ui {
@@ -58,6 +59,7 @@ StringParser::StringParser() {
     functionTable_["tilepic"] = boost::bind(&StringParser::parseTilePic, this, _1, _2, _3);
     functionTable_["tilepichue"] = boost::bind(&StringParser::parseTilePicHue, this, _1, _2, _3);
     functionTable_["button"] = boost::bind(&StringParser::parseButton, this, _1, _2, _3);
+    functionTable_["checkbox"] = boost::bind(&StringParser::parseCheckbox, this, _1, _2, _3);
 }
 
 GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std::vector<UnicodeString>& strings) {
@@ -337,6 +339,7 @@ bool StringParser::parseButton(const UnicodeString& params, const std::vector<Un
         but->set_geometry(bounds);
         
         but->addTexture(components::UoButton::TEX_INDEX_UP, upTex);
+        but->addTexture(components::UoButton::TEX_INDEX_MOUSEOVER, upTex);
         but->addTexture(components::UoButton::TEX_INDEX_DOWN, downTex);
         but->updateTexture();
         
@@ -353,6 +356,47 @@ bool StringParser::parseButton(const UnicodeString& params, const std::vector<Un
         return true;
     } else {
         LOG_ERROR << "Unable to parse button, params " << params << std::endl;
+        return false;
+    }
+}
+
+bool StringParser::parseCheckbox(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    
+    if (matcher.find() && matcher.groupCount() == 7) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int uncheckedId = StringConverter::toInt(matcher.group(3, status));
+        int checkedId = StringConverter::toInt(matcher.group(4, status));
+        int checked = StringConverter::toInt(matcher.group(5, status));
+        int switchId = StringConverter::toInt(matcher.group(6, status));
+        
+        boost::shared_ptr<ui::Texture> uncheckedTex = data::Manager::getTexture(data::TextureSource::GUMPART, uncheckedId);
+        boost::shared_ptr<ui::Texture> checkedTex = data::Manager::getTexture(data::TextureSource::GUMPART, checkedId);
+        
+        components::UoCheckbox* cb = new components::UoCheckbox(menu);
+        CL_Rectf bounds(x, y, CL_Sizef(checkedTex->getWidth(), checkedTex->getHeight()));
+        cb->set_geometry(bounds);
+        
+        cb->addTexture(components::UoCheckbox::TEX_INDEX_UNCHECKED, uncheckedTex);
+        cb->addTexture(components::UoCheckbox::TEX_INDEX_UNCHECKED_MOUSEOVER, uncheckedTex);
+        cb->addTexture(components::UoCheckbox::TEX_INDEX_CHECKED, checkedTex);
+        cb->addTexture(components::UoCheckbox::TEX_INDEX_CHECKED_MOUSEOVER, checkedTex);
+        cb->updateTexture();
+        
+        cb->setSwitchId(switchId);
+
+        if (checked) {
+            cb->setChecked(true);
+        }
+        
+        menu->addToCurrentPage(cb);
+        
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse checkbox, params " << params << std::endl;
         return false;
     }
 }

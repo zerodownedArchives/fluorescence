@@ -35,12 +35,22 @@ class UoCheckbox : public MultiTextureImage<4> {
 friend class ui::XmlParser;
 
 public:
+    enum TextureIndex {
+        TEX_INDEX_UNCHECKED = 0,
+        TEX_INDEX_UNCHECKED_MOUSEOVER = 1,
+        TEX_INDEX_CHECKED = 2,
+        TEX_INDEX_CHECKED_MOUSEOVER = 3,
+    };
+    
     UoCheckbox(CL_GUIComponent* parent);
     
     void updateTexture();
     
     void setChecked(bool value);
     bool isChecked() const;
+    
+    void setSwitchId(unsigned int id);
+    unsigned int getSwitchId() const;
     
 private:
     bool onInputPressed(const CL_InputEvent & e);

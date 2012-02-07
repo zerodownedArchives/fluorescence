@@ -24,6 +24,7 @@
 #include "gumpactions.hpp"
 #include "cursormanager.hpp"
 #include "components/propertylabel.hpp"
+#include "components/uocheckbox.hpp"
 
 #include <client.hpp>
 #include <misc/log.hpp>
@@ -328,6 +329,17 @@ void GumpMenu::setTypeId(unsigned int typeId) {
 void GumpMenu::sendReply(unsigned int buttonId) {
     std::list<uint32_t> switches;
     std::list<net::packets::GumpReply::TextEntryInfo> textEntries;
+    
+    std::vector<CL_GUIComponent*> children = get_child_components();
+    std::vector<CL_GUIComponent*>::const_iterator iter = children.begin();
+    std::vector<CL_GUIComponent*>::const_iterator end = children.end();
+    for (; iter != end; ++iter) {
+        components::UoCheckbox* cb = dynamic_cast<components::UoCheckbox*>(*iter);
+        if (cb && cb->isChecked()) {
+            switches.push_back(cb->getSwitchId());
+        }
+    }
+    
     net::packets::GumpReply pkt(serial_, typeId_, buttonId, switches, textEntries);
     net::Manager::getSingleton()->send(pkt);
     
