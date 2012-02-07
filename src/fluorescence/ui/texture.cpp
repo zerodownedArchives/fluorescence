@@ -71,7 +71,7 @@ void Texture::setTexture(CL_PixelBuffer& pixBuf) {
     }
 }
 
-unsigned int Texture::getWidth() {
+float Texture::getWidth() {
     if (texture_) {
         return texture_->get_width();
     } else if (pixelBuffer_) {
@@ -81,7 +81,7 @@ unsigned int Texture::getWidth() {
     }
 }
 
-unsigned int Texture::getHeight() {
+float Texture::getHeight() {
     if (texture_) {
         return texture_->get_height();
     } else if (pixelBuffer_) {

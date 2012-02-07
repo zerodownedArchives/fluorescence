@@ -55,11 +55,10 @@ bool GumpMenu::read(const int8_t* buf, unsigned int len, unsigned int& index) {
     
     uint16_t textLineCount;
     ret &= PacketReader::read(buf, len, index, textLineCount);
+    textLines_.resize(textLineCount);
     for (unsigned int i = 0; i < textLineCount; ++i) {
         ret &= PacketReader::read(buf, len, index, dataLength);
-        boost::shared_ptr<UnicodeString> newStr(new UnicodeString());
-        ret &= PacketReader::readUnicodeFixed(buf, len, index, *newStr, dataLength);
-        textLines_.push_back(newStr);
+        ret &= PacketReader::readUnicodeFixed(buf, len, index, textLines_[i], dataLength);
     }
 
     return ret;

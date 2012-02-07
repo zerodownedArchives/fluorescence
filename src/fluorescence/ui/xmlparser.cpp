@@ -339,17 +339,17 @@ bool XmlParser::parseButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpM
     pugi::xml_node mouseDownNode = node.child("mousedown");
     
     if (normalNode) {
-        parseMultiTextureImage(normalNode, button, 0);
+        parseMultiTextureImage(normalNode, button, components::UoButton::TEX_INDEX_UP);
     } else {
         LOG_ERROR << "Normal image for uo button not defined" << std::endl;
         return false;
     }
     
     if (mouseOverNode) {
-        parseMultiTextureImage(mouseOverNode, button, 1);
+        parseMultiTextureImage(mouseOverNode, button, components::UoButton::TEX_INDEX_MOUSEOVER);
     }
     if (mouseDownNode) {
-        parseMultiTextureImage(mouseDownNode, button, 2);
+        parseMultiTextureImage(mouseDownNode, button, components::UoButton::TEX_INDEX_DOWN);
     }
     
     if (bounds.get_width() == 0 || bounds.get_height() == 0) {

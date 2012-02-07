@@ -34,7 +34,7 @@ class GumpMenu;
 
 class StringParser {
 public:
-    static GumpMenu* fromString(const UnicodeString& commands, const std::vector<boost::shared_ptr<UnicodeString> >& strings);
+    static GumpMenu* fromString(const UnicodeString& commands, const std::vector<UnicodeString>& strings);
     
 private:
     static StringParser* singleton_;
@@ -44,17 +44,21 @@ private:
     StringParser(const StringParser& copy) = delete;
     StringParser& operator=(const StringParser& copy) = delete;
     
-    GumpMenu* innerFromString(const UnicodeString& commands, const std::vector<boost::shared_ptr<UnicodeString> >& strings);
+    GumpMenu* innerFromString(const UnicodeString& commands, const std::vector<UnicodeString>& strings);
     
-    typedef boost::function<bool (const UnicodeString&, GumpMenu*)> StringParseFunction;
+    typedef boost::function<bool (const UnicodeString&, const std::vector<UnicodeString>& strings, GumpMenu*)> StringParseFunction;
     std::map<UnicodeString, StringParseFunction> functionTable_;
     
     
-    bool parsePage(const UnicodeString& params, GumpMenu* menu) const;
-    bool parseResizepic(const UnicodeString& params, GumpMenu* menu) const;
-    bool parseGumpPicTiled(const UnicodeString& params, GumpMenu* menu) const;
-    
-    
+    bool parsePage(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
+    bool parseResizepic(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
+    bool parseGumpPicTiled(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
+    bool parseCroppedText(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
+    bool parseText(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
+    bool parseGumpPic(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
+    bool parseTilePic(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
+    bool parseTilePicHue(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
+    bool parseButton(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
 };
 
 }

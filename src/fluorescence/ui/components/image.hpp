@@ -46,7 +46,8 @@ public:
     void setHue(unsigned int hue);
     void setAlpha(float alpha);
     
-    void setTiled(bool value);
+    void setTiled(bool tiled);
+    void setStretchTexture(bool stretch);
     
 protected:
     void setHueInfo(const CL_Vec3f& hueInfo);
@@ -66,8 +67,11 @@ private:
     // fine. this flag indicates wheter the renderer has to re-render the image because of this condition
     bool requireInitialRepaint_;
     
+    bool stretchTexture_;
     bool tiled_;
     CL_Rectf textureRect_;
+    
+    void calculateTextureCoordinates();
 };
 
 }

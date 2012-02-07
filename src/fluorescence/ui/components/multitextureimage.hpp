@@ -41,7 +41,7 @@ public:
         }
     };
     
-    void addTexture(unsigned int index, boost::shared_ptr<ui::Texture> texture, unsigned int hue, const std::string& rgba, float alpha, bool tiled) {
+    void addTexture(unsigned int index, boost::shared_ptr<ui::Texture> texture, unsigned int hue = 0, const std::string& rgba = "", float alpha = 1, bool tiled = false) {
         if (index >= NUM_TEXTURES) {
             LOG_ERROR << "Trying to add invalid texture id in MultiTextureImage, id=" << index << std::endl;
             return;

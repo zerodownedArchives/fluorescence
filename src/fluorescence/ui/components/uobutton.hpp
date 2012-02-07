@@ -35,6 +35,12 @@ class UoButton : public MultiTextureImage<3>, public BaseButton {
 friend class ui::XmlParser;
 
 public:
+    enum TextureIndex {
+        TEX_INDEX_UP = 0,
+        TEX_INDEX_MOUSEOVER = 1,
+        TEX_INDEX_DOWN = 2,
+    };
+
     UoButton(CL_GUIComponent* parent);
     
     virtual GumpMenu* getTopLevelMenu();

@@ -49,7 +49,7 @@ public:
     
     UnicodeString gumpData_;
     
-    std::vector<boost::shared_ptr<UnicodeString> > textLines_;
+    std::vector<UnicodeString> textLines_;
 };
 
 }

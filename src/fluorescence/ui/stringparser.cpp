@@ -25,9 +25,12 @@
 #include <misc/log.hpp>
 #include <data/manager.hpp>
 
+#include "manager.hpp"
+#include "fontengine.hpp"
 #include "gumpmenu.hpp"
 #include "components/background.hpp"
 #include "components/image.hpp"
+#include "components/uobutton.hpp"
 
 namespace fluo {
 namespace ui {
@@ -41,17 +44,23 @@ StringParser* StringParser::getSingleton() {
     return singleton_;
 }
 
-GumpMenu* StringParser::fromString(const UnicodeString& commands, const std::vector<boost::shared_ptr<UnicodeString> >& strings) {
+GumpMenu* StringParser::fromString(const UnicodeString& commands, const std::vector<UnicodeString>& strings) {
     return getSingleton()->innerFromString(commands, strings);
 }
 
 StringParser::StringParser() {
-    functionTable_["page"] = boost::bind(&StringParser::parsePage, this, _1, _2);
-    functionTable_["resizepic"] = boost::bind(&StringParser::parseResizepic, this, _1, _2);
-    functionTable_["gumppictiled"] = boost::bind(&StringParser::parseGumpPicTiled, this, _1, _2);
+    functionTable_["page"] = boost::bind(&StringParser::parsePage, this, _1, _2, _3);
+    functionTable_["resizepic"] = boost::bind(&StringParser::parseResizepic, this, _1, _2, _3);
+    functionTable_["gumppictiled"] = boost::bind(&StringParser::parseGumpPicTiled, this, _1, _2, _3);
+    functionTable_["croppedtext"] = boost::bind(&StringParser::parseCroppedText, this, _1, _2, _3);
+    functionTable_["text"] = boost::bind(&StringParser::parseText, this, _1, _2, _3);
+    functionTable_["gumppic"] = boost::bind(&StringParser::parseGumpPic, this, _1, _2, _3);
+    functionTable_["tilepic"] = boost::bind(&StringParser::parseTilePic, this, _1, _2, _3);
+    functionTable_["tilepichue"] = boost::bind(&StringParser::parseTilePicHue, this, _1, _2, _3);
+    functionTable_["button"] = boost::bind(&StringParser::parseButton, this, _1, _2, _3);
 }
 
-GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std::vector<boost::shared_ptr<UnicodeString> >& strings) {
+GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std::vector<UnicodeString>& strings) {
     CL_Rect bounds(0, 0, 100, 100); // temporary foobar value
 
     CL_GUITopLevelDescription desc(bounds, false);
@@ -61,6 +70,8 @@ GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std
     ret->setDraggable(true);
     ret->setClosable(true);
     // TODO: resizable, disposable
+    
+    ret->set_id_name("nobackground");
     
     UErrorCode status = U_ZERO_ERROR;
     bool parseSuccess = true;
@@ -76,7 +87,7 @@ GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std
        std::map<UnicodeString, StringParseFunction>::iterator function = functionTable_.find(curCmd);
 
         if (function != functionTable_.end()) {
-            parseSuccess = (function->second)(curParams, ret);
+            parseSuccess = (function->second)(curParams, strings, ret);
             if (!parseSuccess) {
                 break;
             }
@@ -98,14 +109,14 @@ GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std
     return ret;
 }
 
-bool StringParser::parsePage(const UnicodeString& params, GumpMenu* menu) const {
+bool StringParser::parsePage(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
     // { page {0} }
     int pageId = StringConverter::toInt(params);
     menu->addPage(pageId);
     return true;
 }
 
-bool StringParser::parseResizepic(const UnicodeString& params, GumpMenu* menu) const {
+bool StringParser::parseResizepic(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
     // { resizepic {0} {1} {2} {3} {4} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
@@ -130,7 +141,7 @@ bool StringParser::parseResizepic(const UnicodeString& params, GumpMenu* menu) c
     }
 }
 
-bool StringParser::parseGumpPicTiled(const UnicodeString& params, GumpMenu* menu) const {
+bool StringParser::parseGumpPicTiled(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -151,6 +162,192 @@ bool StringParser::parseGumpPicTiled(const UnicodeString& params, GumpMenu* menu
         return true;
     } else {
         LOG_ERROR << "Unable to parse gumppictiled, params " << params << std::endl;
+        return false;
+    }
+}
+
+bool StringParser::parseCroppedText(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    if (matcher.find() && matcher.groupCount() == 6) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        unsigned int width = StringConverter::toInt(matcher.group(3, status));
+        unsigned int height = StringConverter::toInt(matcher.group(4, status));
+        int hue = StringConverter::toInt(matcher.group(5, status));
+        int textId = StringConverter::toInt(matcher.group(6, status));
+        
+        boost::shared_ptr<ui::Texture> tex = ui::Manager::getFontEngine()->getUniFontTexture(1, strings[textId], 99999, hue, false, 0);
+        if (width > tex->getWidth()) {
+            width = tex->getWidth();
+        }
+        if (height > tex->getHeight()) {
+            height = tex->getHeight();
+        }
+        
+        components::Image* img = new components::Image(menu);
+        CL_Rectf bounds(x, y, CL_Sizef(width, height));
+        img->set_geometry(bounds);
+        img->setTiled(false);
+        img->setStretchTexture(false);
+        img->setTexture(tex);
+        menu->addToCurrentPage(img);
+        
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse croppedtext, params " << params << std::endl;
+        return false;
+    }
+}
+
+bool StringParser::parseText(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    if (matcher.find() && matcher.groupCount() == 6) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int hue = StringConverter::toInt(matcher.group(5, status));
+        int textId = StringConverter::toInt(matcher.group(6, status));
+        
+        boost::shared_ptr<ui::Texture> tex = ui::Manager::getFontEngine()->getUniFontTexture(1, strings[textId], 99999, hue, false, 0);
+        
+        components::Image* img = new components::Image(menu);
+        CL_Rectf bounds(x, y, CL_Sizef(tex->getWidth(), tex->getHeight()));
+        img->set_geometry(bounds);
+        img->setTiled(false);
+        img->setStretchTexture(false);
+        img->setTexture(tex);
+        menu->addToCurrentPage(img);
+        
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse text, params " << params << std::endl;
+        return false;
+    }
+}
+
+bool StringParser::parseGumpPic(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    static RegexMatcher matcherHue("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*hue=(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    matcherHue.reset(params);
+    
+    int x, y, gumpId;
+    int hue = 0;
+    if (matcherHue.find() && matcherHue.groupCount() == 4) {
+        x = StringConverter::toInt(matcherHue.group(1, status));
+        y = StringConverter::toInt(matcherHue.group(2, status));
+        gumpId = StringConverter::toInt(matcherHue.group(3, status));
+        hue = StringConverter::toInt(matcherHue.group(4, status));
+    } else if (matcher.find() && matcher.groupCount() == 3) {
+        x = StringConverter::toInt(matcher.group(1, status));
+        y = StringConverter::toInt(matcher.group(2, status));
+        gumpId = StringConverter::toInt(matcher.group(3, status));
+    } else {
+        LOG_ERROR << "Unable to parse gumppic, params " << params << std::endl;
+        return false;
+    }
+    
+    boost::shared_ptr<ui::Texture> tex = data::Manager::getTexture(data::TextureSource::GUMPART, gumpId);
+    components::Image* img = new components::Image(menu);
+    CL_Rectf bounds(x, y, CL_Sizef(tex->getWidth(), tex->getHeight()));
+    img->set_geometry(bounds);
+    img->setTexture(tex);
+    img->setHue(hue);
+    menu->addToCurrentPage(img);
+    
+    return true;
+}
+
+bool StringParser::parseTilePic(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    
+    if (matcher.find() && matcher.groupCount() == 3) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int artId = StringConverter::toInt(matcher.group(3, status));
+        
+        boost::shared_ptr<ui::Texture> tex = data::Manager::getTexture(data::TextureSource::STATICART, artId);
+        components::Image* img = new components::Image(menu);
+        CL_Rectf bounds(x, y, CL_Sizef(tex->getWidth(), tex->getHeight()));
+        img->set_geometry(bounds);
+        img->setTexture(tex);
+        menu->addToCurrentPage(img);
+        
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse tilepic, params " << params << std::endl;
+        return false;
+    }
+}
+
+bool StringParser::parseTilePicHue(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    
+    if (matcher.find() && matcher.groupCount() == 4) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int artId = StringConverter::toInt(matcher.group(3, status));
+        int hue = StringConverter::toInt(matcher.group(4, status));
+        
+        boost::shared_ptr<ui::Texture> tex = data::Manager::getTexture(data::TextureSource::STATICART, artId);
+        components::Image* img = new components::Image(menu);
+        CL_Rectf bounds(x, y, CL_Sizef(tex->getWidth(), tex->getHeight()));
+        img->set_geometry(bounds);
+        img->setTexture(tex);
+        img->setHue(hue);
+        menu->addToCurrentPage(img);
+        
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse tilepichue, params " << params << std::endl;
+        return false;
+    }
+}
+
+bool StringParser::parseButton(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    
+    if (matcher.find() && matcher.groupCount() == 7) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int upId = StringConverter::toInt(matcher.group(3, status));
+        int downId = StringConverter::toInt(matcher.group(4, status));
+        int type = StringConverter::toInt(matcher.group(5, status));
+        int pageId = StringConverter::toInt(matcher.group(6, status));
+        int buttonId = StringConverter::toInt(matcher.group(7, status));
+        
+        boost::shared_ptr<ui::Texture> upTex = data::Manager::getTexture(data::TextureSource::GUMPART, upId);
+        boost::shared_ptr<ui::Texture> downTex = data::Manager::getTexture(data::TextureSource::GUMPART, downId);
+        
+        components::UoButton* but = new components::UoButton(menu);
+        CL_Rectf bounds(x, y, CL_Sizef(upTex->getWidth(), upTex->getHeight()));
+        but->set_geometry(bounds);
+        
+        but->addTexture(components::UoButton::TEX_INDEX_UP, upTex);
+        but->addTexture(components::UoButton::TEX_INDEX_DOWN, downTex);
+        but->updateTexture();
+        
+        if (type == 0) {
+            but->setPageButton(pageId);
+        } else {
+            but->setServerButton(buttonId);
+        }
+        
+        menu->addToCurrentPage(but);
+        
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse button, params " << params << std::endl;
         return false;
     }
 }

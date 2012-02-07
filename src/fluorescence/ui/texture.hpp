@@ -44,8 +44,8 @@ public:
     boost::shared_ptr<CL_Texture> getTexture();
     void setTexture(CL_PixelBuffer& pixBuf);
 
-    unsigned int getWidth();
-    unsigned int getHeight();
+    float getWidth();
+    float getHeight();
 
     bool hasPixel(unsigned int pixelX, unsigned int pixelY);
 

@@ -83,12 +83,12 @@ void UoButton::updateTexture() {
 
 unsigned int UoButton::calcTextureId() const {
     if (mouseDown_) {
-        return 2;
+        return UoButton::TEX_INDEX_DOWN;
     } else {
         if (mouseOver_) {
-            return 1;
+            return UoButton::TEX_INDEX_MOUSEOVER;
         } else {
-            return 0;
+            return UoButton::TEX_INDEX_UP;
         }
     }
 }

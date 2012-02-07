@@ -34,7 +34,8 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-Image::Image(CL_GUIComponent* parent) : CL_GUIComponent(parent), autoResize_(false), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white), requireInitialRepaint_(true), tiled_(false) {
+Image::Image(CL_GUIComponent* parent) : CL_GUIComponent(parent), 
+        autoResize_(false), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white), requireInitialRepaint_(true), stretchTexture_(true), tiled_(false) {
     func_render().set(this, &Image::render);
 }
 
@@ -47,35 +48,42 @@ void Image::setTexture(boost::shared_ptr<ui::Texture> tex) {
 }
 
 void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
+    CL_Rectf geom = get_geometry();
     if (!texture_ || !texture_->isReadComplete()) {
+        request_repaint();
+    } else if (autoResize_ && (geom.get_width() != texture_->getWidth() || geom.get_height() != texture_->getHeight())) {
+        geom.set_width(texture_->getWidth());
+        geom.set_height(texture_->getHeight());
+        set_geometry(geom);
+        calculateTextureCoordinates();
         request_repaint();
     } else {
         if (requireInitialRepaint_) {
-            if (tiled_) {
-                textureRect_ = CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight());
-                texture_->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
-            } else {
-                textureRect_ = CL_Rectf(0.0f, 0.0f, 1.0f, 1.0f);
-            }
-            
             if (hueInfo_[1u] != 0) {
                 request_repaint();
             }
+            
+            calculateTextureCoordinates();
             requireInitialRepaint_ = false;
         }
-        CL_Rectf geom = get_geometry();
-        if (autoResize_ && (geom.get_width() != texture_->getWidth() || geom.get_height() != texture_->getHeight())) {
-            geom.set_width(texture_->getWidth());
-            geom.set_height(texture_->getHeight());
-            set_geometry(geom);
-            request_repaint();
+        
+        if (hueInfo_[1u] == 0) {
+            CL_Draw::texture(gc, *(texture_->getTexture()), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_, textureRect_);
         } else {
-            if (hueInfo_[1u] == 0) {
-                CL_Draw::texture(gc, *(texture_->getTexture()), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_, textureRect_);
-            } else {
-                renderShader(gc, clipRect);
-            }
+            renderShader(gc, clipRect);
         }
+    }
+}
+
+void Image::calculateTextureCoordinates() {
+    if (tiled_) {
+        textureRect_ = CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight());
+        texture_->getTexture()->set_wrap_mode(cl_wrap_repeat , cl_wrap_repeat );
+    } else if (stretchTexture_) {
+        textureRect_ = CL_Rectf(0.0f, 0.0f, 1.0f, 1.0f);
+    } else {
+        texture_->getTexture()->set_wrap_mode(cl_wrap_clamp_to_edge , cl_wrap_clamp_to_edge);
+        textureRect_ = CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight());
     }
 }
 
@@ -94,6 +102,10 @@ void Image::setAlpha(float alpha) {
 
 void Image::setTiled(bool tiled) {
     tiled_ = tiled;
+}
+
+void Image::setStretchTexture(bool stretch) {
+    stretchTexture_ = stretch;
 }
 
 void Image::setHueInfo(const CL_Vec3f& info) {
