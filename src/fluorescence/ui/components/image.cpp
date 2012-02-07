@@ -112,6 +112,10 @@ void Image::setHueInfo(const CL_Vec3f& info) {
     hueInfo_ = info;
 }
 
+void Image::setAutoResize(bool value) {
+    autoResize_ = value;
+}
+
 void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     //gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
 

@@ -80,7 +80,8 @@ bool PacketWriter::writeUnicodeNull(int8_t* buf, unsigned int len, unsigned int&
     }
 }
 
-bool PacketWriter::writeUnicodeFixed(int8_t* buf, unsigned int len, unsigned int& index, const UnicodeString& value, unsigned int fixed) {
+bool PacketWriter::writeUnicodeFixed(int8_t* buf, unsigned int len, unsigned int& index, const UnicodeString& value, unsigned int charCount) {
+    unsigned int fixed = charCount * 2;
     if (index + fixed < len) {
         int bytes = StringConverter::toUnicode(value, fixedStringBuf_, 0x4000, false);
 

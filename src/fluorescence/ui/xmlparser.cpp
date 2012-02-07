@@ -353,7 +353,7 @@ bool XmlParser::parseButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpM
     }
     
     if (bounds.get_width() == 0 || bounds.get_height() == 0) {
-        button->autoResize_ = true;
+        button->setAutoResize(true);
         bounds.set_width(1);
         bounds.set_height(1);
     }
@@ -693,11 +693,11 @@ bool XmlParser::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMe
     }
     
     if (bounds.get_width() == 0 || bounds.get_height() == 0) {
-        if (texture->getWidth() != 0) {
+        if (texture->getWidth() != 1) {
             bounds.set_width(texture->getWidth());
             bounds.set_height(texture->getHeight());
         } else {
-            img->autoResize_ = true;
+            img->setAutoResize(true);
             bounds.set_width(1);
             bounds.set_height(1);
         }
@@ -983,7 +983,7 @@ bool XmlParser::parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     }
     
     if (bounds.get_width() == 0 || bounds.get_height() == 0) {
-        cb->autoResize_ = true;
+        cb->setAutoResize(true);
         bounds.set_width(1);
         bounds.set_height(1);
     }

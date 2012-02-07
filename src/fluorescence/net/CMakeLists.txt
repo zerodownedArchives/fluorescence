@@ -76,6 +76,7 @@ set (PACKETS_HPP
     net/packets/movementdeny.hpp
     net/packets/createcharacter.hpp
     net/packets/gumpmenu.hpp
+    net/packets/gumpreply.hpp
 
     net/packets/bf.hpp
     net/packets/bf/changemap.hpp
@@ -133,6 +134,7 @@ set (PACKETS_CPP
     net/packets/movementdeny.cpp
     net/packets/createcharacter.cpp
     net/packets/gumpmenu.cpp
+    net/packets/gumpreply.cpp
 
     net/packets/bf.cpp
     net/packets/bf/changemap.cpp

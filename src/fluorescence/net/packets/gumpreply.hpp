@@ -17,39 +17,37 @@
  */
 
 
-#ifndef FLUO_NET_PACKETS_GUMPMENU_HPP
-#define FLUO_NET_PACKETS_GUMPMENU_HPP
+#ifndef FLUO_NET_PACKETS_GUMPREPLY_HPP
+#define FLUO_NET_PACKETS_GUMPREPLY_HPP
 
-#include <vector>
-#include <boost/shared_ptr.hpp>
-
-#include <net/packet.hpp>
+#include <list>
 
 #include <typedefs.hpp>
+#include <net/packet.hpp>
 
 namespace fluo {
 namespace net {
 
 namespace packets {
 
-class GumpMenu : public Packet {
+class GumpReply : public Packet {
 public:
-    GumpMenu();
-
-    virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
-
-    virtual void onReceive();
+    struct TextEntryInfo {
+        uint16_t number_;
+        UnicodeString text_;
+    };
     
-    
-    Serial typeId_;
+    GumpReply(Serial gumpSerial, unsigned int typeId, unsigned int buttonId, 
+            const std::list<uint32_t>& switches, const std::list<TextEntryInfo>& textEntries_);
+
+    virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
+
+private:
     Serial gumpSerial_;
-    
-    uint32_t locX_;
-    uint32_t locY_;
-    
-    UnicodeString gumpData_;
-    
-    std::vector<UnicodeString> textLines_;
+    uint32_t typeId_;
+    uint32_t buttonId_;
+    std::list<uint32_t> switches_;
+    std::list<TextEntryInfo> textEntries_;
 };
 
 }

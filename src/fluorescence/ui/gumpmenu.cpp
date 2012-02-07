@@ -26,10 +26,10 @@
 #include "components/propertylabel.hpp"
 
 #include <client.hpp>
-
 #include <misc/log.hpp>
-
 #include <world/mobile.hpp>
+#include <net/manager.hpp>
+#include <net/packets/gumpreply.hpp>
 
 namespace fluo {
 namespace ui {
@@ -319,6 +319,19 @@ void GumpMenu::setSerial(Serial serial) {
     
         // TODO: register somewhere?
     }
+}
+
+void GumpMenu::setTypeId(unsigned int typeId) {
+    typeId_ = typeId;
+}
+
+void GumpMenu::sendReply(unsigned int buttonId) {
+    std::list<uint32_t> switches;
+    std::list<net::packets::GumpReply::TextEntryInfo> textEntries;
+    net::packets::GumpReply pkt(serial_, typeId_, buttonId, switches, textEntries);
+    net::Manager::getSingleton()->send(pkt);
+    
+    ui::Manager::getSingleton()->closeGumpMenu(this);
 }
 
 }

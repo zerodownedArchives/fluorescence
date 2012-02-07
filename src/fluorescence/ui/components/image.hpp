@@ -48,6 +48,7 @@ public:
     
     void setTiled(bool tiled);
     void setStretchTexture(bool stretch);
+    void setAutoResize(bool value);
     
 protected:
     void setHueInfo(const CL_Vec3f& hueInfo);

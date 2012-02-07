@@ -80,7 +80,8 @@ void BaseButton::onClickServer() {
         if (buttonId_ == 0) {
             ui::Manager::getSingleton()->closeGumpMenu(gump);
         } else {
-            // TODO: send gump reply to server
+            // send gump reply to server
+            gump->sendReply(buttonId_);
         }
     } else {
         LOG_ERROR << "BaseButton inside something other than GumpMenu" << std::endl;

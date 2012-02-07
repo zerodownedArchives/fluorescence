@@ -77,7 +77,7 @@ float Texture::getWidth() {
     } else if (pixelBuffer_) {
         return pixelBuffer_->get_width();
     } else {
-        return 0;
+        return 1;
     }
 }
 
@@ -87,7 +87,7 @@ float Texture::getHeight() {
     } else if (pixelBuffer_) {
         return pixelBuffer_->get_height();
     } else {
-        return 0;
+        return 1;
     }
 }
 

@@ -107,9 +107,13 @@ public:
     void fitSizeToChildren();
     
     void setSerial(Serial serial);
+    void setTypeId(unsigned int typeId);
+    
+    void sendReply(unsigned int buttonId_);
 
 private:
     Serial serial_;
+    unsigned int typeId_;
     
     unsigned int activePageId_;
     std::map<unsigned int, std::vector<CL_GUIComponent*> > pages_;

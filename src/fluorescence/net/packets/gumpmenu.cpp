@@ -44,8 +44,8 @@ GumpMenu::GumpMenu() : Packet(0xB0) {
 bool GumpMenu::read(const int8_t* buf, unsigned int len, unsigned int& index) {
     bool ret = true;
     
-    ret &= PacketReader::read(buf, len, index, playerSerial_);
     ret &= PacketReader::read(buf, len, index, gumpSerial_);
+    ret &= PacketReader::read(buf, len, index, typeId_);
     ret &= PacketReader::read(buf, len, index, locX_);
     ret &= PacketReader::read(buf, len, index, locY_);
     
@@ -67,6 +67,7 @@ bool GumpMenu::read(const int8_t* buf, unsigned int len, unsigned int& index) {
 void GumpMenu::onReceive() {
     ui::GumpMenu* menu = ui::StringParser::fromString(gumpData_, textLines_);
     menu->setSerial(gumpSerial_);
+    menu->setTypeId(typeId_);
     CL_Rectf geom = menu->get_geometry();
     geom.translate(locX_, locY_);
     menu->set_geometry(geom);

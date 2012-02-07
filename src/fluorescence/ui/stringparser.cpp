@@ -257,6 +257,7 @@ bool StringParser::parseGumpPic(const UnicodeString& params, const std::vector<U
     img->set_geometry(bounds);
     img->setTexture(tex);
     img->setHue(hue);
+    img->setAutoResize(true);
     menu->addToCurrentPage(img);
     
     return true;
@@ -277,6 +278,7 @@ bool StringParser::parseTilePic(const UnicodeString& params, const std::vector<U
         CL_Rectf bounds(x, y, CL_Sizef(tex->getWidth(), tex->getHeight()));
         img->set_geometry(bounds);
         img->setTexture(tex);
+        img->setAutoResize(true);
         menu->addToCurrentPage(img);
         
         return true;
@@ -303,6 +305,7 @@ bool StringParser::parseTilePicHue(const UnicodeString& params, const std::vecto
         img->set_geometry(bounds);
         img->setTexture(tex);
         img->setHue(hue);
+        img->setAutoResize(true);
         menu->addToCurrentPage(img);
         
         return true;
@@ -342,6 +345,8 @@ bool StringParser::parseButton(const UnicodeString& params, const std::vector<Un
         } else {
             but->setServerButton(buttonId);
         }
+        
+        but->setAutoResize(true);
         
         menu->addToCurrentPage(but);
         
