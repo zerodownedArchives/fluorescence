@@ -136,7 +136,7 @@ void FontEngine::calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeSt
     height = lineCount * (fontLoader->getMaxHeight() + uniLineSpacing_) + borderWidth*2;
     width = (std::max)(width, curWidth) + borderWidth*2;
 
-    LOG_DEBUG << "calculated width=" << width << "  height=" << height << std::endl;
+    // LOG_DEBUG << "calculated width=" << width << "  height=" << height << std::endl;
     //LOG_DEBUG << "line breaks[0]: " << lineBreakIndices.front() << std::endl;
 }
 
