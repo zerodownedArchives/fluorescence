@@ -2,7 +2,7 @@
 /* default font */
 label, checkbox, button, lineedit, combobox, frame, listview, menubar, radiobar, slider, spin, statusbar, tabheader, tooltip, window
 {
-    font-family:DevinneSwash;
+    font-family:unifont0;
     font-size:18pt;
 }
 

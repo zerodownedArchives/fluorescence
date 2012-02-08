@@ -127,6 +127,7 @@ private:
     CL_Slot slotCloseWindow;
 
     void loadFontDirectory(const boost::filesystem::path& path);
+    void loadUnifonts();
 
     boost::recursive_mutex gumpListMutex_;
     std::list<GumpMenu*> gumpList_;

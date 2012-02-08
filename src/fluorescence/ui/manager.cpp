@@ -31,6 +31,7 @@
 #include "gumpactions.hpp"
 #include "fontengine.hpp"
 #include "render/shadermanager.hpp"
+#include "uofont.hpp"
 
 #include <client.hpp>
 
@@ -122,6 +123,10 @@ bool Manager::setShardConfig(Config& config) {
     path = "shards";
     path = path / config["/fluo/shard@name"].asPath() / "fonts";
     loadFontDirectory(path);
+    
+    loadUnifonts();
+    
+    fontEngine_.reset(new FontEngine(config, getGraphicContext()));
 
     worldRenderQueue_.reset(new WorldRenderQueue());
 
@@ -130,8 +135,6 @@ bool Manager::setShardConfig(Config& config) {
 
     doubleClickHandler_.reset(new DoubleClickHandler(config));
     doubleClickHandler_->start();
-
-    fontEngine_.reset(new FontEngine(config, getGraphicContext()));
 
     shaderManager_.reset(new ShaderManager(getGraphicContext()));
 
@@ -367,6 +370,13 @@ boost::shared_ptr<ShaderManager> Manager::getShaderManager() {
 UnicodeString Manager::getOpenGLExtensions() const {
     const GLubyte* sExtensions = glGetString(GL_EXTENSIONS);
     return UnicodeString((const char*)sExtensions);
+}
+
+void Manager::loadUnifonts() {
+    UoFont uni0(0);
+    CL_FontDescription fontDesc;
+    fontDesc.set_typeface_name("unifont0");
+    getGuiManager()->register_font(uni0, fontDesc);
 }
     
 

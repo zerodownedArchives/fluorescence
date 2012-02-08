@@ -50,6 +50,10 @@ GumpMenu* StringParser::fromString(const UnicodeString& commands, const std::vec
 }
 
 StringParser::StringParser() {
+    functionTable_["nomove"] = boost::bind(&StringParser::setNoMove, this, _1, _2, _3);
+    functionTable_["noclose"] = boost::bind(&StringParser::setNoClose, this, _1, _2, _3);
+    // TODO: resizable, disposable
+    
     functionTable_["page"] = boost::bind(&StringParser::parsePage, this, _1, _2, _3);
     functionTable_["resizepic"] = boost::bind(&StringParser::parseResizepic, this, _1, _2, _3);
     functionTable_["gumppictiled"] = boost::bind(&StringParser::parseGumpPicTiled, this, _1, _2, _3);
@@ -71,7 +75,7 @@ GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std
     GumpMenu* ret = new GumpMenu(desc);
     ret->setDraggable(true);
     ret->setClosable(true);
-    // TODO: resizable, disposable
+    // TODO: defaults for resizable, disposable
     
     ret->set_id_name("nobackground");
     
@@ -207,11 +211,11 @@ bool StringParser::parseText(const UnicodeString& params, const std::vector<Unic
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
-    if (matcher.find() && matcher.groupCount() == 6) {
+    if (matcher.find() && matcher.groupCount() == 4) {
         int x = StringConverter::toInt(matcher.group(1, status));
         int y = StringConverter::toInt(matcher.group(2, status));
-        int hue = StringConverter::toInt(matcher.group(5, status));
-        int textId = StringConverter::toInt(matcher.group(6, status));
+        int hue = StringConverter::toInt(matcher.group(3, status));
+        int textId = StringConverter::toInt(matcher.group(4, status));
         
         boost::shared_ptr<ui::Texture> tex = ui::Manager::getFontEngine()->getUniFontTexture(1, strings[textId], 99999, hue, false, 0);
         
@@ -399,6 +403,16 @@ bool StringParser::parseCheckbox(const UnicodeString& params, const std::vector<
         LOG_ERROR << "Unable to parse checkbox, params " << params << std::endl;
         return false;
     }
+}
+
+bool StringParser::setNoMove(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    menu->setDraggable(false);
+    return true;
+}
+
+bool StringParser::setNoClose(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    menu->setClosable(false);
+    return true;
 }
 
 }

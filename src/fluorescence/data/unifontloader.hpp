@@ -39,13 +39,13 @@ namespace data {
 class UnicodeCharacter {
 public:
     UnicodeCharacter();
-    UnicodeCharacter(unsigned int charCode, unsigned int xOffset, unsigned int yOffset, unsigned int width, unsigned int height);
+    UnicodeCharacter(unsigned int charCode, int xOffset, int yOffset, unsigned int width, unsigned int height);
 
     ~UnicodeCharacter();
 
     unsigned int charCode_;
-    unsigned int xOffset_;
-    unsigned int yOffset_;
+    int xOffset_;
+    int yOffset_;
     unsigned int width_;
     unsigned int height_;
     uint8_t* data_;

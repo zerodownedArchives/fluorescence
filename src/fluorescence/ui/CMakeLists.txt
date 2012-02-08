@@ -14,6 +14,8 @@ set (UI_HPP
     ui/gumpmenus.hpp
     ui/gumpactions.hpp
     ui/fontengine.hpp
+    ui/uofont.hpp
+    ui/uofontprovider.hpp
     )
 
 set (UI_CPP
@@ -30,6 +32,8 @@ set (UI_CPP
     ui/gumpmenus.cpp
     ui/gumpactions.cpp
     ui/fontengine.cpp
+    ui/uofont.cpp
+    ui/uofontprovider.cpp
     )
 
 set (GUMPMENU_HPP

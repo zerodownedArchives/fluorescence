@@ -7,6 +7,7 @@
         <map5 difs-enabled="0" />
         <mul-directory path="your UO directory" />
     </files>
+    <shard />
     <ui>
         <gameview>
             <font name="DevinneSwash" size="16" />

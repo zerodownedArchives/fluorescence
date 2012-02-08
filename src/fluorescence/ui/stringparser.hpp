@@ -49,6 +49,8 @@ private:
     typedef boost::function<bool (const UnicodeString&, const std::vector<UnicodeString>& strings, GumpMenu*)> StringParseFunction;
     std::map<UnicodeString, StringParseFunction> functionTable_;
     
+    bool setNoMove(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
+    bool setNoClose(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
     
     bool parsePage(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
     bool parseResizepic(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;

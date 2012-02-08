@@ -40,7 +40,7 @@ UnicodeCharacter::UnicodeCharacter() :
         charCode_(0), xOffset_(0), yOffset_(0), width_(0), height_(0), data_(NULL) {
 }
 
-UnicodeCharacter::UnicodeCharacter(unsigned int charCode, unsigned int xOffset, unsigned int yOffset, unsigned int width, unsigned int height) :
+UnicodeCharacter::UnicodeCharacter(unsigned int charCode, int xOffset, int yOffset, unsigned int width, unsigned int height) :
         charCode_(charCode), xOffset_(xOffset), yOffset_(yOffset), width_(width), height_(height) {
 
     data_ = reinterpret_cast<uint8_t*>(malloc(width_ * height_));
@@ -117,7 +117,7 @@ boost::shared_ptr<UnicodeCharacter> UniFontLoader::getCharacter(unsigned int cha
     }
 
     stream_.seekg(offsets_[character], std::ios_base::beg);
-    uint8_t charHeader[4];
+    int8_t charHeader[4];
     stream_.read(reinterpret_cast<char*>(charHeader), 4);
 
     boost::shared_ptr<UnicodeCharacter> ret(new UnicodeCharacter(character, charHeader[0], charHeader[1], charHeader[2], charHeader[3]));
