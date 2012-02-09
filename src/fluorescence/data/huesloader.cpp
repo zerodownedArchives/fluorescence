@@ -20,12 +20,13 @@
 
 #include "huesloader.hpp"
 
+#include <sstream>
+#include <boost/bind.hpp>
+
 #include "util.hpp"
 
 #include <ui/texture.hpp>
 #include <misc/log.hpp>
-
-#include <boost/bind.hpp>
 
 namespace fluo {
 namespace data {
@@ -117,6 +118,15 @@ unsigned int HuesLoader::translateHue(unsigned int hue) const {
     }
 
     return ret;
+}
+
+UnicodeString HuesLoader::getFontRgbString(unsigned int hue) const {
+    uint32_t rgb = getFontRgbColor(hue);
+        
+    std::stringstream sstr;
+    sstr << "#" << std::hex << ((rgb >> 24) & 0xFF) << ((rgb >> 16) & 0xFF) << ((rgb >> 8) & 0xFF);
+    
+    return StringConverter::fromUtf8(sstr.str());
 }
 
 }

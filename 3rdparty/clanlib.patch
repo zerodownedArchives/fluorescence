@@ -1,55 +1,116 @@
-Index: Sources/API/Display/Render/pen.h
+Index: Sources/GUI/gui_component.cpp
 ===================================================================
---- Sources/API/Display/Render/pen.h	(revision 7026)
-+++ Sources/API/Display/Render/pen.h	(working copy)
-@@ -77,6 +77,8 @@
- 	/// \brief Returns the origin of texture point sprites.
- 	CL_PointSpriteOrigin get_point_sprite_origin() const;
- 
-+	bool is_enable_point_sprite() const;
-+
- //!Operations
- public:
- 	/// \brief The default value is 1.0
-Index: Sources/API/GUI/gui_component.h
-===================================================================
---- Sources/API/GUI/gui_component.h	(revision 7026)
-+++ Sources/API/GUI/gui_component.h	(working copy)
-@@ -318,6 +318,8 @@
- 	/// \brief Gets the css element for this component
- 	CL_CSSLayoutElement get_css_element();
- 
-+	bool stay_in_background() const;
-+
- /// \}
- /// \name Events
- /// \{
-@@ -544,6 +546,8 @@
- 	/// \brief Loads a layout from file.
- 	void load_css_layout(const CL_String &xml_filename, const CL_String &css_filename);
- 
-+	void set_stay_in_background(bool value);
-+
- /// \}
- /// \name Implementation
- /// \{
-Index: Sources/Display/Render/pen.cpp
-===================================================================
---- Sources/Display/Render/pen.cpp	(revision 7026)
-+++ Sources/Display/Render/pen.cpp	(working copy)
-@@ -139,5 +139,9 @@
- 	impl->point_sprite_origin = origin;
+--- Sources/GUI/gui_component.cpp	(revision 7085)
++++ Sources/GUI/gui_component.cpp	(working copy)
+@@ -602,6 +602,23 @@
+ 	return impl->constant_repaint;
  }
  
-+bool CL_Pen::is_enable_point_sprite() const {
-+	return impl->point_sprites;
++bool CL_GUIComponent::stay_in_background() const
++{
++	return impl->stay_in_background;
++}
++
++CL_Font CL_GUIComponent::get_font_override() const
++{
++	static CL_Font ret;
++	return ret;
++}
++
++CL_StringRef CL_GUIComponent::get_css_override(const CL_GUIThemePart& part, const CL_String& name) const 
++{
++	static CL_StringRef ret;
++	return ret;
 +}
 +
  /////////////////////////////////////////////////////////////////////////////
- // CL_Pen Implementation:
+ // CL_GUIComponent Events:
+ 
+@@ -1377,6 +1394,11 @@
+ 	impl->css_layout.layout(gc, get_size());
+ }
+ 
++void CL_GUIComponent::set_stay_in_background(bool value)
++{
++	impl->stay_in_background = value;
++}
++
+ /////////////////////////////////////////////////////////////////////////////
+ // CL_GUIComponent Implementation:
+ 
+Index: Sources/GUI/Theme/gui_theme_part_impl.h
+===================================================================
+--- Sources/GUI/Theme/gui_theme_part_impl.h	(revision 7085)
++++ Sources/GUI/Theme/gui_theme_part_impl.h	(working copy)
+@@ -152,6 +152,11 @@
+ 
+ inline CL_StringRef CL_GUIThemePart_Impl::get_property(const CL_GUIThemePart &part, const CL_String &name, const CL_String8 &hash, const CL_String &default_value) const
+ {
++    CL_StringRef overrideValue = component->get_css_override(part, name);
++    if (overrideValue.data()) {
++        return overrideValue;
++    }
++    
+ 	CL_StringRef css_value = get_css_value(name, hash, default_value);
+ 
+ 	// Check if theme wants to override the property:
+Index: Sources/GUI/Theme/gui_theme_part.cpp
+===================================================================
+--- Sources/GUI/Theme/gui_theme_part.cpp	(revision 7085)
++++ Sources/GUI/Theme/gui_theme_part.cpp	(working copy)
+@@ -191,6 +191,11 @@
+ 
+ CL_Font CL_GUIThemePart::get_font() const
+ {
++    CL_Font fontOverride = impl->component->get_font_override();
++    if (!fontOverride.is_null()) {
++        return fontOverride;
++    }
++    
+ 	CL_GUIFontCache &font_cache = impl->component->get_gui_manager().impl->font_cache;
+ 	CL_Font font = font_cache.get_font(get_element_name(), impl->states);
+ 	if (!font.is_null())
+Index: Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
+===================================================================
+--- Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp	(revision 7085)
++++ Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp	(working copy)
+@@ -245,7 +245,7 @@
+ 	CL_GUITopLevelWindow *toplevel_window;
+ 	toplevel_window = get_window_at_point(new_input_event.mouse_pos);
+ 
+-	if (toplevel_window)
++	if (toplevel_window && !toplevel_window->component->stay_in_background())
+ 		bring_to_front(toplevel_window);
+ 
+ 	// Send focus lost events
+Index: Sources/GUI/gui_component_impl.cpp
+===================================================================
+--- Sources/GUI/gui_component_impl.cpp	(revision 7085)
++++ Sources/GUI/gui_component_impl.cpp	(working copy)
+@@ -42,6 +42,7 @@
+   focus_policy(CL_GUIComponent::focus_refuse), allow_resize(false), clip_children(false), enabled(true),
+   visible(true), activated(false), default_handler(false), cancel_handler(false),
+   constant_repaint(false), blocks_default_action_when_focused(false), is_selected_in_group(false), double_click_enabled(true)
++  , stay_in_background(false)
+ {
+ 	gui_manager_impl = gui_manager.lock().get();
+ 
+Index: Sources/GUI/gui_component_impl.h
+===================================================================
+--- Sources/GUI/gui_component_impl.h	(revision 7085)
++++ Sources/GUI/gui_component_impl.h	(working copy)
+@@ -115,6 +115,8 @@
+ 	CL_CSSLayoutElement css_element;
+ 	bool double_click_enabled;
+ 
++	bool stay_in_background;
++
+ /// \}
+ /// \name Operations
+ /// \{
 Index: Sources/GL/opengl_graphic_context_provider.cpp
 ===================================================================
---- Sources/GL/opengl_graphic_context_provider.cpp	(revision 7026)
+--- Sources/GL/opengl_graphic_context_provider.cpp	(revision 7085)
 +++ Sources/GL/opengl_graphic_context_provider.cpp	(working copy)
 @@ -1317,6 +1317,12 @@
  			break;
@@ -64,69 +125,64 @@ Index: Sources/GL/opengl_graphic_context_provider.cpp
  }
  
  void CL_OpenGLGraphicContextProvider::set_polygon_rasterizer(const CL_PolygonRasterizer &raster)
-Index: Sources/GUI/gui_component.cpp
+Index: Sources/Display/Render/pen.cpp
 ===================================================================
---- Sources/GUI/gui_component.cpp	(revision 7026)
-+++ Sources/GUI/gui_component.cpp	(working copy)
-@@ -602,6 +602,11 @@
- 	return impl->constant_repaint;
+--- Sources/Display/Render/pen.cpp	(revision 7085)
++++ Sources/Display/Render/pen.cpp	(working copy)
+@@ -139,5 +139,9 @@
+ 	impl->point_sprite_origin = origin;
  }
  
-+bool CL_GUIComponent::stay_in_background() const
-+{
-+	return impl->stay_in_background;
++bool CL_Pen::is_enable_point_sprite() const {
++	return impl->point_sprites;
 +}
 +
  /////////////////////////////////////////////////////////////////////////////
- // CL_GUIComponent Events:
+ // CL_Pen Implementation:
+Index: Sources/API/GUI/gui_component.h
+===================================================================
+--- Sources/API/GUI/gui_component.h	(revision 7085)
++++ Sources/API/GUI/gui_component.h	(working copy)
+@@ -62,6 +62,7 @@
+ class CL_CSSLayout;
+ class CL_CSSLayoutElement;
+ class CL_GUIComponent_Impl;
++class CL_GUIThemePart;
  
-@@ -1377,6 +1382,11 @@
- 	impl->css_layout.layout(gc, get_size());
- }
+ typedef CL_DisplayWindowDescription CL_GUITopLevelDescription;
  
-+void CL_GUIComponent::set_stay_in_background(bool value)
-+{
-+	impl->stay_in_background = value;
-+}
+@@ -318,6 +319,12 @@
+ 	/// \brief Gets the css element for this component
+ 	CL_CSSLayoutElement get_css_element();
+ 
++	bool stay_in_background() const;
 +
- /////////////////////////////////////////////////////////////////////////////
- // CL_GUIComponent Implementation:
- 
-Index: Sources/GUI/gui_component_impl.cpp
-===================================================================
---- Sources/GUI/gui_component_impl.cpp	(revision 7026)
-+++ Sources/GUI/gui_component_impl.cpp	(working copy)
-@@ -42,6 +42,7 @@
-   focus_policy(CL_GUIComponent::focus_refuse), allow_resize(false), clip_children(false), enabled(true),
-   visible(true), activated(false), default_handler(false), cancel_handler(false),
-   constant_repaint(false), blocks_default_action_when_focused(false), is_selected_in_group(false), double_click_enabled(true)
-+  , stay_in_background(false)
- {
- 	gui_manager_impl = gui_manager.lock().get();
- 
-Index: Sources/GUI/gui_component_impl.h
-===================================================================
---- Sources/GUI/gui_component_impl.h	(revision 7026)
-+++ Sources/GUI/gui_component_impl.h	(working copy)
-@@ -115,6 +115,8 @@
- 	CL_CSSLayoutElement css_element;
- 	bool double_click_enabled;
- 
-+	bool stay_in_background;
++	virtual CL_Font get_font_override() const;
++
++	virtual CL_StringRef get_css_override(const CL_GUIThemePart& part, const CL_String& name) const;
 +
  /// \}
- /// \name Operations
+ /// \name Events
  /// \{
-Index: Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
+@@ -544,6 +551,8 @@
+ 	/// \brief Loads a layout from file.
+ 	void load_css_layout(const CL_String &xml_filename, const CL_String &css_filename);
+ 
++	void set_stay_in_background(bool value);
++
+ /// \}
+ /// \name Implementation
+ /// \{
+Index: Sources/API/Display/Render/pen.h
 ===================================================================
---- Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp	(revision 7026)
-+++ Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp	(working copy)
-@@ -245,7 +245,7 @@
- 	CL_GUITopLevelWindow *toplevel_window;
- 	toplevel_window = get_window_at_point(new_input_event.mouse_pos);
+--- Sources/API/Display/Render/pen.h	(revision 7085)
++++ Sources/API/Display/Render/pen.h	(working copy)
+@@ -77,6 +77,8 @@
+ 	/// \brief Returns the origin of texture point sprites.
+ 	CL_PointSpriteOrigin get_point_sprite_origin() const;
  
--	if (toplevel_window)
-+	if (toplevel_window && !toplevel_window->component->stay_in_background())
- 		bring_to_front(toplevel_window);
- 
- 	// Send focus lost events
++	bool is_enable_point_sprite() const;
++
+ //!Operations
+ public:
+ 	/// \brief The default value is 1.0

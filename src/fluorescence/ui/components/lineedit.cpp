@@ -27,7 +27,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-LineEdit::LineEdit(CL_GUIComponent* parent) : CL_LineEdit(parent) {
+LineEdit::LineEdit(CL_GUIComponent* parent) : CL_LineEdit(parent), entryId_(0xFFFFFFFFu) {
 }
 
 UnicodeString LineEdit::getText() {
@@ -50,6 +50,14 @@ void LineEdit::onEnterPressed() {
             GumpActions::doAction(gump, action_, 0, NULL);
         }
     }
+}
+
+void LineEdit::setEntryId(unsigned int entryId) {
+    entryId_ = entryId;
+}
+
+unsigned int LineEdit::getEntryId() const {
+    return entryId_;
 }
 
 }

@@ -51,11 +51,8 @@ void UoFontProvider::destroy() {
 void UoFontProvider::draw_text(CL_GraphicContext& gc, float x, float y, const CL_StringRef& text, const CL_Colorf& color) {
     boost::shared_ptr<ui::Texture> tex = getTexture(gc, text, color);
     
-    CL_Rectf rect(x, y - tex->getHeight(), CL_Sizef(tex->getWidth(), tex->getHeight()));
-    
-    LOG_DEBUG << "draw_text: at " << rect << ": " << text.c_str() << std::endl;
-    
-    //gc.draw_pixels(x, y-tex->getHeight(), *tex->getPixelBuffer(), rect, CL_Colorf::red);
+    CL_Rectf rect(x, y - tex->getHeight(), CL_Sizef(tex->getWidth(), tex->getHeight()));    
+    //LOG_DEBUG << "draw_text: at " << rect << ": " << text.c_str() << std::endl;
     
     CL_Draw::texture(gc, *tex->getTexture(), CL_Quadf(rect));
 }
@@ -87,7 +84,39 @@ CL_Size UoFontProvider::get_text_size(CL_GraphicContext& gc, const CL_StringRef&
 }
 
 int UoFontProvider::get_character_index(CL_GraphicContext& gc, const CL_String& text, const CL_Point& point) {
-    return 0;
+    //LOG_DEBUG << "get_char_index: " << point.x << "/" << point.y << std::endl;
+    
+    int curX = 0;
+	int curY = 0;
+
+	CL_FontMetrics fm = get_font_metrics();
+	int lineHeight = fontLoader_->getMaxHeight() + fm.get_external_leading();
+
+    int lineIdx = point.y / lineHeight; // char should be in this line
+    int targetYMin = lineHeight * lineIdx;
+    int targetYMax = targetYMin + lineHeight;
+    
+    CL_String::size_type stringLen = text.length();
+    for (CL_String::size_type p = 0; p < stringLen; p++) {
+        if (text[p] == '\n') {
+            curY += lineHeight;
+            continue;
+        }
+        if (curY >= targetYMin && curY < targetYMax) {
+            // this is the line we really need to look at
+            boost::shared_ptr<data::UnicodeCharacter> curChar = fontLoader_->getCharacter(text[p]);
+            if (point.x >= curX && point.x < (curX + curChar->getTotalWidth())) {
+                return p;
+            } else {
+                curX += curChar->getTotalWidth();
+            }
+        } else if (curY >= targetYMax) {
+            // target was the last character on the previous line
+            return (p-1);
+        }
+    }
+    
+	return -1;	// Not found
 }
 
 void UoFontProvider::initFontMetrics() {

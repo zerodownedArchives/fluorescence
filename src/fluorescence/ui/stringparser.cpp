@@ -32,6 +32,7 @@
 #include "components/image.hpp"
 #include "components/uobutton.hpp"
 #include "components/uocheckbox.hpp"
+#include "components/textentry.hpp"
 
 namespace fluo {
 namespace ui {
@@ -64,6 +65,7 @@ StringParser::StringParser() {
     functionTable_["tilepichue"] = boost::bind(&StringParser::parseTilePicHue, this, _1, _2, _3);
     functionTable_["button"] = boost::bind(&StringParser::parseButton, this, _1, _2, _3);
     functionTable_["checkbox"] = boost::bind(&StringParser::parseCheckbox, this, _1, _2, _3);
+    functionTable_["textentry"] = boost::bind(&StringParser::parseTextEntry, this, _1, _2, _3);
 }
 
 GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std::vector<UnicodeString>& strings) {
@@ -369,7 +371,7 @@ bool StringParser::parseCheckbox(const UnicodeString& params, const std::vector<
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
     
-    if (matcher.find() && matcher.groupCount() == 7) {
+    if (matcher.find() && matcher.groupCount() == 6) {
         int x = StringConverter::toInt(matcher.group(1, status));
         int y = StringConverter::toInt(matcher.group(2, status));
         int uncheckedId = StringConverter::toInt(matcher.group(3, status));
@@ -413,6 +415,42 @@ bool StringParser::setNoMove(const UnicodeString& params, const std::vector<Unic
 bool StringParser::setNoClose(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
     menu->setClosable(false);
     return true;
+}
+
+bool StringParser::parseTextEntry(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    
+    if (matcher.find() && matcher.groupCount() == 7) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int width = StringConverter::toInt(matcher.group(3, status));
+        int height = StringConverter::toInt(matcher.group(4, status));
+        int hue = StringConverter::toInt(matcher.group(5, status));
+        int entryId = StringConverter::toInt(matcher.group(6, status));
+        int textIdx = StringConverter::toInt(matcher.group(7, status));
+        
+        components::TextEntry* entry = new components::TextEntry(menu);
+        CL_Rectf bounds(x, y, CL_Sizef(width, height));
+        entry->set_geometry(bounds);
+        
+        entry->setEntryId(entryId);
+        entry->setText(strings[textIdx]);
+
+        entry->setTextHue(hue);
+        
+        CL_FontDescription defaultFontDesc;
+        defaultFontDesc.set_typeface_name("unifont1");
+        entry->setFont(defaultFontDesc);
+        
+        menu->addToCurrentPage(entry);
+        
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse checkbox, params " << params << std::endl;
+        return false;
+    }
 }
 
 }

@@ -17,35 +17,32 @@
  */
 
 
-#ifndef FLUO_UI_COMPONENTS_LINEEDIT_HPP
-#define FLUO_UI_COMPONENTS_LINEEDIT_HPP
+#ifndef FLUO_UI_COMPONENTS_TEXTENTRY_HPP
+#define FLUO_UI_COMPONENTS_TEXTENTRY_HPP
 
-#include <ClanLib/GUI/Components/lineedit.h>
+#include "lineedit.hpp"
 
-#include <misc/string.hpp>
+#include <ClanLib/Display/Font/font.h>
 
 namespace fluo {
 namespace ui {
 namespace components {
-
-class LineEdit : public CL_LineEdit {
+    
+class TextEntry : public LineEdit {
 public:
-    LineEdit(CL_GUIComponent* parent);
-
-    void setText(const UnicodeString& string);
-    UnicodeString getText();
-
-    void setAction(const UnicodeString& action);
-    void onEnterPressed();
+    TextEntry(CL_GUIComponent* parent);
     
-    void setEntryId(unsigned int entryId);
-    unsigned int getEntryId() const;
-
+    void render(CL_GraphicContext& gc, const CL_Rect& updateRect);
+    
+    void setFont(const CL_FontDescription& fontDesc);
+    void setTextHue(unsigned int hue);
+    
+    virtual CL_Font get_font_override() const;
+    virtual CL_StringRef get_css_override(const CL_GUIThemePart& part, const CL_String& name) const;
+    
 private:
-    UnicodeString action_;
-    
-    unsigned int entryId_;
-
+    CL_Font font_;
+    CL_String textColor_;
 };
 
 }
@@ -53,3 +50,4 @@ private:
 }
 
 #endif
+

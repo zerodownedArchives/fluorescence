@@ -375,8 +375,18 @@ UnicodeString Manager::getOpenGLExtensions() const {
 void Manager::loadUnifonts() {
     UoFont uni0(0);
     CL_FontDescription fontDesc;
-    fontDesc.set_typeface_name("unifont0");
+    fontDesc.set_typeface_name("unifont");
     getGuiManager()->register_font(uni0, fontDesc);
+    
+    for (unsigned int i = 1; i <= 12; ++i) {
+        UoFont uniCur(i);
+        CL_FontDescription curDesc;
+        std::stringstream sstr;
+        sstr << "unifont" << i;
+        curDesc.set_typeface_name(sstr.str());
+        LOG_DEBUG << "registering font " << sstr.str() << std::endl;
+        getGuiManager()->register_font(uniCur, curDesc);
+    }
 }
     
 

@@ -52,6 +52,7 @@ public:
 
     boost::shared_ptr<ui::Texture> getHuesTexture();
     uint32_t getFontRgbColor(unsigned int hue) const;
+    UnicodeString getFontRgbString(unsigned int hue) const;
 
     unsigned int translateHue(unsigned int hue) const;
 

@@ -62,6 +62,7 @@ private:
     bool parseTilePicHue(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
     bool parseButton(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
     bool parseCheckbox(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
+    bool parseTextEntry(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
 };
 
 }

@@ -25,6 +25,7 @@
 #include "cursormanager.hpp"
 #include "components/propertylabel.hpp"
 #include "components/uocheckbox.hpp"
+#include "components/textentry.hpp"
 
 #include <client.hpp>
 #include <misc/log.hpp>
@@ -337,6 +338,15 @@ void GumpMenu::sendReply(unsigned int buttonId) {
         components::UoCheckbox* cb = dynamic_cast<components::UoCheckbox*>(*iter);
         if (cb && cb->isChecked()) {
             switches.push_back(cb->getSwitchId());
+            continue;
+        }
+        
+        components::TextEntry* entry = dynamic_cast<components::TextEntry*>(*iter);
+        if (entry && entry->getEntryId() != 0xFFFFFFFFu) {
+            net::packets::GumpReply::TextEntryInfo info;
+            info.number_ = entry->getEntryId();
+            info.text_ = entry->getText();
+            textEntries.push_back(info);
         }
     }
     

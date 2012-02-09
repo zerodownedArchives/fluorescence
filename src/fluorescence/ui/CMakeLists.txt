@@ -56,6 +56,7 @@ set (GUMPMENU_HPP
     ui/components/image.hpp
     ui/components/background.hpp
     ui/components/uocheckbox.hpp
+    ui/components/textentry.hpp
     )
 
 set (GUMPMENU_CPP
@@ -77,6 +78,7 @@ set (GUMPMENU_CPP
     ui/components/image.cpp
     ui/components/background.cpp
     ui/components/uocheckbox.cpp
+    ui/components/textentry.cpp
     )
 
 set (RENDER_HPP
