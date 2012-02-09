@@ -243,7 +243,7 @@ boost::shared_ptr<ui::Texture> UoFontProvider::getTexture(CL_GraphicContext& gc,
     }
 
 
-    if (borderWidth > 0 && clborderColor != CL_Colorf::black) {
+    if (borderWidth > 0 && clcolor != CL_Colorf::black) {
         applyBorder(tex->getPixelBuffer(), clcolor, borderWidth, clborderColor);
     }
 
