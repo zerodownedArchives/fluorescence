@@ -79,6 +79,25 @@ public:
         this->Image::setTexture(allTextures_[idx]);
     }
     
+    virtual void setColorRGBA(const CL_Colorf& color) {
+        for (unsigned int i = 0; i < NUM_TEXTURES; ++i) {
+            allColors_[i] = color;
+        }
+    }
+    
+    virtual void setHue(unsigned int hue) {
+        for (unsigned int i = 0; i < NUM_TEXTURES; ++i) {
+            allHueInfos_[i][0u] = hue;
+        }
+    }
+    
+    virtual void setAlpha(float alpha) {
+        for (unsigned int i = 0; i < NUM_TEXTURES; ++i) {
+            allColors_[i].a = alpha;
+            allHueInfos_[i][2u] = alpha;
+        }
+    }
+    
 private:
     boost::shared_ptr<ui::Texture> allTextures_[NUM_TEXTURES];
     CL_Colorf allColors_[NUM_TEXTURES];

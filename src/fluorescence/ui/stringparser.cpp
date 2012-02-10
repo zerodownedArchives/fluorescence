@@ -73,6 +73,7 @@ StringParser::StringParser() {
     functionTable_["xmfhtmlgump"] = boost::bind(&StringParser::parseXmfHtmlGump, this, _1, _2, _3);
     functionTable_["xmfhtmlgumpcolor"] = boost::bind(&StringParser::parseXmfHtmlGumpColor, this, _1, _2, _3);
     functionTable_["xmfhtmltok"] = boost::bind(&StringParser::parseXmfHtmlTok, this, _1, _2, _3);
+    functionTable_["checkertrans"] = boost::bind(&StringParser::parseCheckerTrans, this, _1, _2, _3);
 }
 
 GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std::vector<UnicodeString>& strings) {
@@ -673,6 +674,42 @@ bool StringParser::parseXmfHtmlTok(const UnicodeString& params, const std::vecto
         return true;
     } else {
         LOG_ERROR << "Unable to parse xmfhtmlgumpcolor, params " << params << std::endl;
+        return false;
+    }
+}
+
+bool StringParser::parseCheckerTrans(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    if (matcher.find() && matcher.groupCount() == 4) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int width = StringConverter::toInt(matcher.group(3, status));
+        int height = StringConverter::toInt(matcher.group(4, status));
+        
+        CL_Rectf checkerRect(x, y, CL_Sizef(width, height));
+        
+        std::vector<CL_GUIComponent*> children = menu->get_child_components();
+        std::vector<CL_GUIComponent*>::const_iterator iter = children.begin();
+        std::vector<CL_GUIComponent*>::const_iterator end = children.end();
+        for (; iter != end; ++iter) {
+            if ((*iter)->get_geometry().is_overlapped(checkerRect)) {
+                components::Image* img = dynamic_cast<components::Image*>(*iter);
+                if (img) {
+                    img->setAlpha(0.2f);
+                } else {
+                    components::Background* bg = dynamic_cast<components::Background*>(*iter);
+                    if (bg) {
+                        bg->setAlpha(0.2f);
+                    }
+                }
+            }
+        }
+        
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse checkertrans, params " << params << std::endl;
         return false;
     }
 }

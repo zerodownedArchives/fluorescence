@@ -219,6 +219,7 @@ void Background::setHue(unsigned int hue) {
 }
 
 void Background::setAlpha(float alpha) {
+    LOG_DEBUG << "background::setalpha" << std::endl;
     hueInfo_[2u] = alpha;
     colorRgba_.a = alpha;
 }

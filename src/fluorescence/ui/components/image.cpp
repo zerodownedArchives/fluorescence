@@ -96,6 +96,7 @@ void Image::setHue(unsigned int hue) {
 }
 
 void Image::setAlpha(float alpha) {
+    LOG_DEBUG << "Image::setalpha" << std::endl;
     hueInfo_[2u] = alpha;
     colorRgba_.a = alpha;
 }

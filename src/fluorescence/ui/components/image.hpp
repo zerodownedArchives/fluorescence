@@ -42,9 +42,9 @@ public:
     void setTexture(boost::shared_ptr<ui::Texture> tex);
     void render(CL_GraphicContext& gc, const CL_Rect& clipRect);
     
-    void setColorRGBA(const CL_Colorf& color);
-    void setHue(unsigned int hue);
-    void setAlpha(float alpha);
+    virtual void setColorRGBA(const CL_Colorf& color);
+    virtual void setHue(unsigned int hue);
+    virtual void setAlpha(float alpha);
     
     void setTiled(bool tiled);
     void setStretchTexture(bool stretch);
