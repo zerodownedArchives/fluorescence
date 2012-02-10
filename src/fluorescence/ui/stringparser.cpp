@@ -104,6 +104,12 @@ GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std
         if (function != functionTable_.end()) {
             parseSuccess = (function->second)(curParams, strings, ret);
             if (!parseSuccess) {
+                LOG_INFO << "Unable to parse gump: " << std::endl;
+                LOG_INFO << commands << std::endl;
+                LOG_INFO << "Additional lines: " << strings.size() << std::endl;
+                for (unsigned int i = 0; i < strings.size(); ++i) {
+                    LOG_INFO << "\t" << i << ": " << strings[i] << std::endl;
+                }
                 break;
             }
         } else {
@@ -114,12 +120,12 @@ GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std
     ret->fitSizeToChildren();
     ret->activateFirstPage();
     
-    //LOG_INFO << "Gump data: " << std::endl;
-    //LOG_INFO << commands << std::endl;
-    //LOG_INFO << "Additional lines: " << strings.size() << std::endl;
-    //for (unsigned int i = 0; i < strings.size(); ++i) {
-        //LOG_INFO << "\t" << i << ": " << *strings[i] << std::endl;
-    //}
+    LOG_INFO << "Gump data: " << std::endl;
+    LOG_INFO << commands << std::endl;
+    LOG_INFO << "Additional lines: " << strings.size() << std::endl;
+    for (unsigned int i = 0; i < strings.size(); ++i) {
+        LOG_INFO << "\t" << i << ": " << strings[i] << std::endl;
+    }
     
     return ret;
 }
@@ -167,11 +173,17 @@ bool StringParser::parseGumpPicTiled(const UnicodeString& params, const std::vec
         int height = StringConverter::toInt(matcher.group(4, status));
         int gumpId = StringConverter::toInt(matcher.group(5, status));
         
+        boost::shared_ptr<ui::Texture> tex = data::Manager::getTexture(data::TextureSource::GUMPART, gumpId);
+        if (!tex) {
+            LOG_WARN << "Unable to display gumppictiled with gump id " << gumpId << std::endl;
+            return true;
+        }
+        
         components::Image* img = new components::Image(menu);
         CL_Rectf bounds(x, y, CL_Sizef(width, height));
         img->set_geometry(bounds);
         img->setTiled(true);
-        img->setTexture(data::Manager::getTexture(data::TextureSource::GUMPART, gumpId));
+        img->setTexture(tex);
         menu->addToCurrentPage(img);
         
         return true;
@@ -267,6 +279,11 @@ bool StringParser::parseGumpPic(const UnicodeString& params, const std::vector<U
     }
     
     boost::shared_ptr<ui::Texture> tex = data::Manager::getTexture(data::TextureSource::GUMPART, gumpId);
+    if (!tex) {
+        LOG_WARN << "Unable to display gumppic with gump id " << gumpId << std::endl;
+        return true;
+    }
+        
     components::Image* img = new components::Image(menu);
     CL_Rectf bounds(x, y, CL_Sizef(tex->getWidth(), tex->getHeight()));
     img->set_geometry(bounds);
@@ -289,6 +306,10 @@ bool StringParser::parseTilePic(const UnicodeString& params, const std::vector<U
         int artId = StringConverter::toInt(matcher.group(3, status));
         
         boost::shared_ptr<ui::Texture> tex = data::Manager::getTexture(data::TextureSource::STATICART, artId);
+        if (!tex) {
+            LOG_WARN << "Unable to display tilepic with art id " << artId << std::endl;
+            return true;
+        }
         components::Image* img = new components::Image(menu);
         CL_Rectf bounds(x, y, CL_Sizef(tex->getWidth(), tex->getHeight()));
         img->set_geometry(bounds);
@@ -315,6 +336,11 @@ bool StringParser::parseTilePicHue(const UnicodeString& params, const std::vecto
         int hue = StringConverter::toInt(matcher.group(4, status));
         
         boost::shared_ptr<ui::Texture> tex = data::Manager::getTexture(data::TextureSource::STATICART, artId);
+        if (!tex) {
+            LOG_WARN << "Unable to display tilepichue with art id " << artId << std::endl;
+            return true;
+        }
+        
         components::Image* img = new components::Image(menu);
         CL_Rectf bounds(x, y, CL_Sizef(tex->getWidth(), tex->getHeight()));
         img->set_geometry(bounds);
@@ -346,6 +372,16 @@ bool StringParser::parseButton(const UnicodeString& params, const std::vector<Un
         
         boost::shared_ptr<ui::Texture> upTex = data::Manager::getTexture(data::TextureSource::GUMPART, upId);
         boost::shared_ptr<ui::Texture> downTex = data::Manager::getTexture(data::TextureSource::GUMPART, downId);
+        
+        if (!upTex) {
+            LOG_ERROR << "Unable to add button with up id " << upId << std::endl;
+            return true;
+        }
+        
+        if (!downTex) {
+            LOG_WARN << "Unable to set button down id " << downId << std::endl;
+            return true;
+        }
         
         components::UoButton* but = new components::UoButton(menu);
         CL_Rectf bounds(x, y, CL_Sizef(upTex->getWidth(), upTex->getHeight()));
@@ -388,6 +424,16 @@ bool StringParser::parseCheckbox(const UnicodeString& params, const std::vector<
         
         boost::shared_ptr<ui::Texture> uncheckedTex = data::Manager::getTexture(data::TextureSource::GUMPART, uncheckedId);
         boost::shared_ptr<ui::Texture> checkedTex = data::Manager::getTexture(data::TextureSource::GUMPART, checkedId);
+        
+        if (!uncheckedTex) {
+            LOG_WARN << "Unable to display checkbox with unchecked id " << uncheckedId << std::endl;
+            return true;
+        }
+        
+        if (!checkedTex) {
+            LOG_WARN << "Unable to display checkbox with checked id " << checkedId << std::endl;
+            return true;
+        }
         
         components::UoCheckbox* cb = new components::UoCheckbox(menu);
         CL_Rectf bounds(x, y, CL_Sizef(checkedTex->getWidth(), checkedTex->getHeight()));
