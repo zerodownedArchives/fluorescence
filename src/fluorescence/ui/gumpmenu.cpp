@@ -41,7 +41,7 @@ GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
     serial_(0), activePageId_(0), firstPageId_(0),
     closable_(true),
     draggable_(true), isDragged_(false),
-    linkedMobile_(NULL) {
+    linkedMobile_(NULL), currentRadioGroup_(0) {
 
     addPage(0);
 
@@ -108,6 +108,8 @@ void GumpMenu::activatePage(unsigned int pageId) {
 
     activePageId_ = pageId;
     internalActivatePage(activePageId_);
+    
+    setCurrentRadioGroup(pageId);
 }
 
 unsigned int GumpMenu::getActivePageId() {
@@ -354,6 +356,14 @@ void GumpMenu::sendReply(unsigned int buttonId) {
     net::Manager::getSingleton()->send(pkt);
     
     ui::Manager::getSingleton()->closeGumpMenu(this);
+}
+
+void GumpMenu::setCurrentRadioGroup(unsigned int groupId) {
+    currentRadioGroup_ = groupId;
+}
+
+unsigned int GumpMenu::getCurrentRadioGroup() const {
+    return currentRadioGroup_;
 }
 
 }

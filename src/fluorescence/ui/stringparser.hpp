@@ -68,6 +68,8 @@ private:
     bool parseXmfHtmlGumpColor(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
     bool parseXmfHtmlTok(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
     bool parseCheckerTrans(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
+    bool parseRadio(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
+    bool parseGroup(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
 };
 
 }

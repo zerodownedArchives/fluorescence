@@ -36,6 +36,7 @@
 #include "components/uocheckbox.hpp"
 #include "components/textentry.hpp"
 #include "components/label.hpp"
+#include "components/uoradiobutton.hpp"
 
 namespace fluo {
 namespace ui {
@@ -74,6 +75,8 @@ StringParser::StringParser() {
     functionTable_["xmfhtmlgumpcolor"] = boost::bind(&StringParser::parseXmfHtmlGumpColor, this, _1, _2, _3);
     functionTable_["xmfhtmltok"] = boost::bind(&StringParser::parseXmfHtmlTok, this, _1, _2, _3);
     functionTable_["checkertrans"] = boost::bind(&StringParser::parseCheckerTrans, this, _1, _2, _3);
+    functionTable_["radio"] = boost::bind(&StringParser::parseRadio, this, _1, _2, _3);
+    functionTable_["group"] = boost::bind(&StringParser::parseGroup, this, _1, _2, _3);
 }
 
 GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std::vector<UnicodeString>& strings) {
@@ -445,6 +448,7 @@ bool StringParser::parseCheckbox(const UnicodeString& params, const std::vector<
         cb->addTexture(components::UoCheckbox::TEX_INDEX_CHECKED, checkedTex);
         cb->addTexture(components::UoCheckbox::TEX_INDEX_CHECKED_MOUSEOVER, checkedTex);
         cb->updateTexture();
+        cb->setAutoResize(true);
         
         cb->setSwitchId(switchId);
 
@@ -710,6 +714,76 @@ bool StringParser::parseCheckerTrans(const UnicodeString& params, const std::vec
         return true;
     } else {
         LOG_ERROR << "Unable to parse checkertrans, params " << params << std::endl;
+        return false;
+    }
+}
+
+bool StringParser::parseRadio(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    
+    if (matcher.find() && matcher.groupCount() == 6) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int uncheckedId = StringConverter::toInt(matcher.group(3, status));
+        int checkedId = StringConverter::toInt(matcher.group(4, status));
+        int checked = StringConverter::toInt(matcher.group(5, status));
+        int switchId = StringConverter::toInt(matcher.group(6, status));
+        
+        boost::shared_ptr<ui::Texture> uncheckedTex = data::Manager::getTexture(data::TextureSource::GUMPART, uncheckedId);
+        boost::shared_ptr<ui::Texture> checkedTex = data::Manager::getTexture(data::TextureSource::GUMPART, checkedId);
+        
+        if (!uncheckedTex) {
+            LOG_WARN << "Unable to display radio with unchecked id " << uncheckedId << std::endl;
+            return true;
+        }
+        
+        if (!checkedTex) {
+            LOG_WARN << "Unable to display radio with checked id " << checkedId << std::endl;
+            return true;
+        }
+        
+        components::UoRadioButton* cb = new components::UoRadioButton(menu);
+        CL_Rectf bounds(x, y, CL_Sizef(checkedTex->getWidth(), checkedTex->getHeight()));
+        cb->set_geometry(bounds);
+        
+        cb->addTexture(components::UoCheckbox::TEX_INDEX_UNCHECKED, uncheckedTex);
+        cb->addTexture(components::UoCheckbox::TEX_INDEX_UNCHECKED_MOUSEOVER, uncheckedTex);
+        cb->addTexture(components::UoCheckbox::TEX_INDEX_CHECKED, checkedTex);
+        cb->addTexture(components::UoCheckbox::TEX_INDEX_CHECKED_MOUSEOVER, checkedTex);
+        cb->updateTexture();
+        cb->setAutoResize(true);
+        
+        cb->setSwitchId(switchId);
+        cb->setRadioGroupId(menu->getCurrentRadioGroup());
+
+        if (checked) {
+            cb->setChecked(true);
+        }
+        
+        menu->addToCurrentPage(cb);
+        
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse radio, params " << params << std::endl;
+        return false;
+    }
+}
+
+bool StringParser::parseGroup(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    
+    if (matcher.find() && matcher.groupCount() == 1) {
+        int group = StringConverter::toInt(matcher.group(1, status));
+
+        menu->setCurrentRadioGroup(group);
+        
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse group, params " << params << std::endl;
         return false;
     }
 }
