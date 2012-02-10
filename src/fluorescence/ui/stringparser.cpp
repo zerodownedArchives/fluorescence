@@ -24,6 +24,8 @@
 
 #include <misc/log.hpp>
 #include <data/manager.hpp>
+#include <data/util.hpp>
+#include <data/clilocloader.hpp>
 
 #include "manager.hpp"
 #include "fontengine.hpp"
@@ -68,6 +70,9 @@ StringParser::StringParser() {
     functionTable_["checkbox"] = boost::bind(&StringParser::parseCheckbox, this, _1, _2, _3);
     functionTable_["textentry"] = boost::bind(&StringParser::parseTextEntry, this, _1, _2, _3);
     functionTable_["htmlgump"] = boost::bind(&StringParser::parseHtmlGump, this, _1, _2, _3);
+    functionTable_["xmfhtmlgump"] = boost::bind(&StringParser::parseXmfHtmlGump, this, _1, _2, _3);
+    functionTable_["xmfhtmlgumpcolor"] = boost::bind(&StringParser::parseXmfHtmlGumpColor, this, _1, _2, _3);
+    functionTable_["xmfhtmltok"] = boost::bind(&StringParser::parseXmfHtmlTok, this, _1, _2, _3);
 }
 
 GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std::vector<UnicodeString>& strings) {
@@ -450,7 +455,7 @@ bool StringParser::parseTextEntry(const UnicodeString& params, const std::vector
         
         return true;
     } else {
-        LOG_ERROR << "Unable to parse checkbox, params " << params << std::endl;
+        LOG_ERROR << "Unable to parse textentry, params " << params << std::endl;
         return false;
     }
 }
@@ -487,7 +492,141 @@ bool StringParser::parseHtmlGump(const UnicodeString& params, const std::vector<
         
         return true;
     } else {
-        LOG_ERROR << "Unable to parse resizepic, params " << params << std::endl;
+        LOG_ERROR << "Unable to parse htmlgump, params " << params << std::endl;
+        return false;
+    }
+}
+
+bool StringParser::parseXmfHtmlGump(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    if (matcher.find() && matcher.groupCount() == 7) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int width = StringConverter::toInt(matcher.group(3, status));
+        int height = StringConverter::toInt(matcher.group(4, status));
+        int clilocId = StringConverter::toInt(matcher.group(5, status));
+        int background = StringConverter::toInt(matcher.group(6, status));
+        int scroll = StringConverter::toInt(matcher.group(7, status));
+
+        CL_Rectf bounds(x, y, CL_Sizef(width, height));
+        if (background == 1) {
+            components::Background* bg = new components::Background(menu);
+            bg->set_geometry(bounds);
+            bg->setBaseId(3000);
+            menu->addToCurrentPage(bg);
+        }
+        
+        if (scroll == 1) {
+            LOG_INFO << "Scrollbars for html gumps are not implemented yet" << std::endl;
+        }
+        
+        UnicodeString text = data::Manager::getClilocLoader()->get(clilocId);
+        
+        components::Label* label = new components::Label(menu);
+        label->set_geometry(bounds);
+        label->setHtmlText(text);
+        menu->addToCurrentPage(label);
+        
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse xmfhtmlgump, params " << params << std::endl;
+        return false;
+    }
+}
+
+bool StringParser::parseXmfHtmlGumpColor(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    if (matcher.find() && matcher.groupCount() == 8) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int width = StringConverter::toInt(matcher.group(3, status));
+        int height = StringConverter::toInt(matcher.group(4, status));
+        int clilocId = StringConverter::toInt(matcher.group(5, status));
+        int background = StringConverter::toInt(matcher.group(6, status));
+        int scroll = StringConverter::toInt(matcher.group(7, status));
+        int color = StringConverter::toInt(matcher.group(8, status));
+
+        CL_Rectf bounds(x, y, CL_Sizef(width, height));
+        if (background == 1) {
+            components::Background* bg = new components::Background(menu);
+            bg->set_geometry(bounds);
+            bg->setBaseId(3000);
+            menu->addToCurrentPage(bg);
+        }
+        
+        if (scroll == 1) {
+            LOG_INFO << "Scrollbars for html gumps are not implemented yet" << std::endl;
+        }
+        
+        // hue is sent as 16 bit rgb. 5 bit each. same as format in hues.mul.
+        uint16_t color16 = color & 0xFFFF;
+        int r = data::Util::getColorR(color16);
+        int g = data::Util::getColorG(color16);
+        int b = data::Util::getColorB(color16);
+        CL_Colorf colorDef(r, g, b);
+        
+        UnicodeString text = data::Manager::getClilocLoader()->get(clilocId);
+        
+        components::Label* label = new components::Label(menu);
+        label->set_geometry(bounds);
+        label->setHtmlText(text, colorDef);
+        menu->addToCurrentPage(label);
+        
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse xmfhtmlgumpcolor, params " << params << std::endl;
+        return false;
+    }
+}
+
+bool StringParser::parseXmfHtmlTok(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*@([^@]*)@\\s*", 0, status);
+    matcher.reset(params);
+    if (matcher.find() && matcher.groupCount() == 9) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int width = StringConverter::toInt(matcher.group(3, status));
+        int height = StringConverter::toInt(matcher.group(4, status));
+        int background = StringConverter::toInt(matcher.group(5, status));
+        int scroll = StringConverter::toInt(matcher.group(6, status));
+        int color = StringConverter::toInt(matcher.group(7, status));
+        int clilocId = StringConverter::toInt(matcher.group(8, status));
+        UnicodeString args = matcher.group(9, status);
+
+        CL_Rectf bounds(x, y, CL_Sizef(width, height));
+        if (background == 1) {
+            components::Background* bg = new components::Background(menu);
+            bg->set_geometry(bounds);
+            bg->setBaseId(3000);
+            menu->addToCurrentPage(bg);
+        }
+        
+        if (scroll == 1) {
+            LOG_INFO << "Scrollbars for html gumps are not implemented yet" << std::endl;
+        }
+        
+        // hue is sent as 16 bit rgb. 5 bit each. same as format in hues.mul.
+        uint16_t color16 = color & 0xFFFF;
+        int r = data::Util::getColorR(color16);
+        int g = data::Util::getColorG(color16);
+        int b = data::Util::getColorB(color16);
+        CL_Colorf colorDef(r, g, b);
+        
+        UnicodeString text = data::Manager::getClilocLoader()->get(clilocId, args);
+        
+        components::Label* label = new components::Label(menu);
+        label->set_geometry(bounds);
+        label->setHtmlText(text, colorDef);
+        menu->addToCurrentPage(label);
+        
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse xmfhtmlgumpcolor, params " << params << std::endl;
         return false;
     }
 }

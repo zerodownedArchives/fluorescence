@@ -42,7 +42,7 @@ void Label::setText(const UnicodeString& text) {
     set_text(StringConverter::toUtf8String(text));
 }
 
-void Label::setHtmlText(const UnicodeString& text) {
+void Label::setHtmlText(const UnicodeString& text, const CL_Colorf& colorDefault) {
     UErrorCode status = U_ZERO_ERROR;
     
     static UoFont fontDefault(1);
@@ -54,7 +54,7 @@ void Label::setHtmlText(const UnicodeString& text) {
     CL_SpanLayout span;
     
     CL_Font curFont = fontDefault;
-    CL_Colorf curColor = CL_Colorf::black;
+    CL_Colorf curColor = colorDefault;
     
     std::stack<CL_Font> fontStack;
     std::stack<CL_Colorf> colorStack;
@@ -81,6 +81,10 @@ void Label::setHtmlText(const UnicodeString& text) {
             span.add_text(StringConverter::toUtf8String(curText), curFont, curColor);
         }
         
+        if (endIndex == text.length()) {
+            break;
+        }
+        
         curIndex = endIndex + 1;
         endIndex = text.indexOf('>', curIndex);
         UnicodeString curTag(text, curIndex, endIndex - curIndex);
@@ -103,7 +107,7 @@ void Label::setHtmlText(const UnicodeString& text) {
                 colorStack.pop();
             } else if (curTag.startsWith("/center")) {
             } else {
-                LOG_DEBUG << "Unknown html tag: <" << curTag << ">, skipping" << std::endl;
+                LOG_DEBUG << "Unknown/unsupported html tag: <" << curTag << ">, skipping" << std::endl;
             }
         }
         

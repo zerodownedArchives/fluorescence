@@ -21,6 +21,7 @@
 #define FLUO_DATA_HUESLOADER_HPP
 
 #include <boost/shared_ptr.hpp>
+#include <ClanLib/Display/2D/color.h>
 
 #include <misc/string.hpp>
 
@@ -53,6 +54,7 @@ public:
     boost::shared_ptr<ui::Texture> getHuesTexture();
     uint32_t getFontRgbColor(unsigned int hue) const;
     UnicodeString getFontRgbString(unsigned int hue) const;
+    CL_Colorf getFontClColor(unsigned int hue) const;
 
     unsigned int translateHue(unsigned int hue) const;
 

@@ -35,7 +35,7 @@ public:
     void setText(const UnicodeString& string);
     UnicodeString getText();
     
-    void setHtmlText(const UnicodeString& string);
+    void setHtmlText(const UnicodeString& string, const CL_Colorf& colorDefault = CL_Colorf::black);
 };
 
 }

@@ -129,5 +129,15 @@ UnicodeString HuesLoader::getFontRgbString(unsigned int hue) const {
     return StringConverter::fromUtf8(sstr.str());
 }
 
+CL_Colorf HuesLoader::getFontClColor(unsigned int hue) const {
+    uint32_t rgb = getFontRgbColor(hue);
+    
+    int r = (rgb >> 24) & 0xFF;
+    int g = (rgb >> 16) & 0xFF;
+    int b = (rgb >> 8) & 0xFF;
+        
+    return CL_Colorf(r, g, b);
+}
+
 }
 }
