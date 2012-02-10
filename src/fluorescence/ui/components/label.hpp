@@ -34,6 +34,8 @@ public:
 
     void setText(const UnicodeString& string);
     UnicodeString getText();
+    
+    void setHtmlText(const UnicodeString& string);
 };
 
 }

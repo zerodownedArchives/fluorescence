@@ -50,7 +50,7 @@ CL_StringRef TextEntry::get_css_override(const CL_GUIThemePart& part, const CL_S
         return "";
     } else if (name == "bg-color") {
         CL_String elemName = part.get_element_name();
-        LOG_DEBUG << "bg-color elem " << part.get_element_name().c_str() << "  ::: index=" << (int)part.get_element_name().find("selected") << std::endl;
+        //LOG_DEBUG << "bg-color elem " << part.get_element_name().c_str() << "  ::: index=" << (int)part.get_element_name().find("selected") << std::endl;
         if ((int)elemName.find("selection") > 0) {
             return "#99999999";
         } else if ((int)elemName.find("cursor") > 0) {
