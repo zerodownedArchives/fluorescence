@@ -52,9 +52,9 @@ public:
     virtual GumpMenu* getTopLevelMenu() = 0;
     
 protected:
-    BaseButton() = default;
-    BaseButton(const BaseButton& other) = default;
-    BaseButton& operator=(const BaseButton& other) = default;
+    BaseButton();
+    BaseButton(const BaseButton& other) { };
+    BaseButton& operator=(const BaseButton& other) { };
 
 private:
     unsigned int buttonType_;

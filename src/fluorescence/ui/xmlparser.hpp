@@ -81,8 +81,8 @@ private:
     static XmlParser* getSingleton();
 
     XmlParser();
-    XmlParser(const XmlParser& factory) = delete;
-    XmlParser& operator=(const XmlParser& factory) = delete;
+    XmlParser(const XmlParser& factory) {};
+    XmlParser& operator=(const XmlParser& factory) {};
 
     GumpMenu* fromXml(pugi::xml_document& doc, GumpMenu* menu);
 

@@ -41,8 +41,8 @@ private:
     static StringParser* getSingleton();
     
     StringParser();
-    StringParser(const StringParser& copy) = delete;
-    StringParser& operator=(const StringParser& copy) = delete;
+    StringParser(const StringParser& copy) { };
+    StringParser& operator=(const StringParser& copy) { };
     
     GumpMenu* innerFromString(const UnicodeString& commands, const std::vector<UnicodeString>& strings);
     

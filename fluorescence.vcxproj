@@ -75,7 +75,7 @@
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <OutputFile>$(TargetName)_win32$(TargetExt)</OutputFile>
-      <AdditionalDependencies>libboost_filesystem-vc100-mt-s-1_47.lib;libboost_program_options-vc100-mt-s-1_47.lib;libboost_thread-vc100-mt-s-1_47.lib;libboost_system-vc100-mt-s-1_47.lib;libboost_date_time-vc100-mt-s-1_47.lib;clanApp-static-mt.lib;clanCore-static-mt.lib;clanDisplay-static-mt.lib;clanGL-static-mt.lib;clanGUI-static-mt.lib;zlib-static-mt.lib;libjpeg-static-mt.lib;icuin.lib;icuuc.lib;icudt.lib;icuio.lib;wsock32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libboost_filesystem-vc100-mt-s-1_47.lib;libboost_program_options-vc100-mt-s-1_47.lib;libboost_thread-vc100-mt-s-1_47.lib;libboost_system-vc100-mt-s-1_47.lib;libboost_date_time-vc100-mt-s-1_47.lib;clanApp-static-mt.lib;clanCore-static-mt.lib;clanDisplay-static-mt.lib;clanGL-static-mt.lib;clanGUI-static-mt.lib;zlib-static-mt.lib;libjpeg-static-mt.lib;icuin.lib;icuuc.lib;icudt.lib;icuio.lib;wsock32.lib;ws2_32.lib;libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -87,8 +87,10 @@
     <ClCompile Include="src\fluorescence\data\artloader.cpp" />
     <ClCompile Include="src\fluorescence\data\clilocloader.cpp" />
     <ClCompile Include="src\fluorescence\data\equipconvdefloader.cpp" />
+    <ClCompile Include="src\fluorescence\data\filepathloader.cpp" />
     <ClCompile Include="src\fluorescence\data\fullfileloader.cpp" />
     <ClCompile Include="src\fluorescence\data\gumpartloader.cpp" />
+    <ClCompile Include="src\fluorescence\data\httploader.cpp" />
     <ClCompile Include="src\fluorescence\data\huesloader.cpp" />
     <ClCompile Include="src\fluorescence\data\indexloader.cpp" />
     <ClCompile Include="src\fluorescence\data\manager.cpp" />
@@ -137,6 +139,8 @@
     <ClCompile Include="src\fluorescence\net\packets\equippedmobile.cpp" />
     <ClCompile Include="src\fluorescence\net\packets\gameserverloginrequest.cpp" />
     <ClCompile Include="src\fluorescence\net\packets\gameserverselect.cpp" />
+    <ClCompile Include="src\fluorescence\net\packets\gumpmenu.cpp" />
+    <ClCompile Include="src\fluorescence\net\packets\gumpreply.cpp" />
     <ClCompile Include="src\fluorescence\net\packets\localizedtext.cpp" />
     <ClCompile Include="src\fluorescence\net\packets\localizedtextaffix.cpp" />
     <ClCompile Include="src\fluorescence\net\packets\logincomplete.cpp" />
@@ -176,16 +180,19 @@
     <ClCompile Include="src\fluorescence\ui\animdatatextureprovider.cpp" />
     <ClCompile Include="src\fluorescence\ui\animtextureprovider.cpp" />
     <ClCompile Include="src\fluorescence\ui\bitmask.cpp" />
+    <ClCompile Include="src\fluorescence\ui\components\background.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\basebutton.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\containerview.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\gumpview.cpp" />
+    <ClCompile Include="src\fluorescence\ui\components\image.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\label.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\lineedit.cpp" />
-    <ClCompile Include="src\fluorescence\ui\components\localbutton.cpp" />
-    <ClCompile Include="src\fluorescence\ui\components\pagebutton.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\propertylabel.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\scrollarea.cpp" />
-    <ClCompile Include="src\fluorescence\ui\components\serverbutton.cpp" />
+    <ClCompile Include="src\fluorescence\ui\components\templatebutton.cpp" />
+    <ClCompile Include="src\fluorescence\ui\components\textentry.cpp" />
+    <ClCompile Include="src\fluorescence\ui\components\uobutton.cpp" />
+    <ClCompile Include="src\fluorescence\ui\components\uocheckbox.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\worldview.cpp" />
     <ClCompile Include="src\fluorescence\ui\cursorimage.cpp" />
     <ClCompile Include="src\fluorescence\ui\cursormanager.cpp" />
@@ -193,7 +200,6 @@
     <ClCompile Include="src\fluorescence\ui\fontengine.cpp" />
     <ClCompile Include="src\fluorescence\ui\gumpactions.cpp" />
     <ClCompile Include="src\fluorescence\ui\gumpelement.cpp" />
-    <ClCompile Include="src\fluorescence\ui\gumpfactory.cpp" />
     <ClCompile Include="src\fluorescence\ui\gumpmenu.cpp" />
     <ClCompile Include="src\fluorescence\ui\gumpmenus.cpp" />
     <ClCompile Include="src\fluorescence\ui\manager.cpp" />
@@ -216,9 +222,13 @@
     <ClCompile Include="src\fluorescence\ui\render\worldrenderqueue.cpp" />
     <ClCompile Include="src\fluorescence\ui\render\worldviewrenderer.cpp" />
     <ClCompile Include="src\fluorescence\ui\singletextureprovider.cpp" />
+    <ClCompile Include="src\fluorescence\ui\stringparser.cpp" />
     <ClCompile Include="src\fluorescence\ui\targeting\servertarget.cpp" />
     <ClCompile Include="src\fluorescence\ui\targeting\target.cpp" />
     <ClCompile Include="src\fluorescence\ui\texture.cpp" />
+    <ClCompile Include="src\fluorescence\ui\uofont.cpp" />
+    <ClCompile Include="src\fluorescence\ui\uofontprovider.cpp" />
+    <ClCompile Include="src\fluorescence\ui\xmlparser.cpp" />
     <ClCompile Include="src\fluorescence\world\dynamicitem.cpp" />
     <ClCompile Include="src\fluorescence\world\ingameobject.cpp" />
     <ClCompile Include="src\fluorescence\world\lightmanager.cpp" />
@@ -243,9 +253,11 @@
     <ClInclude Include="src\fluorescence\data\deffileloader.hpp" />
     <ClInclude Include="src\fluorescence\data\defstructs.hpp" />
     <ClInclude Include="src\fluorescence\data\equipconvdefloader.hpp" />
+    <ClInclude Include="src\fluorescence\data\filepathloader.hpp" />
     <ClInclude Include="src\fluorescence\data\fixedsizeondemandfileloader.hpp" />
     <ClInclude Include="src\fluorescence\data\fullfileloader.hpp" />
     <ClInclude Include="src\fluorescence\data\gumpartloader.hpp" />
+    <ClInclude Include="src\fluorescence\data\httploader.hpp" />
     <ClInclude Include="src\fluorescence\data\huesloader.hpp" />
     <ClInclude Include="src\fluorescence\data\indexedondemandfileloader.hpp" />
     <ClInclude Include="src\fluorescence\data\indexloader.hpp" />
@@ -255,6 +267,7 @@
     <ClInclude Include="src\fluorescence\data\mobtypesloader.hpp" />
     <ClInclude Include="src\fluorescence\data\ondemandfileloader.hpp" />
     <ClInclude Include="src\fluorescence\data\ondemandreadable.hpp" />
+    <ClInclude Include="src\fluorescence\data\ondemandurlloader.hpp" />
     <ClInclude Include="src\fluorescence\data\staticsloader.hpp" />
     <ClInclude Include="src\fluorescence\data\tiledataloader.hpp" />
     <ClInclude Include="src\fluorescence\data\unifontloader.hpp" />
@@ -303,6 +316,8 @@
     <ClInclude Include="src\fluorescence\net\packets\equippedmobile.hpp" />
     <ClInclude Include="src\fluorescence\net\packets\gameserverloginrequest.hpp" />
     <ClInclude Include="src\fluorescence\net\packets\gameserverselect.hpp" />
+    <ClInclude Include="src\fluorescence\net\packets\gumpmenu.hpp" />
+    <ClInclude Include="src\fluorescence\net\packets\gumpreply.hpp" />
     <ClInclude Include="src\fluorescence\net\packets\localizedtext.hpp" />
     <ClInclude Include="src\fluorescence\net\packets\localizedtextaffix.hpp" />
     <ClInclude Include="src\fluorescence\net\packets\logincomplete.hpp" />
@@ -346,16 +361,20 @@
     <ClInclude Include="src\fluorescence\ui\animdatatextureprovider.hpp" />
     <ClInclude Include="src\fluorescence\ui\animtextureprovider.hpp" />
     <ClInclude Include="src\fluorescence\ui\bitmask.hpp" />
+    <ClInclude Include="src\fluorescence\ui\components\background.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\basebutton.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\containerview.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\gumpview.hpp" />
+    <ClInclude Include="src\fluorescence\ui\components\image.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\label.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\lineedit.hpp" />
-    <ClInclude Include="src\fluorescence\ui\components\localbutton.hpp" />
-    <ClInclude Include="src\fluorescence\ui\components\pagebutton.hpp" />
+    <ClInclude Include="src\fluorescence\ui\components\multitextureimage.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\propertylabel.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\scrollarea.hpp" />
-    <ClInclude Include="src\fluorescence\ui\components\serverbutton.hpp" />
+    <ClInclude Include="src\fluorescence\ui\components\templatebutton.hpp" />
+    <ClInclude Include="src\fluorescence\ui\components\textentry.hpp" />
+    <ClInclude Include="src\fluorescence\ui\components\uobutton.hpp" />
+    <ClInclude Include="src\fluorescence\ui\components\uocheckbox.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\worldview.hpp" />
     <ClInclude Include="src\fluorescence\ui\cursorimage.hpp" />
     <ClInclude Include="src\fluorescence\ui\cursormanager.hpp" />
@@ -363,7 +382,6 @@
     <ClInclude Include="src\fluorescence\ui\fontengine.hpp" />
     <ClInclude Include="src\fluorescence\ui\gumpactions.hpp" />
     <ClInclude Include="src\fluorescence\ui\gumpelement.hpp" />
-    <ClInclude Include="src\fluorescence\ui\gumpfactory.hpp" />
     <ClInclude Include="src\fluorescence\ui\gumpmenu.hpp" />
     <ClInclude Include="src\fluorescence\ui\gumpmenus.hpp" />
     <ClInclude Include="src\fluorescence\ui\manager.hpp" />
@@ -386,10 +404,14 @@
     <ClInclude Include="src\fluorescence\ui\render\worldrenderqueue.hpp" />
     <ClInclude Include="src\fluorescence\ui\render\worldviewrenderer.hpp" />
     <ClInclude Include="src\fluorescence\ui\singletextureprovider.hpp" />
+    <ClInclude Include="src\fluorescence\ui\stringparser.hpp" />
     <ClInclude Include="src\fluorescence\ui\targeting\servertarget.hpp" />
     <ClInclude Include="src\fluorescence\ui\targeting\target.hpp" />
     <ClInclude Include="src\fluorescence\ui\texture.hpp" />
     <ClInclude Include="src\fluorescence\ui\textureprovider.hpp" />
+    <ClInclude Include="src\fluorescence\ui\uofont.hpp" />
+    <ClInclude Include="src\fluorescence\ui\uofontprovider.hpp" />
+    <ClInclude Include="src\fluorescence\ui\xmlparser.hpp" />
     <ClInclude Include="src\fluorescence\world\dynamicitem.hpp" />
     <ClInclude Include="src\fluorescence\world\ingameobject.hpp" />
     <ClInclude Include="src\fluorescence\world\lightmanager.hpp" />
@@ -404,6 +426,11 @@
     <ClInclude Include="src\fluorescence\world\smoothmovement.hpp" />
     <ClInclude Include="src\fluorescence\world\smoothmovementmanager.hpp" />
     <ClInclude Include="src\fluorescence\world\statics.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\fluorescence\data\CMakeLists.txt" />
+    <None Include="src\fluorescence\ui\CMakeLists.txt" />
+    <None Include="src\fluorescence\ui\uofontprovider.hpp.gch" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
