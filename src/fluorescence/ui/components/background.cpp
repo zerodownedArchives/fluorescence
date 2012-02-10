@@ -148,8 +148,6 @@ void Background::calculateVertexCoordinates() {
     
     CL_Rectf centerPieceTexCoords(0.0f, 0.0f, centerBarWidth / texWidths[4], middleBarHeight / texHeights[4]);
     
-    LOG_DEBUG << "center text coords: " << centerPieceTexCoords << std::endl;
-    
     // top left corner
     setVertexCoordinates(0, CL_Rectf(0, 0, CL_Sizef(texWidths[0], texHeights[0])));
     setTextureCoordinates(0, defaultTexCoords);
@@ -219,7 +217,6 @@ void Background::setHue(unsigned int hue) {
 }
 
 void Background::setAlpha(float alpha) {
-    LOG_DEBUG << "background::setalpha" << std::endl;
     hueInfo_[2u] = alpha;
     colorRgba_.a = alpha;
 }
