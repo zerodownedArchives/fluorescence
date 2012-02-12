@@ -18,7 +18,7 @@
 
 
 
-#include "walkmanager.hpp"
+#include "walkpacketmanager.hpp"
 
 #include <string.h>
 
@@ -35,21 +35,21 @@
 namespace fluo {
 namespace net {
 
-WalkManager::WalkManager() : fastWalkStackIdx_(0), curSequence_(0), unacceptedSequenceCount_(0) {
+WalkPacketManager::WalkPacketManager() : fastWalkStackIdx_(0), curSequence_(0), unacceptedSequenceCount_(0) {
 }
 
-void WalkManager::initFastWalkStack(const uint32_t* stack) {
+void WalkPacketManager::initFastWalkStack(const uint32_t* stack) {
     memcpy(fastWalkStack_, stack, sizeof(uint32_t) * 6);
 }
 
-void WalkManager::updateFastWalkStack(uint32_t value) {
+void WalkPacketManager::updateFastWalkStack(uint32_t value) {
     for (unsigned int i = 5; i > 0; ++i) {
         fastWalkStack_[i] = fastWalkStack_[i-1];
     }
     fastWalkStack_[0] = value;
 }
 
-void WalkManager::onMovementAccept(uint8_t sequence) {
+void WalkPacketManager::onMovementAccept(uint8_t sequence) {
     LOG_DEBUG << "movement accept: " << (unsigned int)sequence << std::endl;
     if (!player_) {
         player_ = world::Manager::getSingleton()->getPlayer();
@@ -74,7 +74,7 @@ void WalkManager::onMovementAccept(uint8_t sequence) {
     }
 }
 
-void WalkManager::onMovementDeny(const net::packets::MovementDeny* pkt) {
+void WalkPacketManager::onMovementDeny(const net::packets::MovementDeny* pkt) {
     LOG_DEBUG << "movement deny" << std::endl;
     if (!player_) {
         player_ = world::Manager::getSingleton()->getPlayer();
@@ -91,14 +91,14 @@ void WalkManager::onMovementDeny(const net::packets::MovementDeny* pkt) {
     unacceptedSequenceCount_ = 0;
 }
 
-void WalkManager::onMovementRequest(uint8_t direction) {
+bool WalkPacketManager::sendMovementRequest(uint8_t direction) {
     if (!player_) {
         player_ = world::Manager::getSingleton()->getPlayer();
     }
 
     // to many not acknowledged yet
     if (unacceptedSequenceCount_ >= MAX_UNACCEPTED_SEQUENCE_COUNT) {
-        return;
+        return false;
     }
 
     uint8_t newSequence = curSequence_;
@@ -115,16 +115,7 @@ void WalkManager::onMovementRequest(uint8_t direction) {
     unacceptedSequences_[unacceptedSequenceCount_] = newSequence;
     ++unacceptedSequenceCount_;
 
-    // start to move player there
-    if (player_->getDirection() != direction) {
-        // TODO: this should be delayed
-        player_->setDirection(direction);
-    } else {
-        // TODO: play animation
-        world::SmoothMovement mov(player_, direction, 300);
-        world::Manager::getSmoothMovementManager()->add(player_->getSerial(), mov);
-        player_->playAnim(player_->getWalkAnim());
-    }
+    return true;
 }
 
 }

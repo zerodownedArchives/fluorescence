@@ -26,6 +26,7 @@
 #include "mobile.hpp"
 #include "dynamicitem.hpp"
 #include "overheadmessage.hpp"
+#include "playerwalkmanager.hpp"
 
 #include <misc/exception.hpp>
 #include <misc/log.hpp>
@@ -66,6 +67,7 @@ Manager::Manager(const Config& config) : currentMapId_(0) {
     sectorManager_.reset(new SectorManager(config));
     lightManager_.reset(new LightManager());
     smoothMovementManager_.reset(new SmoothMovementManager());
+    playerWalkManager_.reset(new PlayerWalkManager());
 }
 
 Manager::~Manager() {
@@ -78,6 +80,10 @@ boost::shared_ptr<SectorManager> Manager::getSectorManager() {
 
 boost::shared_ptr<SmoothMovementManager> Manager::getSmoothMovementManager() {
     return getSingleton()->smoothMovementManager_;
+}
+
+boost::shared_ptr<PlayerWalkManager> Manager::getPlayerWalkManager() {
+    return getSingleton()->playerWalkManager_;
 }
 
 unsigned int Manager::getCurrentMapId() {
@@ -153,6 +159,7 @@ void Manager::step(unsigned int elapsedMillis) {
 }
 
 void Manager::update(unsigned int elapsedMillis) {
+    playerWalkManager_->update(elapsedMillis);
     smoothMovementManager_->update(elapsedMillis);
 
     std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobIter = mobiles_.begin();

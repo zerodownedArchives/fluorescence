@@ -14,6 +14,7 @@ set (WORLD_HPP
     world/smoothmovement.hpp
     world/smoothmovementmanager.hpp
     world/particleeffect.hpp
+    world/playerwalkmanager.hpp
     )
 
 set (WORLD_CPP
@@ -31,6 +32,7 @@ set (WORLD_CPP
     world/smoothmovement.cpp
     world/smoothmovementmanager.cpp
     world/particleeffect.cpp
+    world/playerwalkmanager.cpp
     )
 
 set(WORLD_FILES ${WORLD_HPP} ${WORLD_CPP} PARENT_SCOPE)

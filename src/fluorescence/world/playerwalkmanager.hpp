@@ -17,48 +17,37 @@
  */
 
 
-#ifndef FLUO_NET_WALKMANAGER_HPP
-#define FLUO_NET_WALKMANAGER_HPP
+#ifndef FLUO_WORLD_PLAYERWALKMANAGER_HPP
+#define FLUO_WORLD_PLAYERWALKMANAGER_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <stdint.h>
+#include <typedefs.hpp>
 
 namespace fluo {
-
 namespace world {
-class Mobile;
-}
-
-namespace net {
-
-namespace packets {
-class MovementDeny;
-}
-
-class WalkManager {
+    
+class PlayerWalkManager {
 public:
-    WalkManager();
-
-    void initFastWalkStack(const uint32_t* values);
-    void updateFastWalkStack(uint32_t value);
-
-    void onMovementAccept(uint8_t sequence);
-    void onMovementDeny(const net::packets::MovementDeny* pkt);
-    void onMovementRequest(uint8_t direction);
-
+    PlayerWalkManager(); 
+    
+    void setWalkDirection(uint8_t direction);
+    void stopAtNextTile();
+    void stopImmediately();
+    
+    void update(unsigned int elapsedMillis);
+    
+    bool isWalking() const;
+    
 private:
-    boost::shared_ptr<world::Mobile> player_;
-
-    uint32_t fastWalkStack_[6];
-    unsigned int fastWalkStackIdx_;
-    uint8_t curSequence_;
-
-    unsigned int unacceptedSequenceCount_;
-    uint8_t unacceptedSequences_[10];
-    static const unsigned int MAX_UNACCEPTED_SEQUENCE_COUNT = 4;
+    uint8_t requestedDirection_;
+    
+    bool isWalking_;
+    bool lastIsWalking_;
+    
+    int millisToNextMove_;
 };
 
 }
 }
 
 #endif
+

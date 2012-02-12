@@ -71,6 +71,7 @@ private:
 
     unsigned int defaultAnimId_;
     unsigned int nextAnimId_;
+    unsigned int nextDirection_;
 };
 
 }

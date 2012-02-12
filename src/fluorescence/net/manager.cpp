@@ -30,7 +30,7 @@
 
 #include "packetlist.hpp"
 #include "twofishencryption.hpp"
-#include "walkmanager.hpp"
+#include "walkpacketmanager.hpp"
 
 namespace fluo {
 namespace net {
@@ -78,7 +78,7 @@ Manager::Manager(const Config& config) {
     }
 #endif
 
-    walkManager_.reset(new WalkManager());
+    walkPacketManager_.reset(new WalkPacketManager());
 }
 
 Manager::~Manager() {
@@ -235,8 +235,8 @@ uint32_t Manager::getSeed() const {
     return socket_.getSeed();
 }
 
-boost::shared_ptr<WalkManager> Manager::getWalkManager() {
-    return getSingleton()->walkManager_;
+boost::shared_ptr<WalkPacketManager> Manager::getWalkPacketManager() {
+    return getSingleton()->walkPacketManager_;
 }
 
 }

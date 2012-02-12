@@ -38,6 +38,7 @@ class SmoothMovementManager;
 class Mobile;
 class DynamicItem;
 class OverheadMessage;
+class PlayerWalkManager;
 
 class Manager {
 public:
@@ -49,6 +50,7 @@ public:
     static boost::shared_ptr<SectorManager> getSectorManager();
     static boost::shared_ptr<LightManager> getLightManager();
     static boost::shared_ptr<SmoothMovementManager> getSmoothMovementManager();
+    static boost::shared_ptr<PlayerWalkManager> getPlayerWalkManager();
 
     unsigned int getCurrentMapId();
     void setCurrentMapId(unsigned int id);
@@ -85,6 +87,7 @@ private:
     void update(unsigned int millis);
 
     boost::shared_ptr<SmoothMovementManager> smoothMovementManager_;
+    boost::shared_ptr<PlayerWalkManager> playerWalkManager_;
 
     std::list<boost::shared_ptr<OverheadMessage> > overheadMessages_;
 };

@@ -12,7 +12,7 @@ set (NET_HPP
     net/packetwriter.hpp
     net/packetreader.hpp
     net/multipurposepacket.hpp
-    net/walkmanager.hpp
+    net/walkpacketmanager.hpp
     )
 
 set (NET_CPP
@@ -26,7 +26,7 @@ set (NET_CPP
     net/packetwriter.cpp
     net/packetreader.cpp
     net/multipurposepacket.cpp
-    net/walkmanager.cpp
+    net/walkpacketmanager.cpp
     )
 
 set (PACKETS_HPP

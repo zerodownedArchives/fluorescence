@@ -28,7 +28,7 @@ namespace fluo {
 namespace ui {
 
 AnimTextureProvider::AnimTextureProvider(unsigned int bodyId) : bodyId_(bodyId), direction_(0), currentIdx_(0),
-        millis_(0), frameMillis_(150), repeatMode_(REPEAT_MODE_DEFAULT), nextAnimId_(0xFFFFFFFFu) {
+        millis_(0), frameMillis_(150), repeatMode_(REPEAT_MODE_DEFAULT), nextAnimId_(0xFFFFFFFFu), nextDirection_(0) {
     defaultAnimId_ = data::Manager::getMobTypesLoader()->getIdleAction(bodyId);
     currentAnimId_ = defaultAnimId_;
 
@@ -36,6 +36,7 @@ AnimTextureProvider::AnimTextureProvider(unsigned int bodyId) : bodyId_(bodyId),
 }
 
 boost::shared_ptr<ui::Texture> AnimTextureProvider::getTexture() const {
+    //LOG_DEBUG << "getTexture current direction:" << direction_ << std::endl;
     std::map<unsigned int, std::vector<boost::shared_ptr<Animation> > >::const_iterator it = animations_.find(currentAnimId_);
     if (it != animations_.end() && it->second[direction_] && it->second[direction_]->isReadComplete()) {
         return it->second[direction_]->getFrame(currentIdx_).texture_;
@@ -89,6 +90,11 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
             nextAnimId_ = 0xFFFFFFFFu;
         }
     }
+    
+    if (nextDirection_ != direction_) {
+        frameChanged = true;
+        direction_ = nextDirection_;
+    }
 
     it = animations_.find(currentAnimId_);
     if (it == animations_.end() || animations_.size() == 0 || it->second.empty() || !it->second[direction_]->isReadComplete() || elapsedMillis == 0) {
@@ -121,13 +127,13 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
     millis_ = newMillis;
 
     frameChanged |= lastIdx != currentIdx_;
-
+    
     return frameChanged;
 }
 
 void AnimTextureProvider::setDirection(unsigned int direction) {
     direction &= 0x7; // only last 3 bits are interesting
-    direction_ = direction;
+    nextDirection_ = direction;
 }
 
 }

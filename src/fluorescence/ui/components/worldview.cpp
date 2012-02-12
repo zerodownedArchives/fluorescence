@@ -29,6 +29,7 @@
 #include <world/statics.hpp>
 #include <world/ingameobject.hpp>
 #include <world/mobile.hpp>
+#include <world/playerwalkmanager.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
@@ -38,9 +39,6 @@
 
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
-
-#include <net/manager.hpp>
-#include <net/walkmanager.hpp>
 
 #include <algorithm>
 #include <ClanLib/Display/Window/keys.h>
@@ -170,16 +168,16 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
 
     switch (e.id) {
     case CL_KEY_UP:
-        net::Manager::getWalkManager()->onMovementRequest(Direction::N);
+        world::Manager::getPlayerWalkManager()->setWalkDirection(Direction::N);
         break;
     case CL_KEY_DOWN:
-        net::Manager::getWalkManager()->onMovementRequest(Direction::S);
+        world::Manager::getPlayerWalkManager()->setWalkDirection(Direction::S);
         break;
     case CL_KEY_LEFT:
-        net::Manager::getWalkManager()->onMovementRequest(Direction::W);
+        world::Manager::getPlayerWalkManager()->setWalkDirection(Direction::W);
         break;
     case CL_KEY_RIGHT:
-        net::Manager::getWalkManager()->onMovementRequest(Direction::E);
+        world::Manager::getPlayerWalkManager()->setWalkDirection(Direction::E);
         break;
 
     case CL_KEY_ADD:
@@ -260,6 +258,12 @@ bool WorldView::onInputReleased(const CL_InputEvent& e) {
     boost::shared_ptr<world::IngameObject> draggedObject;
 
     switch (e.id) {
+    case CL_KEY_UP:
+    case CL_KEY_DOWN:
+    case CL_KEY_LEFT:
+    case CL_KEY_RIGHT:
+        world::Manager::getPlayerWalkManager()->stopAtNextTile();
+        break;
     case CL_MOUSE_LEFT:
         clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
         draggedObject = ui::Manager::getSingleton()->getCursorManager()->stopDragging();
