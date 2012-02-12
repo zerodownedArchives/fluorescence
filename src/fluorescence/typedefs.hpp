@@ -65,6 +65,14 @@ enum {
 };
 };
 
+struct AnimRepeatMode {
+enum {
+    LOOP = 0, // loop animation forever
+    LAST = 1, // play animation once, then stick with the last frame
+    DEFAULT = 2, // play animation once, then switch to to default frame
+};
+};
+
 }
 
 

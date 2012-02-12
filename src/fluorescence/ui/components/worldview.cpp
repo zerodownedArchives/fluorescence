@@ -61,6 +61,7 @@ WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpEleme
     func_input_pressed().set(this, &WorldView::onInputPressed);
     func_input_released().set(this, &WorldView::onInputReleased);
     func_input_doubleclick().set(this, &WorldView::onDoubleClick);
+    func_input_pointer_moved().set(this, &WorldView::onPointerMoved);
 }
 
 WorldView::~WorldView() {
@@ -167,18 +168,16 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
     //LOGARG_INFO(LOGTYPE_INPUT, "input pressed WorldView: %u", e.id);
 
     switch (e.id) {
-    case CL_KEY_UP:
-        world::Manager::getPlayerWalkManager()->setWalkDirection(Direction::N);
+    case CL_MOUSE_RIGHT: {
+        //CL_Vec2f yaxis(0, 1);
+        //CL_Vec2f mouseVec(e.mouse_pos.x, e.mouse_pos.y)
+        //angle = arccos
+        unsigned int direction = getDirectionForMousePosition(e.mouse_pos);
+        world::Manager::getPlayerWalkManager()->setWalkDirection(direction);
+        
+        //world::Manager::getPlayerWalkManager()->setWalkDirection(Direction::N);
         break;
-    case CL_KEY_DOWN:
-        world::Manager::getPlayerWalkManager()->setWalkDirection(Direction::S);
-        break;
-    case CL_KEY_LEFT:
-        world::Manager::getPlayerWalkManager()->setWalkDirection(Direction::W);
-        break;
-    case CL_KEY_RIGHT:
-        world::Manager::getPlayerWalkManager()->setWalkDirection(Direction::E);
-        break;
+    }
 
     case CL_KEY_ADD:
         lm = world::Manager::getLightManager();
@@ -258,12 +257,10 @@ bool WorldView::onInputReleased(const CL_InputEvent& e) {
     boost::shared_ptr<world::IngameObject> draggedObject;
 
     switch (e.id) {
-    case CL_KEY_UP:
-    case CL_KEY_DOWN:
-    case CL_KEY_LEFT:
-    case CL_KEY_RIGHT:
+    case CL_MOUSE_RIGHT:
         world::Manager::getPlayerWalkManager()->stopAtNextTile();
         break;
+        
     case CL_MOUSE_LEFT:
         clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
         draggedObject = ui::Manager::getSingleton()->getCursorManager()->stopDragging();
@@ -319,6 +316,40 @@ boost::shared_ptr<world::IngameObject> WorldView::getFirstIngameObjectAt(unsigne
 
 void WorldView::setCenterObject(boost::shared_ptr<world::IngameObject> obj) {
     centerObject_ = obj;
+}
+
+bool WorldView::onPointerMoved(const CL_InputEvent& e) {
+    if (e.device.get_keycode(CL_MOUSE_RIGHT)) {
+        unsigned int direction = getDirectionForMousePosition(e.mouse_pos);
+        world::Manager::getPlayerWalkManager()->setWalkDirection(direction);
+    }
+    
+    return true;
+}
+
+unsigned int WorldView::getDirectionForMousePosition(const CL_Point& mouse) const {
+    float posY = mouse.y - (get_height() / 2);
+    float posX = mouse.x - (get_width() / 2);
+    float angle = atan2(posY, posX);
+    
+    float absangle = fabs(angle);
+    if (absangle >= 2.7489) {
+        return Direction::SW;
+    } else if (angle <= -1.9635) {
+        return Direction::W;
+    } else if (angle <= -1.1781) {
+        return Direction::NW;
+    } else if (angle <= -0.3927) {
+        return Direction::N;
+    } else if (angle <= 0.3927) {
+        return Direction::NE;
+    } else if (angle <= 1.1781) {
+        return Direction::E;
+    } else if (angle <= 1.9635) {
+        return Direction::SE;
+    } else {
+        return Direction::S;
+    }
 }
 
 }

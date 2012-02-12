@@ -169,15 +169,30 @@ bool Mobile::updateAnimation(unsigned int elapsedMillis) {
     return textureProvider_->update(elapsedMillis);
 }
 
-void Mobile::playAnim(unsigned int animId) {
+void Mobile::animate(unsigned int animId, unsigned int delay, unsigned int repeatMode) {
     textureProvider_->setAnimId(animId);
+    textureProvider_->setRepeatMode(repeatMode);
+    textureProvider_->setDelay(delay);
 
     std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
     std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
 
     for (; iter != end; ++iter) {
         if ((*iter)->isDynamicItem()) {
-            boost::dynamic_pointer_cast<DynamicItem>(*iter)->playAnim(animId);
+            boost::dynamic_pointer_cast<DynamicItem>(*iter)->animate(animId, delay, repeatMode);
+        }
+    }
+}
+
+void Mobile::stopAnim() {
+    textureProvider_->setIdleAnim();
+    
+    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
+
+    for (; iter != end; ++iter) {
+        if ((*iter)->isDynamicItem()) {
+            boost::dynamic_pointer_cast<DynamicItem>(*iter)->stopAnim();
         }
     }
 }

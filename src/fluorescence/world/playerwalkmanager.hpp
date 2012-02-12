@@ -37,6 +37,8 @@ public:
     
     bool isWalking() const;
     
+    void onSmoothMovementFinish();
+    
 private:
     uint8_t requestedDirection_;
     

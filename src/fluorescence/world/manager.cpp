@@ -159,8 +159,8 @@ void Manager::step(unsigned int elapsedMillis) {
 }
 
 void Manager::update(unsigned int elapsedMillis) {
-    playerWalkManager_->update(elapsedMillis);
     smoothMovementManager_->update(elapsedMillis);
+    playerWalkManager_->update(elapsedMillis);
 
     std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobIter = mobiles_.begin();
     std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobEnd = mobiles_.end();

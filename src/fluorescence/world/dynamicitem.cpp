@@ -298,9 +298,17 @@ bool DynamicItem::isMirrored() const {
     return equipped_ && direction_ < 3;
 }
 
-void DynamicItem::playAnim(unsigned int animId) {
+void DynamicItem::animate(unsigned int animId, unsigned int delay, unsigned int repeatMode) {
     if (equipped_ && animTextureProvider_) {
         animTextureProvider_->setAnimId(animId);
+        animTextureProvider_->setRepeatMode(repeatMode);
+        animTextureProvider_->setDelay(delay);
+    }
+}
+
+void DynamicItem::stopAnim() {
+    if (equipped_ && animTextureProvider_) {
+        animTextureProvider_->setIdleAnim();
     }
 }
 

@@ -18,6 +18,8 @@
 
 #include "playerwalkmanager.hpp"
 
+#include <boost/bind.hpp>
+
 #include "manager.hpp"
 #include "smoothmovement.hpp"
 #include "smoothmovementmanager.hpp"
@@ -59,17 +61,18 @@ void PlayerWalkManager::update(unsigned int elapsedMillis) {
     
     if (!lastIsWalking_) {
         // starting to walk now => start anim
+        player->animate(player->getWalkAnim(), 0, AnimRepeatMode::LOOP);
         millisToNextMove_ = 0;
     } else {
         millisToNextMove_ -= elapsedMillis;
     }
     
     // don't wait until the smooth movement is completely over to avoid jerking motions
-    if (millisToNextMove_ <= 30) {
+    if (millisToNextMove_ <= 0) {
         if (player->getDirection() != requestedDirection_) {
             if (!lastIsWalking_) {
                 // just turn and wait for a bit
-                millisToNextMove_ += 131;
+                millisToNextMove_ = 150;
             }
             
             player->setDirection(requestedDirection_);
@@ -80,31 +83,27 @@ void PlayerWalkManager::update(unsigned int elapsedMillis) {
             // TODO: check running, mounted. different speed
             unsigned int moveDuration = 400;
             
-            millisToNextMove_ += moveDuration;;
+            millisToNextMove_ = moveDuration;;
             
             world::SmoothMovement mov(player, requestedDirection_, moveDuration);
+            mov.setFinishedCallback(boost::bind(&PlayerWalkManager::onSmoothMovementFinish, this));
             world::Manager::getSmoothMovementManager()->add(player->getSerial(), mov);
             net::Manager::getWalkPacketManager()->sendMovementRequest(requestedDirection_);
         }
         
         lastIsWalking_ = true;
     }
-    
-    
-    // // start to move player there
-    //if (player_->getDirection() != direction) {
-        //// TODO: this should be delayed
-        //player_->setDirection(direction);
-    //} else {
-        //// TODO: play animation
-        //world::SmoothMovement mov(player_, direction, 300);
-        //world::Manager::getSmoothMovementManager()->add(player_->getSerial(), mov);
-        //player_->playAnim(player_->getWalkAnim());
-    //}
 }
 
 bool PlayerWalkManager::isWalking() const {
     return isWalking_;
+}
+
+void PlayerWalkManager::onSmoothMovementFinish() {
+    if (!isWalking_) {
+        boost::shared_ptr<world::Mobile> player = world::Manager::getSingleton()->getPlayer();
+        player->stopAnim();
+    }
 }
 
 }

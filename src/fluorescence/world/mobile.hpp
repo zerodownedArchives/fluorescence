@@ -60,7 +60,8 @@ public:
     virtual void onClick();
     virtual void onDoubleClick();
 
-    void playAnim(unsigned int animId);
+    void animate(unsigned int animId, unsigned int delay = 1, unsigned int repeatType = AnimRepeatMode::DEFAULT);
+    void stopAnim();
 
     virtual bool isMirrored() const;
     void setDirection(unsigned int direction);

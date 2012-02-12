@@ -28,7 +28,7 @@ namespace fluo {
 namespace ui {
 
 AnimTextureProvider::AnimTextureProvider(unsigned int bodyId) : bodyId_(bodyId), direction_(0), currentIdx_(0),
-        millis_(0), frameMillis_(150), repeatMode_(REPEAT_MODE_DEFAULT), nextAnimId_(0xFFFFFFFFu), nextDirection_(0) {
+        millis_(0), frameMillis_(100), repeatMode_(AnimRepeatMode::DEFAULT), nextAnimId_(0xFFFFFFFFu), nextDirection_(0) {
     defaultAnimId_ = data::Manager::getMobTypesLoader()->getIdleAction(bodyId);
     currentAnimId_ = defaultAnimId_;
 
@@ -108,15 +108,15 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
     unsigned int maxMillis = it->second[direction_]->getFrameCount() * frameMillis_;
     if (newMillis >= maxMillis) {
         switch (repeatMode_) {
-            case REPEAT_MODE_LOOP:
+            case AnimRepeatMode::LOOP:
                 currentIdx_ = 0;
                 newMillis %= maxMillis;
                 break;
-            case REPEAT_MODE_LAST:
+            case AnimRepeatMode::LAST:
                 // we are already at the last frame here
                 break;
-            case REPEAT_MODE_DEFAULT:
-                setAnimId(defaultAnimId_);
+            case AnimRepeatMode::DEFAULT:
+                setIdleAnim();
                 //frameChanged = true;
                 break;
         }
@@ -134,6 +134,18 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
 void AnimTextureProvider::setDirection(unsigned int direction) {
     direction &= 0x7; // only last 3 bits are interesting
     nextDirection_ = direction;
+}
+
+void AnimTextureProvider::setRepeatMode(unsigned int mode) {
+    repeatMode_ = mode;
+}
+
+void AnimTextureProvider::setIdleAnim() {
+    setAnimId(defaultAnimId_);
+}
+
+void AnimTextureProvider::setDelay(unsigned int delay) {
+    frameMillis_ = 100 + delay * 50;
 }
 
 }

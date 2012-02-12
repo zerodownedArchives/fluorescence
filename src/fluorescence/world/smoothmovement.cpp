@@ -63,6 +63,10 @@ void SmoothMovement::start() {
 void SmoothMovement::finish() {
     // necessary to set this to the precise target location. otherwise rounding errors might add up
     movingObject_->setLocation(startLoc_ + diff_);
+    
+    if (finishedCallback_) {
+        finishedCallback_();
+    }
 }
 
 void SmoothMovement::update(unsigned int elapsedMillis) {
@@ -72,6 +76,10 @@ void SmoothMovement::update(unsigned int elapsedMillis) {
     movingObject_->setLocation(curLoc);
 
     totalElapsedMillis_ += elapsedMillis;
+}
+
+void SmoothMovement::setFinishedCallback(FinishedCallback cb) {
+    finishedCallback_ = cb;
 }
 
 }
