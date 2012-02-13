@@ -26,8 +26,7 @@ namespace fluo {
 namespace ui {
 
 WorldRenderData::WorldRenderData() :
-            textureProviderUpdateRequired_(true), vertexCoordinatesUpdateRequired_(true), renderDepthUpdateRequired_(true),
-            textureProviderUpdated_(false), vertexCoordinatesUpdated_(false), renderDepthUpdated_(false), renderDepth_(0) {
+            textureProviderUpdateRequired_(true), vertexCoordinatesUpdateRequired_(true), renderDepthUpdateRequired_(true) {
     for (unsigned int i = 0; i < 6; ++i) {
         vertexNormals_[i] = CL_Vec3f(0, 0, 1);
     }
@@ -64,35 +63,14 @@ bool WorldRenderData::renderDepthUpdateRequired() const {
 
 void WorldRenderData::onTextureProviderUpdate() {
     textureProviderUpdateRequired_ = false;
-    textureProviderUpdated_ = true;
 }
 
 void WorldRenderData::onVertexCoordinatesUpdate() {
     vertexCoordinatesUpdateRequired_ = false;
-    vertexCoordinatesUpdated_ = true;
 }
 
 void WorldRenderData::onRenderDepthUpdate() {
     renderDepthUpdateRequired_ = false;
-    renderDepthUpdated_ = true;
-}
-
-bool WorldRenderData::textureProviderUpdated() const {
-    return textureProviderUpdated_;
-}
-
-bool WorldRenderData::vertexCoordinatesUpdated() const {
-    return vertexCoordinatesUpdated_;
-}
-
-bool WorldRenderData::renderDepthUpdated() const {
-    return renderDepthUpdated_;
-}
-
-void WorldRenderData::reset() {
-    textureProviderUpdated_ = false;
-    vertexCoordinatesUpdated_ = false;
-    renderDepthUpdated_ = false;
 }
 
 void WorldRenderData::setVertexCoordinates(unsigned int idx, float x, float y) {
@@ -100,12 +78,12 @@ void WorldRenderData::setVertexCoordinates(unsigned int idx, float x, float y) {
     vertexCoordinates_[idx].y = y;
 }
 
-void WorldRenderData::setRenderDepth(unsigned long long value) {
+void WorldRenderData::setRenderDepth(const RenderDepth& value) {
     renderDepth_ = value;
 }
 
 void WorldRenderData::setRenderDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint8_t byte5, uint8_t byte6) { 
-    unsigned long long tmp = 0;
+    uint64_t tmp = 0;
     tmp |= (xPlusY & 0xFFFF);
     tmp <<= 8;
     uint8_t tmpZ = (((int)z) + 128) & 0xFF;
@@ -117,10 +95,10 @@ void WorldRenderData::setRenderDepth(uint16_t xPlusY, int8_t z, uint8_t priority
     tmp <<= 8;
     tmp |= (byte6 & 0xFF);
 
-    renderDepth_ = tmp;
+    renderDepth_ = RenderDepth(tmp);
 }
 
-unsigned long long WorldRenderData::getRenderDepth() const {
+const RenderDepth& WorldRenderData::getRenderDepth() const {
     return renderDepth_;
 }
 

@@ -178,5 +178,13 @@ void SectorManager::update(unsigned int elapsedMillis) {
     }
 }
 
+std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator SectorManager::begin() {
+    return sectorMap_.begin();
+}
+
+std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator SectorManager::end() {
+    return sectorMap_.end();
+}
+
 }
 }

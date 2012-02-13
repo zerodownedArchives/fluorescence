@@ -77,7 +77,7 @@ private:
     bool updateAnimation(unsigned int elapsedMillis);
 };
 
-class StaticBlock : public data::OnDemandReadable {
+class StaticBlock : public data::OnDemandReadable<StaticBlock> {
 friend class data::StaticsLoader;
 
 public:

@@ -31,7 +31,9 @@ namespace fluo {
 namespace world {
 
 Sector::Sector(unsigned int mapId, const IsoIndex& sectorId) :
-        mapId_(mapId), id_(sectorId), visible_(true), fullUpdateRenderDataRequired_(true) {
+        mapId_(mapId), id_(sectorId),  
+        mapAddedToList_(false), staticsAddedToList_(false), 
+        visible_(true), fullUpdateRenderDataRequired_(true) {
 
     //LOG_DEBUG << "Sector construct, map=" << mapId_ << " x=" << getLocX() << " y=" << getLocY() << std::endl;
 
@@ -52,13 +54,6 @@ unsigned int Sector::getLocY() const {
 
 bool Sector::isVisible() const {
     return visible_;
-}
-
-boost::shared_ptr<MapBlock> Sector::getMapBlock() const {
-    return mapBlock_;
-}
-boost::shared_ptr<StaticBlock> Sector::getStaticBlock() const {
-    return staticBlock_;
 }
 
 unsigned int Sector::getMapId() const {
@@ -90,37 +85,65 @@ void Sector::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
 }
 
 void Sector::update(unsigned int elapsedMillis) {
-    if (!staticBlock_ || !staticBlock_->isReadComplete() || !mapBlock_ || !mapBlock_->isReadComplete()) {
-        // not fully loaded yet
-        return;
+    if (!mapAddedToList_ && mapBlock_ && mapBlock_->isReadComplete()) {
+        // map block is now loaded => add to list
+        for (unsigned int x = 0; x < 8; ++x) {
+            for (unsigned int y = 0; y < 8; ++y) {
+                renderList_.push_back(mapBlock_->get(x, y).get());
+            }
+        }
+        
+        fullUpdateRenderDataRequired_ = true;
+        renderListSortRequired_ = true;
+        mapAddedToList_ = true;
     }
+    
+    if (!staticsAddedToList_ && staticBlock_ && staticBlock_->isReadComplete()) {
+        // static block is now loaded => add to list
+        std::list<boost::shared_ptr<world::StaticItem> > staticList = staticBlock_->getItemList();
+        std::list<boost::shared_ptr<world::StaticItem> >::const_iterator it = staticList.begin();
+        std::list<boost::shared_ptr<world::StaticItem> >::const_iterator end = staticList.end();
 
+        for (; it != end; ++it) {
+            renderList_.push_back(it->get());
+        }
+        
+        fullUpdateRenderDataRequired_ = true;
+        renderListSortRequired_ = true;
+        staticsAddedToList_ = true;
+    }
+    
     if (mapBlock_->repaintRequested_) {
+        // happens when the neighboring z values of a map block change
         fullUpdateRenderDataRequired_ = true;
         mapBlock_->repaintRequested_ = false; 
     }
-
+    
     //LOG_DEBUG << "Sector::update " << id_ << std::endl;
     if (fullUpdateRenderDataRequired_) {
         //LOG_DEBUG << "full update required" << std::endl;
-        // the sector is not yet loaded completely (e.g. a graphic is still missing)
+        
+        // do we need to update everything?
         bool curFullUpdateRequired = false;
 
-        std::list<boost::shared_ptr<world::StaticItem> > staticList = staticBlock_->getItemList();
-        std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticList.begin();
-        std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticList.end();
-
-        for (; it != end; ++it) {
-            if (!(*it)->getWorldRenderData().renderDataValid()) {
-                (*it)->updateRenderData(elapsedMillis);
-                curFullUpdateRequired = true;
+        if (mapAddedToList_) {
+            for (unsigned int x = 0; x < 8; ++x) {
+                for (unsigned int y = 0; y < 8; ++y) {
+                    if (!mapBlock_->get(x, y)->getWorldRenderData().renderDataValid()) {
+                        renderListSortRequired_ |= mapBlock_->get(x, y)->updateRenderData(elapsedMillis);
+                        curFullUpdateRequired = true;
+                    }
+                }
             }
         }
+        
+        if (staticsAddedToList_) {
+            std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticBlock_->getItemList().begin();
+            std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticBlock_->getItemList().end();
 
-        for (unsigned int x = 0; x < 8; ++x) {
-            for (unsigned int y = 0; y < 8; ++y) {
-                if (!mapBlock_->get(x, y)->getWorldRenderData().renderDataValid()) {
-                    mapBlock_->get(x, y)->updateRenderData(elapsedMillis);
+            for (; it != end; ++it) {
+                if (!(*it)->getWorldRenderData().renderDataValid()) {
+                    renderListSortRequired_ |= (*it)->updateRenderData(elapsedMillis);
                     curFullUpdateRequired = true;
                 }
             }
@@ -132,12 +155,12 @@ void Sector::update(unsigned int elapsedMillis) {
             // to save time in the future, update only the items that are animated. store those in a list now
             quickRenderUpdateList_.clear();
 
-            std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticList.begin();
-            std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticList.end();
+            std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticBlock_->getItemList().begin();
+            std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticBlock_->getItemList().end();
 
             for (; it != end; ++it) {
                 if ((*it)->requireRenderUpdate()) {
-                    quickRenderUpdateList_.push_back(*it);
+                    quickRenderUpdateList_.push_back(it->get());
                 }
             }
 
@@ -149,13 +172,30 @@ void Sector::update(unsigned int elapsedMillis) {
     } else if (!quickRenderUpdateList_.empty()) {
         //LOG_DEBUG << "quick render update, size=" << quickRenderUpdateList_.size() << std::endl;
         // only call update on those few things that really need to be updated (e.g. animated statics)
-        std::list<boost::shared_ptr<world::StaticItem> >::iterator iter = quickRenderUpdateList_.begin();
-        std::list<boost::shared_ptr<world::StaticItem> >::iterator end = quickRenderUpdateList_.end();
+        std::list<world::IngameObject*>::iterator iter = quickRenderUpdateList_.begin();
+        std::list<world::IngameObject*>::iterator end = quickRenderUpdateList_.end();
 
         for (; iter != end; ++iter) {
-            (*iter)->updateRenderData(elapsedMillis);
+            renderListSortRequired_ |= (*iter)->updateRenderData(elapsedMillis);
         }
     }
+    
+    if (renderListSortRequired_) {
+        renderListSortRequired_ = false;
+        renderList_.sort(&Sector::renderDepthSortHelper);
+    }
+}
+
+bool Sector::renderDepthSortHelper(const world::IngameObject* a, const world::IngameObject* b) {
+    return a->getRenderDepth() < b->getRenderDepth();
+}
+
+std::list<world::IngameObject*>::iterator Sector::renderBegin() {
+    return renderList_.begin();
+}
+
+std::list<world::IngameObject*>::iterator Sector::renderEnd() {
+    return renderList_.end();
 }
 
 }

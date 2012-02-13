@@ -127,7 +127,8 @@ const CL_Vec3f& IngameObject::getHueInfo() const {
     return worldRenderData_.hueInfo_;
 }
 
-void IngameObject::updateRenderData(unsigned int elapsedMillis) {
+bool IngameObject::updateRenderData(unsigned int elapsedMillis) {
+    bool renderDepthChanged = false;
     if (worldRenderData_.renderDataValid()) {
         bool frameChanged = updateAnimation(elapsedMillis);
 
@@ -145,7 +146,7 @@ void IngameObject::updateRenderData(unsigned int elapsedMillis) {
 
         boost::shared_ptr<ui::Texture> tex = getIngameTexture();
         if (!tex || !tex->isReadComplete()) {
-            return;
+            return false;
         }
 
         bool frameChanged = updateAnimation(elapsedMillis);
@@ -161,11 +162,16 @@ void IngameObject::updateRenderData(unsigned int elapsedMillis) {
         }
 
         if (worldRenderData_.renderDepthUpdateRequired()) {
+            RenderDepth oldDepth = getRenderDepth();
             updateRenderDepth();
             worldRenderData_.onRenderDepthUpdate();
             notifyRenderQueuesWorldDepth();
+            
+            renderDepthChanged = oldDepth != getRenderDepth();
         }
     }
+    
+    return renderDepthChanged;
 }
 
 bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {
@@ -248,7 +254,7 @@ boost::shared_ptr<IngameObject> IngameObject::getTopParent() {
 }
 
 void IngameObject::printRenderDepth() const {
-    LOG_DEBUG << "Render depth: " << std::hex << worldRenderData_.getRenderDepth() << std::dec << std::endl;
+    LOG_DEBUG << "Render depth: " << std::hex << worldRenderData_.getRenderDepth().value_ << std::dec << std::endl;
 }
 
 void IngameObject::setOverheadMessageOffsets() {
@@ -520,11 +526,11 @@ const ui::WorldRenderData& IngameObject::getWorldRenderData() const {
 void IngameObject::updateGumpTextureProvider() {
 }
 
-void IngameObject::setRenderDepth(unsigned long long depth) {
+void IngameObject::setRenderDepth(const RenderDepth& depth) {
     worldRenderData_.setRenderDepth(depth);
 }
 
-unsigned long long IngameObject::getRenderDepth() const {
+const RenderDepth& IngameObject::getRenderDepth() const {
     return worldRenderData_.getRenderDepth();
 }
 

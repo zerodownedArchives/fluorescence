@@ -20,17 +20,37 @@
 #ifndef FLUO_DATA_ONDEMANDREADABLE_HPP
 #define FLUO_DATA_ONDEMANDREADABLE_HPP
 
+#include <boost/function.hpp>
+#include <boost/shared_ptr.hpp>
+
 namespace fluo {
 namespace data {
 
+template<class T>
 class OnDemandReadable {
 public:
+    typedef boost::function<void (boost::shared_ptr<T>)> Callback;
+    
     OnDemandReadable() : readComplete_(false) { }
-    void setReadComplete() { readComplete_ = true; }
-    bool isReadComplete() { return readComplete_; }
+    
+    void setReadComplete(boost::shared_ptr<T> sharedThis = boost::shared_ptr<T>()) { 
+        readComplete_ = true; 
+        
+        if (completeCallback_ && sharedThis) {
+            completeCallback_(sharedThis);
+        }
+    }
+    
+    bool isReadComplete() { 
+        return readComplete_; 
+    }
+    
+    void setCompleteCallback(Callback cb) { completeCallback_ = cb; }
 
 private:
     bool readComplete_;
+    
+    Callback completeCallback_;
 };
 
 }

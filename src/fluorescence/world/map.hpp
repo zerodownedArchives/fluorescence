@@ -79,7 +79,7 @@ private:
     bool isFlat_;
 };
 
-class MapBlock : public data::OnDemandReadable {
+class MapBlock : public data::OnDemandReadable<MapBlock> {
 
 friend class data::MapLoader;
 friend class world::Sector;

@@ -90,7 +90,18 @@ public:
     uint64_t value_;
     uint16_t x_;
     uint16_t y_;
+};
 
+struct RenderDepth {
+    RenderDepth() : value_(0) { }
+    RenderDepth(uint64_t value) : value_(value) { }
+    
+    bool operator>(const RenderDepth& other) const { return value_ > other.value_; }
+    bool operator<(const RenderDepth& other) const { return value_ < other.value_; }
+    bool operator==(const RenderDepth& other) const { return value_ == other.value_; }
+    bool operator!=(const RenderDepth& other) const { return value_ != other.value_; }
+    
+    uint64_t value_;
 };
 
 }

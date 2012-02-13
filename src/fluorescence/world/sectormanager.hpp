@@ -59,6 +59,9 @@ public:
     void clear();
 
     void update(unsigned int elapsedMillis);
+    
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator begin();
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator end();
 
 private:
     std::map<IsoIndex, boost::shared_ptr<world::Sector> > sectorMap_;
