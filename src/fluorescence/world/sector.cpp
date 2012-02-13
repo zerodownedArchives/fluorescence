@@ -30,28 +30,24 @@
 namespace fluo {
 namespace world {
 
-Sector::Sector(unsigned int mapId, unsigned int sectorId) :
+Sector::Sector(unsigned int mapId, const IsoIndex& sectorId) :
         mapId_(mapId), id_(sectorId), visible_(true), fullUpdateRenderDataRequired_(true) {
 
-    unsigned int mapHeight = data::Manager::getMapLoader(mapId_)->getBlockCountY();
-    location_[0u] = sectorId / mapHeight;
-    location_[1u] = sectorId % mapHeight;
+    //LOG_DEBUG << "Sector construct, map=" << mapId_ << " x=" << getLocX() << " y=" << getLocY() << std::endl;
 
-    //LOG_DEBUG << "Sector construct, map=" << mapId_ << " x=" << location_[0u] << " y=" << location_[1u] << std::endl;
-
-    mapBlock_ = data::Manager::getMapLoader(mapId_)->get(location_[0u], location_[1u]);
-    staticBlock_ = data::Manager::getStaticsLoader(mapId_)->get(location_[0u], location_[1u]);
+    mapBlock_ = data::Manager::getMapLoader(mapId_)->get(getLocX(), getLocY());
+    staticBlock_ = data::Manager::getStaticsLoader(mapId_)->get(getLocX(), getLocY());
 }
 
 Sector::~Sector() {
-    //LOGARG_DEBUG(LOGTYPE_WORLD, "Sector destroy, map=%u x=%u y=%u items=%u", mapId_, location_[0u], location_[1u], staticBlock_->getItemList().size() + 64);
+    //LOG_DEBUG << "Sector destruct, map=" << mapId_ << " x=" << getLocX() << " y=" << getLocY() << std::endl;
 }
 
 unsigned int Sector::getLocX() const {
-    return location_[0u];
+    return id_.x_;
 }
 unsigned int Sector::getLocY() const {
-    return location_[1u];
+    return id_.y_;
 }
 
 bool Sector::isVisible() const {
@@ -69,7 +65,7 @@ unsigned int Sector::getMapId() const {
     return mapId_;
 }
 
-unsigned int Sector::getSectorId() const {
+const IsoIndex& Sector::getSectorId() const {
     return id_;
 }
 

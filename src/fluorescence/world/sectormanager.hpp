@@ -25,6 +25,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <typedefs.hpp>
 #include <misc/config.hpp>
 
 namespace fluo {
@@ -60,7 +61,7 @@ public:
     void update(unsigned int elapsedMillis);
 
 private:
-    std::map<unsigned int, boost::shared_ptr<world::Sector> > sectorMap_;
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> > sectorMap_;
 
     unsigned int updateCounter_; ///< Sector update is not necessary at every frame. Thus we only call it every updateFrequency_ frame
     unsigned int sectorAddFrequency_;
@@ -74,7 +75,7 @@ private:
 
     std::list<ui::components::WorldView*> worldViews_;
 
-    void buildSectorRequiredList(std::list<unsigned int>& list, unsigned int cacheAdd);
+    void buildSectorRequiredList(std::list<IsoIndex>& list, unsigned int cacheAdd);
 };
 
 }

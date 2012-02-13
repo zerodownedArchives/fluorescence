@@ -21,9 +21,9 @@
 #define FLUO_UI_WORLDVIEW_HPP
 
 #include <boost/shared_ptr.hpp>
-
 #include <list>
 
+#include <typedefs.hpp>
 #include <ui/gumpelement.hpp>
 
 namespace fluo {
@@ -57,7 +57,7 @@ public:
     void renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect);
 
     /// store all sectors this view needs (including some cache) in the list
-    void getRequiredSectors(std::list<unsigned int>& list, unsigned int mapHeight, unsigned int cacheAdd);
+    void getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd);
 
     boost::shared_ptr<world::IngameObject> getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY);
 

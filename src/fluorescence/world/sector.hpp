@@ -20,10 +20,11 @@
 #ifndef FLUO_WORLD_SECTOR_HPP
 #define FLUO_WORLD_SECTOR_HPP
 
+#include <boost/shared_ptr.hpp>
+
+#include <typedefs.hpp>
 #include "map.hpp"
 #include "statics.hpp"
-
-#include <boost/shared_ptr.hpp>
 
 namespace fluo {
 
@@ -40,10 +41,10 @@ namespace world {
 class Sector {
 
 public:
-    Sector(unsigned int mapId, unsigned int sectorId);
+    Sector(unsigned int mapId, const IsoIndex& sectorId);
     ~Sector();
 
-    unsigned int getSectorId() const;
+    const IsoIndex& getSectorId() const;
     unsigned int getMapId() const;
 
     unsigned int getLocX() const;
@@ -60,8 +61,7 @@ public:
 
 private:
     unsigned int mapId_;
-    unsigned int id_;
-    CL_Vec2<unsigned int> location_;
+    IsoIndex id_;
 
     boost::shared_ptr<MapBlock> mapBlock_;
     boost::shared_ptr<StaticBlock> staticBlock_;

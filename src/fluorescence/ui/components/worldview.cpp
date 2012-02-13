@@ -120,7 +120,7 @@ void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     //gc.pop_cliprect();
 }
 
-void WorldView::getRequiredSectors(std::list<unsigned int>& list, unsigned int mapHeight, unsigned int cacheAdd) {
+void WorldView::getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd) {
     // at least, we need to load as much tiles as the diagonal of the view is long
     // we load this amount of tiles (plus a little cache) in each direction of the center tile
 
@@ -138,20 +138,19 @@ void WorldView::getRequiredSectors(std::list<unsigned int>& list, unsigned int m
     int centerSectorX = (int)(getCenterTileX() / 8.0);
     int centerSectorY = (int)(getCenterTileY() / 8.0);
 
-    list.push_back(centerSectorX * mapHeight + centerSectorY);
+    list.push_back(IsoIndex(centerSectorX, centerSectorY));
 
     // uncomment this to load just a single sector
     //return;
 
-    unsigned int sectorX, sectorY, sectorId;
+    unsigned int sectorX, sectorY;
     int diff;
     for (int x = -loadInEachDirection; x <= loadInEachDirection; ++x) {
         diff = loadInEachDirection - abs(x);
         for (int y = -diff; y <= diff; ++y) {
             sectorX = (std::max)(centerSectorX + x, 0);
             sectorY = (std::max)(centerSectorY + y, 0);
-            sectorId = sectorX * mapHeight + sectorY;
-            list.push_back(sectorId);
+            list.push_back(IsoIndex(sectorX, sectorY));
 
         }
     }
