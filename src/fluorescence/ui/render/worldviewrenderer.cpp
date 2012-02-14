@@ -62,7 +62,11 @@ void WorldViewRenderer::checkTextureSize() {
 
         CL_GraphicContext gc = ui::Manager::getGraphicContext();
 
-        depthTexture_ = CL_Texture(gc, gc.get_size(), cl_depth_component);
+        depthTexture_ = CL_Texture(gc, texture_->getWidth(), texture_->getHeight(), cl_depth_component);
+        
+        frameBuffer_ = CL_FrameBuffer(gc);
+        frameBuffer_.attach_color_buffer(0, *texture_->getTexture());
+        frameBuffer_.attach_depth_buffer(depthTexture_);
     }
 }
 
@@ -71,11 +75,7 @@ boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) 
         checkTextureSize();
         CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 
-        CL_FrameBuffer fb(gc);
-        fb.attach_color_buffer(0, *texture_->getTexture());
-        fb.attach_depth_buffer(depthTexture_);
-
-        gc.set_frame_buffer(fb);
+        gc.set_frame_buffer(frameBuffer_);
 
         render(gc);
 

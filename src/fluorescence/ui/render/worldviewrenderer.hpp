@@ -73,6 +73,8 @@ private:
 
     void batchAdd(CL_GraphicContext& gc, world::IngameObject* curObj, ui::Texture* tex, unsigned long long& minRenderPrio, float renderDiff);
     void batchFlush(CL_GraphicContext& gc);
+    
+    CL_FrameBuffer frameBuffer_;
 };
 
 }
