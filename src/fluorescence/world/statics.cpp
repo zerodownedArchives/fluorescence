@@ -116,7 +116,7 @@ void StaticItem::onClick() {
     printRenderDepth();
 }
 
-bool StaticItem::requireRenderUpdate() const {
+bool StaticItem::periodicRenderUpdateRequired() const {
     return tileDataInfo_->animation();
 }
 

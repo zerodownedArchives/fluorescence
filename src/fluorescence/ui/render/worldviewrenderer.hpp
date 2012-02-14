@@ -60,6 +60,12 @@ private:
     boost::shared_ptr<Texture> texture_;
     CL_Texture depthTexture_;
     void checkTextureSize();
+    
+    // draw more pixels than currently displayed (borderSize/2 more pixels in every direction)
+    static const unsigned int BORDER_SIZE_HALF = 50;
+    static const unsigned int BORDER_SIZE = BORDER_SIZE_HALF * 2;
+    
+    CL_FrameBuffer frameBuffer_;
 };
 
 }

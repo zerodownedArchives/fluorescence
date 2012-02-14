@@ -70,8 +70,7 @@ public:
     virtual boost::shared_ptr<ui::Texture> getIngameTexture() const = 0;
     virtual boost::shared_ptr<ui::Texture> getGumpTexture() const;
 
-    // return true if the render depth changed (i.e. some list might require resorting)
-    bool updateRenderData(unsigned int elapsedMillis); ///< calls updateVertexCoordinates, updateRenderDepth, updateTextureProvider and updateAnimation
+    void updateRenderData(unsigned int elapsedMillis); ///< calls updateVertexCoordinates, updateRenderDepth, updateTextureProvider and updateAnimation
 
     const CL_Vec3f* getVertexCoordinates() const;
 
@@ -133,10 +132,12 @@ public:
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqBegin();
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd();
 
-    void setRenderDepth(const RenderDepth& depth);
     const RenderDepth& getRenderDepth() const;
 
     void printRenderDepth() const;
+    
+    bool renderDepthChanged() const;
+    bool textureOrVerticesChanged() const;
 
 protected:
     ui::WorldRenderData worldRenderData_;

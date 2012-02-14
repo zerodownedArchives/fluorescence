@@ -121,12 +121,16 @@ bool MapTile::updateAnimation(unsigned int elapsedMillis) {
 }
 
 void MapTile::setSurroundingZ(int left, int right, int bottom) {
+    bool flatBefore = isFlat_;
     zLeft_ = left;
     zRight_ = right;
     zBottom_ = bottom;
 
     calculateIsFlat();
 
+    if (isFlat_ != flatBefore) {
+        updateTextureProvider();
+    }
     invalidateVertexCoordinates();
 }
 

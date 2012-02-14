@@ -116,7 +116,7 @@ unsigned int WorldView::getHeight() {
 void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     //gc.push_cliprect(get_geometry());
     CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
-    // renderer_->render(gc);
+     //renderer_->render(gc);
     //gc.pop_cliprect();
 }
 

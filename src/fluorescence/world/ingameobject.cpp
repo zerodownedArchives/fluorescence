@@ -127,8 +127,9 @@ const CL_Vec3f& IngameObject::getHueInfo() const {
     return worldRenderData_.hueInfo_;
 }
 
-bool IngameObject::updateRenderData(unsigned int elapsedMillis) {
-    bool renderDepthChanged = false;
+void IngameObject::updateRenderData(unsigned int elapsedMillis) {
+    worldRenderData_.resetUpdatedFlags();
+    
     if (worldRenderData_.renderDataValid()) {
         bool frameChanged = updateAnimation(elapsedMillis);
 
@@ -146,7 +147,7 @@ bool IngameObject::updateRenderData(unsigned int elapsedMillis) {
 
         boost::shared_ptr<ui::Texture> tex = getIngameTexture();
         if (!tex || !tex->isReadComplete()) {
-            return false;
+            return;
         }
 
         bool frameChanged = updateAnimation(elapsedMillis);
@@ -162,16 +163,11 @@ bool IngameObject::updateRenderData(unsigned int elapsedMillis) {
         }
 
         if (worldRenderData_.renderDepthUpdateRequired()) {
-            RenderDepth oldDepth = getRenderDepth();
             updateRenderDepth();
             worldRenderData_.onRenderDepthUpdate();
             notifyRenderQueuesWorldDepth();
-            
-            renderDepthChanged = oldDepth != getRenderDepth();
         }
     }
-    
-    return renderDepthChanged;
 }
 
 bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {
@@ -526,12 +522,16 @@ const ui::WorldRenderData& IngameObject::getWorldRenderData() const {
 void IngameObject::updateGumpTextureProvider() {
 }
 
-void IngameObject::setRenderDepth(const RenderDepth& depth) {
-    worldRenderData_.setRenderDepth(depth);
-}
-
 const RenderDepth& IngameObject::getRenderDepth() const {
     return worldRenderData_.getRenderDepth();
+}
+
+bool IngameObject::renderDepthChanged() const {
+    return worldRenderData_.renderDepthUpdated();
+}
+
+bool IngameObject::textureOrVerticesChanged() const {
+    return worldRenderData_.textureOrVerticesUpdated();
 }
 
 }

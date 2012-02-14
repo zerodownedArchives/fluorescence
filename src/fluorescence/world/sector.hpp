@@ -58,6 +58,8 @@ public:
     
     std::list<world::IngameObject*>::iterator renderBegin();
     std::list<world::IngameObject*>::iterator renderEnd();
+    
+    bool repaintRequired() const;
 
 private:
     unsigned int mapId_;
@@ -73,6 +75,7 @@ private:
 
     bool fullUpdateRenderDataRequired_;
     bool renderListSortRequired_;
+    bool repaintRequired_;
     
     // ownership of these objects is already provided by staticBlock_ or mapBlock_, thus no smart pointers here
     std::list<world::IngameObject*> quickRenderUpdateList_;    

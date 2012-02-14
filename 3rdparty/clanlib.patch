@@ -108,37 +108,6 @@ Index: Sources/GUI/gui_component_impl.h
  /// \}
  /// \name Operations
  /// \{
-Index: Sources/GL/opengl_graphic_context_provider.cpp
-===================================================================
---- Sources/GL/opengl_graphic_context_provider.cpp	(revision 7085)
-+++ Sources/GL/opengl_graphic_context_provider.cpp	(working copy)
-@@ -1317,6 +1317,12 @@
- 			break;
- 		}
- 	}
-+
-+	if (pen.is_enable_point_sprite()) {
-+		glEnable(0x8861); // GL_POINT_SPRITE
-+	} else {
-+		glDisable(0x8861); // GL_POINT_SPRITE
-+	}
- }
- 
- void CL_OpenGLGraphicContextProvider::set_polygon_rasterizer(const CL_PolygonRasterizer &raster)
-Index: Sources/Display/Render/pen.cpp
-===================================================================
---- Sources/Display/Render/pen.cpp	(revision 7085)
-+++ Sources/Display/Render/pen.cpp	(working copy)
-@@ -139,5 +139,9 @@
- 	impl->point_sprite_origin = origin;
- }
- 
-+bool CL_Pen::is_enable_point_sprite() const {
-+	return impl->point_sprites;
-+}
-+
- /////////////////////////////////////////////////////////////////////////////
- // CL_Pen Implementation:
 Index: Sources/API/GUI/gui_component.h
 ===================================================================
 --- Sources/API/GUI/gui_component.h	(revision 7085)
@@ -173,16 +142,3 @@ Index: Sources/API/GUI/gui_component.h
  /// \}
  /// \name Implementation
  /// \{
-Index: Sources/API/Display/Render/pen.h
-===================================================================
---- Sources/API/Display/Render/pen.h	(revision 7085)
-+++ Sources/API/Display/Render/pen.h	(working copy)
-@@ -77,6 +77,8 @@
- 	/// \brief Returns the origin of texture point sprites.
- 	CL_PointSpriteOrigin get_point_sprite_origin() const;
- 
-+	bool is_enable_point_sprite() const;
-+
- //!Operations
- public:
- 	/// \brief The default value is 1.0

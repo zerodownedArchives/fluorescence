@@ -57,32 +57,30 @@ WorldViewRenderer::~WorldViewRenderer() {
 }
 
 void WorldViewRenderer::checkTextureSize() {
-    if (!texture_ || texture_->getWidth() != worldView_->getWidth() || texture_->getHeight() != worldView_->getHeight()) {
+    if (!texture_ || texture_->getWidth() != worldView_->getWidth() + BORDER_SIZE || texture_->getHeight() != worldView_->getHeight() + BORDER_SIZE) {
         texture_.reset(new ui::Texture(false));
-        texture_->initPixelBuffer(worldView_->getWidth(), worldView_->getHeight());
+        texture_->initPixelBuffer(worldView_->getWidth() + BORDER_SIZE, worldView_->getHeight() + BORDER_SIZE);
         texture_->setReadComplete();
 
         CL_GraphicContext gc = ui::Manager::getGraphicContext();
 
-        depthTexture_ = CL_Texture(gc, gc.get_size(), cl_depth_component);
+        depthTexture_ = CL_Texture(gc, worldView_->getWidth() + BORDER_SIZE, worldView_->getHeight() + BORDER_SIZE, cl_depth_component);
+        
+        frameBuffer_ = CL_FrameBuffer(gc);
+        frameBuffer_.attach_color_buffer(0, *texture_->getTexture());
+        frameBuffer_.attach_depth_buffer(depthTexture_);
     }
 }
 
 boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) {
-    if (true || renderQueue_->requireWorldRepaint() || !texture_ || requireInitialRepaint()) {
-        checkTextureSize();
-        CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
+    checkTextureSize();
+    CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 
-        CL_FrameBuffer fb(gc);
-        fb.attach_color_buffer(0, *texture_->getTexture());
-        fb.attach_depth_buffer(depthTexture_);
+    gc.set_frame_buffer(frameBuffer_);
 
-        gc.set_frame_buffer(fb);
+    render(gc);
 
-        render(gc);
-
-        gc.set_frame_buffer(origBuffer);
-    }
+    gc.set_frame_buffer(origBuffer);
 
     return texture_;
 }
@@ -91,24 +89,32 @@ boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) 
 void WorldViewRenderer::render(CL_GraphicContext& gc) {
     renderQueue_->preRender();
 
-    gc.clear(CL_Colorf(0.f, 0.f, 0.f, 1.f));
-    gc.clear_depth(1.0);
-
     CL_BufferControl buffer_control;
     buffer_control.set_depth_compare_function(cl_comparefunc_lequal);
-    buffer_control.enable_depth_write(false);
-    buffer_control.enable_depth_test(false);
+    buffer_control.enable_depth_write(true);
+    buffer_control.enable_depth_test(true);
     buffer_control.enable_stencil_test(false);
     buffer_control.enable_color_write(true);
     gc.set_buffer_control(buffer_control);
 
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getWorldShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
+    
+    static int lastClippingLeft = 0;
+    static int lastClippingTop = 0;
 
     int clippingLeftPixelCoord = worldView_->getCenterPixelX() - worldView_->getWidth()/2;
     int clippingRightPixelCoord = worldView_->getCenterPixelX() + worldView_->getWidth()/2;
     int clippingTopPixelCoord = worldView_->getCenterPixelY() - worldView_->getHeight()/2;
     int clippingBottomPixelCoord = worldView_->getCenterPixelY() + worldView_->getHeight()/2;
+    
+    bool allRepaint = (lastClippingLeft != clippingLeftPixelCoord) || (lastClippingTop != clippingTopPixelCoord);
+    lastClippingLeft = clippingLeftPixelCoord;
+    lastClippingTop = clippingTopPixelCoord;
+    
+    if (allRepaint) {
+        gc.clear_depth(1.0);
+    }
     
     static CL_Rectf texCoordHelper(0.0f, 0.0f, 1.0f, 1.0f);
 
@@ -152,6 +158,10 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     unsigned int totalCount = 0;
 
     for (; secIter != secEnd; ++secIter) {
+        if (!allRepaint && !secIter->second->repaintRequired()) {
+            continue;
+        }
+        
         std::list<world::IngameObject*>::iterator objIter = secIter->second->renderBegin();
         std::list<world::IngameObject*>::iterator objEnd = secIter->second->renderEnd();
         
@@ -202,7 +212,6 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     gc.reset_textures();
     gc.reset_program_object();
 
-    gc.clear_depth(1.0);
 
     buffer_control.enable_depth_write(false);
     buffer_control.enable_depth_test(false);
@@ -243,7 +252,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     ++cnt;
     
     
-    LOG_DEBUG << "total: " << totalCount << " not in: " << notInCount << std::endl;
+    //LOG_DEBUG << "total: " << totalCount << " not in: " << notInCount << std::endl;
 }
 
 boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {

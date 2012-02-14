@@ -53,14 +53,13 @@ public:
     bool vertexCoordinatesUpdateRequired() const;
     bool renderDepthUpdateRequired() const;
 
-    bool textureProviderUpdated() const;
-    bool vertexCoordinatesUpdated() const;
+    void resetUpdatedFlags();
+    bool textureOrVerticesUpdated() const;
     bool renderDepthUpdated() const;
 
     const CL_Vec3f* getVertexCoordinates() const;
     void setVertexCoordinates(unsigned int idx, float x, float y);
     void setVertexCoordinates(const CL_Rectf& rect);
-    void setRenderDepth(const RenderDepth& d);
     void setRenderDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint8_t byte5, uint8_t byte6);
     const RenderDepth& getRenderDepth() const;
 
@@ -79,6 +78,9 @@ private:
     bool textureProviderUpdateRequired_;
     bool vertexCoordinatesUpdateRequired_;
     bool renderDepthUpdateRequired_;
+    
+    bool renderDepthUpdated_;
+    bool textureOrVerticesUpdated_;
 
     CL_Vec3f vertexCoordinates_[6];
 

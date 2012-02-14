@@ -63,23 +63,22 @@ bool WorldRenderData::renderDepthUpdateRequired() const {
 
 void WorldRenderData::onTextureProviderUpdate() {
     textureProviderUpdateRequired_ = false;
+    textureOrVerticesUpdated_ = true;
 }
 
 void WorldRenderData::onVertexCoordinatesUpdate() {
     vertexCoordinatesUpdateRequired_ = false;
+    textureOrVerticesUpdated_ = true;
 }
 
 void WorldRenderData::onRenderDepthUpdate() {
     renderDepthUpdateRequired_ = false;
+    renderDepthUpdated_ = true;
 }
 
 void WorldRenderData::setVertexCoordinates(unsigned int idx, float x, float y) {
     vertexCoordinates_[idx].x = x;
     vertexCoordinates_[idx].y = y;
-}
-
-void WorldRenderData::setRenderDepth(const RenderDepth& value) {
-    renderDepth_ = value;
 }
 
 void WorldRenderData::setRenderDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint8_t byte5, uint8_t byte6) { 
@@ -95,7 +94,12 @@ void WorldRenderData::setRenderDepth(uint16_t xPlusY, int8_t z, uint8_t priority
     tmp <<= 8;
     tmp |= (byte6 & 0xFF);
 
-    renderDepth_ = RenderDepth(tmp);
+    renderDepth_ = tmp;
+    
+    float gpuDepth = xPlusY / 32767.f;
+    for (unsigned int i = 0; i < 6; ++i) {
+        vertexCoordinates_[i].z = gpuDepth;
+    }
 }
 
 const RenderDepth& WorldRenderData::getRenderDepth() const {
@@ -119,6 +123,19 @@ void WorldRenderData::setVertexCoordinates(const CL_Rectf& rect) {
     vertexCoordinates_[4].y = rect.bottom;
     vertexCoordinates_[5].x = rect.right;
     vertexCoordinates_[5].y = rect.bottom;
+}
+
+void WorldRenderData::resetUpdatedFlags() {
+    renderDepthUpdated_ = false;
+    textureOrVerticesUpdated_ = false;
+}
+
+bool WorldRenderData::textureOrVerticesUpdated() const {
+    return textureOrVerticesUpdated_;
+}
+
+bool WorldRenderData::renderDepthUpdated() const {
+    return renderDepthUpdated_;
 }
 
 }

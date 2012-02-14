@@ -33,7 +33,7 @@ namespace world {
 Sector::Sector(unsigned int mapId, const IsoIndex& sectorId) :
         mapId_(mapId), id_(sectorId),  
         mapAddedToList_(false), staticsAddedToList_(false), 
-        visible_(true), fullUpdateRenderDataRequired_(true) {
+        visible_(true), fullUpdateRenderDataRequired_(true), repaintRequired_(false) {
 
     //LOG_DEBUG << "Sector construct, map=" << mapId_ << " x=" << getLocX() << " y=" << getLocY() << std::endl;
 
@@ -85,6 +85,8 @@ void Sector::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
 }
 
 void Sector::update(unsigned int elapsedMillis) {
+    repaintRequired_ = false;
+    
     if (!mapAddedToList_ && mapBlock_ && mapBlock_->isReadComplete()) {
         // map block is now loaded => add to list
         for (unsigned int x = 0; x < 8; ++x) {
@@ -94,7 +96,6 @@ void Sector::update(unsigned int elapsedMillis) {
         }
         
         fullUpdateRenderDataRequired_ = true;
-        renderListSortRequired_ = true;
         mapAddedToList_ = true;
     }
     
@@ -109,28 +110,40 @@ void Sector::update(unsigned int elapsedMillis) {
         }
         
         fullUpdateRenderDataRequired_ = true;
-        renderListSortRequired_ = true;
         staticsAddedToList_ = true;
     }
     
     if (mapBlock_->repaintRequested_) {
         // happens when the neighboring z values of a map block change
-        fullUpdateRenderDataRequired_ = true;
+        
+        for (unsigned int x = 0; x < 8; ++x) {
+            for (unsigned int y = 0; y < 8; ++y) {
+                mapBlock_->get(x, y)->updateRenderData(elapsedMillis);
+                renderListSortRequired_ |= mapBlock_->get(x, y)->renderDepthChanged();
+                repaintRequired_ |= mapBlock_->get(x, y)->textureOrVerticesChanged();
+            }
+        }
+        
         mapBlock_->repaintRequested_ = false; 
     }
     
     //LOG_DEBUG << "Sector::update " << id_ << std::endl;
     if (fullUpdateRenderDataRequired_) {
+        // this is executed only a few times after the sector is loaded, as long as not all textures for the sector are loaded
+        // as soon as every static and map tile is loaded, only the things in the quick update list are updated
+        
         //LOG_DEBUG << "full update required" << std::endl;
         
         // do we need to update everything?
         bool curFullUpdateRequired = false;
+        repaintRequired_ = true;
 
         if (mapAddedToList_) {
             for (unsigned int x = 0; x < 8; ++x) {
                 for (unsigned int y = 0; y < 8; ++y) {
                     if (!mapBlock_->get(x, y)->getWorldRenderData().renderDataValid()) {
-                        renderListSortRequired_ |= mapBlock_->get(x, y)->updateRenderData(elapsedMillis);
+                        mapBlock_->get(x, y)->updateRenderData(elapsedMillis);
+                        renderListSortRequired_ |= mapBlock_->get(x, y)->renderDepthChanged();
                         curFullUpdateRequired = true;
                     }
                 }
@@ -143,23 +156,27 @@ void Sector::update(unsigned int elapsedMillis) {
 
             for (; it != end; ++it) {
                 if (!(*it)->getWorldRenderData().renderDataValid()) {
-                    renderListSortRequired_ |= (*it)->updateRenderData(elapsedMillis);
-                    curFullUpdateRequired = true;
+                    if (!(*it)->getWorldRenderData().renderDataValid()) {
+                        (*it)->updateRenderData(elapsedMillis);
+                        renderListSortRequired_ |= (*it)->renderDepthChanged();
+                        curFullUpdateRequired = true;
+                    }
                 }
             }
         }
 
         if (!curFullUpdateRequired) {
-            //LOG_DEBUG << "full update not required anymore" << std::endl;
             // all the items in this sector are now fully loaded, including texture etc
             // to save time in the future, update only the items that are animated. store those in a list now
+            
+            //LOG_DEBUG << "full update not required anymore" << std::endl;
             quickRenderUpdateList_.clear();
 
             std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticBlock_->getItemList().begin();
             std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticBlock_->getItemList().end();
 
             for (; it != end; ++it) {
-                if ((*it)->requireRenderUpdate()) {
+                if ((*it)->periodicRenderUpdateRequired()) {
                     quickRenderUpdateList_.push_back(it->get());
                 }
             }
@@ -168,7 +185,6 @@ void Sector::update(unsigned int elapsedMillis) {
 
             //LOG_DEBUG << "Items in quicklist: " << quickRenderUpdateList_.size() << std::endl;
         }
-
     } else if (!quickRenderUpdateList_.empty()) {
         //LOG_DEBUG << "quick render update, size=" << quickRenderUpdateList_.size() << std::endl;
         // only call update on those few things that really need to be updated (e.g. animated statics)
@@ -176,12 +192,15 @@ void Sector::update(unsigned int elapsedMillis) {
         std::list<world::IngameObject*>::iterator end = quickRenderUpdateList_.end();
 
         for (; iter != end; ++iter) {
-            renderListSortRequired_ |= (*iter)->updateRenderData(elapsedMillis);
+            (*iter)->updateRenderData(elapsedMillis);
+            renderListSortRequired_ |= (*iter)->renderDepthChanged();
+            repaintRequired_ |= (*iter)->textureOrVerticesChanged();
         }
     }
     
     if (renderListSortRequired_) {
         renderListSortRequired_ = false;
+        repaintRequired_ = true;
         renderList_.sort(&Sector::renderDepthSortHelper);
     }
 }
@@ -196,6 +215,10 @@ std::list<world::IngameObject*>::iterator Sector::renderBegin() {
 
 std::list<world::IngameObject*>::iterator Sector::renderEnd() {
     return renderList_.end();
+}
+
+bool Sector::repaintRequired() const {
+    return repaintRequired_;
 }
 
 }
