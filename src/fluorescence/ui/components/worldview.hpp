@@ -34,7 +34,9 @@ class IngameObject;
 
 namespace ui {
 
+namespace render {
 class WorldViewRenderer;
+}
 
 namespace components {
 
@@ -47,12 +49,12 @@ public:
 
     void setCenterTiles(float x, float y);
 
-    int getCenterPixelX();
-    int getCenterPixelY();
-    int getCenterPixelZ();
+    float getCenterPixelX() const;
+    float getCenterPixelY() const;
+    CL_Vec2f getTopLeftPixel() const;
 
-    unsigned int getWidth();
-    unsigned int getHeight();
+    unsigned int getWidth() const;
+    unsigned int getHeight() const;
 
     void renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect);
 
@@ -68,11 +70,11 @@ private:
 
     boost::shared_ptr<world::IngameObject> centerObject_;
 
-    float getCenterTileX();
-    float getCenterTileY();
-    float getCenterTileZ();
+    float getCenterTileX() const;
+    float getCenterTileY() const;
+    float getCenterTileZ() const;
 
-    boost::shared_ptr<WorldViewRenderer> renderer_;
+    boost::shared_ptr<render::WorldViewRenderer> renderer_;
 
     bool onInputPressed(const CL_InputEvent& e);
     bool onInputReleased(const CL_InputEvent & e);
@@ -80,6 +82,10 @@ private:
     bool onPointerMoved(const CL_InputEvent& e);
     
     unsigned int getDirectionForMousePosition(const CL_Point& mouse) const;
+    
+    float lastCenterPixelX_;
+    float lastCenterPixelY_;
+    CL_Rectf textureCoordinates_;
 };
 
 }

@@ -23,11 +23,10 @@
 #include <ClanLib/Display/Render/program_object.h>
 
 #include <ui/manager.hpp>
-#include <ui/render/renderqueue.hpp>
 #include <ui/render/shadermanager.hpp>
 #include <ui/texture.hpp>
-#include <ui/fontengine.hpp>
 #include <ui/components/worldview.hpp>
+#include <ui/cliprectmanager.hpp>
 
 #include <misc/log.hpp>
 
@@ -47,52 +46,100 @@
 
 namespace fluo {
 namespace ui {
+namespace render {
 
-WorldViewRenderer::WorldViewRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::WorldView* worldView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_WORLD),
-        worldView_(worldView), renderQueue_(renderQueue) {
+WorldViewRenderer::WorldViewRenderer(components::WorldView* worldView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_WORLD),
+        worldView_(worldView), textureWidth_(0), textureHeight_(0), frameBufferIndex_(0) {
 }
 
 WorldViewRenderer::~WorldViewRenderer() {
-    renderQueue_->clear();
 }
 
 void WorldViewRenderer::checkTextureSize() {
-    if (!texture_ || texture_->getWidth() != worldView_->getWidth() + BORDER_SIZE || texture_->getHeight() != worldView_->getHeight() + BORDER_SIZE) {
-        texture_.reset(new ui::Texture(false));
-        texture_->initPixelBuffer(worldView_->getWidth() + BORDER_SIZE, worldView_->getHeight() + BORDER_SIZE);
-        texture_->setReadComplete();
-
-        CL_GraphicContext gc = ui::Manager::getGraphicContext();
-
-        depthTexture_ = CL_Texture(gc, worldView_->getWidth() + BORDER_SIZE, worldView_->getHeight() + BORDER_SIZE, cl_depth_component);
+    if (!textures_[0] || textureWidth_ != worldView_->getWidth() + BORDER_SIZE || textureHeight_ != worldView_->getHeight() + BORDER_SIZE) {
+        textureWidth_ = worldView_->getWidth() + BORDER_SIZE;
+        textureHeight_ = worldView_->getHeight() + BORDER_SIZE;
         
-        frameBuffer_ = CL_FrameBuffer(gc);
-        frameBuffer_.attach_color_buffer(0, *texture_->getTexture());
-        frameBuffer_.attach_depth_buffer(depthTexture_);
+        initFrameBuffer(0);
+        initFrameBuffer(1);
+        repaintEverything_ = true;
     }
 }
 
-boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) {
+void WorldViewRenderer::initFrameBuffer(unsigned int index) {
+    textures_[index].reset(new ui::Texture(false));
+    textures_[index]->initPixelBuffer(textureWidth_, textureHeight_);
+    textures_[index]->setReadComplete();
+
+    CL_GraphicContext gc = ui::Manager::getGraphicContext();
+
+    depthTextures_[index] = CL_Texture(gc, textureWidth_, textureHeight_, cl_depth_component);
+    
+    frameBuffers_[index] = CL_FrameBuffer(gc);
+    frameBuffers_[index].attach_color_buffer(0, *textures_[index]->getTexture());
+    frameBuffers_[index].attach_depth_buffer(depthTextures_[index]);
+    
+    texturesInitialized_[index] = false;
+}
+
+boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc, float moveX, float moveY) {
     checkTextureSize();
     CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
+    
+    frameBufferIndex_ = (frameBufferIndex_ + 1) % 2;
 
-    gc.set_frame_buffer(frameBuffer_);
+    gc.set_frame_buffer(frameBuffers_[frameBufferIndex_]);
+    
+    renderPreviousTexture(gc, moveX, moveY);
 
     render(gc);
-
+    
     gc.set_frame_buffer(origBuffer);
+    
+    texturesInitialized_[frameBufferIndex_] = true;
+    return textures_[frameBufferIndex_];
+}
 
-    return texture_;
+CL_Rectf WorldViewRenderer::renderPreviousTexture(CL_GraphicContext& gc, float pixelX, float pixelY) {
+    if (abs(pixelX) >= textureWidth_ || abs(pixelY) >= textureHeight_) {
+        // need to paint everything from scratch
+        repaintEverything_ = true;
+    } else {
+        unsigned int oldTexture = (frameBufferIndex_ + 1) % 2;
+        
+        if (texturesInitialized_[oldTexture]) {
+            repaintEverything_ = false;
+            
+            gc.clear_depth(1.0);
+            CL_Draw::texture(gc, *textures_[oldTexture]->getTexture(), CL_Rectf(-pixelX, -pixelY, CL_Sizef(textureWidth_, textureHeight_)));
+            
+            if (pixelX < 0) {
+                ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(-pixelX, textureHeight_)).translate(worldView_->getTopLeftPixel()));
+            } else if (pixelX > 0) {
+                ui::Manager::getClipRectManager()->add(CL_Rectf(textureWidth_ - pixelX, 0, CL_Sizef(pixelX, textureHeight_)).translate(worldView_->getTopLeftPixel()));
+            }
+            
+            if (pixelY < 0) {
+                ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(textureWidth_, -pixelY)).translate(worldView_->getTopLeftPixel()));
+            } else if (pixelY > 0) {
+                ui::Manager::getClipRectManager()->add(CL_Rectf(0, textureHeight_ - pixelY, CL_Sizef(textureWidth_, pixelY)).translate(worldView_->getTopLeftPixel()));
+            }
+        } else {
+            repaintEverything_ = true;
+        }
+    }
+    
+    //LOG_DEBUG << "center moved x=" << pixelX << " y=" << pixelY << " repaint everything=" << repaintEverything_ << std::endl;
+    
+    return CL_Rectf(0.0, 0.0, 1.0, 1.0);
 }
 
 
 void WorldViewRenderer::render(CL_GraphicContext& gc) {
-    renderQueue_->preRender();
-
     CL_BufferControl buffer_control;
     buffer_control.set_depth_compare_function(cl_comparefunc_lequal);
-    buffer_control.enable_depth_write(true);
-    buffer_control.enable_depth_test(true);
+    buffer_control.enable_depth_write(false);
+    buffer_control.enable_depth_test(false);
     buffer_control.enable_stencil_test(false);
     buffer_control.enable_color_write(true);
     gc.set_buffer_control(buffer_control);
@@ -103,19 +150,137 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     static int lastClippingLeft = 0;
     static int lastClippingTop = 0;
 
+    CL_Vec2f clippingTopLeftCorner = -worldView_->getTopLeftPixel();
     int clippingLeftPixelCoord = worldView_->getCenterPixelX() - worldView_->getWidth()/2;
-    int clippingRightPixelCoord = worldView_->getCenterPixelX() + worldView_->getWidth()/2;
+    //int clippingRightPixelCoord = worldView_->getCenterPixelX() + worldView_->getWidth()/2;
     int clippingTopPixelCoord = worldView_->getCenterPixelY() - worldView_->getHeight()/2;
-    int clippingBottomPixelCoord = worldView_->getCenterPixelY() + worldView_->getHeight()/2;
+    //int clippingBottomPixelCoord = worldView_->getCenterPixelY() + worldView_->getHeight()/2;
     
     bool allRepaint = (lastClippingLeft != clippingLeftPixelCoord) || (lastClippingTop != clippingTopPixelCoord);
     lastClippingLeft = clippingLeftPixelCoord;
     lastClippingTop = clippingTopPixelCoord;
+    allRepaint = !allRepaint;
     
-    if (allRepaint) {
-        gc.clear_depth(1.0);
+    
+    CL_Vec2f pixelOffsetVec(clippingLeftPixelCoord, clippingTopPixelCoord);
+    shader->set_uniform2f("PositionOffset", pixelOffsetVec);
+
+    gc.set_texture(0, *(data::Manager::getSingleton()->getHuesLoader()->getHuesTexture()->getTexture()));
+    shader->set_uniform1i("HueTexture", 0);
+    shader->set_uniform1i("ObjectTexture", 1);
+
+    boost::shared_ptr<world::LightManager> lightManager = world::Manager::getLightManager();
+    shader->set_uniform3f("AmbientLightIntensity", lightManager->getAmbientIntensity());
+    shader->set_uniform3f("GlobalLightIntensity", lightManager->getGlobalIntensity());
+    shader->set_uniform3f("GlobalLightDirection", lightManager->getGlobalDirection());
+
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator secIter = world::Manager::getSectorManager()->begin();
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator secEnd = world::Manager::getSectorManager()->end();
+    
+    std::list<world::IngameObject*>::iterator objIter;
+    std::list<world::IngameObject*>::iterator objEnd;;
+
+    ui::ClipRectManager* clipRectMan = ui::Manager::getClipRectManager().get();
+    std::vector<CL_Rectf>::const_iterator clipRectIter;
+    std::vector<CL_Rectf>::const_iterator clipRectEnd = clipRectMan->end();
+    
+    unsigned int notInCount = 0;
+    unsigned int totalCount = 0;
+    
+    for (; secIter != secEnd; ++secIter) {
+        objIter = secIter->second->renderBegin();
+        objEnd = secIter->second->renderEnd();
+        
+        for (; objIter != objEnd; ++objIter) {
+            totalCount++;
+            world::IngameObject* curObj = *objIter;
+            
+            // check if texture is ready to be drawn
+            ui::Texture* tex = curObj->getIngameTexture().get();
+
+            if (!tex || !tex->isReadComplete() || !curObj->isVisible()) {
+                continue;
+            }
+        
+            // check if current object is in the area visible to the player
+            if (!repaintEverything_) {
+                bool drawn = false;
+                for (clipRectIter = clipRectMan->begin(); clipRectIter != clipRectEnd; ++clipRectIter) {
+                    if (curObj->overlaps(*clipRectIter)) {
+                        CL_Rectf clipRect(*clipRectIter);
+                        clipRect.translate(clippingTopLeftCorner);
+                        //LOG_DEBUG << "clip rect: " << clipRect << std::endl;
+                        if (clipRect.top < 0 || clipRect.left < 0 || clipRect.bottom > 600 || clipRect.right > 800) {
+                            continue;
+                        }
+                        gc.push_cliprect(clipRect);
+                        renderObject(gc, curObj, tex);
+                        drawn = true;
+                        gc.pop_cliprect();
+                    }
+                }
+                
+                if (!drawn) {
+                    notInCount++;
+                }
+            } else {
+                renderObject(gc, curObj, tex);
+            }
+        }
     }
+
+    gc.reset_textures();
+    gc.reset_program_object();
     
+    ui::Manager::getClipRectManager()->clear();
+    
+    //buffer_control.enable_depth_write(false);
+    //buffer_control.enable_depth_test(false);
+    //buffer_control.enable_stencil_test(false);
+    //buffer_control.enable_color_write(true);
+    //gc.set_buffer_control(buffer_control);
+
+
+    //static unsigned int cnt = 0;
+    //static boost::shared_ptr<world::ParticleEffect> testEmitter3 = particles::XmlLoader::fromFile("gate");
+    
+    //if (cnt >= 150) {
+        //testEmitter3->update(20);
+        
+        //// render particle effects
+        //shader = ui::Manager::getShaderManager()->getParticleShader();
+        //gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
+
+        //CL_Pen defPen = gc.get_pen();
+        //CL_Pen pen;
+        //pen.set_point_size(1.0); // TODO: make this dynamic
+        //pen.enable_vertex_program_point_size(true);
+        //pen.enable_point_sprite(true);
+        //gc.set_pen(pen);
+
+        //testEmitter3->renderAll(gc, shader);
+
+        ////++renderDiff;
+        ////fluo::sleepMs(20);
+
+        //gc.set_pen(defPen);
+        //gc.reset_program_object();
+    //}
+
+    //++cnt;
+    
+    
+    if (totalCount > 0) {
+        //LOG_DEBUG << "total: " << totalCount << " not in: " << notInCount << std::endl;
+    }
+}
+
+boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {
+    boost::shared_ptr<RenderQueue> rq;
+    return rq;
+}
+
+void WorldViewRenderer::renderObject(CL_GraphicContext& gc, world::IngameObject* obj, ui::Texture* tex) const {
     static CL_Rectf texCoordHelper(0.0f, 0.0f, 1.0f, 1.0f);
 
     static CL_Vec2f texCoords[6] = {
@@ -135,129 +300,22 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
         CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom),
         CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom)
     };
-
-
-    CL_Vec2f pixelOffsetVec(clippingLeftPixelCoord, clippingTopPixelCoord);
-    shader->set_uniform2f("PositionOffset", pixelOffsetVec);
-
-    gc.set_texture(0, *(data::Manager::getSingleton()->getHuesLoader()->getHuesTexture()->getTexture()));
-    shader->set_uniform1i("HueTexture", 0);
-    shader->set_uniform1i("ObjectTexture", 1);
-
-    boost::shared_ptr<world::LightManager> lightManager = world::Manager::getLightManager();
-    shader->set_uniform3f("AmbientLightIntensity", lightManager->getAmbientIntensity());
-    shader->set_uniform3f("GlobalLightIntensity", lightManager->getGlobalIntensity());
-    shader->set_uniform3f("GlobalLightDirection", lightManager->getGlobalDirection());
-
-    bool renderingComplete = true;
-
-    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator secIter = world::Manager::getSectorManager()->begin();
-    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator secEnd = world::Manager::getSectorManager()->end();
     
-    unsigned int notInCount = 0;
-    unsigned int totalCount = 0;
-
-    for (; secIter != secEnd; ++secIter) {
-        if (!allRepaint && !secIter->second->repaintRequired()) {
-            continue;
-        }
-        
-        std::list<world::IngameObject*>::iterator objIter = secIter->second->renderBegin();
-        std::list<world::IngameObject*>::iterator objEnd = secIter->second->renderEnd();
-        
-        for (; objIter != objEnd; ++objIter) {
-            totalCount++;
-            world::IngameObject* curObj = *objIter;
-        
-            // check if current object is in the area visible to the player
-            if (!curObj->isInDrawArea(clippingLeftPixelCoord, clippingRightPixelCoord, clippingTopPixelCoord, clippingBottomPixelCoord)) {
-                notInCount++;
-                continue;
-            }
-
-            // check if texture is ready to be drawn
-            ui::Texture* tex = curObj->getIngameTexture().get();
-
-            // happens e.g. for the equipped backpack
-            if (!tex) {
-                continue;
-            }
-
-            if (!tex->isReadComplete()) {
-                renderingComplete = false;
-                continue;
-            }
-
-            // object is invisible
-            if (!curObj->isVisible()) {
-                continue;
-            }
-
-            CL_PrimitivesArray primarray(gc);
-            primarray.set_attributes(0, curObj->getVertexCoordinates());
-            if (curObj->isMirrored()) {
-                primarray.set_attributes(1, texCoordsMirrored);
-            } else {
-                primarray.set_attributes(1, texCoords);
-            }
-            primarray.set_attributes(2, curObj->getVertexNormals());
-            primarray.set_attribute(3, curObj->getHueInfo());
-
-            gc.set_texture(1, *(tex->getTexture()));
-
-            gc.draw_primitives(cl_triangles, 6, primarray);
-        }
+    CL_PrimitivesArray primarray(gc);
+    primarray.set_attributes(0, obj->getVertexCoordinates());
+    if (obj->isMirrored()) {
+        primarray.set_attributes(1, texCoordsMirrored);
+    } else {
+        primarray.set_attributes(1, texCoords);
     }
+    primarray.set_attributes(2, obj->getVertexNormals());
+    primarray.set_attribute(3, obj->getHueInfo());
 
-    gc.reset_textures();
-    gc.reset_program_object();
+    gc.set_texture(1, *(tex->getTexture()));
 
-
-    buffer_control.enable_depth_write(false);
-    buffer_control.enable_depth_test(false);
-    buffer_control.enable_stencil_test(false);
-    buffer_control.enable_color_write(true);
-    gc.set_buffer_control(buffer_control);
-
-    renderQueue_->postRender(renderingComplete);
-
-
-
-    static unsigned int cnt = 0;
-    static boost::shared_ptr<world::ParticleEffect> testEmitter3 = particles::XmlLoader::fromFile("gate");
-    
-    if (cnt >= 150) {
-        testEmitter3->update(20);
-        
-        // render particle effects
-        shader = ui::Manager::getShaderManager()->getParticleShader();
-        gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
-
-        CL_Pen defPen = gc.get_pen();
-        CL_Pen pen;
-        pen.set_point_size(1.0); // TODO: make this dynamic
-        pen.enable_vertex_program_point_size(true);
-        pen.enable_point_sprite(true);
-        gc.set_pen(pen);
-
-        testEmitter3->renderAll(gc, shader);
-
-        //++renderDiff;
-        //fluo::sleepMs(20);
-
-        gc.set_pen(defPen);
-        gc.reset_program_object();
-    }
-
-    ++cnt;
-    
-    
-    //LOG_DEBUG << "total: " << totalCount << " not in: " << notInCount << std::endl;
+    gc.draw_primitives(cl_triangles, 6, primarray);
 }
 
-boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {
-    return renderQueue_;
 }
-
 }
 }

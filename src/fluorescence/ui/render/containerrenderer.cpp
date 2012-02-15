@@ -47,23 +47,23 @@ ContainerRenderer::~ContainerRenderer() {
 }
 
 
-void ContainerRenderer::checkTextureSize() {
+void ContainerRenderer::checkTextureSize(CL_GraphicContext& gc) {
     if (!texture_ || texture_->getWidth() != containerView_->getWidth() || texture_->getHeight() != containerView_->getHeight()) {
         texture_.reset(new ui::Texture(false));
         texture_->initPixelBuffer(containerView_->getWidth(), containerView_->getHeight());
         texture_->setReadComplete();
+        
+        frameBuffer_ = CL_FrameBuffer(gc);
+        frameBuffer_.attach_color_buffer(0, *texture_->getTexture());
     }
 }
 
 boost::shared_ptr<Texture> ContainerRenderer::getTexture(CL_GraphicContext& gc) {
     if (renderQueue_->requireWorldRepaint() || !texture_ || requireInitialRepaint()) {
-        checkTextureSize();
+        checkTextureSize(gc);
         CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 
-        CL_FrameBuffer fb(gc);
-        fb.attach_color_buffer(0, *texture_->getTexture());
-
-        gc.set_frame_buffer(fb);
+        gc.set_frame_buffer(frameBuffer_);
 
         render(gc);
 

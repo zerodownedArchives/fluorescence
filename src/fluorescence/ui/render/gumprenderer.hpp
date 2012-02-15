@@ -53,7 +53,9 @@ private:
     boost::shared_ptr<RenderQueue> renderQueue_;
 
     boost::shared_ptr<Texture> texture_;
-    void checkTextureSize();
+    void checkTextureSize(CL_GraphicContext& gc);
+    
+    CL_FrameBuffer frameBuffer_;
 };
 }
 }

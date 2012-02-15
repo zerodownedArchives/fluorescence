@@ -28,6 +28,9 @@
 #include "overheadmessage.hpp"
 #include "playerwalkmanager.hpp"
 
+#include <ui/manager.hpp>
+#include <ui/cliprectmanager.hpp>
+
 #include <misc/exception.hpp>
 #include <misc/log.hpp>
 

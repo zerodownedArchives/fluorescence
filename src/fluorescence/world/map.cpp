@@ -129,7 +129,7 @@ void MapTile::setSurroundingZ(int left, int right, int bottom) {
     calculateIsFlat();
 
     if (isFlat_ != flatBefore) {
-        updateTextureProvider();
+        invalidateTextureProvider();
     }
     invalidateVertexCoordinates();
 }
@@ -142,17 +142,17 @@ const data::LandTileInfo* MapTile::getTileDataInfo() {
     return tileDataInfo_;
 }
 
-bool MapTile::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {
+bool MapTile::overlaps(const CL_Rectf& rect) const {
     //LOGARG_DEBUG(LOGTYPE_WORLD, "isInDrawArea (%u %u %u %u) => x=%u y=%u\n", leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord, vertexCoordinates_[0u].x, vertexCoordinates_[0u].y);
 
     if (isFlat_) {
-        return IngameObject::isInDrawArea(leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord);
+        return IngameObject::overlaps(rect);
     } else {
         const CL_Vec3f* vc = worldRenderData_.getVertexCoordinates();
-        return vc[1].x <= rightPixelCoord &&
-                (vc[0].y <= bottomPixelCoord || vc[1].y <= bottomPixelCoord || vc[2].y <= bottomPixelCoord || vc[5].y <= bottomPixelCoord) &&
-                vc[4].x >= leftPixelCoord &&
-                (vc[0].y >= topPixelCoord || vc[1].y >= topPixelCoord || vc[2].y >= topPixelCoord || vc[5].y >= topPixelCoord);
+        return vc[1].x <= rect.right &&
+                (vc[0].y <= rect.bottom || vc[1].y <= rect.bottom || vc[2].y <= rect.bottom || vc[5].y <= rect.bottom) &&
+                vc[4].x >= rect.left &&
+                (vc[0].y >= rect.top || vc[1].y >= rect.top || vc[2].y >= rect.top || vc[5].y >= rect.top);
     }
 }
 
@@ -207,7 +207,7 @@ void MapTile::onClick() {
 }
 
 
-MapBlock::MapBlock() {
+MapBlock::MapBlock() : repaintRequested_(false) {
     for (unsigned int i = 0; i < 64; ++i) {
         tiles_[i].reset(new MapTile());
     }

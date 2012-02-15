@@ -128,7 +128,7 @@ const CL_Vec3f& IngameObject::getHueInfo() const {
 }
 
 void IngameObject::updateRenderData(unsigned int elapsedMillis) {
-    worldRenderData_.resetUpdatedFlags();
+    worldRenderData_.resetPreUpdate();
     
     if (worldRenderData_.renderDataValid()) {
         bool frameChanged = updateAnimation(elapsedMillis);
@@ -170,15 +170,15 @@ void IngameObject::updateRenderData(unsigned int elapsedMillis) {
     }
 }
 
-bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {
+bool IngameObject::overlaps(const CL_Rectf& rect) const {
     //LOGARG_DEBUG(LOGTYPE_WORLD, "isInDrawArea (%u %u %u %u) => x=%u y=%u\n", leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord, vertexCoordinates_[0u].x, vertexCoordinates_[0u].y);
 
     // almost every texture is a rectangle, with vertexCoordinates_[0] being top left and vertexCoordinates_[5] bottom right
     // all non-rectangular cases are maptiles
-    return (worldRenderData_.vertexCoordinates_[0].x <= rightPixelCoord) &&
-            (worldRenderData_.vertexCoordinates_[0].y <= bottomPixelCoord) &&
-            (worldRenderData_.vertexCoordinates_[5].x >= leftPixelCoord) &&
-            (worldRenderData_.vertexCoordinates_[5].y >= topPixelCoord);
+    return (worldRenderData_.vertexCoordinates_[0].x <= rect.right) &&
+            (worldRenderData_.vertexCoordinates_[0].y <= rect.bottom) &&
+            (worldRenderData_.vertexCoordinates_[5].x >= rect.left) &&
+            (worldRenderData_.vertexCoordinates_[5].y >= rect.top);
 }
 
 bool IngameObject::hasPixel(int pixelX, int pixelY) const {

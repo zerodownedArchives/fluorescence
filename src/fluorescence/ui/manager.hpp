@@ -50,6 +50,7 @@ class DoubleClickHandler;
 class GumpMenu;
 class FontEngine;
 class ShaderManager;
+class ClipRectManager;
 
 class Manager {
 public:
@@ -70,6 +71,7 @@ public:
     static boost::shared_ptr<DoubleClickHandler> getDoubleClickHandler();
     static boost::shared_ptr<FontEngine> getFontEngine();
     static boost::shared_ptr<ShaderManager> getShaderManager();
+    static boost::shared_ptr<ClipRectManager> getClipRectManager();
 
     void step();
 
@@ -145,6 +147,8 @@ private:
     boost::shared_ptr<ShaderManager> shaderManager_;
     
     UnicodeString getOpenGLExtensions() const;
+    
+    boost::shared_ptr<ClipRectManager> clipRectManager_;
 };
 
 }

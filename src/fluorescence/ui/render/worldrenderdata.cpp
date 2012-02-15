@@ -125,10 +125,21 @@ void WorldRenderData::setVertexCoordinates(const CL_Rectf& rect) {
     vertexCoordinates_[5].y = rect.bottom;
 }
 
-void WorldRenderData::resetUpdatedFlags() {
+void WorldRenderData::resetPreUpdate() {
     renderDepthUpdated_ = false;
     textureOrVerticesUpdated_ = false;
+    
+    if (!renderDataValid()) {
+        // store last vertex coordinates for clipped updates
+        previousVertexRect_ = getCurrentVertexRect();
+    }
 }
+
+CL_Rectf WorldRenderData::getCurrentVertexRect() const {
+    // this is only used to get the rectangular areas we need to redraw. it does not give a correct rectangle for map tiles, 
+    // but if map tiles are updated the sector provides a big rectangle anyways
+    return CL_Rectf(vertexCoordinates_[0].x, vertexCoordinates_[0].y, vertexCoordinates_[5].x, vertexCoordinates_[5].y);
+};
 
 bool WorldRenderData::textureOrVerticesUpdated() const {
     return textureOrVerticesUpdated_;

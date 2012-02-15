@@ -26,6 +26,7 @@
 
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
+#include <ui/cliprectmanager.hpp>
 
 namespace fluo {
 namespace world {
@@ -120,7 +121,7 @@ void Sector::update(unsigned int elapsedMillis) {
             for (unsigned int y = 0; y < 8; ++y) {
                 mapBlock_->get(x, y)->updateRenderData(elapsedMillis);
                 renderListSortRequired_ |= mapBlock_->get(x, y)->renderDepthChanged();
-                repaintRequired_ |= mapBlock_->get(x, y)->textureOrVerticesChanged();
+                renderListSortRequired_ |= mapBlock_->get(x, y)->textureOrVerticesChanged();
             }
         }
         
@@ -172,18 +173,31 @@ void Sector::update(unsigned int elapsedMillis) {
             //LOG_DEBUG << "full update not required anymore" << std::endl;
             quickRenderUpdateList_.clear();
 
-            std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticBlock_->getItemList().begin();
-            std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticBlock_->getItemList().end();
+            if (staticsAddedToList_) {
+                std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticBlock_->getItemList().begin();
+                std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticBlock_->getItemList().end();
 
-            for (; it != end; ++it) {
-                if ((*it)->periodicRenderUpdateRequired()) {
-                    quickRenderUpdateList_.push_back(it->get());
+                for (; it != end; ++it) {
+                    if ((*it)->periodicRenderUpdateRequired()) {
+                        quickRenderUpdateList_.push_back(it->get());
+                    }
                 }
             }
 
             fullUpdateRenderDataRequired_ = false;
 
             //LOG_DEBUG << "Items in quicklist: " << quickRenderUpdateList_.size() << std::endl;
+            
+            
+            // add repaint rectangle over full sector range, and a bit more
+            const CL_Vec3f* vertCoords = mapBlock_->get(0, 0)->getWorldRenderData().getVertexCoordinates();
+            float updateLeft = vertCoords[0].x - 150;
+            float updateTop = vertCoords[0].x - 150;
+            vertCoords = mapBlock_->get(7, 7)->getWorldRenderData().getVertexCoordinates();
+            float updateRight = vertCoords[5].x + 100;
+            float updateBottom = vertCoords[5].x + 100;
+            CL_Rectf updateRect(updateLeft, updateTop, updateRight, updateBottom);
+            ui::Manager::getClipRectManager()->add(updateRect);
         }
     } else if (!quickRenderUpdateList_.empty()) {
         //LOG_DEBUG << "quick render update, size=" << quickRenderUpdateList_.size() << std::endl;
@@ -193,8 +207,16 @@ void Sector::update(unsigned int elapsedMillis) {
 
         for (; iter != end; ++iter) {
             (*iter)->updateRenderData(elapsedMillis);
-            renderListSortRequired_ |= (*iter)->renderDepthChanged();
-            repaintRequired_ |= (*iter)->textureOrVerticesChanged();
+            bool depthChanged = (*iter)->renderDepthChanged();
+            bool texOrVertChanged = (*iter)->textureOrVerticesChanged();
+            renderListSortRequired_ |= depthChanged;
+            repaintRequired_ |= texOrVertChanged;
+            
+            if (depthChanged || texOrVertChanged) {
+                // add previous and current vertex coordinates to clipped update range
+                ui::Manager::getClipRectManager()->add((*iter)->getWorldRenderData().previousVertexRect_);
+                ui::Manager::getClipRectManager()->add((*iter)->getWorldRenderData().getCurrentVertexRect());
+            }
         }
     }
     

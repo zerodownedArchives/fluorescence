@@ -32,6 +32,7 @@
 #include "fontengine.hpp"
 #include "render/shadermanager.hpp"
 #include "uofont.hpp"
+#include "cliprectmanager.hpp"
 
 #include <client.hpp>
 
@@ -137,6 +138,8 @@ bool Manager::setShardConfig(Config& config) {
     doubleClickHandler_->start();
 
     shaderManager_.reset(new ShaderManager(getGraphicContext()));
+    
+    clipRectManager_.reset(new ClipRectManager());
 
     return true;
 }
@@ -388,7 +391,10 @@ void Manager::loadUnifonts() {
         getGuiManager()->register_font(uniCur, curDesc);
     }
 }
-    
+
+boost::shared_ptr<ClipRectManager> Manager::getClipRectManager() {
+    return getSingleton()->clipRectManager_;
+}    
 
 }
 }

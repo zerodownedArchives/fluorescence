@@ -79,8 +79,8 @@ public:
 
     const CL_Vec3f& getHueInfo() const;
 
-    /// returns whether or not this item is currently in the drawing area of the game window
-    virtual bool isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const;
+    /// returns whether or not the vertex coordinates of this object overlap the given rectangle
+    virtual bool overlaps(const CL_Rectf& rect) const;
 
     /// returns wheter or not the given pixel coordinate is covered by this object's texture
     virtual bool hasPixel(int pixelX, int pixelY) const;

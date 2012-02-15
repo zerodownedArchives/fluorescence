@@ -36,38 +36,51 @@ class IngameObject;
 
 namespace ui {
 
-class RenderQueue;
 class Texture;
 
 namespace components {
 class WorldView;
 }
 
+namespace render {
+
 class WorldViewRenderer : public IngameObjectRenderer {
 public:
-    WorldViewRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::WorldView* ingameView);
+    WorldViewRenderer(components::WorldView* ingameView);
     ~WorldViewRenderer();
 
-    virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc);
-    virtual void render(CL_GraphicContext& gc);
-
+    virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc, float moveX, float moveY);
+    
     virtual boost::shared_ptr<RenderQueue> getRenderQueue() const;
 
 private:
     components::WorldView* worldView_;
-    boost::shared_ptr<RenderQueue> renderQueue_;
+    
+    virtual void render(CL_GraphicContext& gc);
+    void renderObject(CL_GraphicContext& gc, world::IngameObject* obj, ui::Texture* tex) const;
 
-    boost::shared_ptr<Texture> texture_;
-    CL_Texture depthTexture_;
+    unsigned int textureWidth_;
+    unsigned int textureHeight_;
+    boost::shared_ptr<Texture> textures_[2];
+    CL_Texture depthTextures_[2];
     void checkTextureSize();
     
     // draw more pixels than currently displayed (borderSize/2 more pixels in every direction)
-    static const unsigned int BORDER_SIZE_HALF = 50;
+    static const unsigned int BORDER_SIZE_HALF = 0;
     static const unsigned int BORDER_SIZE = BORDER_SIZE_HALF * 2;
     
-    CL_FrameBuffer frameBuffer_;
+    unsigned int frameBufferIndex_;
+    void initFrameBuffer(unsigned int index);
+    CL_FrameBuffer frameBuffers_[2];
+    bool texturesInitialized_[2];
+    bool repaintEverything_;
+    
+    // draws the texture from the last frame, moved x/y pixels
+    // returns the texture coordinates to use for drawing the texture
+    CL_Rectf renderPreviousTexture(CL_GraphicContext& gc, float pixelX, float pixelY);
 };
 
+}
 }
 }
 

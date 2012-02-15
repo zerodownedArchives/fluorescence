@@ -48,9 +48,10 @@ namespace ui {
 namespace components {
 
 WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent),
-        centerTileX_(0), centerTileY_(0), centerTileZ_(0) {
+        centerTileX_(0), centerTileY_(0), centerTileZ_(0),
+        lastCenterPixelX_(0), lastCenterPixelY_(0) {
     this->set_geometry(bounds);
-    renderer_.reset(new WorldViewRenderer(ui::Manager::getWorldRenderQueue(), this));
+    renderer_.reset(new render::WorldViewRenderer(this));
 
     world::Manager::getSectorManager()->registerWorldView(this);
     setCenterObject(world::Manager::getSingleton()->getPlayer()->shared_from_this());
@@ -68,7 +69,7 @@ WorldView::~WorldView() {
     world::Manager::getSectorManager()->unregisterWorldView(this);
 }
 
-float WorldView::getCenterTileX() {
+float WorldView::getCenterTileX() const {
     if (centerObject_) {
         return centerObject_->getLocX();
     } else {
@@ -76,7 +77,7 @@ float WorldView::getCenterTileX() {
     }
 }
 
-float WorldView::getCenterTileY() {
+float WorldView::getCenterTileY() const {
     if (centerObject_) {
         return centerObject_->getLocY();
     } else {
@@ -84,7 +85,7 @@ float WorldView::getCenterTileY() {
     }
 }
 
-float WorldView::getCenterTileZ() {
+float WorldView::getCenterTileZ() const {
     if (centerObject_) {
         return centerObject_->getLocZ();
     } else {
@@ -97,27 +98,35 @@ void WorldView::setCenterTiles(float x, float y) {
     centerTileY_ = y;
 }
 
-int WorldView::getCenterPixelX() {
+float WorldView::getCenterPixelX() const {
     return (getCenterTileX() - getCenterTileY()) * 22;
 }
 
-int WorldView::getCenterPixelY() {
+float WorldView::getCenterPixelY() const {
     return (getCenterTileX() + getCenterTileY()) * 22 - getCenterTileZ() * 4;
 }
 
-unsigned int WorldView::getWidth() {
+CL_Vec2f WorldView::getTopLeftPixel() const {
+    return CL_Vec2f(getCenterPixelX() - getWidth()/2, getCenterPixelY() - getHeight()/2);
+}
+
+unsigned int WorldView::getWidth() const {
     return get_width();
 }
 
-unsigned int WorldView::getHeight() {
+unsigned int WorldView::getHeight() const {
     return get_height();
 }
 
 void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
-    //gc.push_cliprect(get_geometry());
-    CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
-     //renderer_->render(gc);
-    //gc.pop_cliprect();
+    float pixelMoveX = round(getCenterPixelX() - lastCenterPixelX_);
+    float pixelMoveY = round(getCenterPixelY() - lastCenterPixelY_);
+    
+    lastCenterPixelX_ += pixelMoveX;
+    lastCenterPixelY_ += pixelMoveY;
+    
+    textureCoordinates_ = CL_Rectf(0, 0, 1, 1);
+    CL_Draw::texture(gc, *renderer_->getTexture(gc, pixelMoveX, pixelMoveY)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())), CL_Colorf::white, textureCoordinates_);
 }
 
 void WorldView::getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd) {
@@ -304,10 +313,10 @@ bool WorldView::onDoubleClick(const CL_InputEvent& e) {
 
 boost::shared_ptr<world::IngameObject> WorldView::getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) {
     //LOG_INFO << "WorldView::getFirstObjectAt " << pixelX << " " << pixelY << std::endl;
-    int worldX = getCenterPixelX() - get_width()/2.0;
+    float worldX = getCenterPixelX() - get_width()/2.0;
     worldX += pixelX;
 
-    int worldY = getCenterPixelY() - get_height()/2.0;
+    float worldY = getCenterPixelY() - get_height()/2.0;
     worldY += pixelY;
 
     return ui::Manager::getWorldRenderQueue()->getFirstObjectAt(worldX, worldY, true);

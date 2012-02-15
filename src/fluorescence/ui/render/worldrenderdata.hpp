@@ -53,7 +53,7 @@ public:
     bool vertexCoordinatesUpdateRequired() const;
     bool renderDepthUpdateRequired() const;
 
-    void resetUpdatedFlags();
+    void resetPreUpdate();
     bool textureOrVerticesUpdated() const;
     bool renderDepthUpdated() const;
 
@@ -65,6 +65,9 @@ public:
 
     CL_Vec3f vertexNormals_[6];
     CL_Vec3f hueInfo_;
+    
+    CL_Rectf previousVertexRect_;
+    CL_Rectf getCurrentVertexRect() const;
 
 private:
     void invalidateTextureProvider();
