@@ -169,14 +169,14 @@ void Manager::update(unsigned int elapsedMillis) {
     std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobEnd = mobiles_.end();
 
     for (; mobIter != mobEnd; ++mobIter) {
-        mobIter->second->updateRenderData(elapsedMillis);
+        updateObject(mobIter->second.get(), elapsedMillis);
     }
 
     std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator itmIter = dynamicItems_.begin();
     std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator itmEnd = dynamicItems_.end();
 
     for (; itmIter != itmEnd; ++itmIter) {
-        itmIter->second->updateRenderData(elapsedMillis);
+        updateObject(itmIter->second.get(), elapsedMillis);
     }
 
     sectorManager_->update(elapsedMillis);
@@ -186,7 +186,7 @@ void Manager::update(unsigned int elapsedMillis) {
     std::list<boost::shared_ptr<OverheadMessage> > expiredMessages;
 
     for (; msgIter != msgEnd; ++msgIter) {
-        (*msgIter)->updateRenderData(elapsedMillis);
+        updateObject(msgIter->get(), elapsedMillis);
 
         if ((*msgIter)->isExpired()) {
             expiredMessages.push_back(*msgIter);
@@ -197,9 +197,21 @@ void Manager::update(unsigned int elapsedMillis) {
         msgIter = expiredMessages.begin();
         msgEnd = expiredMessages.end();
 
+        ui::Manager::getClipRectManager()->add((*msgIter)->getWorldRenderData().getCurrentVertexRect());
         for (; msgIter != msgEnd; ++msgIter) {
             (*msgIter)->expire();
         }
+    }
+}
+
+void Manager::updateObject(IngameObject* obj, unsigned int elapsedMillis) {
+    obj->updateRenderData(elapsedMillis);
+    bool depthUpdate = obj->getWorldRenderData().renderDepthUpdated();
+    bool texOrVertUpdate = obj->getWorldRenderData().textureOrVerticesUpdated();
+    if (depthUpdate || texOrVertUpdate) {
+        // add previous and current vertex coordinates to clipped update range
+        ui::Manager::getClipRectManager()->add(obj->getWorldRenderData().previousVertexRect_);
+        ui::Manager::getClipRectManager()->add(obj->getWorldRenderData().getCurrentVertexRect());
     }
 }
 

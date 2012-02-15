@@ -39,6 +39,7 @@ class Mobile;
 class DynamicItem;
 class OverheadMessage;
 class PlayerWalkManager;
+class IngameObject;
 
 class Manager {
 public:
@@ -85,6 +86,7 @@ private:
     std::map<Serial, boost::shared_ptr<DynamicItem> > dynamicItems_;
 
     void update(unsigned int millis);
+    void updateObject(IngameObject* obj, unsigned int elapsedMillis);
 
     boost::shared_ptr<SmoothMovementManager> smoothMovementManager_;
     boost::shared_ptr<PlayerWalkManager> playerWalkManager_;
