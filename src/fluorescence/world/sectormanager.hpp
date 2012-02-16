@@ -62,6 +62,8 @@ public:
     
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator begin();
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator end();
+    
+    world::Sector* getSectorForCoordinates(unsigned int locX, unsigned int locY) const;
 
 private:
     std::map<IsoIndex, boost::shared_ptr<world::Sector> > sectorMap_;

@@ -60,6 +60,10 @@ public:
     std::list<world::IngameObject*>::iterator renderEnd();
     
     bool repaintRequired() const;
+    
+    void addDynamicObject(world::IngameObject* obj);
+    void removeDynamicObject(world::IngameObject* obj);
+    void requestSort();
 
 private:
     unsigned int mapId_;

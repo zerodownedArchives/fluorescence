@@ -23,6 +23,10 @@
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
 
+#include "manager.hpp"
+#include "sectormanager.hpp"
+#include "sector.hpp"
+
 namespace fluo {
 namespace world {
 
@@ -42,6 +46,31 @@ void ServerObject::setHue(unsigned int hue) {
 
         forceRepaint();
     }
+}
+
+void ServerObject::onLocationChanged(const CL_Vec3f& oldLocation) {
+    Sector* newSector = world::Manager::getSectorManager()->getSectorForCoordinates(getLocX(), getLocY());
+    
+    if (sector_ != newSector) {
+        if (sector_) {
+            sector_->removeDynamicObject(this);
+        }
+        
+        if (newSector) {
+            newSector->addDynamicObject(this);
+        }
+    }
+    
+    sector_ = newSector;
+}
+
+void ServerObject::onDelete() {
+    if (sector_) {
+        sector_->removeDynamicObject(this);
+    }
+    sector_ = NULL;
+    
+    IngameObject::onDelete();
 }
 
 }

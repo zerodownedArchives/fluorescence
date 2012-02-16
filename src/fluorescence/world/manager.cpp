@@ -179,8 +179,6 @@ void Manager::update(unsigned int elapsedMillis) {
         updateObject(itmIter->second.get(), elapsedMillis);
     }
 
-    sectorManager_->update(elapsedMillis);
-
     std::list<boost::shared_ptr<OverheadMessage> >::iterator msgIter = overheadMessages_.begin();
     std::list<boost::shared_ptr<OverheadMessage> >::iterator msgEnd = overheadMessages_.end();
     std::list<boost::shared_ptr<OverheadMessage> > expiredMessages;
@@ -197,11 +195,14 @@ void Manager::update(unsigned int elapsedMillis) {
         msgIter = expiredMessages.begin();
         msgEnd = expiredMessages.end();
 
-        ui::Manager::getClipRectManager()->add((*msgIter)->getWorldRenderData().getCurrentVertexRect());
         for (; msgIter != msgEnd; ++msgIter) {
+            ui::Manager::getClipRectManager()->add((*msgIter)->getWorldRenderData().getCurrentVertexRect());
             (*msgIter)->expire();
         }
     }
+    
+    // has to be the last thing we do here
+    sectorManager_->update(elapsedMillis);
 }
 
 void Manager::updateObject(IngameObject* obj, unsigned int elapsedMillis) {

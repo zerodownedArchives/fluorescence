@@ -188,6 +188,8 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     unsigned int totalCount = 0;
     
     for (; secIter != secEnd; ++secIter) {
+        // TOOD: check if we can skip the whole sector
+        
         objIter = secIter->second->renderBegin();
         objEnd = secIter->second->renderEnd();
         

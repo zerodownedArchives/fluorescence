@@ -29,12 +29,15 @@
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
 
+#include "manager.hpp"
 #include "overheadmessage.hpp"
+#include "sectormanager.hpp"
+#include "sector.hpp"
 
 namespace fluo {
 namespace world {
 
-IngameObject::IngameObject(unsigned int objectType) : draggable_(false), objectType_(objectType), visible_(true) {
+IngameObject::IngameObject(unsigned int objectType) : draggable_(false), sector_(NULL), objectType_(objectType), visible_(true) {
 
 }
 
@@ -67,6 +70,8 @@ void IngameObject::setLocation(CL_Vec3f loc) {
             ceilf(oldLocation[1u]) != ceilf(location_[1u]) ||
             ceilf(oldLocation[2u]) != ceilf(location_[2u])) {
         invalidateRenderDepth();
+        
+        onLocationChanged(oldLocation);
     }
 
     invalidateVertexCoordinates();
@@ -166,6 +171,10 @@ void IngameObject::updateRenderData(unsigned int elapsedMillis) {
             updateRenderDepth();
             worldRenderData_.onRenderDepthUpdate();
             notifyRenderQueuesWorldDepth();
+            
+            if (sector_) {
+                sector_->requestSort();
+            }
         }
     }
 }
@@ -357,6 +366,15 @@ void IngameObject::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
 }
 
 void IngameObject::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
+}
+
+void IngameObject::onAddedToSector(world::Sector* sector) {
+}
+
+void IngameObject::onRemovedFromSector(world::Sector* sector) {
+}
+
+void IngameObject::onLocationChanged(const CL_Vec3f& oldLocation) {
 }
 
 void IngameObject::setParentObject() {

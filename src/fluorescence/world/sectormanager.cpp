@@ -186,5 +186,15 @@ std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator SectorManager::e
     return sectorMap_.end();
 }
 
+world::Sector* SectorManager::getSectorForCoordinates(unsigned int locX, unsigned int locY) const {
+    locX /= 8;
+    locY /= 8;
+    
+    IsoIndex secIdx(locX, locY);
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::const_iterator iter = sectorMap_.find(secIdx);
+    
+    return (iter != sectorMap_.end()) ? iter->second.get() : NULL;
+}
+
 }
 }

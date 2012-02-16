@@ -17,33 +17,38 @@
  */
 
 
-#ifndef FLUO_WORLD_SERVEROBJECT_HPP
-#define FLUO_WORLD_SERVEROBJECT_HPP
+#ifndef FLUO_UI_CLIPRECTMANAGER_HPP
+#define FLUO_UI_CLIPRECTMANAGER_HPP
 
-#include "ingameobject.hpp"
-
-#include <typedefs.hpp>
+#include <vector>
+#include <ClanLib/Core/Math/rect.h>
 
 namespace fluo {
 namespace world {
+class IngameObject;
+}
 
-class ServerObject : public IngameObject {
+namespace ui {
+
+class ClipRectManager {
 public:
-    ServerObject(Serial serial, unsigned int objectType);
-
-    Serial getSerial() const;
-
-    void setHue(unsigned int hue);
+    ClipRectManager();
     
-    virtual void onLocationChanged(const CL_Vec3f& oldLocation);
-    virtual void onDelete();
-
+    void add(const CL_Rectf& rect);
+    void clear();
+    size_t size() const;
+    
+    bool isInside(const world::IngameObject* obj) const;
+    
+    std::vector<CL_Rectf>::const_iterator begin() const;
+    std::vector<CL_Rectf>::const_iterator end() const;
+    
 private:
-    Serial serial_;
-    unsigned int hue_;
+    std::vector<CL_Rectf> rectangles_;
 };
 
 }
 }
 
 #endif
+

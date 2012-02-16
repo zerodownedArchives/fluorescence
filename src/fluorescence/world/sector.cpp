@@ -243,5 +243,22 @@ bool Sector::repaintRequired() const {
     return repaintRequired_;
 }
 
+void Sector::addDynamicObject(world::IngameObject* obj) {
+    renderList_.push_back(obj);
+    renderListSortRequired_ = true;
+    obj->onAddedToSector(this);
+    LOG_DEBUG << "add dynamic object" << std::endl;
+}
+
+void Sector::removeDynamicObject(world::IngameObject* obj) {
+    renderList_.remove(obj);
+    obj->onRemovedFromSector(this);
+    LOG_DEBUG << "remove dynamic object" << std::endl;
+}
+
+void Sector::requestSort() {
+    renderListSortRequired_ = true;
+}
+
 }
 }

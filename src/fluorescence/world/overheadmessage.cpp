@@ -28,7 +28,10 @@
 
 #include <misc/log.hpp>
 
-#include <world/mobile.hpp>
+#include "mobile.hpp"
+#include "manager.hpp"
+#include "sectormanager.hpp"
+#include "sector.hpp"
 
 namespace fluo {
 namespace world {
@@ -88,6 +91,11 @@ void OverheadMessage::expire() {
 
     boost::shared_ptr<OverheadMessage> sharedThis = boost::dynamic_pointer_cast<OverheadMessage>(shared_from_this());
     world::Manager::getSingleton()->unregisterOverheadMessage(sharedThis);
+    
+    if (sector_) {
+        sector_->removeDynamicObject(this);
+    }
+    sector_ = NULL;
 }
 
 void OverheadMessage::onClick() {
@@ -131,6 +139,22 @@ void OverheadMessage::onRemovedFromParent() {
     for (; remIter != remEnd; ++remIter) {
         removeFromRenderQueue(*remIter);
     }
+}
+
+void OverheadMessage::onLocationChanged(const CL_Vec3f& oldLocation) {
+    Sector* newSector = world::Manager::getSectorManager()->getSectorForCoordinates(getLocX(), getLocY());
+    
+    if (sector_ != newSector) {
+        if (sector_) {
+            sector_->removeDynamicObject(this);
+        }
+        
+        if (newSector) {
+            newSector->addDynamicObject(this);
+        }
+    }
+    
+    sector_ = newSector;
 }
 
 }

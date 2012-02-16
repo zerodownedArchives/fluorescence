@@ -39,6 +39,7 @@ namespace ui {
 }
 
 namespace world {
+class Sector;
 
 class IngameObject : public boost::enable_shared_from_this<IngameObject> {
 
@@ -114,6 +115,10 @@ public:
     virtual void onChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
 
     virtual void onDelete();
+    
+    virtual void onLocationChanged(const CL_Vec3f& oldLocation);
+    virtual void onAddedToSector(world::Sector* sector);
+    virtual void onRemovedFromSector(world::Sector* sector);
 
 
     bool isMap() const;
@@ -156,6 +161,8 @@ protected:
     std::list<boost::shared_ptr<IngameObject> > childObjects_;
 
     void forceRepaint();
+    
+    Sector* sector_;
 
 private:
     unsigned int objectType_;
