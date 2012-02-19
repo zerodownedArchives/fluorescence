@@ -99,11 +99,11 @@ void WorldView::setCenterTiles(float x, float y) {
 }
 
 float WorldView::getCenterPixelX() const {
-    return (getCenterTileX() - getCenterTileY()) * 22;
+    return roundf((getCenterTileX() - getCenterTileY()) * 22);
 }
 
 float WorldView::getCenterPixelY() const {
-    return (getCenterTileX() + getCenterTileY()) * 22 - getCenterTileZ() * 4;
+    return roundf((getCenterTileX() + getCenterTileY()) * 22 - getCenterTileZ() * 4);
 }
 
 CL_Vec2f WorldView::getTopLeftPixel() const {
@@ -119,14 +119,13 @@ unsigned int WorldView::getHeight() const {
 }
 
 void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
-    float pixelMoveX = round(getCenterPixelX() - lastCenterPixelX_);
-    float pixelMoveY = round(getCenterPixelY() - lastCenterPixelY_);
+    float pixelMoveX = getCenterPixelX() - lastCenterPixelX_;
+    float pixelMoveY = getCenterPixelY() - lastCenterPixelY_;
     
-    lastCenterPixelX_ += pixelMoveX;
-    lastCenterPixelY_ += pixelMoveY;
+    lastCenterPixelX_ = getCenterPixelX();
+    lastCenterPixelY_ = getCenterPixelY();
     
-    textureCoordinates_ = CL_Rectf(0, 0, 1, 1);
-    CL_Draw::texture(gc, *renderer_->getTexture(gc, pixelMoveX, pixelMoveY)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())), CL_Colorf::white, textureCoordinates_);
+    CL_Draw::texture(gc, *renderer_->getTexture(gc, pixelMoveX, pixelMoveY)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())), CL_Colorf::white);
 }
 
 void WorldView::getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd) {
@@ -234,7 +233,6 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
 
     case CL_KEY_F:
         data::Manager::getArtLoader()->printStats();
-        LOG_DEBUG << "Render queue count: " << ui::Manager::getWorldRenderQueue()->size() << std::endl;
         break;
         
     case CL_KEY_P:
@@ -319,7 +317,9 @@ boost::shared_ptr<world::IngameObject> WorldView::getFirstIngameObjectAt(unsigne
     float worldY = getCenterPixelY() - get_height()/2.0;
     worldY += pixelY;
 
-    return ui::Manager::getWorldRenderQueue()->getFirstObjectAt(worldX, worldY, true);
+    // return ui::Manager::getWorldRenderQueue()->getFirstObjectAt(worldX, worldY, true);
+    boost::shared_ptr<world::IngameObject> ret;
+    return ret;
 }
 
 void WorldView::setCenterObject(boost::shared_ptr<world::IngameObject> obj) {

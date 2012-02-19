@@ -141,7 +141,7 @@ Log& Log::operator<<(std::ios_base& ( *manip )(std::ios_base &)) {
 }
 
 Log& Log::operator<<(const CL_Rectf& rect) {
-    return *this << "[Rect: " << rect.left << "/" << rect.top << "/" << rect.get_width() << "/" << rect.get_height() << "]";
+    return *this << "[Rect: " << (unsigned int)rect.left << "/" << (unsigned int)rect.top << "/" << (unsigned int)rect.get_width() << "/" << (unsigned int)rect.get_height() << "]";
 }
 
 }

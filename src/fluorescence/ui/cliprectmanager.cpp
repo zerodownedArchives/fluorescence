@@ -18,6 +18,7 @@
 
 #include "cliprectmanager.hpp"
 
+#include <misc/log.hpp>
 #include <world/ingameobject.hpp>
 
 namespace fluo {
@@ -27,29 +28,36 @@ ClipRectManager::ClipRectManager() {
 }
     
 void ClipRectManager::add(const CL_Rectf& rect) {
-    // TODO: check for overlaps to keep number of rectangles as small as possible
-    rectangles_.push_back(rect);
+    // happens when the location is set for the first time (invalid previous coordinates)
+    if (rect.top == rect.bottom || rect.left == rect.right) {
+        return;
+    }
+    
+    CL_Rectf expanded(rect);
+    expanded.expand(1, 1, 1, 1);
+
+    // check for overlaps to keep number of rectangles as small as possible
+    std::vector<CL_Rectf>::iterator iter = rectangles_.begin();
+    std::vector<CL_Rectf>::iterator end = rectangles_.end();
+    
+    for (; iter != end; ++iter) {
+        if (iter->is_overlapped(expanded)) {
+            CL_Rectf bounding = CL_Rectf(*iter).bounding_rect(expanded);
+            CL_Rectf overlap = CL_Rectf(*iter).overlap(expanded);
+            
+            // area of the bounding rectangle should not be too big. keep the rects seperate if joining them does not give a significant advantage
+            if ((bounding.get_width() * bounding.get_height() / 2) <= (iter->get_width() * iter->get_height() + expanded.get_width() * expanded.get_height() - overlap.get_width() * overlap.get_height())) {
+                iter->bounding_rect(expanded);
+                return;
+            }
+        }
+    }
+    
+    rectangles_.push_back(expanded);
 }
 
 void ClipRectManager::clear() {
     rectangles_.clear();
-}
-
-bool ClipRectManager::isInside(const world::IngameObject* obj) const {
-    if (rectangles_.empty()) {
-        return false;
-    }
-    
-    std::vector<CL_Rectf>::const_iterator iter = rectangles_.begin();
-    std::vector<CL_Rectf>::const_iterator end = rectangles_.end();
-    
-    for (; iter != end; ++iter) {
-        if (obj->overlaps(*iter)) {
-            return true;
-        }
-    }
-    
-    return false;
 }
 
 std::vector<CL_Rectf>::const_iterator ClipRectManager::begin() const {
@@ -62,6 +70,29 @@ std::vector<CL_Rectf>::const_iterator ClipRectManager::end() const {
 
 size_t ClipRectManager::size() const {
     return rectangles_.size();
+}
+
+void ClipRectManager::clamp(const CL_Vec2f& topleftBase, const CL_Size& sizeBase) {
+    if (rectangles_.empty()) {
+        return;
+    }
+    
+    CL_Rectf clampRect(topleftBase.x, topleftBase.y, CL_Sizef(sizeBase.width, sizeBase.height));
+    
+    std::vector<CL_Rectf>::iterator iter = rectangles_.begin();
+    std::vector<CL_Rectf>::iterator end = rectangles_.end();
+    std::vector<CL_Rectf>::iterator helper;
+    
+    while (iter != end) {
+        if (!clampRect.is_overlapped(*iter)) {
+            helper = iter;
+            ++iter;
+            rectangles_.erase(helper);
+        } else {
+            iter->clip(clampRect);
+            ++iter;
+        }
+    }
 }
     
 }

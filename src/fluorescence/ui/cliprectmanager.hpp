@@ -43,6 +43,8 @@ public:
     std::vector<CL_Rectf>::const_iterator begin() const;
     std::vector<CL_Rectf>::const_iterator end() const;
     
+    void clamp(const CL_Vec2f& topleft, const CL_Size& size);
+    
 private:
     std::vector<CL_Rectf> rectangles_;
 };

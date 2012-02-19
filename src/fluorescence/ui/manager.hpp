@@ -44,7 +44,6 @@ namespace world {
 namespace ui {
 
 class IngameView;
-class RenderQueue;
 class CursorManager;
 class DoubleClickHandler;
 class GumpMenu;
@@ -65,7 +64,6 @@ public:
 
     static CL_Texture* provideTexture(unsigned int width, unsigned int height);
 
-    static boost::shared_ptr<RenderQueue> getWorldRenderQueue();
     static boost::shared_ptr<CL_GUIManager> getGuiManager();
     static boost::shared_ptr<CursorManager> getCursorManager();
     static boost::shared_ptr<DoubleClickHandler> getDoubleClickHandler();
@@ -104,8 +102,6 @@ private:
     ~Manager();
     Manager(const Manager& copy) { }
     void operator=(const Manager& copy) { }
-
-    boost::shared_ptr<RenderQueue> worldRenderQueue_;
 
     // clan lib setup stuff
     CL_SetupCore clSetupCore;

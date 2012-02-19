@@ -28,7 +28,6 @@
 #include <misc/log.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/render/renderqueue.hpp>
 #include <ui/components/worldview.hpp>
 
 #include <data/maploader.hpp>
@@ -112,12 +111,9 @@ void SectorManager::deleteSectors() {
     std::list<IsoIndex>::const_iterator requiredBegin = sectorRequiredList.begin();
     std::list<IsoIndex>::const_iterator requiredEnd = sectorRequiredList.end();
 
-    boost::shared_ptr<ui::RenderQueue> renderQueue = ui::Manager::getWorldRenderQueue();
-
     while (deleteIter != deleteEnd) {
         if (deleteIter->second->getMapId() != mapId ||
                 !std::binary_search(requiredBegin, requiredEnd, deleteIter->second->getSectorId())) {
-            deleteIter->second->removeFromRenderQueue(renderQueue);
             sectorMap_.erase(deleteIter);
         }
 

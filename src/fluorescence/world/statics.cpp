@@ -88,14 +88,7 @@ void StaticItem::updateRenderDepth() {
 }
 
 void StaticItem::updateTextureProvider() {
-    bool hasProvider = (bool)textureProvider_;
-
     textureProvider_ = data::Manager::getItemTextureProvider(artId_);
-
-    if (!hasProvider) {
-        // texture assigned for the first time
-        addToRenderQueue(ui::Manager::getWorldRenderQueue());
-    }
 }
 
 bool StaticItem::updateAnimation(unsigned int elapsedMillis) {

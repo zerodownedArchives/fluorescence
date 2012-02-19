@@ -115,8 +115,6 @@ void WorldItem::onReceive() {
     itm->setHue(hue_);
 
     // TODO: handle status
-
-    itm->addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 }

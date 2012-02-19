@@ -56,9 +56,9 @@ WorldViewRenderer::~WorldViewRenderer() {
 }
 
 void WorldViewRenderer::checkTextureSize() {
-    if (!textures_[0] || textureWidth_ != worldView_->getWidth() + BORDER_SIZE || textureHeight_ != worldView_->getHeight() + BORDER_SIZE) {
-        textureWidth_ = worldView_->getWidth() + BORDER_SIZE;
-        textureHeight_ = worldView_->getHeight() + BORDER_SIZE;
+    if (!textures_[0] || textureWidth_ != worldView_->getWidth() || textureHeight_ != worldView_->getHeight()) {
+        textureWidth_ = worldView_->getWidth();
+        textureHeight_ = worldView_->getHeight();
         
         initFrameBuffer(0);
         initFrameBuffer(1);
@@ -147,23 +147,8 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getWorldShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
     
-    static int lastClippingLeft = 0;
-    static int lastClippingTop = 0;
-
-    CL_Vec2f clippingTopLeftCorner = -worldView_->getTopLeftPixel();
-    int clippingLeftPixelCoord = worldView_->getCenterPixelX() - worldView_->getWidth()/2;
-    //int clippingRightPixelCoord = worldView_->getCenterPixelX() + worldView_->getWidth()/2;
-    int clippingTopPixelCoord = worldView_->getCenterPixelY() - worldView_->getHeight()/2;
-    //int clippingBottomPixelCoord = worldView_->getCenterPixelY() + worldView_->getHeight()/2;
-    
-    bool allRepaint = (lastClippingLeft != clippingLeftPixelCoord) || (lastClippingTop != clippingTopPixelCoord);
-    lastClippingLeft = clippingLeftPixelCoord;
-    lastClippingTop = clippingTopPixelCoord;
-    allRepaint = !allRepaint;
-    
-    
-    CL_Vec2f pixelOffsetVec(clippingLeftPixelCoord, clippingTopPixelCoord);
-    shader->set_uniform2f("PositionOffset", pixelOffsetVec);
+    CL_Vec2f clippingTopLeftCorner = worldView_->getTopLeftPixel();
+    shader->set_uniform2f("PositionOffset", clippingTopLeftCorner);
 
     gc.set_texture(0, *(data::Manager::getSingleton()->getHuesLoader()->getHuesTexture()->getTexture()));
     shader->set_uniform1i("HueTexture", 0);
@@ -181,8 +166,11 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     std::list<world::IngameObject*>::iterator objEnd;;
 
     ui::ClipRectManager* clipRectMan = ui::Manager::getClipRectManager().get();
+    clipRectMan->clamp(clippingTopLeftCorner, worldView_->get_size());
     std::vector<CL_Rectf>::const_iterator clipRectIter;
     std::vector<CL_Rectf>::const_iterator clipRectEnd = clipRectMan->end();
+    
+    //LOG_DEBUG << "rectangles: " << clipRectMan->size() << std::endl;
     
     unsigned int notInCount = 0;
     unsigned int totalCount = 0;
@@ -210,11 +198,11 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
                 for (clipRectIter = clipRectMan->begin(); clipRectIter != clipRectEnd; ++clipRectIter) {
                     if (curObj->overlaps(*clipRectIter)) {
                         CL_Rectf clipRect(*clipRectIter);
-                        clipRect.translate(clippingTopLeftCorner);
+                        clipRect.translate(-clippingTopLeftCorner);
                         //LOG_DEBUG << "clip rect: " << clipRect << std::endl;
-                        if (clipRect.top < 0 || clipRect.left < 0 || clipRect.bottom > 600 || clipRect.right > 800) {
-                            continue;
-                        }
+                        //if (clipRect.top < 0 || clipRect.left < 0 || clipRect.bottom > 600 || clipRect.right > 800) {
+                            //continue;
+                        //}
                         gc.push_cliprect(clipRect);
                         renderObject(gc, curObj, tex);
                         drawn = true;

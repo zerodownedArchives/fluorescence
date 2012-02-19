@@ -101,17 +101,10 @@ void MapTile::updateRenderDepth() {
 void MapTile::updateTextureProvider() {
     calculateIsFlat();
 
-    bool hasTexture = (bool)texture_;
-
     if (isFlat_) {
         texture_ = data::Manager::getArtLoader()->getMapTexture(artId_);
     } else {
         texture_ = data::Manager::getMapTexLoader()->get(tileDataInfo_->textureId_);
-    }
-
-    if (!hasTexture && texture_) {
-        // was assigned a texture for the first time
-        addToRenderQueue(ui::Manager::getWorldRenderQueue());
     }
 }
 

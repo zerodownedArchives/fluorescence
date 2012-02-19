@@ -32,10 +32,6 @@ namespace data {
     class SectorReader;
 }
 
-namespace ui {
-    class RenderQueue;
-}
-
 namespace world {
 
 class Sector {
@@ -51,8 +47,6 @@ public:
     unsigned int getLocY() const;
 
     bool isVisible() const;
-
-    void removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
 
     void update(unsigned int elapsedMillis);
     

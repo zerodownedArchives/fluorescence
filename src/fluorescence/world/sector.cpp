@@ -25,7 +25,6 @@
 #include <data/maploader.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/render/renderqueue.hpp>
 #include <ui/cliprectmanager.hpp>
 
 namespace fluo {
@@ -63,26 +62,6 @@ unsigned int Sector::getMapId() const {
 
 const IsoIndex& Sector::getSectorId() const {
     return id_;
-}
-
-void Sector::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
-    if (staticBlock_) {
-        std::list<boost::shared_ptr<world::StaticItem> > staticList = staticBlock_->getItemList();
-        std::list<boost::shared_ptr<world::StaticItem> >::const_iterator it = staticList.begin();
-        std::list<boost::shared_ptr<world::StaticItem> >::const_iterator end = staticList.end();
-
-        for (; it != end; ++it) {
-            (*it)->removeFromRenderQueue(rq);
-        }
-    }
-
-    if (mapBlock_) {
-        for (unsigned int x = 0; x < 8; ++x) {
-            for (unsigned int y = 0; y < 8; ++y) {
-                mapBlock_->get(x, y)->removeFromRenderQueue(rq);
-            }
-        }
-    }
 }
 
 void Sector::update(unsigned int elapsedMillis) {
@@ -247,13 +226,11 @@ void Sector::addDynamicObject(world::IngameObject* obj) {
     renderList_.push_back(obj);
     renderListSortRequired_ = true;
     obj->onAddedToSector(this);
-    LOG_DEBUG << "add dynamic object" << std::endl;
 }
 
 void Sector::removeDynamicObject(world::IngameObject* obj) {
     renderList_.remove(obj);
     obj->onRemovedFromSector(this);
-    LOG_DEBUG << "remove dynamic object" << std::endl;
 }
 
 void Sector::requestSort() {

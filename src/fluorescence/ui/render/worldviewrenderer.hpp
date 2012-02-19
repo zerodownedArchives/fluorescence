@@ -65,10 +65,6 @@ private:
     CL_Texture depthTextures_[2];
     void checkTextureSize();
     
-    // draw more pixels than currently displayed (borderSize/2 more pixels in every direction)
-    static const unsigned int BORDER_SIZE_HALF = 0;
-    static const unsigned int BORDER_SIZE = BORDER_SIZE_HALF * 2;
-    
     unsigned int frameBufferIndex_;
     void initFrameBuffer(unsigned int index);
     CL_FrameBuffer frameBuffers_[2];

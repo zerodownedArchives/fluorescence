@@ -85,7 +85,6 @@ private:
     
     float lastCenterPixelX_;
     float lastCenterPixelY_;
-    CL_Rectf textureCoordinates_;
 };
 
 }

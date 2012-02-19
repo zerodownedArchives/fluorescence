@@ -54,8 +54,6 @@ void PlayerInit::onReceive() {
     player->setLocation(locX_, locY_, locZ_);
     player->setBodyId(bodyId_);
     player->setDirection(direction_);
-
-    player->addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 }
