@@ -28,6 +28,9 @@
 #include "overheadmessage.hpp"
 #include "playerwalkmanager.hpp"
 
+#include <ui/manager.hpp>
+#include <ui/cliprectmanager.hpp>
+
 #include <misc/exception.hpp>
 #include <misc/log.hpp>
 
@@ -63,7 +66,7 @@ void Manager::destroy() {
     }
 }
 
-Manager::Manager(const Config& config) : currentMapId_(0) {
+Manager::Manager(const Config& config) : currentMapId_(0), autoDeleteRange_(18) {
     sectorManager_.reset(new SectorManager(config));
     lightManager_.reset(new LightManager());
     smoothMovementManager_.reset(new SmoothMovementManager());
@@ -161,29 +164,42 @@ void Manager::step(unsigned int elapsedMillis) {
 void Manager::update(unsigned int elapsedMillis) {
     smoothMovementManager_->update(elapsedMillis);
     playerWalkManager_->update(elapsedMillis);
+    
+    unsigned int playerX = ceilf(player_->getLocX());
+    unsigned int playerY = ceilf(player_->getLocY());
+    
+    std::list<Serial> outOfRangeDelete;
 
     std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobIter = mobiles_.begin();
     std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobEnd = mobiles_.end();
 
     for (; mobIter != mobEnd; ++mobIter) {
-        mobIter->second->updateRenderData(elapsedMillis);
+        if (abs(mobIter->second->getLocX() - playerX) > autoDeleteRange_ || 
+                abs(mobIter->second->getLocY() - playerY) > autoDeleteRange_) {
+            outOfRangeDelete.push_back(mobIter->first);
+        } else {
+            updateObject(mobIter->second.get(), elapsedMillis);
+        }
     }
 
     std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator itmIter = dynamicItems_.begin();
     std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator itmEnd = dynamicItems_.end();
 
     for (; itmIter != itmEnd; ++itmIter) {
-        itmIter->second->updateRenderData(elapsedMillis);
+        if ((abs(itmIter->second->getLocX() - playerX) > autoDeleteRange_ || 
+                abs(itmIter->second->getLocY() - playerY) > autoDeleteRange_) && !itmIter->second->hasParent()) {
+            outOfRangeDelete.push_back(itmIter->first);
+        } else {
+            updateObject(itmIter->second.get(), elapsedMillis);
+        }
     }
-
-    sectorManager_->update(elapsedMillis);
 
     std::list<boost::shared_ptr<OverheadMessage> >::iterator msgIter = overheadMessages_.begin();
     std::list<boost::shared_ptr<OverheadMessage> >::iterator msgEnd = overheadMessages_.end();
     std::list<boost::shared_ptr<OverheadMessage> > expiredMessages;
 
     for (; msgIter != msgEnd; ++msgIter) {
-        (*msgIter)->updateRenderData(elapsedMillis);
+        updateObject(msgIter->get(), elapsedMillis);
 
         if ((*msgIter)->isExpired()) {
             expiredMessages.push_back(*msgIter);
@@ -195,8 +211,31 @@ void Manager::update(unsigned int elapsedMillis) {
         msgEnd = expiredMessages.end();
 
         for (; msgIter != msgEnd; ++msgIter) {
+            ui::Manager::getClipRectManager()->add((*msgIter)->getWorldRenderData().getCurrentVertexRect());
             (*msgIter)->expire();
         }
+    }
+    
+    if (!outOfRangeDelete.empty()) {
+        std::list<Serial>::const_iterator iter = outOfRangeDelete.begin();
+        std::list<Serial>::const_iterator end = outOfRangeDelete.end();
+        
+        for (; iter != end; ++iter) {
+            deleteObject(*iter);
+        }
+    }
+    
+    // has to be the last thing we do here
+    sectorManager_->update(elapsedMillis);
+}
+
+void Manager::updateObject(IngameObject* obj, unsigned int elapsedMillis) {
+    obj->updateRenderData(elapsedMillis);
+    bool depthUpdate = obj->getWorldRenderData().renderDepthUpdated();
+    bool texOrVertUpdate = obj->getWorldRenderData().textureOrVerticesUpdated();
+    if (depthUpdate || texOrVertUpdate) {
+        // add previous and current vertex coordinates to clipped update range
+        obj->repaintRectangle(true);
     }
 }
 
@@ -206,6 +245,10 @@ void Manager::registerOverheadMessage(boost::shared_ptr<OverheadMessage> msg) {
 
 void Manager::unregisterOverheadMessage(boost::shared_ptr<OverheadMessage> msg) {
     overheadMessages_.remove(msg);
+}
+
+void Manager::setAutoDeleteRange(unsigned int range) {
+    autoDeleteRange_ = range + 1;
 }
 
 }

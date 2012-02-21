@@ -92,6 +92,9 @@ public:
     unsigned int getRunAnim() const;
 
     bool isWarmode() const;
+    
+    virtual void onAddedToSector(world::Sector* sector);
+    virtual void onRemovedFromSector(world::Sector* sector);
 
 private:
     unsigned int baseBodyId_; // as sent by the server

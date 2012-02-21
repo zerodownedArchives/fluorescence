@@ -34,6 +34,9 @@ public:
     Serial getSerial() const;
 
     void setHue(unsigned int hue);
+    
+    virtual void onLocationChanged(const CL_Vec3f& oldLocation);
+    virtual void onDelete();
 
 private:
     Serial serial_;

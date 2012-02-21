@@ -25,6 +25,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <typedefs.hpp>
 #include <misc/config.hpp>
 
 namespace fluo {
@@ -38,6 +39,7 @@ class WorldView;
 namespace world {
 
 class Sector;
+class IngameObject;
 
 class SectorManager {
 public:
@@ -58,9 +60,16 @@ public:
     void clear();
 
     void update(unsigned int elapsedMillis);
+    
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator begin();
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator end();
+    
+    boost::shared_ptr<world::Sector> getSectorForCoordinates(unsigned int locX, unsigned int locY);
+    
+    boost::shared_ptr<IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopObject) const;
 
 private:
-    std::map<unsigned int, boost::shared_ptr<world::Sector> > sectorMap_;
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> > sectorMap_;
 
     unsigned int updateCounter_; ///< Sector update is not necessary at every frame. Thus we only call it every updateFrequency_ frame
     unsigned int sectorAddFrequency_;
@@ -74,7 +83,7 @@ private:
 
     std::list<ui::components::WorldView*> worldViews_;
 
-    void buildSectorRequiredList(std::list<unsigned int>& list, unsigned int cacheAdd);
+    void buildSectorRequiredList(std::list<IsoIndex>& list, unsigned int cacheAdd);
 };
 
 }

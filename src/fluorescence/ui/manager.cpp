@@ -22,7 +22,6 @@
 
 #include <boost/filesystem/operations.hpp>
 
-#include "render/worldrenderqueue.hpp"
 #include "cursormanager.hpp"
 #include "doubleclickhandler.hpp"
 #include "gumpmenu.hpp"
@@ -32,6 +31,7 @@
 #include "fontengine.hpp"
 #include "render/shadermanager.hpp"
 #include "uofont.hpp"
+#include "cliprectmanager.hpp"
 
 #include <client.hpp>
 
@@ -128,8 +128,6 @@ bool Manager::setShardConfig(Config& config) {
     
     fontEngine_.reset(new FontEngine(config, getGraphicContext()));
 
-    worldRenderQueue_.reset(new WorldRenderQueue());
-
     cursorManager_.reset(new CursorManager(config, mainWindow_));
     singleton_->getCursorManager()->setCursor(CursorType::GAME_WEST);
 
@@ -137,15 +135,14 @@ bool Manager::setShardConfig(Config& config) {
     doubleClickHandler_->start();
 
     shaderManager_.reset(new ShaderManager(getGraphicContext()));
+    
+    clipRectManager_.reset(new ClipRectManager());
 
     return true;
 }
 
 Manager::~Manager() {
     LOG_INFO << "ui::Manager shutdown" << std::endl;
-    if (worldRenderQueue_) {
-        worldRenderQueue_->clear();
-    }
 }
 
 void Manager::step() {
@@ -198,10 +195,6 @@ CL_GraphicContext& Manager::getGraphicContext() {
 
 CL_Texture* Manager::provideTexture(unsigned int width, unsigned int height) {
     return new CL_Texture(singleton_->getGraphicContext(), width, height, cl_rgb8);
-}
-
-boost::shared_ptr<RenderQueue> Manager::getWorldRenderQueue() {
-    return singleton_->worldRenderQueue_;
 }
 
 boost::shared_ptr<CL_GUIManager> Manager::getGuiManager() {
@@ -388,7 +381,10 @@ void Manager::loadUnifonts() {
         getGuiManager()->register_font(uniCur, curDesc);
     }
 }
-    
+
+boost::shared_ptr<ClipRectManager> Manager::getClipRectManager() {
+    return getSingleton()->clipRectManager_;
+}    
 
 }
 }

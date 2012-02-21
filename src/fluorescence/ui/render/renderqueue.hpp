@@ -83,8 +83,8 @@ public:
     bool requireGumpRepaint() const;
     void resetGumpRepaintIndicators();
 
-    unsigned long long getMinRenderDepth() const;
-    unsigned long long getMaxRenderDepth() const;
+    RenderDepth getMinRenderDepth() const;
+    RenderDepth getMaxRenderDepth() const;
 
 protected:
     void processRemoveList();
@@ -121,8 +121,8 @@ private:
     friend void world::IngameObject::addToRenderQueue(const boost::shared_ptr<RenderQueue>& rq);
     friend void world::IngameObject ::removeFromRenderQueue(const boost::shared_ptr<RenderQueue>& rq);
 
-    unsigned long long minRenderDepth_;
-    unsigned long long maxRenderDepth_;
+    RenderDepth minRenderDepth_;
+    RenderDepth maxRenderDepth_;
 };
 
 }

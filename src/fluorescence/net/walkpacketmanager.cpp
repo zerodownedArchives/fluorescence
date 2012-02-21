@@ -50,7 +50,7 @@ void WalkPacketManager::updateFastWalkStack(uint32_t value) {
 }
 
 void WalkPacketManager::onMovementAccept(uint8_t sequence) {
-    LOG_DEBUG << "movement accept: " << (unsigned int)sequence << std::endl;
+    //LOG_DEBUG << "movement accept: " << (unsigned int)sequence << std::endl;
     if (!player_) {
         player_ = world::Manager::getSingleton()->getPlayer();
     }

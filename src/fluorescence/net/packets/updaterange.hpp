@@ -17,42 +17,31 @@
  */
 
 
-#ifndef FLUO_DATA_ONDEMANDREADABLE_HPP
-#define FLUO_DATA_ONDEMANDREADABLE_HPP
+#ifndef FLUO_NET_PACKETS_UPDATERANGE_HPP
+#define FLUO_NET_PACKETS_UPDATERANGE_HPP
 
-#include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
+#include <net/packet.hpp>
 
 namespace fluo {
-namespace data {
+namespace net {
 
-template<class T>
-class OnDemandReadable {
+namespace packets {
+
+class UpdateRange : public Packet {
 public:
-    typedef boost::function<void (boost::shared_ptr<T>)> Callback;
-    
-    OnDemandReadable() : readComplete_(false) { }
-    
-    void setReadComplete(boost::shared_ptr<T> sharedThis = boost::shared_ptr<T>()) { 
-        readComplete_ = true; 
-        
-        if (completeCallback_ && sharedThis) {
-            completeCallback_(sharedThis);
-        }
-    }
-    
-    bool isReadComplete() { 
-        return readComplete_; 
-    }
-    
-    void setCompleteCallback(Callback cb) { completeCallback_ = cb; }
+    UpdateRange();
+    UpdateRange(unsigned int range);
+
+    virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
+    virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
+
+    virtual void onReceive();
 
 private:
-    bool readComplete_;
-    
-    Callback completeCallback_;
+    uint8_t range_;
 };
 
+}
 }
 }
 

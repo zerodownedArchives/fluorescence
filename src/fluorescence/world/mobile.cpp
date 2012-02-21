@@ -20,8 +20,6 @@
 
 #include "mobile.hpp"
 
-#include "dynamicitem.hpp"
-
 #include <misc/log.hpp>
 
 #include <net/manager.hpp>
@@ -40,11 +38,9 @@
 #include <ui/singletextureprovider.hpp>
 #include <ui/animtextureprovider.hpp>
 
-#include <world/manager.hpp>
-
-
-#include "smoothmovement.hpp"
-#include "smoothmovementmanager.hpp"
+#include "manager.hpp"
+#include "dynamicitem.hpp"
+#include "sector.hpp"
 
 namespace fluo {
 namespace world {
@@ -345,7 +341,7 @@ void Mobile::onDelete() {
 
     linkedGumps_.clear();
 
-    IngameObject::onDelete();
+    ServerObject::onDelete();
 }
 
 void Mobile::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
@@ -356,6 +352,14 @@ void Mobile::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
         obj->addToRenderQueue(*iter);
     }
 
+    if (sector_) {
+        sector_->addDynamicObject(obj.get());
+    }
+    
+    if (obj->isDynamicItem()) {
+        boost::dynamic_pointer_cast<DynamicItem>(obj)->setDirection(getDirection());
+    }
+    
     checkItemLayerFlags();
 }
 
@@ -366,14 +370,12 @@ void Mobile::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
     std::list<boost::shared_ptr<ui::RenderQueue> > rqsToRemove;
     for (; iter != end; ++iter) {
         if (obj->isInRenderQueue(*iter)) {
-            rqsToRemove.push_back(*iter);
+            obj->removeFromRenderQueue(*iter);
         }
     }
-
-    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remIter = rqsToRemove.begin();
-    std::list<boost::shared_ptr<ui::RenderQueue> >::iterator remEnd = rqsToRemove.end();
-    for (; remIter != remEnd; ++remIter) {
-        obj->removeFromRenderQueue(*remIter);
+    
+    if (sector_) {
+        sector_->removeDynamicObject(obj.get());
     }
 
     checkItemLayerFlags();
@@ -439,6 +441,24 @@ unsigned int Mobile::getRunAnim() const {
         return 3;
     } else {
         return 2;
+    }
+}
+
+void Mobile::onAddedToSector(world::Sector* sector) {
+    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
+
+    for (; iter != end; ++iter) {
+        sector->addDynamicObject(iter->get());
+    }
+}
+
+void Mobile::onRemovedFromSector(world::Sector* sector) {
+    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
+
+    for (; iter != end; ++iter) {
+        sector->removeDynamicObject(iter->get());
     }
 }
 

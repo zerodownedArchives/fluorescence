@@ -16,6 +16,7 @@ set (UI_HPP
     ui/fontengine.hpp
     ui/uofont.hpp
     ui/uofontprovider.hpp
+    ui/cliprectmanager.hpp
     )
 
 set (UI_CPP
@@ -34,6 +35,7 @@ set (UI_CPP
     ui/fontengine.cpp
     ui/uofont.cpp
     ui/uofontprovider.cpp
+    ui/cliprectmanager.cpp
     )
 
 set (GUMPMENU_HPP

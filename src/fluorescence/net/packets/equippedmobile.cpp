@@ -87,8 +87,6 @@ void EquippedMobile::onReceive() {
 
         mob->addChildObject(itm);
     }
-
-    mob->addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 }

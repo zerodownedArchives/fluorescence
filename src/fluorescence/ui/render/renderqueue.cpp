@@ -245,7 +245,7 @@ void RenderQueue::resetGumpRepaintIndicators() {
 }
 
 void RenderQueue::updateMinMaxRenderDepth() {
-    unsigned long long cur;
+    RenderDepth cur;
 
     minRenderDepth_ = 0xFFFFFFFFFFFFFFFFu;
     maxRenderDepth_ = 0;
@@ -280,11 +280,11 @@ void RenderQueue::updateMinMaxRenderDepth() {
     }
 }
 
-unsigned long long RenderQueue::getMinRenderDepth() const {
+RenderDepth RenderQueue::getMinRenderDepth() const {
     return minRenderDepth_;
 }
 
-unsigned long long RenderQueue::getMaxRenderDepth() const {
+RenderDepth RenderQueue::getMaxRenderDepth() const {
     return maxRenderDepth_;
 }
 

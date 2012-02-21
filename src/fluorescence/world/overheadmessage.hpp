@@ -47,6 +47,8 @@ public:
 
     bool isExpired() const;
     void expire();
+    
+    virtual void onLocationChanged(const CL_Vec3f& oldLocation);
 
 private:
     UnicodeString text_;

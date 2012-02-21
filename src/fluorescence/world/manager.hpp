@@ -39,6 +39,7 @@ class Mobile;
 class DynamicItem;
 class OverheadMessage;
 class PlayerWalkManager;
+class IngameObject;
 
 class Manager {
 public:
@@ -67,6 +68,8 @@ public:
 
     void registerOverheadMessage(boost::shared_ptr<OverheadMessage> msg);
     void unregisterOverheadMessage(boost::shared_ptr<OverheadMessage> msg);
+    
+    void setAutoDeleteRange(unsigned int range);
 
 private:
     static Manager* singleton_;
@@ -85,10 +88,13 @@ private:
     std::map<Serial, boost::shared_ptr<DynamicItem> > dynamicItems_;
 
     void update(unsigned int millis);
-
+    void updateObject(IngameObject* obj, unsigned int elapsedMillis);
+    
     boost::shared_ptr<SmoothMovementManager> smoothMovementManager_;
     boost::shared_ptr<PlayerWalkManager> playerWalkManager_;
 
+    unsigned int autoDeleteRange_;
+    
     std::list<boost::shared_ptr<OverheadMessage> > overheadMessages_;
 };
 

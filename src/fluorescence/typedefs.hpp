@@ -73,6 +73,37 @@ enum {
 };
 };
 
+struct IsoIndex {
+public:
+    IsoIndex() : value_(0), x_(0), y_(0) { }
+    IsoIndex(unsigned int x, unsigned int y) : x_(x & 0xFFFf), y_(y & 0xFFFF) {
+        value_ = x_ + y_;
+        value_ <<= 32;
+        value_ |= (x_ << 16) | y_;
+    }
+
+    bool operator>(const IsoIndex& other) const { return value_ > other.value_; }
+    bool operator<(const IsoIndex& other) const { return value_ < other.value_; }
+    bool operator==(const IsoIndex& other) const { return value_ == other.value_; }
+    bool operator!=(const IsoIndex& other) const { return value_ != other.value_; }
+
+    uint64_t value_;
+    uint16_t x_;
+    uint16_t y_;
+};
+
+struct RenderDepth {
+    RenderDepth() : value_(0) { }
+    RenderDepth(uint64_t value) : value_(value) { }
+    
+    bool operator>(const RenderDepth& other) const { return value_ > other.value_; }
+    bool operator<(const RenderDepth& other) const { return value_ < other.value_; }
+    bool operator==(const RenderDepth& other) const { return value_ == other.value_; }
+    bool operator!=(const RenderDepth& other) const { return value_ != other.value_; }
+    
+    uint64_t value_;
+};
+
 }
 
 

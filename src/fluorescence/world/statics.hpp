@@ -58,7 +58,7 @@ public:
 
     // returns wheter other not this static tile requires periodic updates to updateRenderData to be rendere correctly.
     // this is only the case if is animated
-    bool requireRenderUpdate() const;
+    bool periodicRenderUpdateRequired() const;
 
 private:
     unsigned int artId_;
@@ -77,7 +77,7 @@ private:
     bool updateAnimation(unsigned int elapsedMillis);
 };
 
-class StaticBlock : public data::OnDemandReadable {
+class StaticBlock : public data::OnDemandReadable<StaticBlock> {
 friend class data::StaticsLoader;
 
 public:

@@ -20,10 +20,11 @@
 #ifndef FLUO_WORLD_SECTOR_HPP
 #define FLUO_WORLD_SECTOR_HPP
 
+#include <boost/shared_ptr.hpp>
+
+#include <typedefs.hpp>
 #include "map.hpp"
 #include "statics.hpp"
-
-#include <boost/shared_ptr.hpp>
 
 namespace fluo {
 
@@ -31,19 +32,15 @@ namespace data {
     class SectorReader;
 }
 
-namespace ui {
-    class RenderQueue;
-}
-
 namespace world {
 
 class Sector {
 
 public:
-    Sector(unsigned int mapId, unsigned int sectorId);
+    Sector(unsigned int mapId, const IsoIndex& sectorId);
     ~Sector();
 
-    unsigned int getSectorId() const;
+    const IsoIndex& getSectorId() const;
     unsigned int getMapId() const;
 
     unsigned int getLocX() const;
@@ -51,26 +48,40 @@ public:
 
     bool isVisible() const;
 
-    boost::shared_ptr<MapBlock> getMapBlock() const;
-    boost::shared_ptr<StaticBlock> getStaticBlock() const;
-
-    void removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq);
-
     void update(unsigned int elapsedMillis);
+    
+    std::list<world::IngameObject*>::iterator renderBegin();
+    std::list<world::IngameObject*>::iterator renderEnd();
+    
+    bool repaintRequired() const;
+    
+    void addDynamicObject(world::IngameObject* obj);
+    void removeDynamicObject(world::IngameObject* obj);
+    void requestSort();
+    
+    boost::shared_ptr<world::IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopObject) const;
 
 private:
     unsigned int mapId_;
-    unsigned int id_;
-    CL_Vec2<unsigned int> location_;
+    IsoIndex id_;
 
     boost::shared_ptr<MapBlock> mapBlock_;
+    bool mapAddedToList_;
+    
     boost::shared_ptr<StaticBlock> staticBlock_;
+    bool staticsAddedToList_;
 
     bool visible_;
 
     bool fullUpdateRenderDataRequired_;
-    std::list<boost::shared_ptr<world::StaticItem> > quickRenderUpdateList_;
-
+    bool renderListSortRequired_;
+    bool repaintRequired_;
+    
+    // ownership of these objects is already provided by staticBlock_ or mapBlock_, thus no smart pointers here
+    std::list<world::IngameObject*> quickRenderUpdateList_;    
+    std::list<world::IngameObject*> renderList_;
+    
+    static bool renderDepthSortHelper(const world::IngameObject* a, const world::IngameObject* b);
 };
 
 }

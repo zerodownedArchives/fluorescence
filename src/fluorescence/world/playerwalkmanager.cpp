@@ -81,7 +81,7 @@ void PlayerWalkManager::update(unsigned int elapsedMillis) {
         
         if (lastIsWalking_) {
             // TODO: check running, mounted. different speed
-            unsigned int moveDuration = 400;
+            unsigned int moveDuration = 100;
             
             millisToNextMove_ = moveDuration;;
             

@@ -28,8 +28,12 @@
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
+#include <ui/cliprectmanager.hpp>
 
+#include "manager.hpp"
 #include "overheadmessage.hpp"
+#include "sectormanager.hpp"
+#include "sector.hpp"
 
 namespace fluo {
 namespace world {
@@ -67,6 +71,8 @@ void IngameObject::setLocation(CL_Vec3f loc) {
             ceilf(oldLocation[1u]) != ceilf(location_[1u]) ||
             ceilf(oldLocation[2u]) != ceilf(location_[2u])) {
         invalidateRenderDepth();
+        
+        onLocationChanged(oldLocation);
     }
 
     invalidateVertexCoordinates();
@@ -128,6 +134,8 @@ const CL_Vec3f& IngameObject::getHueInfo() const {
 }
 
 void IngameObject::updateRenderData(unsigned int elapsedMillis) {
+    worldRenderData_.resetPreUpdate();
+    
     if (worldRenderData_.renderDataValid()) {
         bool frameChanged = updateAnimation(elapsedMillis);
 
@@ -164,19 +172,23 @@ void IngameObject::updateRenderData(unsigned int elapsedMillis) {
             updateRenderDepth();
             worldRenderData_.onRenderDepthUpdate();
             notifyRenderQueuesWorldDepth();
+            
+            if (sector_) {
+                sector_->requestSort();
+            }
         }
     }
 }
 
-bool IngameObject::isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const {
+bool IngameObject::overlaps(const CL_Rectf& rect) const {
     //LOGARG_DEBUG(LOGTYPE_WORLD, "isInDrawArea (%u %u %u %u) => x=%u y=%u\n", leftPixelCoord, rightPixelCoord, topPixelCoord, bottomPixelCoord, vertexCoordinates_[0u].x, vertexCoordinates_[0u].y);
 
     // almost every texture is a rectangle, with vertexCoordinates_[0] being top left and vertexCoordinates_[5] bottom right
     // all non-rectangular cases are maptiles
-    return (worldRenderData_.vertexCoordinates_[0].x <= rightPixelCoord) &&
-            (worldRenderData_.vertexCoordinates_[0].y <= bottomPixelCoord) &&
-            (worldRenderData_.vertexCoordinates_[5].x >= leftPixelCoord) &&
-            (worldRenderData_.vertexCoordinates_[5].y >= topPixelCoord);
+    return (worldRenderData_.vertexCoordinates_[0].x <= rect.right) &&
+            (worldRenderData_.vertexCoordinates_[0].y <= rect.bottom) &&
+            (worldRenderData_.vertexCoordinates_[5].x >= rect.left) &&
+            (worldRenderData_.vertexCoordinates_[5].y >= rect.top);
 }
 
 bool IngameObject::hasPixel(int pixelX, int pixelY) const {
@@ -248,7 +260,7 @@ boost::shared_ptr<IngameObject> IngameObject::getTopParent() {
 }
 
 void IngameObject::printRenderDepth() const {
-    LOG_DEBUG << "Render depth: " << std::hex << worldRenderData_.getRenderDepth() << std::dec << std::endl;
+    LOG_DEBUG << "Render depth: " << std::hex << worldRenderData_.getRenderDepth().value_ << std::dec << std::endl;
 }
 
 void IngameObject::setOverheadMessageOffsets() {
@@ -355,6 +367,15 @@ void IngameObject::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
 }
 
 void IngameObject::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
+}
+
+void IngameObject::onAddedToSector(world::Sector* sector) {
+}
+
+void IngameObject::onRemovedFromSector(world::Sector* sector) {
+}
+
+void IngameObject::onLocationChanged(const CL_Vec3f& oldLocation) {
 }
 
 void IngameObject::setParentObject() {
@@ -503,6 +524,8 @@ void IngameObject::forceRepaint() {
             (*rqIter)->forceRepaint();
         }
     }
+    
+    repaintRectangle();
 }
 
 std::list<boost::shared_ptr<ui::RenderQueue> >::iterator IngameObject::rqBegin() {
@@ -520,12 +543,27 @@ const ui::WorldRenderData& IngameObject::getWorldRenderData() const {
 void IngameObject::updateGumpTextureProvider() {
 }
 
-void IngameObject::setRenderDepth(unsigned long long depth) {
-    worldRenderData_.setRenderDepth(depth);
+const RenderDepth& IngameObject::getRenderDepth() const {
+    return worldRenderData_.getRenderDepth();
 }
 
-unsigned long long IngameObject::getRenderDepth() const {
-    return worldRenderData_.getRenderDepth();
+bool IngameObject::renderDepthChanged() const {
+    return worldRenderData_.renderDepthUpdated();
+}
+
+bool IngameObject::textureOrVerticesChanged() const {
+    return worldRenderData_.textureOrVerticesUpdated();
+}
+
+void IngameObject::repaintRectangle(bool repaintPreviousCoordinates) const {
+    if (repaintPreviousCoordinates) {
+        ui::Manager::getClipRectManager()->add(worldRenderData_.previousVertexRect_);
+    }
+    ui::Manager::getClipRectManager()->add(worldRenderData_.getCurrentVertexRect());
+}
+
+bool IngameObject::hasParent() const {
+    return !parentObject_.expired();
 }
 
 }
