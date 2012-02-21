@@ -356,6 +356,10 @@ void Mobile::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
         sector_->addDynamicObject(obj.get());
     }
     
+    if (obj->isDynamicItem()) {
+        boost::dynamic_pointer_cast<DynamicItem>(obj)->setDirection(getDirection());
+    }
+    
     checkItemLayerFlags();
 }
 

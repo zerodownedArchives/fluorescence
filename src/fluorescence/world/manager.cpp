@@ -66,7 +66,7 @@ void Manager::destroy() {
     }
 }
 
-Manager::Manager(const Config& config) : currentMapId_(0) {
+Manager::Manager(const Config& config) : currentMapId_(0), autoDeleteRange_(18) {
     sectorManager_.reset(new SectorManager(config));
     lightManager_.reset(new LightManager());
     smoothMovementManager_.reset(new SmoothMovementManager());
@@ -164,19 +164,34 @@ void Manager::step(unsigned int elapsedMillis) {
 void Manager::update(unsigned int elapsedMillis) {
     smoothMovementManager_->update(elapsedMillis);
     playerWalkManager_->update(elapsedMillis);
+    
+    unsigned int playerX = ceilf(player_->getLocX());
+    unsigned int playerY = ceilf(player_->getLocY());
+    
+    std::list<Serial> outOfRangeDelete;
 
     std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobIter = mobiles_.begin();
     std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobEnd = mobiles_.end();
 
     for (; mobIter != mobEnd; ++mobIter) {
-        updateObject(mobIter->second.get(), elapsedMillis);
+        if (abs(mobIter->second->getLocX() - playerX) > autoDeleteRange_ || 
+                abs(mobIter->second->getLocY() - playerY) > autoDeleteRange_) {
+            outOfRangeDelete.push_back(mobIter->first);
+        } else {
+            updateObject(mobIter->second.get(), elapsedMillis);
+        }
     }
 
     std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator itmIter = dynamicItems_.begin();
     std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator itmEnd = dynamicItems_.end();
 
     for (; itmIter != itmEnd; ++itmIter) {
-        updateObject(itmIter->second.get(), elapsedMillis);
+        if ((abs(itmIter->second->getLocX() - playerX) > autoDeleteRange_ || 
+                abs(itmIter->second->getLocY() - playerY) > autoDeleteRange_) && !itmIter->second->hasParent()) {
+            outOfRangeDelete.push_back(itmIter->first);
+        } else {
+            updateObject(itmIter->second.get(), elapsedMillis);
+        }
     }
 
     std::list<boost::shared_ptr<OverheadMessage> >::iterator msgIter = overheadMessages_.begin();
@@ -201,6 +216,15 @@ void Manager::update(unsigned int elapsedMillis) {
         }
     }
     
+    if (!outOfRangeDelete.empty()) {
+        std::list<Serial>::const_iterator iter = outOfRangeDelete.begin();
+        std::list<Serial>::const_iterator end = outOfRangeDelete.end();
+        
+        for (; iter != end; ++iter) {
+            deleteObject(*iter);
+        }
+    }
+    
     // has to be the last thing we do here
     sectorManager_->update(elapsedMillis);
 }
@@ -211,8 +235,7 @@ void Manager::updateObject(IngameObject* obj, unsigned int elapsedMillis) {
     bool texOrVertUpdate = obj->getWorldRenderData().textureOrVerticesUpdated();
     if (depthUpdate || texOrVertUpdate) {
         // add previous and current vertex coordinates to clipped update range
-        ui::Manager::getClipRectManager()->add(obj->getWorldRenderData().previousVertexRect_);
-        ui::Manager::getClipRectManager()->add(obj->getWorldRenderData().getCurrentVertexRect());
+        obj->repaintRectangle(true);
     }
 }
 
@@ -222,6 +245,10 @@ void Manager::registerOverheadMessage(boost::shared_ptr<OverheadMessage> msg) {
 
 void Manager::unregisterOverheadMessage(boost::shared_ptr<OverheadMessage> msg) {
     overheadMessages_.remove(msg);
+}
+
+void Manager::setAutoDeleteRange(unsigned int range) {
+    autoDeleteRange_ = range + 1;
 }
 
 }

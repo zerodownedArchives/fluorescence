@@ -69,11 +69,9 @@ private:
     void initFrameBuffer(unsigned int index);
     CL_FrameBuffer frameBuffers_[2];
     bool texturesInitialized_[2];
-    bool repaintEverything_;
     
     // draws the texture from the last frame, moved x/y pixels
-    // returns the texture coordinates to use for drawing the texture
-    CL_Rectf renderPreviousTexture(CL_GraphicContext& gc, float pixelX, float pixelY);
+    void renderPreviousTexture(CL_GraphicContext& gc, float pixelX, float pixelY);
 };
 
 }

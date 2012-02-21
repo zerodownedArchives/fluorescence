@@ -92,6 +92,10 @@ void SectorManager::addNewSectors(bool force) {
 }
 
 void SectorManager::deleteSectors() {
+    if (worldViews_.empty()) {
+        return;
+    }
+    
     unsigned int mapId = world::Manager::getSingleton()->getCurrentMapId();
 
     if (mapId != lastMapId_) {
@@ -114,6 +118,7 @@ void SectorManager::deleteSectors() {
     while (deleteIter != deleteEnd) {
         if (deleteIter->second->getMapId() != mapId ||
                 !std::binary_search(requiredBegin, requiredEnd, deleteIter->second->getSectorId())) {
+            //LOG_DEBUG << "sector remove from manager x=" << deleteIter->second->getSectorId().x_ << " y=" << deleteIter->second->getSectorId().y_ << std::endl;
             sectorMap_.erase(deleteIter);
         }
 
@@ -182,14 +187,37 @@ std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator SectorManager::e
     return sectorMap_.end();
 }
 
-world::Sector* SectorManager::getSectorForCoordinates(unsigned int locX, unsigned int locY) const {
+boost::shared_ptr<world::Sector> SectorManager::getSectorForCoordinates(unsigned int locX, unsigned int locY) {
     locX /= 8;
     locY /= 8;
     
     IsoIndex secIdx(locX, locY);
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::const_iterator iter = sectorMap_.find(secIdx);
     
-    return (iter != sectorMap_.end()) ? iter->second.get() : NULL;
+    if (iter != sectorMap_.end()) {
+        return iter->second;
+    } else {
+        boost::shared_ptr<Sector> newSec(new Sector(world::Manager::getSingleton()->getCurrentMapId(), secIdx));
+        sectorMap_[secIdx] = newSec;
+        return newSec;
+    }
+}
+
+boost::shared_ptr<world::IngameObject> SectorManager::getFirstObjectAt(int worldX, int worldY, bool getTopObject) const {
+    boost::shared_ptr<world::IngameObject> ret;
+    
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::const_reverse_iterator iter = sectorMap_.rbegin();
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::const_reverse_iterator end = sectorMap_.rend();
+    
+    for (; iter != end; ++iter) {
+        ret = iter->second->getFirstObjectAt(worldX, worldY, getTopObject);
+        
+        if (ret) {
+            break;
+        }
+    }
+    
+    return ret;
 }
 
 }

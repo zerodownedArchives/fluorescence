@@ -28,6 +28,7 @@
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
+#include <ui/cliprectmanager.hpp>
 
 #include "manager.hpp"
 #include "overheadmessage.hpp"
@@ -37,7 +38,7 @@
 namespace fluo {
 namespace world {
 
-IngameObject::IngameObject(unsigned int objectType) : draggable_(false), sector_(NULL), objectType_(objectType), visible_(true) {
+IngameObject::IngameObject(unsigned int objectType) : draggable_(false), objectType_(objectType), visible_(true) {
 
 }
 
@@ -523,6 +524,8 @@ void IngameObject::forceRepaint() {
             (*rqIter)->forceRepaint();
         }
     }
+    
+    repaintRectangle();
 }
 
 std::list<boost::shared_ptr<ui::RenderQueue> >::iterator IngameObject::rqBegin() {
@@ -550,6 +553,17 @@ bool IngameObject::renderDepthChanged() const {
 
 bool IngameObject::textureOrVerticesChanged() const {
     return worldRenderData_.textureOrVerticesUpdated();
+}
+
+void IngameObject::repaintRectangle(bool repaintPreviousCoordinates) const {
+    if (repaintPreviousCoordinates) {
+        ui::Manager::getClipRectManager()->add(worldRenderData_.previousVertexRect_);
+    }
+    ui::Manager::getClipRectManager()->add(worldRenderData_.getCurrentVertexRect());
+}
+
+bool IngameObject::hasParent() const {
+    return !parentObject_.expired();
 }
 
 }

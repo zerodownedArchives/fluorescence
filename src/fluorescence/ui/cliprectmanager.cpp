@@ -90,6 +90,7 @@ void ClipRectManager::clamp(const CL_Vec2f& topleftBase, const CL_Size& sizeBase
             rectangles_.erase(helper);
         } else {
             iter->clip(clampRect);
+            //LOG_DEBUG << "rect after clamp: " << *iter << std::endl;
             ++iter;
         }
     }

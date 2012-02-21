@@ -95,7 +95,8 @@ void OverheadMessage::expire() {
     if (sector_) {
         sector_->removeDynamicObject(this);
     }
-    sector_ = NULL;
+    
+    sector_.reset();
 }
 
 void OverheadMessage::onClick() {
@@ -142,7 +143,7 @@ void OverheadMessage::onRemovedFromParent() {
 }
 
 void OverheadMessage::onLocationChanged(const CL_Vec3f& oldLocation) {
-    Sector* newSector = world::Manager::getSectorManager()->getSectorForCoordinates(getLocX(), getLocY());
+    boost::shared_ptr<Sector> newSector = world::Manager::getSectorManager()->getSectorForCoordinates(getLocX(), getLocY());
     
     if (sector_ != newSector) {
         if (sector_) {

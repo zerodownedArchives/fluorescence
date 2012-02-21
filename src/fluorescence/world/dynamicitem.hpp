@@ -53,6 +53,7 @@ public:
 
     virtual bool isMirrored() const;
     void setDirection(unsigned int direction);
+    unsigned int getDirection() const;
 
     void setAmount(unsigned int amount);
     unsigned int getAmount() const;

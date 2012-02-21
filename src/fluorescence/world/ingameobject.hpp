@@ -25,6 +25,7 @@
 #include <ClanLib/Core/Math/point.h>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
 #include <list>
@@ -98,6 +99,7 @@ public:
     virtual void onDoubleClick();
 
     virtual boost::shared_ptr<IngameObject> getTopParent();
+    bool hasParent() const;
 
     void setOverheadMessageOffsets();
 
@@ -143,6 +145,8 @@ public:
     
     bool renderDepthChanged() const;
     bool textureOrVerticesChanged() const;
+    
+    void repaintRectangle(bool repaintPreviousCoordinates = false) const;
 
 protected:
     ui::WorldRenderData worldRenderData_;
@@ -162,7 +166,7 @@ protected:
 
     void forceRepaint();
     
-    Sector* sector_;
+    boost::shared_ptr<Sector> sector_;
 
 private:
     unsigned int objectType_;

@@ -58,6 +58,8 @@ public:
     void addDynamicObject(world::IngameObject* obj);
     void removeDynamicObject(world::IngameObject* obj);
     void requestSort();
+    
+    boost::shared_ptr<world::IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopObject) const;
 
 private:
     unsigned int mapId_;

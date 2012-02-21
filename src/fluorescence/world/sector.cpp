@@ -171,10 +171,10 @@ void Sector::update(unsigned int elapsedMillis) {
             // add repaint rectangle over full sector range, and a bit more
             const CL_Vec3f* vertCoords = mapBlock_->get(0, 0)->getWorldRenderData().getVertexCoordinates();
             float updateLeft = vertCoords[0].x - 150;
-            float updateTop = vertCoords[0].x - 150;
+            float updateTop = vertCoords[0].y - 150;
             vertCoords = mapBlock_->get(7, 7)->getWorldRenderData().getVertexCoordinates();
             float updateRight = vertCoords[5].x + 100;
-            float updateBottom = vertCoords[5].x + 100;
+            float updateBottom = vertCoords[5].y + 100;
             CL_Rectf updateRect(updateLeft, updateTop, updateRight, updateBottom);
             ui::Manager::getClipRectManager()->add(updateRect);
         }
@@ -193,8 +193,7 @@ void Sector::update(unsigned int elapsedMillis) {
             
             if (depthChanged || texOrVertChanged) {
                 // add previous and current vertex coordinates to clipped update range
-                ui::Manager::getClipRectManager()->add((*iter)->getWorldRenderData().previousVertexRect_);
-                ui::Manager::getClipRectManager()->add((*iter)->getWorldRenderData().getCurrentVertexRect());
+                (*iter)->repaintRectangle(true);
             }
         }
     }
@@ -225,16 +224,43 @@ bool Sector::repaintRequired() const {
 void Sector::addDynamicObject(world::IngameObject* obj) {
     renderList_.push_back(obj);
     renderListSortRequired_ = true;
+    
+    obj->repaintRectangle();
+    
     obj->onAddedToSector(this);
 }
 
 void Sector::removeDynamicObject(world::IngameObject* obj) {
     renderList_.remove(obj);
+    
+    obj->repaintRectangle();
+    
     obj->onRemovedFromSector(this);
 }
 
 void Sector::requestSort() {
     renderListSortRequired_ = true;
+}
+
+boost::shared_ptr<world::IngameObject> Sector::getFirstObjectAt(int worldX, int worldY, bool getTopObject) const {
+    boost::shared_ptr<world::IngameObject> ret;
+    
+    std::list<world::IngameObject*>::const_reverse_iterator iter = renderList_.rbegin();
+    std::list<world::IngameObject*>::const_reverse_iterator end = renderList_.rend();
+    
+    for (; iter != end; ++iter) {
+        IngameObject* curObj = *iter;
+        if (curObj->isVisible() && curObj->hasPixel(worldX, worldY)) {
+            if (getTopObject) {
+                ret = curObj->getTopParent();
+            } else {
+                ret = curObj->shared_from_this();
+            }
+            break;
+        }
+    }
+    
+    return ret;
 }
 
 }

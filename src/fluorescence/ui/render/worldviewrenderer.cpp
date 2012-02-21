@@ -62,7 +62,6 @@ void WorldViewRenderer::checkTextureSize() {
         
         initFrameBuffer(0);
         initFrameBuffer(1);
-        repaintEverything_ = true;
     }
 }
 
@@ -100,16 +99,15 @@ boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc, 
     return textures_[frameBufferIndex_];
 }
 
-CL_Rectf WorldViewRenderer::renderPreviousTexture(CL_GraphicContext& gc, float pixelX, float pixelY) {
+void WorldViewRenderer::renderPreviousTexture(CL_GraphicContext& gc, float pixelX, float pixelY) {
     if (abs(pixelX) >= textureWidth_ || abs(pixelY) >= textureHeight_) {
         // need to paint everything from scratch
-        repaintEverything_ = true;
+        ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(textureWidth_, textureHeight_)).translate(worldView_->getTopLeftPixel()));
+        LOG_DEBUG << "center moved x=" << pixelX << " y=" << pixelY << std::endl;
     } else {
         unsigned int oldTexture = (frameBufferIndex_ + 1) % 2;
         
         if (texturesInitialized_[oldTexture]) {
-            repaintEverything_ = false;
-            
             gc.clear_depth(1.0);
             CL_Draw::texture(gc, *textures_[oldTexture]->getTexture(), CL_Rectf(-pixelX, -pixelY, CL_Sizef(textureWidth_, textureHeight_)));
             
@@ -125,13 +123,11 @@ CL_Rectf WorldViewRenderer::renderPreviousTexture(CL_GraphicContext& gc, float p
                 ui::Manager::getClipRectManager()->add(CL_Rectf(0, textureHeight_ - pixelY, CL_Sizef(textureWidth_, pixelY)).translate(worldView_->getTopLeftPixel()));
             }
         } else {
-            repaintEverything_ = true;
+            ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(worldView_->getWidth(), worldView_->getHeight())).translate(worldView_->getTopLeftPixel()));
         }
     }
     
-    //LOG_DEBUG << "center moved x=" << pixelX << " y=" << pixelY << " repaint everything=" << repaintEverything_ << std::endl;
-    
-    return CL_Rectf(0.0, 0.0, 1.0, 1.0);
+    //LOG_DEBUG << "center moved x=" << pixelX << " y=" << pixelY << std::endl;
 }
 
 
@@ -170,6 +166,11 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     std::vector<CL_Rectf>::const_iterator clipRectIter;
     std::vector<CL_Rectf>::const_iterator clipRectEnd = clipRectMan->end();
     
+    if (clipRectMan->size() == 0) {
+        fluo::sleepMs(1);
+        return;
+    }
+    
     //LOG_DEBUG << "rectangles: " << clipRectMan->size() << std::endl;
     
     unsigned int notInCount = 0;
@@ -193,28 +194,20 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
             }
         
             // check if current object is in the area visible to the player
-            if (!repaintEverything_) {
-                bool drawn = false;
-                for (clipRectIter = clipRectMan->begin(); clipRectIter != clipRectEnd; ++clipRectIter) {
-                    if (curObj->overlaps(*clipRectIter)) {
-                        CL_Rectf clipRect(*clipRectIter);
-                        clipRect.translate(-clippingTopLeftCorner);
-                        //LOG_DEBUG << "clip rect: " << clipRect << std::endl;
-                        //if (clipRect.top < 0 || clipRect.left < 0 || clipRect.bottom > 600 || clipRect.right > 800) {
-                            //continue;
-                        //}
-                        gc.push_cliprect(clipRect);
-                        renderObject(gc, curObj, tex);
-                        drawn = true;
-                        gc.pop_cliprect();
-                    }
+            bool drawn = false;
+            for (clipRectIter = clipRectMan->begin(); clipRectIter != clipRectEnd; ++clipRectIter) {
+                if (curObj->overlaps(*clipRectIter)) {
+                    CL_Rectf clipRect(*clipRectIter);
+                    clipRect.translate(-clippingTopLeftCorner);
+                    gc.push_cliprect(clipRect);
+                    renderObject(gc, curObj, tex);
+                    drawn = true;
+                    gc.pop_cliprect();
                 }
                 
                 if (!drawn) {
                     notInCount++;
                 }
-            } else {
-                renderObject(gc, curObj, tex);
             }
         }
     }

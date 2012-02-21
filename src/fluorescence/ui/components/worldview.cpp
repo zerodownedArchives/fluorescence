@@ -317,7 +317,7 @@ boost::shared_ptr<world::IngameObject> WorldView::getFirstIngameObjectAt(unsigne
     float worldY = getCenterPixelY() - get_height()/2.0;
     worldY += pixelY;
 
-    // return ui::Manager::getWorldRenderQueue()->getFirstObjectAt(worldX, worldY, true);
+    return world::Manager::getSectorManager()->getFirstObjectAt(worldX, worldY, true);
     boost::shared_ptr<world::IngameObject> ret;
     return ret;
 }
