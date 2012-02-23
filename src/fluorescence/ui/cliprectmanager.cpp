@@ -28,6 +28,8 @@ ClipRectManager::ClipRectManager() {
 }
     
 void ClipRectManager::add(const CL_Rectf& rect) {
+    boost::mutex::scoped_lock myLock(mutex_);
+    
     // happens when the location is set for the first time (invalid previous coordinates)
     if (rect.top == rect.bottom || rect.left == rect.right) {
         return;
@@ -77,23 +79,21 @@ void ClipRectManager::clamp(const CL_Vec2f& topleftBase, const CL_Size& sizeBase
         return;
     }
     
+    std::vector<CL_Rectf> clamped;
+    
     CL_Rectf clampRect(topleftBase.x, topleftBase.y, CL_Sizef(sizeBase.width, sizeBase.height));
     
     std::vector<CL_Rectf>::iterator iter = rectangles_.begin();
     std::vector<CL_Rectf>::iterator end = rectangles_.end();
     std::vector<CL_Rectf>::iterator helper;
     
-    while (iter != end) {
-        if (!clampRect.is_overlapped(*iter)) {
-            helper = iter;
-            ++iter;
-            rectangles_.erase(helper);
-        } else {
-            iter->clip(clampRect);
-            //LOG_DEBUG << "rect after clamp: " << *iter << std::endl;
-            ++iter;
+    for (; iter != end; ++iter) {
+        if (clampRect.is_overlapped(*iter)) {
+            clamped.push_back(iter->clip(clampRect));
         }
     }
+    
+    rectangles_ = clamped;
 }
     
 }

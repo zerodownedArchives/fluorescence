@@ -213,7 +213,7 @@ void Manager::update(unsigned int elapsedMillis) {
         msgEnd = expiredMessages.end();
 
         for (; msgIter != msgEnd; ++msgIter) {
-            ui::Manager::getClipRectManager()->add((*msgIter)->getWorldRenderData().getCurrentVertexRect());
+            (*msgIter)->repaintRectangle(false);
             (*msgIter)->expire();
         }
     }

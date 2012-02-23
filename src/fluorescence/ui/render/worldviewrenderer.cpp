@@ -144,16 +144,36 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     buffer_control.enable_stencil_test(false);
     buffer_control.enable_color_write(true);
     gc.set_buffer_control(buffer_control);
+    
+    CL_Vec2f clippingTopLeftCorner = worldView_->getTopLeftPixel();
+    
+    ui::ClipRectManager* clipRectMan = ui::Manager::getClipRectManager().get();
+    boost::mutex::scoped_lock clipManLock(clipRectMan->mutex_);
+    clipRectMan->clamp(clippingTopLeftCorner, worldView_->get_size());
+    
+    if (clipRectMan->size() == 0) {
+        fluo::sleepMs(1);
+        return;
+    }
+    
+    std::vector<CL_Rectf>::const_iterator clipRectIter;
+    std::vector<CL_Rectf>::const_iterator clipRectEnd = clipRectMan->end();
+    
+    for (clipRectIter = clipRectMan->begin(); clipRectIter != clipRectEnd; ++clipRectIter) {
+        CL_Rectf clipRect(*clipRectIter);
+        clipRect.translate(-clippingTopLeftCorner);
+        gc.push_cliprect(clipRect);
+        gc.clear(CL_Colorf::black);
+        gc.pop_cliprect();
+    }
 
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getWorldShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
     
-    CL_Vec2f clippingTopLeftCorner = worldView_->getTopLeftPixel();
     shader->set_uniform2f("PositionOffset", clippingTopLeftCorner);
     
     boost::shared_ptr<ui::Texture> huesTexture = data::Manager::getSingleton()->getHuesLoader()->getHuesTexture();
     gc.set_texture(0, *(huesTexture->getTexture()));
-    
     // set texture unit 1 active to avoid overriding the hue texture with newly loaded object textures
     gc.set_texture(1, *(huesTexture->getTexture())); 
     
@@ -171,27 +191,6 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     std::list<world::IngameObject*>::iterator objIter;
     std::list<world::IngameObject*>::iterator objEnd;;
 
-    ui::ClipRectManager* clipRectMan = ui::Manager::getClipRectManager().get();
-    clipRectMan->clamp(clippingTopLeftCorner, worldView_->get_size());
-    std::vector<CL_Rectf>::const_iterator clipRectIter;
-    std::vector<CL_Rectf>::const_iterator clipRectEnd = clipRectMan->end();
-    
-    if (clipRectMan->size() == 0) {
-        fluo::sleepMs(1);
-        return;
-    }
-    
-    for (clipRectIter = clipRectMan->begin(); clipRectIter != clipRectEnd; ++clipRectIter) {
-        CL_Rectf clipRect(*clipRectIter);
-        clipRect.translate(-clippingTopLeftCorner);
-        gc.push_cliprect(clipRect);
-        //LOG_DEBUG << "clear rect: " << clipRect << std::endl;
-        //gc.clear(CL_Colorf::black);
-        gc.pop_cliprect();
-    }
-    
-    //LOG_DEBUG << "rectangles: " << clipRectMan->size() << std::endl;
-    
     unsigned int notInCount = 0;
     unsigned int totalCount = 0;
     

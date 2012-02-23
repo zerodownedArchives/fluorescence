@@ -22,6 +22,7 @@
 
 #include <vector>
 #include <ClanLib/Core/Math/rect.h>
+#include <boost/thread/mutex.hpp>
 
 namespace fluo {
 namespace world {
@@ -44,6 +45,8 @@ public:
     std::vector<CL_Rectf>::const_iterator end() const;
     
     void clamp(const CL_Vec2f& topleft, const CL_Size& size);
+    
+    boost::mutex mutex_;
     
 private:
     std::vector<CL_Rectf> rectangles_;
