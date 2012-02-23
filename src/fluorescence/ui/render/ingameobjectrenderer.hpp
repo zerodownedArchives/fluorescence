@@ -39,7 +39,7 @@ public:
     IngameObjectRenderer(unsigned int rendererType);
 
     // get the rendered objects as a texture. can be used i.e. for postprocessing or for a cached texture that does not change very often
-    //virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc) = 0;
+    virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc) = 0;
 
     // render the objects to the current state of the gc
     virtual void render(CL_GraphicContext& gc) = 0;
@@ -50,14 +50,8 @@ public:
 
     virtual boost::shared_ptr<RenderQueue> getRenderQueue() const = 0;
 
-    // due to some strange clanlib behaviour. when opening a paperdoll for the first time, the hue texture seems
-    // not to be loaded correctly, so the gump is mostly black (with outlines). When rendering it again, all seems
-    // fine. this flag indicates wheter the renderer has to re-render the image because of this condition
-    bool requireInitialRepaint();
-
 private:
     unsigned int rendererType_;
-    bool requireInitialRepaint_;
 };
 
 }

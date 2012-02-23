@@ -36,6 +36,7 @@
 #include <ui/doubleclickhandler.hpp>
 #include <ui/cursormanager.hpp>
 #include <ui/render/worldviewrenderer.hpp>
+#include <ui/cliprectmanager.hpp>
 
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
@@ -125,7 +126,9 @@ void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     lastCenterPixelX_ = getCenterPixelX();
     lastCenterPixelY_ = getCenterPixelY();
     
-    CL_Draw::texture(gc, *renderer_->getTexture(gc, pixelMoveX, pixelMoveY)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())), CL_Colorf::white);
+    renderer_->moveCenter(pixelMoveX, pixelMoveY);
+    
+    CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
 }
 
 void WorldView::getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd) {
@@ -235,8 +238,8 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
         data::Manager::getArtLoader()->printStats();
         break;
         
-    case CL_KEY_P:
-        
+    case CL_KEY_N:
+        ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(800, 800)).translate(getTopLeftPixel()));
         break;
 
 

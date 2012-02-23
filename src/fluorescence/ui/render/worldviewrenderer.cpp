@@ -49,7 +49,7 @@ namespace ui {
 namespace render {
 
 WorldViewRenderer::WorldViewRenderer(components::WorldView* worldView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_WORLD),
-        worldView_(worldView), textureWidth_(0), textureHeight_(0), frameBufferIndex_(0) {
+        worldView_(worldView), textureWidth_(0), textureHeight_(0), frameBufferIndex_(0), movePixelX_(0), movePixelY_(0) {
 }
 
 WorldViewRenderer::~WorldViewRenderer() {
@@ -81,7 +81,12 @@ void WorldViewRenderer::initFrameBuffer(unsigned int index) {
     texturesInitialized_[index] = false;
 }
 
-boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc, float moveX, float moveY) {
+void WorldViewRenderer::moveCenter(float moveX, float moveY) {
+    movePixelX_ = moveX;
+    movePixelY_ = moveY;
+}
+
+boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) {
     checkTextureSize();
     CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
     
@@ -89,7 +94,7 @@ boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc, 
 
     gc.set_frame_buffer(frameBuffers_[frameBufferIndex_]);
     
-    renderPreviousTexture(gc, moveX, moveY);
+    renderPreviousTexture(gc, movePixelX_, movePixelY_);
 
     render(gc);
     
@@ -145,8 +150,13 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     
     CL_Vec2f clippingTopLeftCorner = worldView_->getTopLeftPixel();
     shader->set_uniform2f("PositionOffset", clippingTopLeftCorner);
-
-    gc.set_texture(0, *(data::Manager::getSingleton()->getHuesLoader()->getHuesTexture()->getTexture()));
+    
+    boost::shared_ptr<ui::Texture> huesTexture = data::Manager::getSingleton()->getHuesLoader()->getHuesTexture();
+    gc.set_texture(0, *(huesTexture->getTexture()));
+    
+    // set texture unit 1 active to avoid overriding the hue texture with newly loaded object textures
+    gc.set_texture(1, *(huesTexture->getTexture())); 
+    
     shader->set_uniform1i("HueTexture", 0);
     shader->set_uniform1i("ObjectTexture", 1);
 
@@ -169,6 +179,15 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     if (clipRectMan->size() == 0) {
         fluo::sleepMs(1);
         return;
+    }
+    
+    for (clipRectIter = clipRectMan->begin(); clipRectIter != clipRectEnd; ++clipRectIter) {
+        CL_Rectf clipRect(*clipRectIter);
+        clipRect.translate(-clippingTopLeftCorner);
+        gc.push_cliprect(clipRect);
+        //LOG_DEBUG << "clear rect: " << clipRect << std::endl;
+        //gc.clear(CL_Colorf::black);
+        gc.pop_cliprect();
     }
     
     //LOG_DEBUG << "rectangles: " << clipRectMan->size() << std::endl;
@@ -200,6 +219,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
                     CL_Rectf clipRect(*clipRectIter);
                     clipRect.translate(-clippingTopLeftCorner);
                     gc.push_cliprect(clipRect);
+                    //gc.set_texture(0, *(huesTexture->getTexture()));
                     renderObject(gc, curObj, tex);
                     drawn = true;
                     gc.pop_cliprect();
@@ -211,9 +231,9 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
             }
         }
     }
-
-    gc.reset_textures();
+    
     gc.reset_program_object();
+    gc.reset_textures();
     
     ui::Manager::getClipRectManager()->clear();
     

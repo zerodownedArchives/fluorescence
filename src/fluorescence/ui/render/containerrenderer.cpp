@@ -59,7 +59,7 @@ void ContainerRenderer::checkTextureSize(CL_GraphicContext& gc) {
 }
 
 boost::shared_ptr<Texture> ContainerRenderer::getTexture(CL_GraphicContext& gc) {
-    if (renderQueue_->requireWorldRepaint() || !texture_ || requireInitialRepaint()) {
+    if (renderQueue_->requireWorldRepaint() || !texture_) {
         checkTextureSize(gc);
         CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 

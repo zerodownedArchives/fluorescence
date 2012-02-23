@@ -59,7 +59,7 @@ void GumpRenderer::checkTextureSize(CL_GraphicContext& gc) {
 }
 
 boost::shared_ptr<Texture> GumpRenderer::getTexture(CL_GraphicContext& gc) {
-    if (renderQueue_->requireGumpRepaint() || !texture_ || requireInitialRepaint()) {
+    if (renderQueue_->requireGumpRepaint() || !texture_ ) {
         checkTextureSize(gc);
         CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 

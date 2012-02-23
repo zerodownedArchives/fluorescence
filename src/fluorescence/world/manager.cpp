@@ -66,11 +66,13 @@ void Manager::destroy() {
     }
 }
 
-Manager::Manager(const Config& config) : currentMapId_(0), autoDeleteRange_(18) {
+Manager::Manager(const Config& config) : currentMapId_(0) {
     sectorManager_.reset(new SectorManager(config));
     lightManager_.reset(new LightManager());
     smoothMovementManager_.reset(new SmoothMovementManager());
     playerWalkManager_.reset(new PlayerWalkManager());
+    
+    setAutoDeleteRange(18);
 }
 
 Manager::~Manager() {
@@ -217,6 +219,7 @@ void Manager::update(unsigned int elapsedMillis) {
     }
     
     if (!outOfRangeDelete.empty()) {
+        //LOG_DEBUG << "out of range coords=" << playerX << "/" << playerY << std::endl;
         std::list<Serial>::const_iterator iter = outOfRangeDelete.begin();
         std::list<Serial>::const_iterator end = outOfRangeDelete.end();
         
@@ -248,7 +251,7 @@ void Manager::unregisterOverheadMessage(boost::shared_ptr<OverheadMessage> msg) 
 }
 
 void Manager::setAutoDeleteRange(unsigned int range) {
-    autoDeleteRange_ = range + 1;
+    autoDeleteRange_ = range + 2;
 }
 
 }

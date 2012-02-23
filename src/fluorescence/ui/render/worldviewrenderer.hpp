@@ -49,7 +49,8 @@ public:
     WorldViewRenderer(components::WorldView* ingameView);
     ~WorldViewRenderer();
 
-    virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc, float moveX, float moveY);
+    void moveCenter(float moveX, float moveY);
+    virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc);
     
     virtual boost::shared_ptr<RenderQueue> getRenderQueue() const;
 
@@ -72,6 +73,9 @@ private:
     
     // draws the texture from the last frame, moved x/y pixels
     void renderPreviousTexture(CL_GraphicContext& gc, float pixelX, float pixelY);
+    
+    float movePixelX_;
+    float movePixelY_;
 };
 
 }
