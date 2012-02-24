@@ -25,6 +25,7 @@
 #include <ClanLib/Core/Math/point.h>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
 #include <list>
@@ -39,6 +40,7 @@ namespace ui {
 }
 
 namespace world {
+class Sector;
 
 class IngameObject : public boost::enable_shared_from_this<IngameObject> {
 
@@ -79,8 +81,8 @@ public:
 
     const CL_Vec3f& getHueInfo() const;
 
-    /// returns whether or not this item is currently in the drawing area of the game window
-    virtual bool isInDrawArea(int leftPixelCoord, int rightPixelCoord, int topPixelCoord, int bottomPixelCoord) const;
+    /// returns whether or not the vertex coordinates of this object overlap the given rectangle
+    virtual bool overlaps(const CL_Rectf& rect) const;
 
     /// returns wheter or not the given pixel coordinate is covered by this object's texture
     virtual bool hasPixel(int pixelX, int pixelY) const;
@@ -97,6 +99,7 @@ public:
     virtual void onDoubleClick();
 
     virtual boost::shared_ptr<IngameObject> getTopParent();
+    bool hasParent() const;
 
     void setOverheadMessageOffsets();
 
@@ -114,6 +117,10 @@ public:
     virtual void onChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
 
     virtual void onDelete();
+    
+    virtual void onLocationChanged(const CL_Vec3f& oldLocation);
+    virtual void onAddedToSector(world::Sector* sector);
+    virtual void onRemovedFromSector(world::Sector* sector);
 
 
     bool isMap() const;
@@ -132,10 +139,14 @@ public:
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqBegin();
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator rqEnd();
 
-    void setRenderDepth(unsigned long long depth);
-    unsigned long long getRenderDepth() const;
+    const RenderDepth& getRenderDepth() const;
 
     void printRenderDepth() const;
+    
+    bool renderDepthChanged() const;
+    bool textureOrVerticesChanged() const;
+    
+    void repaintRectangle(bool repaintPreviousCoordinates = false) const;
 
 protected:
     ui::WorldRenderData worldRenderData_;
@@ -154,6 +165,8 @@ protected:
     std::list<boost::shared_ptr<IngameObject> > childObjects_;
 
     void forceRepaint();
+    
+    boost::shared_ptr<Sector> sector_;
 
 private:
     unsigned int objectType_;

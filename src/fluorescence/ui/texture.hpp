@@ -32,7 +32,7 @@
 namespace fluo {
 namespace ui {
 
-class Texture : public fluo::data::OnDemandReadable {
+class Texture : public fluo::data::OnDemandReadable<Texture> {
 public:
     Texture(bool useBitMask = true);
 

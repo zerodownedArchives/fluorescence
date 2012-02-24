@@ -28,7 +28,7 @@ namespace fluo {
 namespace ui {
 
 AnimTextureProvider::AnimTextureProvider(unsigned int bodyId) : bodyId_(bodyId), direction_(0), currentIdx_(0),
-        millis_(0), frameMillis_(150), repeatMode_(REPEAT_MODE_DEFAULT), nextAnimId_(0xFFFFFFFFu) {
+        millis_(0), frameMillis_(100), repeatMode_(AnimRepeatMode::DEFAULT), nextAnimId_(0xFFFFFFFFu), nextDirection_(0) {
     defaultAnimId_ = data::Manager::getMobTypesLoader()->getIdleAction(bodyId);
     currentAnimId_ = defaultAnimId_;
 
@@ -36,6 +36,7 @@ AnimTextureProvider::AnimTextureProvider(unsigned int bodyId) : bodyId_(bodyId),
 }
 
 boost::shared_ptr<ui::Texture> AnimTextureProvider::getTexture() const {
+    //LOG_DEBUG << "getTexture current direction:" << direction_ << std::endl;
     std::map<unsigned int, std::vector<boost::shared_ptr<Animation> > >::const_iterator it = animations_.find(currentAnimId_);
     if (it != animations_.end() && it->second[direction_] && it->second[direction_]->isReadComplete()) {
         return it->second[direction_]->getFrame(currentIdx_).texture_;
@@ -89,6 +90,11 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
             nextAnimId_ = 0xFFFFFFFFu;
         }
     }
+    
+    if (nextDirection_ != direction_) {
+        frameChanged = true;
+        direction_ = nextDirection_;
+    }
 
     it = animations_.find(currentAnimId_);
     if (it == animations_.end() || animations_.size() == 0 || it->second.empty() || !it->second[direction_]->isReadComplete() || elapsedMillis == 0) {
@@ -102,15 +108,15 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
     unsigned int maxMillis = it->second[direction_]->getFrameCount() * frameMillis_;
     if (newMillis >= maxMillis) {
         switch (repeatMode_) {
-            case REPEAT_MODE_LOOP:
+            case AnimRepeatMode::LOOP:
                 currentIdx_ = 0;
                 newMillis %= maxMillis;
                 break;
-            case REPEAT_MODE_LAST:
+            case AnimRepeatMode::LAST:
                 // we are already at the last frame here
                 break;
-            case REPEAT_MODE_DEFAULT:
-                setAnimId(defaultAnimId_);
+            case AnimRepeatMode::DEFAULT:
+                setIdleAnim();
                 //frameChanged = true;
                 break;
         }
@@ -121,13 +127,25 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
     millis_ = newMillis;
 
     frameChanged |= lastIdx != currentIdx_;
-
+    
     return frameChanged;
 }
 
 void AnimTextureProvider::setDirection(unsigned int direction) {
     direction &= 0x7; // only last 3 bits are interesting
-    direction_ = direction;
+    nextDirection_ = direction;
+}
+
+void AnimTextureProvider::setRepeatMode(unsigned int mode) {
+    repeatMode_ = mode;
+}
+
+void AnimTextureProvider::setIdleAnim() {
+    setAnimId(defaultAnimId_);
+}
+
+void AnimTextureProvider::setDelay(unsigned int delay) {
+    frameMillis_ = 100 + delay * 50;
 }
 
 }

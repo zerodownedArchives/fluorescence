@@ -17,46 +17,47 @@
  */
 
 
-#ifndef FLUO_UI_GUMPRENDERER_HPP
-#define FLUO_UI_GUMPRENDERER_HPP
-
-#include <ClanLib/Display/Render/graphic_context.h>
+#ifndef FLUO_NET_WALKPACKETMANAGER_HPP
+#define FLUO_NET_WALKPACKETMANAGER_HPP
 
 #include <boost/shared_ptr.hpp>
-
-#include <ui/render/ingameobjectrenderer.hpp>
-
+#include <stdint.h>
 
 namespace fluo {
-namespace ui {
 
-namespace components {
-class GumpView;
+namespace world {
+class Mobile;
 }
 
-class RenderQueue;
-class Texture;
+namespace net {
 
-class GumpRenderer : public IngameObjectRenderer {
+namespace packets {
+class MovementDeny;
+}
+
+class WalkPacketManager {
 public:
-    GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::GumpView* gumpView);
-    ~GumpRenderer();
+    WalkPacketManager();
 
-    virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc);
+    void initFastWalkStack(const uint32_t* values);
+    void updateFastWalkStack(uint32_t value);
 
-    virtual void render(CL_GraphicContext& gc);
-
-    virtual boost::shared_ptr<RenderQueue> getRenderQueue() const;
+    void onMovementAccept(uint8_t sequence);
+    void onMovementDeny(const net::packets::MovementDeny* pkt);
+    bool sendMovementRequest(uint8_t direction);
 
 private:
-    components::GumpView* gumpView_;
-    boost::shared_ptr<RenderQueue> renderQueue_;
+    boost::shared_ptr<world::Mobile> player_;
 
-    boost::shared_ptr<Texture> texture_;
-    void checkTextureSize(CL_GraphicContext& gc);
-    
-    CL_FrameBuffer frameBuffer_;
+    uint32_t fastWalkStack_[6];
+    unsigned int fastWalkStackIdx_;
+    uint8_t curSequence_;
+
+    unsigned int unacceptedSequenceCount_;
+    uint8_t unacceptedSequences_[10];
+    static const unsigned int MAX_UNACCEPTED_SEQUENCE_COUNT = 5;
 };
+
 }
 }
 

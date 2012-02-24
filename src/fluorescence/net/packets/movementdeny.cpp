@@ -21,7 +21,7 @@
 #include "movementdeny.hpp"
 
 #include <net/manager.hpp>
-#include <net/walkmanager.hpp>
+#include <net/walkpacketmanager.hpp>
 
 namespace fluo {
 namespace net {
@@ -43,7 +43,7 @@ bool MovementDeny::read(const int8_t* buf, unsigned int len, unsigned int& index
 }
 
 void MovementDeny::onReceive() {
-    net::Manager::getWalkManager()->onMovementDeny(this);
+    net::Manager::getWalkPacketManager()->onMovementDeny(this);
 }
 
 }

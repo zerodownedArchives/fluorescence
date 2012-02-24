@@ -28,7 +28,6 @@
 #include <misc/log.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/render/renderqueue.hpp>
 #include <ui/components/worldview.hpp>
 
 #include <data/maploader.hpp>
@@ -73,18 +72,18 @@ void SectorManager::addNewSectors(bool force) {
     }
 
     // these are all sectors we require for rendering
-    std::list<unsigned int> sectorRequiredList;
+    std::list<IsoIndex> sectorRequiredList;
     buildSectorRequiredList(sectorRequiredList, sectorAddDistanceCache_);
 
 
-    std::list<unsigned int>::const_iterator requiredIter = sectorRequiredList.begin();
-    std::list<unsigned int>::const_iterator requiredEnd = sectorRequiredList.end();
+    std::list<IsoIndex>::const_iterator requiredIter = sectorRequiredList.begin();
+    std::list<IsoIndex>::const_iterator requiredEnd = sectorRequiredList.end();
 
     // check all sectors if they are loaded, and load if they are not
-    std::map<unsigned int, boost::shared_ptr<Sector> >::const_iterator notFound = sectorMap_.end();
+    std::map<IsoIndex, boost::shared_ptr<Sector> >::const_iterator notFound = sectorMap_.end();
 
     for (; requiredIter != requiredEnd; ++requiredIter) {
-        unsigned int curIdx = *requiredIter;
+        IsoIndex curIdx = *requiredIter;
         if (sectorMap_.find(curIdx) == notFound) {
             boost::shared_ptr<Sector> newSec(new Sector(mapId, curIdx));
             sectorMap_[curIdx] = newSec;
@@ -93,6 +92,10 @@ void SectorManager::addNewSectors(bool force) {
 }
 
 void SectorManager::deleteSectors() {
+    if (worldViews_.empty()) {
+        return;
+    }
+    
     unsigned int mapId = world::Manager::getSingleton()->getCurrentMapId();
 
     if (mapId != lastMapId_) {
@@ -101,23 +104,21 @@ void SectorManager::deleteSectors() {
     }
 
     // these are all sectors we require for rendering
-    std::list<unsigned int> sectorRequiredList;
+    std::list<IsoIndex> sectorRequiredList;
     buildSectorRequiredList(sectorRequiredList, sectorRemoveDistanceCache_);
 
 
     // iterate over all stored sectors and remove them
-    std::map<unsigned int, boost::shared_ptr<Sector> >::iterator deleteIter = sectorMap_.begin();
-    std::map<unsigned int, boost::shared_ptr<Sector> >::iterator deleteEnd = sectorMap_.end();
+    std::map<IsoIndex, boost::shared_ptr<Sector> >::iterator deleteIter = sectorMap_.begin();
+    std::map<IsoIndex, boost::shared_ptr<Sector> >::iterator deleteEnd = sectorMap_.end();
 
-    std::list<unsigned int>::const_iterator requiredBegin = sectorRequiredList.begin();
-    std::list<unsigned int>::const_iterator requiredEnd = sectorRequiredList.end();
-
-    boost::shared_ptr<ui::RenderQueue> renderQueue = ui::Manager::getWorldRenderQueue();
+    std::list<IsoIndex>::const_iterator requiredBegin = sectorRequiredList.begin();
+    std::list<IsoIndex>::const_iterator requiredEnd = sectorRequiredList.end();
 
     while (deleteIter != deleteEnd) {
         if (deleteIter->second->getMapId() != mapId ||
                 !std::binary_search(requiredBegin, requiredEnd, deleteIter->second->getSectorId())) {
-            deleteIter->second->removeFromRenderQueue(renderQueue);
+            //LOG_DEBUG << "sector remove from manager x=" << deleteIter->second->getSectorId().x_ << " y=" << deleteIter->second->getSectorId().y_ << std::endl;
             sectorMap_.erase(deleteIter);
         }
 
@@ -135,7 +136,7 @@ unsigned int SectorManager::calcSectorIndex(unsigned int x, unsigned int y) {
     return x * mapHeight + y;
 }
 
-void SectorManager::buildSectorRequiredList(std::list<unsigned int>& list, unsigned int cacheAdd) {
+void SectorManager::buildSectorRequiredList(std::list<IsoIndex>& list, unsigned int cacheAdd) {
     // ask all ingame views which sectors they need
     std::list<ui::components::WorldView*>::iterator viewIter = worldViews_.begin();
     std::list<ui::components::WorldView*>::iterator viewEnd = worldViews_.end();
@@ -151,12 +152,12 @@ void SectorManager::buildSectorRequiredList(std::list<unsigned int>& list, unsig
     list.sort();
 
     // remove duplicates
-    std::list<unsigned int>::iterator newListEnd = std::unique(list.begin(), list.end());
-    std::list<unsigned int>::iterator listEnd = list.end();
+    std::list<IsoIndex>::iterator newListEnd = std::unique(list.begin(), list.end());
+    std::list<IsoIndex>::iterator listEnd = list.end();
 
     if (newListEnd != listEnd) {
         // count, how many elements we need to cut off
-        std::list<unsigned int>::iterator countIter = newListEnd;
+        std::list<IsoIndex>::iterator countIter = newListEnd;
 
 
         unsigned int cutOffCount = 0;
@@ -170,12 +171,53 @@ void SectorManager::buildSectorRequiredList(std::list<unsigned int>& list, unsig
 }
 
 void SectorManager::update(unsigned int elapsedMillis) {
-    std::map<unsigned int, boost::shared_ptr<world::Sector> >::iterator iter = sectorMap_.begin();
-    std::map<unsigned int, boost::shared_ptr<world::Sector> >::iterator end = sectorMap_.end();
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator iter = sectorMap_.begin();
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator end = sectorMap_.end();
 
     for (; iter != end; ++iter) {
         iter->second->update(elapsedMillis);
     }
+}
+
+std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator SectorManager::begin() {
+    return sectorMap_.begin();
+}
+
+std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator SectorManager::end() {
+    return sectorMap_.end();
+}
+
+boost::shared_ptr<world::Sector> SectorManager::getSectorForCoordinates(unsigned int locX, unsigned int locY) {
+    locX /= 8;
+    locY /= 8;
+    
+    IsoIndex secIdx(locX, locY);
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::const_iterator iter = sectorMap_.find(secIdx);
+    
+    if (iter != sectorMap_.end()) {
+        return iter->second;
+    } else {
+        boost::shared_ptr<Sector> newSec(new Sector(world::Manager::getSingleton()->getCurrentMapId(), secIdx));
+        sectorMap_[secIdx] = newSec;
+        return newSec;
+    }
+}
+
+boost::shared_ptr<world::IngameObject> SectorManager::getFirstObjectAt(int worldX, int worldY, bool getTopObject) const {
+    boost::shared_ptr<world::IngameObject> ret;
+    
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::const_reverse_iterator iter = sectorMap_.rbegin();
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::const_reverse_iterator end = sectorMap_.rend();
+    
+    for (; iter != end; ++iter) {
+        ret = iter->second->getFirstObjectAt(worldX, worldY, getTopObject);
+        
+        if (ret) {
+            break;
+        }
+    }
+    
+    return ret;
 }
 
 }

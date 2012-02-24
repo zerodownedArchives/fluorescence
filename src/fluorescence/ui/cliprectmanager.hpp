@@ -17,43 +17,43 @@
  */
 
 
-#ifndef FLUO_DATA_ONDEMANDREADABLE_HPP
-#define FLUO_DATA_ONDEMANDREADABLE_HPP
+#ifndef FLUO_UI_CLIPRECTMANAGER_HPP
+#define FLUO_UI_CLIPRECTMANAGER_HPP
 
-#include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
+#include <vector>
+#include <ClanLib/Core/Math/rect.h>
+#include <boost/thread/mutex.hpp>
 
 namespace fluo {
-namespace data {
+namespace world {
+class IngameObject;
+}
 
-template<class T>
-class OnDemandReadable {
+namespace ui {
+
+class ClipRectManager {
 public:
-    typedef boost::function<void (boost::shared_ptr<T>)> Callback;
+    ClipRectManager();
     
-    OnDemandReadable() : readComplete_(false) { }
+    void add(const CL_Rectf& rect);
+    void clear();
+    size_t size() const;
     
-    void setReadComplete(boost::shared_ptr<T> sharedThis = boost::shared_ptr<T>()) { 
-        readComplete_ = true; 
-        
-        if (completeCallback_ && sharedThis) {
-            completeCallback_(sharedThis);
-        }
-    }
+    bool isInside(const world::IngameObject* obj) const;
     
-    bool isReadComplete() { 
-        return readComplete_; 
-    }
+    std::vector<CL_Rectf>::const_iterator begin() const;
+    std::vector<CL_Rectf>::const_iterator end() const;
     
-    void setCompleteCallback(Callback cb) { completeCallback_ = cb; }
-
+    void clamp(const CL_Vec2f& topleft, const CL_Size& size);
+    
+    boost::mutex mutex_;
+    
 private:
-    bool readComplete_;
-    
-    Callback completeCallback_;
+    std::vector<CL_Rectf> rectangles_;
 };
 
 }
 }
 
 #endif
+

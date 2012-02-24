@@ -16,6 +16,7 @@ set (UI_HPP
     ui/fontengine.hpp
     ui/uofont.hpp
     ui/uofontprovider.hpp
+    ui/cliprectmanager.hpp
     )
 
 set (UI_CPP
@@ -34,6 +35,7 @@ set (UI_CPP
     ui/fontengine.cpp
     ui/uofont.cpp
     ui/uofontprovider.cpp
+    ui/cliprectmanager.cpp
     )
 
 set (GUMPMENU_HPP
@@ -57,6 +59,7 @@ set (GUMPMENU_HPP
     ui/components/background.hpp
     ui/components/uocheckbox.hpp
     ui/components/textentry.hpp
+    ui/components/uoradiobutton.hpp
     )
 
 set (GUMPMENU_CPP
@@ -79,6 +82,7 @@ set (GUMPMENU_CPP
     ui/components/background.cpp
     ui/components/uocheckbox.cpp
     ui/components/textentry.cpp
+    ui/components/uoradiobutton.cpp
     )
 
 set (RENDER_HPP

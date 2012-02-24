@@ -47,17 +47,14 @@ bool MobileAnimation::read(const int8_t* buf, unsigned int len, unsigned int& in
 }
 
 void MobileAnimation::onReceive() {
-    if (repeatTimes_ > 1 || forward_ != 0 || repeat_ != 0 || delay_ > 0) {
-        // TODO: implement this
-        LOG_WARN << "Mobile animation support is only rudimentary, at least one used parameter is not really supported at the moment" << std::endl;
-        LOG_WARN << "Mobile animation action=" << actionId_ << " frameCount=" << frameCount_ << " repeatTimes=" << repeatTimes_
-                << " forward=" << (unsigned int)forward_ << " repeat=" << (unsigned int)repeat_ << " delay=" << (unsigned int)delay_ << std::endl;
-    }
-
+    LOG_WARN << "Mobile animation action=" << actionId_ << " frameCount=" << frameCount_ << " repeat=" << (unsigned int)repeat_ << " delay=" << (unsigned int)delay_ << std::endl;
+                
+    // TODO: implement frameCount, forward and repeatTimes
     boost::shared_ptr<world::Mobile> mob = world::Manager::getSingleton()->getMobile(serial_, false);
 
     if (mob) {
-        mob->playAnim(actionId_);
+        unsigned int repeatMode = (repeat_ == 1) ? AnimRepeatMode::LOOP : AnimRepeatMode::DEFAULT;
+        mob->animate(actionId_, delay_, repeatMode);
     }
 }
 

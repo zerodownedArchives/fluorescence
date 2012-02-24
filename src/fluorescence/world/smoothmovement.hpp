@@ -21,6 +21,7 @@
 #define FLUO_WORLD_SMOOTHMOVEMENT_HPP
 
 #include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
 #include <ClanLib/Core/Math/vec3.h>
 
 #include <world/serverobject.hpp>
@@ -30,6 +31,9 @@ namespace world {
 
 class SmoothMovement {
 public:
+
+    typedef boost::function<void ()> FinishedCallback;
+
     SmoothMovement(boost::shared_ptr<world::ServerObject> obj, CL_Vec3f diff, unsigned int durationMillis);
     SmoothMovement(boost::shared_ptr<world::ServerObject> obj, uint8_t direction, unsigned int durationMillis);
 
@@ -40,6 +44,8 @@ public:
 
     bool isFinished() const;
     void finish();
+    
+    void setFinishedCallback(FinishedCallback cb);
 
 private:
     boost::shared_ptr<world::ServerObject> movingObject_;
@@ -49,6 +55,8 @@ private:
     bool wasStarted_;
     CL_Vec3f startLoc_;
     unsigned int totalElapsedMillis_;
+    
+    FinishedCallback finishedCallback_;
 };
 
 }

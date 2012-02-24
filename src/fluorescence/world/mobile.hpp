@@ -60,7 +60,8 @@ public:
     virtual void onClick();
     virtual void onDoubleClick();
 
-    void playAnim(unsigned int animId);
+    void animate(unsigned int animId, unsigned int delay = 1, unsigned int repeatType = AnimRepeatMode::DEFAULT);
+    void stopAnim();
 
     virtual bool isMirrored() const;
     void setDirection(unsigned int direction);
@@ -91,6 +92,9 @@ public:
     unsigned int getRunAnim() const;
 
     bool isWarmode() const;
+    
+    virtual void onAddedToSector(world::Sector* sector);
+    virtual void onRemovedFromSector(world::Sector* sector);
 
 private:
     unsigned int baseBodyId_; // as sent by the server

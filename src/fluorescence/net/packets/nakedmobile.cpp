@@ -59,8 +59,6 @@ void NakedMobile::onReceive() {
     mob->setHue(hue_);
 
     // TODO: handle status
-
-    mob->addToRenderQueue(ui::Manager::getWorldRenderQueue());
 }
 
 }

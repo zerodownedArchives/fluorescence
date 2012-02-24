@@ -17,43 +17,37 @@
  */
 
 
-#ifndef FLUO_DATA_ONDEMANDREADABLE_HPP
-#define FLUO_DATA_ONDEMANDREADABLE_HPP
 
-#include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
+#include "updaterange.hpp"
+
+#include <world/manager.hpp>
 
 namespace fluo {
-namespace data {
+namespace net {
+namespace packets {
 
-template<class T>
-class OnDemandReadable {
-public:
-    typedef boost::function<void (boost::shared_ptr<T>)> Callback;
-    
-    OnDemandReadable() : readComplete_(false) { }
-    
-    void setReadComplete(boost::shared_ptr<T> sharedThis = boost::shared_ptr<T>()) { 
-        readComplete_ = true; 
-        
-        if (completeCallback_ && sharedThis) {
-            completeCallback_(sharedThis);
-        }
-    }
-    
-    bool isReadComplete() { 
-        return readComplete_; 
-    }
-    
-    void setCompleteCallback(Callback cb) { completeCallback_ = cb; }
+UpdateRange::UpdateRange() : Packet(0xc8, 2) {
+}
 
-private:
-    bool readComplete_;
-    
-    Callback completeCallback_;
-};
+bool UpdateRange::write(int8_t* buf, unsigned int len, unsigned int& index) const {
+    bool ret = true;
+
+    ret &= writePacketId(buf, len, index);
+    ret &= PacketWriter::write(buf, len, index, range_);
+
+    return ret;
+}
+
+bool UpdateRange::read(const int8_t* buf, unsigned int len, unsigned int& index) {
+    bool ret = PacketReader::read(buf, len, index, range_);
+
+    return ret;
+}
+
+void UpdateRange::onReceive() {
+    world::Manager::getSingleton()->setAutoDeleteRange(range_);
+}
 
 }
 }
-
-#endif
+}

@@ -65,7 +65,7 @@ void WorldRenderQueue::preRender() {
     bool objectsAdded = processAddList();
 
     if (objectsAdded) {
-        sort();
+        //sort();
     }
 }
 
@@ -82,7 +82,7 @@ boost::shared_ptr<world::IngameObject> WorldRenderQueue::getFirstObjectAt(int wo
 
     boost::shared_ptr<world::IngameObject> ret;
 
-    unsigned long long maxRenderPrio = 0;
+    RenderDepth maxRenderPrio = 0;
 
     for (; igIter != igEnd; ++igIter) {
         boost::shared_ptr<world::IngameObject> curObj = *igIter;

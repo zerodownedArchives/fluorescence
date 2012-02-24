@@ -33,7 +33,7 @@ namespace ui {
 }
 
 namespace net {
-class WalkManager;
+class WalkPacketManager;
 
 namespace packets {
     class ServerRedirect;
@@ -48,7 +48,7 @@ public:
     void step();
 
     static boost::shared_ptr<Packet> createPacket(uint8_t id);
-    static boost::shared_ptr<WalkManager> getWalkManager();
+    static boost::shared_ptr<WalkPacketManager> getWalkPacketManager();
 
     bool connect(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
     void disconnect();
@@ -73,7 +73,7 @@ private:
 
     Socket socket_;
 
-    boost::shared_ptr<WalkManager> walkManager_;
+    boost::shared_ptr<WalkPacketManager> walkPacketManager_;
 };
 
 }

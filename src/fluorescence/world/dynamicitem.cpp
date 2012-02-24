@@ -98,6 +98,10 @@ void DynamicItem::setDirection(unsigned int direction) {
     }
 }
 
+unsigned int DynamicItem::getDirection() const {
+    return direction_;
+}
+
 void DynamicItem::setAmount(unsigned int amount) {
     if (amount != amount_) {
         amount_ = amount;
@@ -210,7 +214,7 @@ void DynamicItem::updateTextureProvider() {
     if (equipped_) {
         animTextureProvider_.reset(new ui::AnimTextureProvider(tileDataInfo_->animId_));
         boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
-        setDirection(parent->getDirection());
+        animTextureProvider_->setDirection(getDirection());
 
         unsigned int gumpId = data::Manager::getGumpIdForItem(artId_, parent->getBodyId());
 
@@ -298,9 +302,17 @@ bool DynamicItem::isMirrored() const {
     return equipped_ && direction_ < 3;
 }
 
-void DynamicItem::playAnim(unsigned int animId) {
+void DynamicItem::animate(unsigned int animId, unsigned int delay, unsigned int repeatMode) {
     if (equipped_ && animTextureProvider_) {
         animTextureProvider_->setAnimId(animId);
+        animTextureProvider_->setRepeatMode(repeatMode);
+        animTextureProvider_->setDelay(delay);
+    }
+}
+
+void DynamicItem::stopAnim() {
+    if (equipped_ && animTextureProvider_) {
+        animTextureProvider_->setIdleAnim();
     }
 }
 

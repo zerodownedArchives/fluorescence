@@ -23,6 +23,7 @@
 #include <list>
 #include <boost/shared_ptr.hpp>
 
+#include <typedefs.hpp>
 #include <data/tiledataloader.hpp>
 
 #include "serverobject.hpp"
@@ -52,6 +53,7 @@ public:
 
     virtual bool isMirrored() const;
     void setDirection(unsigned int direction);
+    unsigned int getDirection() const;
 
     void setAmount(unsigned int amount);
     unsigned int getAmount() const;
@@ -68,7 +70,8 @@ public:
     void setLayer(unsigned int layer);
     unsigned int getLayer() const;
 
-    void playAnim(unsigned int animId);
+    void animate(unsigned int animId, unsigned int delay = 1, unsigned int repeatMode = AnimRepeatMode::DEFAULT);
+    void stopAnim();
 
     virtual void onAddedToParent();
     virtual void onRemovedFromParent();

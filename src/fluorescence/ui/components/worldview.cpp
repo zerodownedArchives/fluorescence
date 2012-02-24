@@ -29,18 +29,17 @@
 #include <world/statics.hpp>
 #include <world/ingameobject.hpp>
 #include <world/mobile.hpp>
+#include <world/playerwalkmanager.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
 #include <ui/doubleclickhandler.hpp>
 #include <ui/cursormanager.hpp>
 #include <ui/render/worldviewrenderer.hpp>
+#include <ui/cliprectmanager.hpp>
 
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
-
-#include <net/manager.hpp>
-#include <net/walkmanager.hpp>
 
 #include <algorithm>
 #include <ClanLib/Display/Window/keys.h>
@@ -50,9 +49,10 @@ namespace ui {
 namespace components {
 
 WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent),
-        centerTileX_(0), centerTileY_(0), centerTileZ_(0) {
+        centerTileX_(0), centerTileY_(0), centerTileZ_(0),
+        lastCenterPixelX_(0), lastCenterPixelY_(0) {
     this->set_geometry(bounds);
-    renderer_.reset(new WorldViewRenderer(ui::Manager::getWorldRenderQueue(), this));
+    renderer_.reset(new render::WorldViewRenderer(this));
 
     world::Manager::getSectorManager()->registerWorldView(this);
     setCenterObject(world::Manager::getSingleton()->getPlayer()->shared_from_this());
@@ -63,13 +63,14 @@ WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpEleme
     func_input_pressed().set(this, &WorldView::onInputPressed);
     func_input_released().set(this, &WorldView::onInputReleased);
     func_input_doubleclick().set(this, &WorldView::onDoubleClick);
+    func_input_pointer_moved().set(this, &WorldView::onPointerMoved);
 }
 
 WorldView::~WorldView() {
     world::Manager::getSectorManager()->unregisterWorldView(this);
 }
 
-float WorldView::getCenterTileX() {
+float WorldView::getCenterTileX() const {
     if (centerObject_) {
         return centerObject_->getLocX();
     } else {
@@ -77,7 +78,7 @@ float WorldView::getCenterTileX() {
     }
 }
 
-float WorldView::getCenterTileY() {
+float WorldView::getCenterTileY() const {
     if (centerObject_) {
         return centerObject_->getLocY();
     } else {
@@ -85,7 +86,7 @@ float WorldView::getCenterTileY() {
     }
 }
 
-float WorldView::getCenterTileZ() {
+float WorldView::getCenterTileZ() const {
     if (centerObject_) {
         return centerObject_->getLocZ();
     } else {
@@ -98,30 +99,39 @@ void WorldView::setCenterTiles(float x, float y) {
     centerTileY_ = y;
 }
 
-int WorldView::getCenterPixelX() {
-    return (getCenterTileX() - getCenterTileY()) * 22;
+float WorldView::getCenterPixelX() const {
+    return roundf((getCenterTileX() - getCenterTileY()) * 22);
 }
 
-int WorldView::getCenterPixelY() {
-    return (getCenterTileX() + getCenterTileY()) * 22 - getCenterTileZ() * 4;
+float WorldView::getCenterPixelY() const {
+    return roundf((getCenterTileX() + getCenterTileY()) * 22 - getCenterTileZ() * 4);
 }
 
-unsigned int WorldView::getWidth() {
+CL_Vec2f WorldView::getTopLeftPixel() const {
+    return CL_Vec2f(getCenterPixelX() - getWidth()/2, getCenterPixelY() - getHeight()/2);
+}
+
+unsigned int WorldView::getWidth() const {
     return get_width();
 }
 
-unsigned int WorldView::getHeight() {
+unsigned int WorldView::getHeight() const {
     return get_height();
 }
 
 void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
-    //gc.push_cliprect(get_geometry());
+    float pixelMoveX = getCenterPixelX() - lastCenterPixelX_;
+    float pixelMoveY = getCenterPixelY() - lastCenterPixelY_;
+    
+    lastCenterPixelX_ = getCenterPixelX();
+    lastCenterPixelY_ = getCenterPixelY();
+    
+    renderer_->moveCenter(pixelMoveX, pixelMoveY);
+    
     CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
-    // renderer_->render(gc);
-    //gc.pop_cliprect();
 }
 
-void WorldView::getRequiredSectors(std::list<unsigned int>& list, unsigned int mapHeight, unsigned int cacheAdd) {
+void WorldView::getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd) {
     // at least, we need to load as much tiles as the diagonal of the view is long
     // we load this amount of tiles (plus a little cache) in each direction of the center tile
 
@@ -139,20 +149,19 @@ void WorldView::getRequiredSectors(std::list<unsigned int>& list, unsigned int m
     int centerSectorX = (int)(getCenterTileX() / 8.0);
     int centerSectorY = (int)(getCenterTileY() / 8.0);
 
-    list.push_back(centerSectorX * mapHeight + centerSectorY);
+    list.push_back(IsoIndex(centerSectorX, centerSectorY));
 
     // uncomment this to load just a single sector
     //return;
 
-    unsigned int sectorX, sectorY, sectorId;
+    unsigned int sectorX, sectorY;
     int diff;
     for (int x = -loadInEachDirection; x <= loadInEachDirection; ++x) {
         diff = loadInEachDirection - abs(x);
         for (int y = -diff; y <= diff; ++y) {
             sectorX = (std::max)(centerSectorX + x, 0);
             sectorY = (std::max)(centerSectorY + y, 0);
-            sectorId = sectorX * mapHeight + sectorY;
-            list.push_back(sectorId);
+            list.push_back(IsoIndex(sectorX, sectorY));
 
         }
     }
@@ -169,18 +178,16 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
     //LOGARG_INFO(LOGTYPE_INPUT, "input pressed WorldView: %u", e.id);
 
     switch (e.id) {
-    case CL_KEY_UP:
-        net::Manager::getWalkManager()->onMovementRequest(Direction::N);
+    case CL_MOUSE_RIGHT: {
+        //CL_Vec2f yaxis(0, 1);
+        //CL_Vec2f mouseVec(e.mouse_pos.x, e.mouse_pos.y)
+        //angle = arccos
+        unsigned int direction = getDirectionForMousePosition(e.mouse_pos);
+        world::Manager::getPlayerWalkManager()->setWalkDirection(direction);
+        
+        //world::Manager::getPlayerWalkManager()->setWalkDirection(Direction::N);
         break;
-    case CL_KEY_DOWN:
-        net::Manager::getWalkManager()->onMovementRequest(Direction::S);
-        break;
-    case CL_KEY_LEFT:
-        net::Manager::getWalkManager()->onMovementRequest(Direction::W);
-        break;
-    case CL_KEY_RIGHT:
-        net::Manager::getWalkManager()->onMovementRequest(Direction::E);
-        break;
+    }
 
     case CL_KEY_ADD:
         lm = world::Manager::getLightManager();
@@ -229,11 +236,10 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
 
     case CL_KEY_F:
         data::Manager::getArtLoader()->printStats();
-        LOG_DEBUG << "Render queue count: " << ui::Manager::getWorldRenderQueue()->size() << std::endl;
         break;
         
-    case CL_KEY_P:
-        
+    case CL_KEY_N:
+        ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(800, 800)).translate(getTopLeftPixel()));
         break;
 
 
@@ -260,6 +266,10 @@ bool WorldView::onInputReleased(const CL_InputEvent& e) {
     boost::shared_ptr<world::IngameObject> draggedObject;
 
     switch (e.id) {
+    case CL_MOUSE_RIGHT:
+        world::Manager::getPlayerWalkManager()->stopAtNextTile();
+        break;
+        
     case CL_MOUSE_LEFT:
         clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
         draggedObject = ui::Manager::getSingleton()->getCursorManager()->stopDragging();
@@ -304,17 +314,53 @@ bool WorldView::onDoubleClick(const CL_InputEvent& e) {
 
 boost::shared_ptr<world::IngameObject> WorldView::getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) {
     //LOG_INFO << "WorldView::getFirstObjectAt " << pixelX << " " << pixelY << std::endl;
-    int worldX = getCenterPixelX() - get_width()/2.0;
+    float worldX = getCenterPixelX() - get_width()/2.0;
     worldX += pixelX;
 
-    int worldY = getCenterPixelY() - get_height()/2.0;
+    float worldY = getCenterPixelY() - get_height()/2.0;
     worldY += pixelY;
 
-    return ui::Manager::getWorldRenderQueue()->getFirstObjectAt(worldX, worldY, true);
+    return world::Manager::getSectorManager()->getFirstObjectAt(worldX, worldY, true);
+    boost::shared_ptr<world::IngameObject> ret;
+    return ret;
 }
 
 void WorldView::setCenterObject(boost::shared_ptr<world::IngameObject> obj) {
     centerObject_ = obj;
+}
+
+bool WorldView::onPointerMoved(const CL_InputEvent& e) {
+    if (e.device.get_keycode(CL_MOUSE_RIGHT)) {
+        unsigned int direction = getDirectionForMousePosition(e.mouse_pos);
+        world::Manager::getPlayerWalkManager()->setWalkDirection(direction);
+    }
+    
+    return true;
+}
+
+unsigned int WorldView::getDirectionForMousePosition(const CL_Point& mouse) const {
+    float posY = mouse.y - (get_height() / 2);
+    float posX = mouse.x - (get_width() / 2);
+    float angle = atan2(posY, posX);
+    
+    float absangle = fabs(angle);
+    if (absangle >= 2.7489) {
+        return Direction::SW;
+    } else if (angle <= -1.9635) {
+        return Direction::W;
+    } else if (angle <= -1.1781) {
+        return Direction::NW;
+    } else if (angle <= -0.3927) {
+        return Direction::N;
+    } else if (angle <= 0.3927) {
+        return Direction::NE;
+    } else if (angle <= 1.1781) {
+        return Direction::E;
+    } else if (angle <= 1.9635) {
+        return Direction::SE;
+    } else {
+        return Direction::S;
+    }
 }
 
 }

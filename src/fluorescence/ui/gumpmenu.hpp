@@ -110,6 +110,9 @@ public:
     void setTypeId(unsigned int typeId);
     
     void sendReply(unsigned int buttonId_);
+    
+    void setCurrentRadioGroup(unsigned int groupId);
+    unsigned int getCurrentRadioGroup() const;
 
 private:
     Serial serial_;
@@ -137,6 +140,8 @@ private:
     UnicodeString cancelAction_;
 
     world::Mobile* linkedMobile_;
+    
+    unsigned int currentRadioGroup_;
 };
 
 }

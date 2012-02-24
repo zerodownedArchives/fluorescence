@@ -82,44 +82,45 @@ void Background::calculateQuadCoordinates() {
     float texHeights[9];
     
     for (unsigned int i = 0; i < 9; ++i) {
-        texWidths[i] = textures_[i]->getWidth();
-        texHeights[i] = textures_[i]->getHeight();
+        texWidths[i] = (std::min)(width, textures_[i]->getWidth());
+        texHeights[i] = (std::min)(height, textures_[i]->getHeight());
     }
     
-    float centerBarWidth = width - (texWidths[0] + texWidths[2]);
-    float middleBarHeight = height - (texHeights[0] + texHeights[6]);
+    float centerBarWidthTop = width - (texWidths[0] + texWidths[2]);
+    float centerBarWidthBottom = width - (texWidths[6] + texWidths[8]);
+    float middleBarHeightLeft = height - (texHeights[0] + texHeights[6]);
+    float middleBarHeightRight = height - (texHeights[2] + texHeights[8]);
     
-    CL_Rectf centerBarTexCoords(0.0f, 0.0f, centerBarWidth / texWidths[1], 1.0);    
-    CL_Rectf middleBarTexCoords(0.0f, 0.0f, 1.0, middleBarHeight / texHeights[3]);
-    CL_Rectf centerPieceTexCoords(0.0f, 0.0f, centerBarWidth / texWidths[4], middleBarHeight / texHeights[4]);
+    float centerPieceWidth = width - (texWidths[3] + texWidths[5]);
+    float centerPieceHeight = height - (texHeights[1] + texHeights[7]);
     
     quadCoords_[0] = CL_Rectf(0, 0, CL_Sizef(texWidths[0], texHeights[0]));
     quadTextureCoords_[0] = defaultTexCoords;
     
-    quadCoords_[1] = CL_Rectf(texWidths[0], 0, CL_Sizef(centerBarWidth, texHeights[1]));
-    quadTextureCoords_[1] = centerBarTexCoords;
+    quadCoords_[1] = CL_Rectf(texWidths[0], 0, CL_Sizef(centerBarWidthTop, texHeights[1]));
+    quadTextureCoords_[1] = CL_Rectf(0.0f, 0.0f, centerBarWidthTop / texWidths[1], 1.0);;
     textures_[1]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     quadCoords_[2] = CL_Rectf(width - texWidths[2], 0, CL_Sizef(texWidths[2], texHeights[2]));
     quadTextureCoords_[2] = defaultTexCoords;
     
-    quadCoords_[3] = CL_Rectf(0, texHeights[0], CL_Sizef(texWidths[3], middleBarHeight));
-    quadTextureCoords_[3] = middleBarTexCoords;
+    quadCoords_[3] = CL_Rectf(0, texHeights[0], CL_Sizef(texWidths[3], middleBarHeightLeft));
+    quadTextureCoords_[3] = CL_Rectf(0.0f, 0.0f, 1.0, middleBarHeightLeft / texHeights[3]);
     textures_[3]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
-    quadCoords_[4] = CL_Rectf(texWidths[0], texHeights[0], CL_Sizef(centerBarWidth, middleBarHeight));
-    quadTextureCoords_[4] = centerPieceTexCoords;
+    quadCoords_[4] = CL_Rectf(texWidths[3], texHeights[1], CL_Sizef(centerPieceWidth, centerPieceHeight));
+    quadTextureCoords_[4] = CL_Rectf(0.0f, 0.0f, centerPieceWidth / texWidths[4], centerPieceHeight / texHeights[4]);
     textures_[4]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
-    quadCoords_[5] = CL_Rectf(width - texWidths[2], texHeights[0], CL_Sizef(texWidths[5], middleBarHeight));
-    quadTextureCoords_[5] = middleBarTexCoords;
+    quadCoords_[5] = CL_Rectf(width - texWidths[5], texHeights[2], CL_Sizef(texWidths[5], middleBarHeightRight));
+    quadTextureCoords_[5] = CL_Rectf(0.0f, 0.0f, 1.0f, middleBarHeightRight / texHeights[5]);
     textures_[5]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     quadCoords_[6] = CL_Rectf(0, height - texHeights[6], CL_Sizef(texWidths[6], texHeights[6]));
     quadTextureCoords_[6] = defaultTexCoords;
     
-    quadCoords_[7] = CL_Rectf(texWidths[0], height - texHeights[6], CL_Sizef(centerBarWidth, texHeights[7]));
-    quadTextureCoords_[7] = centerBarTexCoords;
+    quadCoords_[7] = CL_Rectf(texWidths[6], height - texHeights[7], CL_Sizef(centerBarWidthBottom, texHeights[7]));
+    quadTextureCoords_[7] = CL_Rectf(0.0f, 0.0f, centerBarWidthBottom / texWidths[7], 1.0);;
     textures_[7]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     quadCoords_[8] = CL_Rectf(width - texWidths[8], height - texHeights[8], CL_Sizef(texWidths[8], texHeights[8]));
@@ -146,8 +147,6 @@ void Background::calculateVertexCoordinates() {
     CL_Rectf middleBarTexCoords(0.0f, 0.0f, 1.0, middleBarHeight / texHeights[3]);
     
     CL_Rectf centerPieceTexCoords(0.0f, 0.0f, centerBarWidth / texWidths[4], middleBarHeight / texHeights[4]);
-    
-    LOG_DEBUG << "center text coords: " << centerPieceTexCoords << std::endl;
     
     // top left corner
     setVertexCoordinates(0, CL_Rectf(0, 0, CL_Sizef(texWidths[0], texHeights[0])));

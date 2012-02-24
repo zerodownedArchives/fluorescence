@@ -12,7 +12,7 @@ set (NET_HPP
     net/packetwriter.hpp
     net/packetreader.hpp
     net/multipurposepacket.hpp
-    net/walkmanager.hpp
+    net/walkpacketmanager.hpp
     )
 
 set (NET_CPP
@@ -26,7 +26,7 @@ set (NET_CPP
     net/packetwriter.cpp
     net/packetreader.cpp
     net/multipurposepacket.cpp
-    net/walkmanager.cpp
+    net/walkpacketmanager.cpp
     )
 
 set (PACKETS_HPP
@@ -77,6 +77,7 @@ set (PACKETS_HPP
     net/packets/createcharacter.hpp
     net/packets/gumpmenu.hpp
     net/packets/gumpreply.hpp
+    net/packets/updaterange.hpp
 
     net/packets/bf.hpp
     net/packets/bf/changemap.hpp
@@ -135,6 +136,7 @@ set (PACKETS_CPP
     net/packets/createcharacter.cpp
     net/packets/gumpmenu.cpp
     net/packets/gumpreply.cpp
+    net/packets/updaterange.cpp
 
     net/packets/bf.cpp
     net/packets/bf/changemap.cpp

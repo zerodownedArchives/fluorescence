@@ -21,7 +21,7 @@
 #include "fastwalkinit.hpp"
 
 #include <net/manager.hpp>
-#include <net/walkmanager.hpp>
+#include <net/walkpacketmanager.hpp>
 
 namespace fluo {
 namespace net {
@@ -42,7 +42,7 @@ bool FastWalkInit::read(const int8_t* buf, unsigned int len, unsigned int& index
 }
 
 void FastWalkInit::onReceive() {
-    net::Manager::getWalkManager()->initFastWalkStack(keys_);
+    net::Manager::getWalkPacketManager()->initFastWalkStack(keys_);
 }
 
 }

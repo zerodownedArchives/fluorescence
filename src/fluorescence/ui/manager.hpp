@@ -44,12 +44,12 @@ namespace world {
 namespace ui {
 
 class IngameView;
-class RenderQueue;
 class CursorManager;
 class DoubleClickHandler;
 class GumpMenu;
 class FontEngine;
 class ShaderManager;
+class ClipRectManager;
 
 class Manager {
 public:
@@ -64,12 +64,12 @@ public:
 
     static CL_Texture* provideTexture(unsigned int width, unsigned int height);
 
-    static boost::shared_ptr<RenderQueue> getWorldRenderQueue();
     static boost::shared_ptr<CL_GUIManager> getGuiManager();
     static boost::shared_ptr<CursorManager> getCursorManager();
     static boost::shared_ptr<DoubleClickHandler> getDoubleClickHandler();
     static boost::shared_ptr<FontEngine> getFontEngine();
     static boost::shared_ptr<ShaderManager> getShaderManager();
+    static boost::shared_ptr<ClipRectManager> getClipRectManager();
 
     void step();
 
@@ -102,8 +102,6 @@ private:
     ~Manager();
     Manager(const Manager& copy) { }
     void operator=(const Manager& copy) { }
-
-    boost::shared_ptr<RenderQueue> worldRenderQueue_;
 
     // clan lib setup stuff
     CL_SetupCore clSetupCore;
@@ -145,6 +143,8 @@ private:
     boost::shared_ptr<ShaderManager> shaderManager_;
     
     UnicodeString getOpenGLExtensions() const;
+    
+    boost::shared_ptr<ClipRectManager> clipRectManager_;
 };
 
 }

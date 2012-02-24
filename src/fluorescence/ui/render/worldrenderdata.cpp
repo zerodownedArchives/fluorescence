@@ -26,8 +26,7 @@ namespace fluo {
 namespace ui {
 
 WorldRenderData::WorldRenderData() :
-            textureProviderUpdateRequired_(true), vertexCoordinatesUpdateRequired_(true), renderDepthUpdateRequired_(true),
-            textureProviderUpdated_(false), vertexCoordinatesUpdated_(false), renderDepthUpdated_(false), renderDepth_(0) {
+            textureProviderUpdateRequired_(true), vertexCoordinatesUpdateRequired_(true), renderDepthUpdateRequired_(true) {
     for (unsigned int i = 0; i < 6; ++i) {
         vertexNormals_[i] = CL_Vec3f(0, 0, 1);
     }
@@ -64,12 +63,12 @@ bool WorldRenderData::renderDepthUpdateRequired() const {
 
 void WorldRenderData::onTextureProviderUpdate() {
     textureProviderUpdateRequired_ = false;
-    textureProviderUpdated_ = true;
+    textureOrVerticesUpdated_ = true;
 }
 
 void WorldRenderData::onVertexCoordinatesUpdate() {
     vertexCoordinatesUpdateRequired_ = false;
-    vertexCoordinatesUpdated_ = true;
+    textureOrVerticesUpdated_ = true;
 }
 
 void WorldRenderData::onRenderDepthUpdate() {
@@ -77,35 +76,13 @@ void WorldRenderData::onRenderDepthUpdate() {
     renderDepthUpdated_ = true;
 }
 
-bool WorldRenderData::textureProviderUpdated() const {
-    return textureProviderUpdated_;
-}
-
-bool WorldRenderData::vertexCoordinatesUpdated() const {
-    return vertexCoordinatesUpdated_;
-}
-
-bool WorldRenderData::renderDepthUpdated() const {
-    return renderDepthUpdated_;
-}
-
-void WorldRenderData::reset() {
-    textureProviderUpdated_ = false;
-    vertexCoordinatesUpdated_ = false;
-    renderDepthUpdated_ = false;
-}
-
 void WorldRenderData::setVertexCoordinates(unsigned int idx, float x, float y) {
     vertexCoordinates_[idx].x = x;
     vertexCoordinates_[idx].y = y;
 }
 
-void WorldRenderData::setRenderDepth(unsigned long long value) {
-    renderDepth_ = value;
-}
-
 void WorldRenderData::setRenderDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint8_t byte5, uint8_t byte6) { 
-    unsigned long long tmp = 0;
+    uint64_t tmp = 0;
     tmp |= (xPlusY & 0xFFFF);
     tmp <<= 8;
     uint8_t tmpZ = (((int)z) + 128) & 0xFF;
@@ -118,9 +95,14 @@ void WorldRenderData::setRenderDepth(uint16_t xPlusY, int8_t z, uint8_t priority
     tmp |= (byte6 & 0xFF);
 
     renderDepth_ = tmp;
+    
+    float gpuDepth = xPlusY / 32767.f;
+    for (unsigned int i = 0; i < 6; ++i) {
+        vertexCoordinates_[i].z = gpuDepth;
+    }
 }
 
-unsigned long long WorldRenderData::getRenderDepth() const {
+const RenderDepth& WorldRenderData::getRenderDepth() const {
     return renderDepth_;
 }
 
@@ -141,6 +123,30 @@ void WorldRenderData::setVertexCoordinates(const CL_Rectf& rect) {
     vertexCoordinates_[4].y = rect.bottom;
     vertexCoordinates_[5].x = rect.right;
     vertexCoordinates_[5].y = rect.bottom;
+}
+
+void WorldRenderData::resetPreUpdate() {
+    renderDepthUpdated_ = false;
+    textureOrVerticesUpdated_ = false;
+    
+    if (!renderDataValid()) {
+        // store last vertex coordinates for clipped updates
+        previousVertexRect_ = getCurrentVertexRect();
+    }
+}
+
+CL_Rectf WorldRenderData::getCurrentVertexRect() const {
+    // this is only used to get the rectangular areas we need to redraw. it does not give a correct rectangle for map tiles, 
+    // but if map tiles are updated the sector provides a big rectangle anyways
+    return CL_Rectf(vertexCoordinates_[0].x, vertexCoordinates_[0].y, vertexCoordinates_[5].x, vertexCoordinates_[5].y);
+};
+
+bool WorldRenderData::textureOrVerticesUpdated() const {
+    return textureOrVerticesUpdated_;
+}
+
+bool WorldRenderData::renderDepthUpdated() const {
+    return renderDepthUpdated_;
 }
 
 }

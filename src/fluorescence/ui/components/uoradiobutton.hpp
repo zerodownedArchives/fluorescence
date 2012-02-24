@@ -17,47 +17,31 @@
  */
 
 
-#ifndef FLUO_UI_GUMPRENDERER_HPP
-#define FLUO_UI_GUMPRENDERER_HPP
+#ifndef FLUO_UI_COMPONENTS_UORADIOBUTTON_HPP
+#define FLUO_UI_COMPONENTS_UORADIOBUTTON_HPP
 
-#include <ClanLib/Display/Render/graphic_context.h>
-
-#include <boost/shared_ptr.hpp>
-
-#include <ui/render/ingameobjectrenderer.hpp>
-
+#include "uocheckbox.hpp"
 
 namespace fluo {
 namespace ui {
-
 namespace components {
-class GumpView;
-}
 
-class RenderQueue;
-class Texture;
-
-class GumpRenderer : public IngameObjectRenderer {
+class UoRadioButton : public UoCheckbox {
 public:
-    GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::GumpView* gumpView);
-    ~GumpRenderer();
-
-    virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc);
-
-    virtual void render(CL_GraphicContext& gc);
-
-    virtual boost::shared_ptr<RenderQueue> getRenderQueue() const;
-
-private:
-    components::GumpView* gumpView_;
-    boost::shared_ptr<RenderQueue> renderQueue_;
-
-    boost::shared_ptr<Texture> texture_;
-    void checkTextureSize(CL_GraphicContext& gc);
+    UoRadioButton(CL_GUIComponent* parent);
     
-    CL_FrameBuffer frameBuffer_;
+    void setRadioGroupId(unsigned int groupId);
+    unsigned int getRadioGroupId() const;
+    
+private:
+    bool onInputPressed(const CL_InputEvent & e);
+    
+    unsigned int radioGroupId_;
 };
+
+}
 }
 }
 
 #endif
+

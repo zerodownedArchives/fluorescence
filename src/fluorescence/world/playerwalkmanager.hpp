@@ -17,43 +17,39 @@
  */
 
 
-#ifndef FLUO_DATA_ONDEMANDREADABLE_HPP
-#define FLUO_DATA_ONDEMANDREADABLE_HPP
+#ifndef FLUO_WORLD_PLAYERWALKMANAGER_HPP
+#define FLUO_WORLD_PLAYERWALKMANAGER_HPP
 
-#include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
+#include <typedefs.hpp>
 
 namespace fluo {
-namespace data {
-
-template<class T>
-class OnDemandReadable {
+namespace world {
+    
+class PlayerWalkManager {
 public:
-    typedef boost::function<void (boost::shared_ptr<T>)> Callback;
+    PlayerWalkManager(); 
     
-    OnDemandReadable() : readComplete_(false) { }
+    void setWalkDirection(uint8_t direction);
+    void stopAtNextTile();
+    void stopImmediately();
     
-    void setReadComplete(boost::shared_ptr<T> sharedThis = boost::shared_ptr<T>()) { 
-        readComplete_ = true; 
-        
-        if (completeCallback_ && sharedThis) {
-            completeCallback_(sharedThis);
-        }
-    }
+    void update(unsigned int elapsedMillis);
     
-    bool isReadComplete() { 
-        return readComplete_; 
-    }
+    bool isWalking() const;
     
-    void setCompleteCallback(Callback cb) { completeCallback_ = cb; }
-
+    void onSmoothMovementFinish();
+    
 private:
-    bool readComplete_;
+    uint8_t requestedDirection_;
     
-    Callback completeCallback_;
+    bool isWalking_;
+    bool lastIsWalking_;
+    
+    int millisToNextMove_;
 };
 
 }
 }
 
 #endif
+

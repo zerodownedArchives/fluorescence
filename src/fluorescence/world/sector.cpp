@@ -25,141 +25,242 @@
 #include <data/maploader.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/render/renderqueue.hpp>
+#include <ui/cliprectmanager.hpp>
 
 namespace fluo {
 namespace world {
 
-Sector::Sector(unsigned int mapId, unsigned int sectorId) :
-        mapId_(mapId), id_(sectorId), visible_(true), fullUpdateRenderDataRequired_(true) {
+Sector::Sector(unsigned int mapId, const IsoIndex& sectorId) :
+        mapId_(mapId), id_(sectorId),  
+        mapAddedToList_(false), staticsAddedToList_(false), 
+        visible_(true), fullUpdateRenderDataRequired_(true), repaintRequired_(false) {
 
-    unsigned int mapHeight = data::Manager::getMapLoader(mapId_)->getBlockCountY();
-    location_[0u] = sectorId / mapHeight;
-    location_[1u] = sectorId % mapHeight;
+    //LOG_DEBUG << "Sector construct, map=" << mapId_ << " x=" << getLocX() << " y=" << getLocY() << std::endl;
 
-    //LOG_DEBUG << "Sector construct, map=" << mapId_ << " x=" << location_[0u] << " y=" << location_[1u] << std::endl;
-
-    mapBlock_ = data::Manager::getMapLoader(mapId_)->get(location_[0u], location_[1u]);
-    staticBlock_ = data::Manager::getStaticsLoader(mapId_)->get(location_[0u], location_[1u]);
+    mapBlock_ = data::Manager::getMapLoader(mapId_)->get(getLocX(), getLocY());
+    staticBlock_ = data::Manager::getStaticsLoader(mapId_)->get(getLocX(), getLocY());
 }
 
 Sector::~Sector() {
-    //LOGARG_DEBUG(LOGTYPE_WORLD, "Sector destroy, map=%u x=%u y=%u items=%u", mapId_, location_[0u], location_[1u], staticBlock_->getItemList().size() + 64);
+    //LOG_DEBUG << "Sector destruct, map=" << mapId_ << " x=" << getLocX() << " y=" << getLocY() << std::endl;
 }
 
 unsigned int Sector::getLocX() const {
-    return location_[0u];
+    return id_.x_;
 }
 unsigned int Sector::getLocY() const {
-    return location_[1u];
+    return id_.y_;
 }
 
 bool Sector::isVisible() const {
     return visible_;
 }
 
-boost::shared_ptr<MapBlock> Sector::getMapBlock() const {
-    return mapBlock_;
-}
-boost::shared_ptr<StaticBlock> Sector::getStaticBlock() const {
-    return staticBlock_;
-}
-
 unsigned int Sector::getMapId() const {
     return mapId_;
 }
 
-unsigned int Sector::getSectorId() const {
+const IsoIndex& Sector::getSectorId() const {
     return id_;
 }
 
-void Sector::removeFromRenderQueue(boost::shared_ptr<ui::RenderQueue> rq) {
-    if (staticBlock_) {
+void Sector::update(unsigned int elapsedMillis) {
+    repaintRequired_ = false;
+    
+    if (!mapAddedToList_ && mapBlock_ && mapBlock_->isReadComplete()) {
+        // map block is now loaded => add to list
+        for (unsigned int x = 0; x < 8; ++x) {
+            for (unsigned int y = 0; y < 8; ++y) {
+                renderList_.push_back(mapBlock_->get(x, y).get());
+            }
+        }
+        
+        fullUpdateRenderDataRequired_ = true;
+        mapAddedToList_ = true;
+    }
+    
+    if (!staticsAddedToList_ && staticBlock_ && staticBlock_->isReadComplete()) {
+        // static block is now loaded => add to list
         std::list<boost::shared_ptr<world::StaticItem> > staticList = staticBlock_->getItemList();
         std::list<boost::shared_ptr<world::StaticItem> >::const_iterator it = staticList.begin();
         std::list<boost::shared_ptr<world::StaticItem> >::const_iterator end = staticList.end();
 
         for (; it != end; ++it) {
-            (*it)->removeFromRenderQueue(rq);
+            renderList_.push_back(it->get());
         }
+        
+        fullUpdateRenderDataRequired_ = true;
+        staticsAddedToList_ = true;
     }
-
-    if (mapBlock_) {
+    
+    if (mapBlock_->repaintRequested_) {
+        // happens when the neighboring z values of a map block change
+        
         for (unsigned int x = 0; x < 8; ++x) {
             for (unsigned int y = 0; y < 8; ++y) {
-                mapBlock_->get(x, y)->removeFromRenderQueue(rq);
+                mapBlock_->get(x, y)->updateRenderData(elapsedMillis);
+                renderListSortRequired_ |= mapBlock_->get(x, y)->renderDepthChanged();
+                renderListSortRequired_ |= mapBlock_->get(x, y)->textureOrVerticesChanged();
             }
         }
-    }
-}
-
-void Sector::update(unsigned int elapsedMillis) {
-    if (!staticBlock_ || !staticBlock_->isReadComplete() || !mapBlock_ || !mapBlock_->isReadComplete()) {
-        // not fully loaded yet
-        return;
-    }
-
-    if (mapBlock_->repaintRequested_) {
-        fullUpdateRenderDataRequired_ = true;
+        
         mapBlock_->repaintRequested_ = false; 
     }
-
+    
     //LOG_DEBUG << "Sector::update " << id_ << std::endl;
     if (fullUpdateRenderDataRequired_) {
+        // this is executed only a few times after the sector is loaded, as long as not all textures for the sector are loaded
+        // as soon as every static and map tile is loaded, only the things in the quick update list are updated
+        
         //LOG_DEBUG << "full update required" << std::endl;
-        // the sector is not yet loaded completely (e.g. a graphic is still missing)
+        
+        // do we need to update everything?
         bool curFullUpdateRequired = false;
+        repaintRequired_ = true;
 
-        std::list<boost::shared_ptr<world::StaticItem> > staticList = staticBlock_->getItemList();
-        std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticList.begin();
-        std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticList.end();
-
-        for (; it != end; ++it) {
-            if (!(*it)->getWorldRenderData().renderDataValid()) {
-                (*it)->updateRenderData(elapsedMillis);
-                curFullUpdateRequired = true;
+        if (mapAddedToList_) {
+            for (unsigned int x = 0; x < 8; ++x) {
+                for (unsigned int y = 0; y < 8; ++y) {
+                    if (!mapBlock_->get(x, y)->getWorldRenderData().renderDataValid()) {
+                        mapBlock_->get(x, y)->updateRenderData(elapsedMillis);
+                        renderListSortRequired_ |= mapBlock_->get(x, y)->renderDepthChanged();
+                        curFullUpdateRequired = true;
+                    }
+                }
             }
         }
+        
+        if (staticsAddedToList_) {
+            std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticBlock_->getItemList().begin();
+            std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticBlock_->getItemList().end();
 
-        for (unsigned int x = 0; x < 8; ++x) {
-            for (unsigned int y = 0; y < 8; ++y) {
-                if (!mapBlock_->get(x, y)->getWorldRenderData().renderDataValid()) {
-                    mapBlock_->get(x, y)->updateRenderData(elapsedMillis);
-                    curFullUpdateRequired = true;
+            for (; it != end; ++it) {
+                if (!(*it)->getWorldRenderData().renderDataValid()) {
+                    if (!(*it)->getWorldRenderData().renderDataValid()) {
+                        (*it)->updateRenderData(elapsedMillis);
+                        renderListSortRequired_ |= (*it)->renderDepthChanged();
+                        curFullUpdateRequired = true;
+                    }
                 }
             }
         }
 
         if (!curFullUpdateRequired) {
-            //LOG_DEBUG << "full update not required anymore" << std::endl;
             // all the items in this sector are now fully loaded, including texture etc
             // to save time in the future, update only the items that are animated. store those in a list now
+            
+            //LOG_DEBUG << "full update not required anymore" << std::endl;
             quickRenderUpdateList_.clear();
 
-            std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticList.begin();
-            std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticList.end();
+            if (staticsAddedToList_) {
+                std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticBlock_->getItemList().begin();
+                std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticBlock_->getItemList().end();
 
-            for (; it != end; ++it) {
-                if ((*it)->requireRenderUpdate()) {
-                    quickRenderUpdateList_.push_back(*it);
+                for (; it != end; ++it) {
+                    if ((*it)->periodicRenderUpdateRequired()) {
+                        quickRenderUpdateList_.push_back(it->get());
+                    }
                 }
             }
 
             fullUpdateRenderDataRequired_ = false;
 
             //LOG_DEBUG << "Items in quicklist: " << quickRenderUpdateList_.size() << std::endl;
+            
+            
+            // add repaint rectangle over full sector range, and a bit more
+            const CL_Vec3f* vertCoords = mapBlock_->get(0, 0)->getWorldRenderData().getVertexCoordinates();
+            float updateLeft = vertCoords[0].x - 150;
+            float updateTop = vertCoords[0].y - 150;
+            vertCoords = mapBlock_->get(7, 7)->getWorldRenderData().getVertexCoordinates();
+            float updateRight = vertCoords[5].x + 100;
+            float updateBottom = vertCoords[5].y + 100;
+            CL_Rectf updateRect(updateLeft, updateTop, updateRight, updateBottom);
+            ui::Manager::getClipRectManager()->add(updateRect);
         }
-
     } else if (!quickRenderUpdateList_.empty()) {
         //LOG_DEBUG << "quick render update, size=" << quickRenderUpdateList_.size() << std::endl;
         // only call update on those few things that really need to be updated (e.g. animated statics)
-        std::list<boost::shared_ptr<world::StaticItem> >::iterator iter = quickRenderUpdateList_.begin();
-        std::list<boost::shared_ptr<world::StaticItem> >::iterator end = quickRenderUpdateList_.end();
+        std::list<world::IngameObject*>::iterator iter = quickRenderUpdateList_.begin();
+        std::list<world::IngameObject*>::iterator end = quickRenderUpdateList_.end();
 
         for (; iter != end; ++iter) {
             (*iter)->updateRenderData(elapsedMillis);
+            bool depthChanged = (*iter)->renderDepthChanged();
+            bool texOrVertChanged = (*iter)->textureOrVerticesChanged();
+            renderListSortRequired_ |= depthChanged;
+            repaintRequired_ |= texOrVertChanged;
+            
+            if (depthChanged || texOrVertChanged) {
+                // add previous and current vertex coordinates to clipped update range
+                (*iter)->repaintRectangle(true);
+            }
         }
     }
+    
+    if (renderListSortRequired_) {
+        renderListSortRequired_ = false;
+        repaintRequired_ = true;
+        renderList_.sort(&Sector::renderDepthSortHelper);
+    }
+}
+
+bool Sector::renderDepthSortHelper(const world::IngameObject* a, const world::IngameObject* b) {
+    return a->getRenderDepth() < b->getRenderDepth();
+}
+
+std::list<world::IngameObject*>::iterator Sector::renderBegin() {
+    return renderList_.begin();
+}
+
+std::list<world::IngameObject*>::iterator Sector::renderEnd() {
+    return renderList_.end();
+}
+
+bool Sector::repaintRequired() const {
+    return repaintRequired_;
+}
+
+void Sector::addDynamicObject(world::IngameObject* obj) {
+    renderList_.push_back(obj);
+    renderListSortRequired_ = true;
+    
+    obj->repaintRectangle();
+    
+    obj->onAddedToSector(this);
+}
+
+void Sector::removeDynamicObject(world::IngameObject* obj) {
+    renderList_.remove(obj);
+    
+    obj->repaintRectangle();
+    
+    obj->onRemovedFromSector(this);
+}
+
+void Sector::requestSort() {
+    renderListSortRequired_ = true;
+}
+
+boost::shared_ptr<world::IngameObject> Sector::getFirstObjectAt(int worldX, int worldY, bool getTopObject) const {
+    boost::shared_ptr<world::IngameObject> ret;
+    
+    std::list<world::IngameObject*>::const_reverse_iterator iter = renderList_.rbegin();
+    std::list<world::IngameObject*>::const_reverse_iterator end = renderList_.rend();
+    
+    for (; iter != end; ++iter) {
+        IngameObject* curObj = *iter;
+        if (curObj->isVisible() && curObj->hasPixel(worldX, worldY)) {
+            if (getTopObject) {
+                ret = curObj->getTopParent();
+            } else {
+                ret = curObj->shared_from_this();
+            }
+            break;
+        }
+    }
+    
+    return ret;
 }
 
 }

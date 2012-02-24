@@ -39,7 +39,7 @@ struct AnimationFrame {
     boost::shared_ptr<ui::Texture> texture_;
 };
 
-class Animation : public fluo::data::OnDemandReadable {
+class Animation : public fluo::data::OnDemandReadable<Animation> {
 public:
     void addFrame(const AnimationFrame& frame);
 
