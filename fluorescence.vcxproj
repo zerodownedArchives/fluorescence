@@ -168,18 +168,20 @@
     <ClCompile Include="src\fluorescence\net\packets\teleport.cpp" />
     <ClCompile Include="src\fluorescence\net\packets\unicodetext.cpp" />
     <ClCompile Include="src\fluorescence\net\packets\unknown.cpp" />
+    <ClCompile Include="src\fluorescence\net\packets\updaterange.cpp" />
     <ClCompile Include="src\fluorescence\net\packets\worlditem.cpp" />
     <ClCompile Include="src\fluorescence\net\packetwriter.cpp" />
     <ClCompile Include="src\fluorescence\net\socket.cpp" />
     <ClCompile Include="src\fluorescence\net\twofishencryption.cpp" />
     <ClCompile Include="src\fluorescence\net\twofish\twofish.c" />
-    <ClCompile Include="src\fluorescence\net\walkmanager.cpp" />
+    <ClCompile Include="src\fluorescence\net\walkpacketmanager.cpp" />
     <ClCompile Include="src\fluorescence\net\xorencryption.cpp" />
     <ClCompile Include="src\fluorescence\platform.cpp" />
     <ClCompile Include="src\fluorescence\ui\animation.cpp" />
     <ClCompile Include="src\fluorescence\ui\animdatatextureprovider.cpp" />
     <ClCompile Include="src\fluorescence\ui\animtextureprovider.cpp" />
     <ClCompile Include="src\fluorescence\ui\bitmask.cpp" />
+    <ClCompile Include="src\fluorescence\ui\cliprectmanager.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\background.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\basebutton.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\containerview.cpp" />
@@ -193,6 +195,7 @@
     <ClCompile Include="src\fluorescence\ui\components\textentry.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\uobutton.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\uocheckbox.cpp" />
+    <ClCompile Include="src\fluorescence\ui\components\uoradiobutton.cpp" />
     <ClCompile Include="src\fluorescence\ui\components\worldview.cpp" />
     <ClCompile Include="src\fluorescence\ui\cursorimage.cpp" />
     <ClCompile Include="src\fluorescence\ui\cursormanager.cpp" />
@@ -237,6 +240,7 @@
     <ClCompile Include="src\fluorescence\world\mobile.cpp" />
     <ClCompile Include="src\fluorescence\world\overheadmessage.cpp" />
     <ClCompile Include="src\fluorescence\world\particleeffect.cpp" />
+    <ClCompile Include="src\fluorescence\world\playerwalkmanager.cpp" />
     <ClCompile Include="src\fluorescence\world\sector.cpp" />
     <ClCompile Include="src\fluorescence\world\sectormanager.cpp" />
     <ClCompile Include="src\fluorescence\world\serverobject.cpp" />
@@ -345,6 +349,7 @@
     <ClInclude Include="src\fluorescence\net\packets\teleport.hpp" />
     <ClInclude Include="src\fluorescence\net\packets\unicodetext.hpp" />
     <ClInclude Include="src\fluorescence\net\packets\unknown.hpp" />
+    <ClInclude Include="src\fluorescence\net\packets\updaterange.hpp" />
     <ClInclude Include="src\fluorescence\net\packets\worlditem.hpp" />
     <ClInclude Include="src\fluorescence\net\packetwriter.hpp" />
     <ClInclude Include="src\fluorescence\net\socket.hpp" />
@@ -353,7 +358,7 @@
     <ClInclude Include="src\fluorescence\net\twofish\debug.h" />
     <ClInclude Include="src\fluorescence\net\twofish\platform.h" />
     <ClInclude Include="src\fluorescence\net\twofish\table.h" />
-    <ClInclude Include="src\fluorescence\net\walkmanager.hpp" />
+    <ClInclude Include="src\fluorescence\net\walkpacketmanager.hpp" />
     <ClInclude Include="src\fluorescence\net\xorencryption.hpp" />
     <ClInclude Include="src\fluorescence\platform.hpp" />
     <ClInclude Include="src\fluorescence\typedefs.hpp" />
@@ -361,6 +366,7 @@
     <ClInclude Include="src\fluorescence\ui\animdatatextureprovider.hpp" />
     <ClInclude Include="src\fluorescence\ui\animtextureprovider.hpp" />
     <ClInclude Include="src\fluorescence\ui\bitmask.hpp" />
+    <ClInclude Include="src\fluorescence\ui\cliprectmanager.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\background.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\basebutton.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\containerview.hpp" />
@@ -375,6 +381,7 @@
     <ClInclude Include="src\fluorescence\ui\components\textentry.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\uobutton.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\uocheckbox.hpp" />
+    <ClInclude Include="src\fluorescence\ui\components\uoradiobutton.hpp" />
     <ClInclude Include="src\fluorescence\ui\components\worldview.hpp" />
     <ClInclude Include="src\fluorescence\ui\cursorimage.hpp" />
     <ClInclude Include="src\fluorescence\ui\cursormanager.hpp" />
@@ -420,6 +427,7 @@
     <ClInclude Include="src\fluorescence\world\mobile.hpp" />
     <ClInclude Include="src\fluorescence\world\overheadmessage.hpp" />
     <ClInclude Include="src\fluorescence\world\particleeffect.hpp" />
+    <ClInclude Include="src\fluorescence\world\playerwalkmanager.hpp" />
     <ClInclude Include="src\fluorescence\world\sector.hpp" />
     <ClInclude Include="src\fluorescence\world\sectormanager.hpp" />
     <ClInclude Include="src\fluorescence\world\serverobject.hpp" />
@@ -428,8 +436,6 @@
     <ClInclude Include="src\fluorescence\world\statics.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\fluorescence\data\CMakeLists.txt" />
-    <None Include="src\fluorescence\ui\CMakeLists.txt" />
     <None Include="src\fluorescence\ui\uofontprovider.hpp.gch" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

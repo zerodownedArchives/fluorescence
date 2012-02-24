@@ -100,11 +100,11 @@ void WorldView::setCenterTiles(float x, float y) {
 }
 
 float WorldView::getCenterPixelX() const {
-    return roundf((getCenterTileX() - getCenterTileY()) * 22);
+    return floor(((getCenterTileX() - getCenterTileY()) * 22) + 0.5f);
 }
 
 float WorldView::getCenterPixelY() const {
-    return roundf((getCenterTileX() + getCenterTileY()) * 22 - getCenterTileZ() * 4);
+    return floor(((getCenterTileX() + getCenterTileY()) * 22 - getCenterTileZ() * 4) + 0.5f);
 }
 
 CL_Vec2f WorldView::getTopLeftPixel() const {
