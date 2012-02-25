@@ -1,7 +1,7 @@
 Index: Sources/GUI/gui_component.cpp
 ===================================================================
---- Sources/GUI/gui_component.cpp	(revision 7085)
-+++ Sources/GUI/gui_component.cpp	(working copy)
+--- Sources/GUI/gui_component.cpp
++++ Sources/GUI/gui_component.cpp
 @@ -602,6 +602,23 @@
  	return impl->constant_repaint;
  }
@@ -40,8 +40,8 @@ Index: Sources/GUI/gui_component.cpp
  
 Index: Sources/GUI/Theme/gui_theme_part_impl.h
 ===================================================================
---- Sources/GUI/Theme/gui_theme_part_impl.h	(revision 7085)
-+++ Sources/GUI/Theme/gui_theme_part_impl.h	(working copy)
+--- Sources/GUI/Theme/gui_theme_part_impl.h
++++ Sources/GUI/Theme/gui_theme_part_impl.h
 @@ -152,6 +152,11 @@
  
  inline CL_StringRef CL_GUIThemePart_Impl::get_property(const CL_GUIThemePart &part, const CL_String &name, const CL_String8 &hash, const CL_String &default_value) const
@@ -56,8 +56,8 @@ Index: Sources/GUI/Theme/gui_theme_part_impl.h
  	// Check if theme wants to override the property:
 Index: Sources/GUI/Theme/gui_theme_part.cpp
 ===================================================================
---- Sources/GUI/Theme/gui_theme_part.cpp	(revision 7085)
-+++ Sources/GUI/Theme/gui_theme_part.cpp	(working copy)
+--- Sources/GUI/Theme/gui_theme_part.cpp
++++ Sources/GUI/Theme/gui_theme_part.cpp
 @@ -191,6 +191,11 @@
  
  CL_Font CL_GUIThemePart::get_font() const
@@ -72,8 +72,8 @@ Index: Sources/GUI/Theme/gui_theme_part.cpp
  	if (!font.is_null())
 Index: Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
 ===================================================================
---- Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp	(revision 7085)
-+++ Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp	(working copy)
+--- Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
++++ Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
 @@ -245,7 +245,7 @@
  	CL_GUITopLevelWindow *toplevel_window;
  	toplevel_window = get_window_at_point(new_input_event.mouse_pos);
@@ -85,8 +85,8 @@ Index: Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
  	// Send focus lost events
 Index: Sources/GUI/gui_component_impl.cpp
 ===================================================================
---- Sources/GUI/gui_component_impl.cpp	(revision 7085)
-+++ Sources/GUI/gui_component_impl.cpp	(working copy)
+--- Sources/GUI/gui_component_impl.cpp
++++ Sources/GUI/gui_component_impl.cpp
 @@ -42,6 +42,7 @@
    focus_policy(CL_GUIComponent::focus_refuse), allow_resize(false), clip_children(false), enabled(true),
    visible(true), activated(false), default_handler(false), cancel_handler(false),
@@ -97,8 +97,8 @@ Index: Sources/GUI/gui_component_impl.cpp
  
 Index: Sources/GUI/gui_component_impl.h
 ===================================================================
---- Sources/GUI/gui_component_impl.h	(revision 7085)
-+++ Sources/GUI/gui_component_impl.h	(working copy)
+--- Sources/GUI/gui_component_impl.h
++++ Sources/GUI/gui_component_impl.h
 @@ -115,6 +115,8 @@
  	CL_CSSLayoutElement css_element;
  	bool double_click_enabled;
@@ -110,8 +110,8 @@ Index: Sources/GUI/gui_component_impl.h
  /// \{
 Index: Sources/API/GUI/gui_component.h
 ===================================================================
---- Sources/API/GUI/gui_component.h	(revision 7085)
-+++ Sources/API/GUI/gui_component.h	(working copy)
+--- Sources/API/GUI/gui_component.h
++++ Sources/API/GUI/gui_component.h
 @@ -62,6 +62,7 @@
  class CL_CSSLayout;
  class CL_CSSLayoutElement;
