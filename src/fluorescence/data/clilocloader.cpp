@@ -100,7 +100,7 @@ void ClilocLoader::indexFile(const boost::filesystem::path& path, bool isEnu) {
     unsigned int startBufferSize = bufferSize_;
 
     boost::filesystem::ifstream* stream = isEnu ? &enuStream_ : &languageStream_;
-    stream->open(path);
+    stream->open(path, std::ios::binary);
 
     unsigned int filesize = boost::filesystem::file_size(path);
 
