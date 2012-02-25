@@ -282,6 +282,7 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
                 continue;
             }
 
+            LOG_DEBUG << "Registering system font " << iter->path().stem() << " from path " << iter->path().string() << std::endl;
             CL_Font_System::register_font(iter->path().string(), iter->path().stem());
         }
     }
@@ -369,6 +370,7 @@ void Manager::loadUnifonts() {
     UoFont uni0(0);
     CL_FontDescription fontDesc;
     fontDesc.set_typeface_name("unifont");
+    LOG_DEBUG << "Registering font unifont" << std::endl;
     getGuiManager()->register_font(uni0, fontDesc);
     
     for (unsigned int i = 1; i <= 12; ++i) {
@@ -377,7 +379,7 @@ void Manager::loadUnifonts() {
         std::stringstream sstr;
         sstr << "unifont" << i;
         curDesc.set_typeface_name(sstr.str());
-        LOG_DEBUG << "registering font " << sstr.str() << std::endl;
+        LOG_DEBUG << "Registering font " << sstr.str() << std::endl;
         getGuiManager()->register_font(uniCur, curDesc);
     }
 }
