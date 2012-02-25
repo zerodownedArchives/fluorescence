@@ -61,8 +61,14 @@ bool Socket::connect(const UnicodeString& host, unsigned short port) {
     unsigned int ip = 0;
 
 #ifdef WIN32
+    addrinfo hints;
+    ZeroMemory( &hints, sizeof(hints) );
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+
     addrinfo* result;
-    int error = getaddrinfo(stdString.c_str(), NULL, NULL, &result);
+    int error = getaddrinfo(stdString.c_str(), NULL, &hints, &result);
     if (error != 0) {
         LOG_ERROR << "Unknown host " << host << ": " << error << " - " << gai_strerror(error) << std::endl;
         close();
