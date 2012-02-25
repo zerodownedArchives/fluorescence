@@ -137,7 +137,7 @@ bool Variable::parse(const char* str) {
     int nr;
     iss >> nr;
 
-    if (!iss.fail()) {
+    if (!iss.fail() && iss.eof()) {
         setInt(nr);
         return true;
     }
@@ -148,7 +148,7 @@ bool Variable::parse(const char* str) {
     bool b;
     iss >> std::boolalpha >> b;
 
-    if (!iss.fail()) {
+    if (!iss.fail() && iss.eof()) {
         setBool(b);
         return true;
     }
