@@ -54,7 +54,7 @@ public:
 protected:
     BaseButton();
     BaseButton(const BaseButton& other) { };
-    BaseButton& operator=(const BaseButton& other) { };
+    BaseButton& operator=(const BaseButton& other) { return *this; };
 
 private:
     unsigned int buttonType_;

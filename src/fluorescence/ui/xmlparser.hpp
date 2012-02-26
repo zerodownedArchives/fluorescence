@@ -82,7 +82,7 @@ private:
 
     XmlParser();
     XmlParser(const XmlParser& factory) {};
-    XmlParser& operator=(const XmlParser& factory) {};
+    XmlParser& operator=(const XmlParser& factory) { return *this; };
 
     GumpMenu* fromXml(pugi::xml_document& doc, GumpMenu* menu);
 

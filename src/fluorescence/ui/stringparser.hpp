@@ -42,7 +42,7 @@ private:
     
     StringParser();
     StringParser(const StringParser& copy) { };
-    StringParser& operator=(const StringParser& copy) { };
+    StringParser& operator=(const StringParser& copy) { return *this; };
     
     GumpMenu* innerFromString(const UnicodeString& commands, const std::vector<UnicodeString>& strings);
     
