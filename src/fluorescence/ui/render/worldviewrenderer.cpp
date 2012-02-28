@@ -105,7 +105,7 @@ boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) 
 }
 
 void WorldViewRenderer::renderPreviousTexture(CL_GraphicContext& gc, float pixelX, float pixelY) {
-    if (abs(pixelX) >= textureWidth_ || abs(pixelY) >= textureHeight_) {
+    if (abs(pixelX) >= (int)textureWidth_ || abs(pixelY) >= (int)textureHeight_) {
         // need to paint everything from scratch
         ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(textureWidth_, textureHeight_)).translate(worldView_->getTopLeftPixel()));
         LOG_DEBUG << "center moved x=" << pixelX << " y=" << pixelY << std::endl;

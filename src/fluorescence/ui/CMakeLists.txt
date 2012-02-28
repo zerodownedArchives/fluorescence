@@ -89,7 +89,6 @@ set (RENDER_HPP
     ui/render/renderqueue.hpp
     ui/render/ingameobjectrenderer.hpp
     ui/render/worldrenderdata.hpp
-    ui/render/worldrenderqueue.hpp
     ui/render/worldviewrenderer.hpp
     ui/render/gumprenderer.hpp
     ui/render/gumprenderqueue.hpp
@@ -102,7 +101,6 @@ set (RENDER_CPP
     ui/render/renderqueue.cpp
     ui/render/ingameobjectrenderer.cpp
     ui/render/worldrenderdata.cpp
-    ui/render/worldrenderqueue.cpp
     ui/render/worldviewrenderer.cpp
     ui/render/gumprenderer.cpp
     ui/render/gumprenderqueue.cpp

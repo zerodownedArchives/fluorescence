@@ -83,9 +83,6 @@ public:
     bool requireGumpRepaint() const;
     void resetGumpRepaintIndicators();
 
-    RenderDepth getMinRenderDepth() const;
-    RenderDepth getMaxRenderDepth() const;
-
 protected:
     void processRemoveList();
     bool processAddList();
@@ -104,8 +101,6 @@ protected:
     bool debugIngameCheckInList(boost::shared_ptr<world::IngameObject> obj);
     boost::shared_ptr<world::IngameObject> debugIngameGetByIndex(unsigned int idx);
 
-    void updateMinMaxRenderDepth();
-
     // ingameobjects might be added to or deleted from the render queue asynchronously. thus, we keep an extra list for added/deleted items
     std::list<boost::shared_ptr<world::IngameObject> > addList_;
     boost::mutex addListMutex_;
@@ -120,9 +115,6 @@ private:
 
     friend void world::IngameObject::addToRenderQueue(const boost::shared_ptr<RenderQueue>& rq);
     friend void world::IngameObject ::removeFromRenderQueue(const boost::shared_ptr<RenderQueue>& rq);
-
-    RenderDepth minRenderDepth_;
-    RenderDepth maxRenderDepth_;
 };
 
 }

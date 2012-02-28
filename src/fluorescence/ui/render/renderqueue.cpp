@@ -27,7 +27,7 @@
 namespace fluo {
 namespace ui {
 
-RenderQueue::RenderQueue(SortFunction sortFunction) : sortFunction_(sortFunction), minRenderDepth_(0xFFFFFFFFFFFFFFFFu), maxRenderDepth_(0) {
+RenderQueue::RenderQueue(SortFunction sortFunction) : sortFunction_(sortFunction) {
 }
 
 RenderQueue::iterator RenderQueue::begin() {
@@ -242,50 +242,6 @@ bool RenderQueue::requireGumpRepaint() const {
 void RenderQueue::resetGumpRepaintIndicators() {
     gumpChanged_ = false;
     forceRepaint_ = false;
-}
-
-void RenderQueue::updateMinMaxRenderDepth() {
-    RenderDepth cur;
-
-    minRenderDepth_ = 0xFFFFFFFFFFFFFFFFu;
-    maxRenderDepth_ = 0;
-    RenderQueue::iterator iter = objectList_.begin();
-    RenderQueue::iterator end = objectList_.end();
-
-    for (; iter != end; ++iter) {
-        cur = (*iter)->getRenderDepth();
-        if (cur == 0) {
-            continue;
-        } else if (cur < minRenderDepth_) {
-            minRenderDepth_ = cur;
-        } else if (cur > maxRenderDepth_) {
-            maxRenderDepth_ = cur;
-        }
-    }
-
-    boost::mutex::scoped_lock myLock(addListMutex_);
-
-    iter = addList_.begin();
-    end = addList_.end();
-
-    for (; iter != end; ++iter) {
-        cur = (*iter)->getRenderDepth();
-        if (cur == 0) {
-            continue;
-        } else if (cur < minRenderDepth_) {
-            minRenderDepth_ = cur;
-        } else if (cur > maxRenderDepth_) {
-            maxRenderDepth_ = cur;
-        }
-    }
-}
-
-RenderDepth RenderQueue::getMinRenderDepth() const {
-    return minRenderDepth_;
-}
-
-RenderDepth RenderQueue::getMaxRenderDepth() const {
-    return maxRenderDepth_;
 }
 
 }

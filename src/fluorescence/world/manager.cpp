@@ -250,7 +250,7 @@ void Manager::unregisterOverheadMessage(boost::shared_ptr<OverheadMessage> msg) 
     overheadMessages_.remove(msg);
 }
 
-void Manager::setAutoDeleteRange(unsigned int range) {
+void Manager::setAutoDeleteRange(int range) {
     autoDeleteRange_ = range + 2;
 }
 
