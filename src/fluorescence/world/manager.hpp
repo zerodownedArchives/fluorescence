@@ -69,7 +69,7 @@ public:
     void registerOverheadMessage(boost::shared_ptr<OverheadMessage> msg);
     void unregisterOverheadMessage(boost::shared_ptr<OverheadMessage> msg);
     
-    void setAutoDeleteRange(int range);
+    void setAutoDeleteRange(unsigned int range);
 
 private:
     static Manager* singleton_;
@@ -93,7 +93,7 @@ private:
     boost::shared_ptr<SmoothMovementManager> smoothMovementManager_;
     boost::shared_ptr<PlayerWalkManager> playerWalkManager_;
 
-    int autoDeleteRange_;
+    unsigned int autoDeleteRange_;
     
     std::list<boost::shared_ptr<OverheadMessage> > overheadMessages_;
 };

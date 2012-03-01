@@ -109,6 +109,10 @@ public:
     void printStats() {
         unsigned int weakCount = cache_.size();
         unsigned int realCount = 0;
+        unsigned int avgWidth = 0;
+        unsigned int avgHeight = 0;
+        unsigned int maxWidth = 0;
+        unsigned int maxHeight = 0;
 
         typename MapType::iterator iter = cache_.begin();
         typename MapType::iterator end = cache_.end();
@@ -116,12 +120,21 @@ public:
         for (; iter != end; ++iter) {
             // was loaded at some point - is it still valid?
             boost::shared_ptr<ValueType> smPtr = iter->second.lock();
-            if (smPtr.get() != NULL) {
+            if (smPtr) {
                 realCount += 1;
+                unsigned int width = smPtr->getWidth();
+                unsigned int height = smPtr->getHeight();
+                
+                avgWidth += width;
+                avgHeight += height;
+                
+                maxWidth = (std::max)(maxWidth, width);
+                maxHeight = (std::max)(maxHeight, height);
             }
         }
 
         LOG_DEBUG << "WeakPtrCache stats: weak=" << weakCount << " real=" << realCount << std::endl;
+        LOG_DEBUG << "Sizes avg=" << (avgWidth / realCount) << "/" << (avgHeight / realCount) << "  max=" << maxWidth << "/" << maxHeight << std::endl;
     }
 
 private:

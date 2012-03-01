@@ -82,7 +82,7 @@ Manager::Manager() {
     description.set_size(CL_Size(1024, 768), true);
     description.set_title("fluorescence");
     description.set_allow_resize(true);
-    description.set_depth_size(24);
+    description.set_depth_size(8);
     description.set_version(2, 1, true);
     mainWindow_.reset(new CL_DisplayWindow(description));
 
