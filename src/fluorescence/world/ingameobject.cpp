@@ -70,6 +70,7 @@ void IngameObject::setLocation(CL_Vec3f loc) {
     if (ceilf(oldLocation[0u]) != ceilf(location_[0u]) ||
             ceilf(oldLocation[1u]) != ceilf(location_[1u]) ||
             ceilf(oldLocation[2u]) != ceilf(location_[2u])) {
+                
         invalidateRenderDepth();
         
         onLocationChanged(oldLocation);
@@ -78,16 +79,28 @@ void IngameObject::setLocation(CL_Vec3f loc) {
     invalidateVertexCoordinates();
 }
 
-float IngameObject::getLocX() const {
+float IngameObject::getLocXDraw() const {
     return location_[0u];
 }
 
-float IngameObject::getLocY() const {
+float IngameObject::getLocYDraw() const {
     return location_[1u];
 }
 
-float IngameObject::getLocZ() const {
+float IngameObject::getLocZDraw() const {
     return location_[2u];
+}
+
+unsigned int IngameObject::getLocXGame() const {
+    return ceilf(location_[0u]);
+}
+
+unsigned int IngameObject::getLocYGame() const {
+    return ceilf(location_[1u]);
+}
+
+int IngameObject::getLocZGame() const {
+    return ceilf(location_[2u]);
 }
 
 CL_Vec3f IngameObject::getLocation() const {
@@ -537,6 +550,10 @@ std::list<boost::shared_ptr<ui::RenderQueue> >::iterator IngameObject::rqEnd() {
 }
 
 const ui::WorldRenderData& IngameObject::getWorldRenderData() const {
+    return worldRenderData_;
+}
+
+ui::WorldRenderData& IngameObject::getWorldRenderData() {
     return worldRenderData_;
 }
 

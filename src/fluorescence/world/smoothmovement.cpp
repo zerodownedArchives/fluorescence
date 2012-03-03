@@ -25,25 +25,8 @@
 namespace fluo {
 namespace world {
 
-SmoothMovement::SmoothMovement(boost::shared_ptr<world::ServerObject> obj, CL_Vec3f diff, unsigned int durationMillis) :
-        movingObject_(obj), diff_(diff), duration_(durationMillis), wasStarted_(false) {
-}
-
-SmoothMovement::SmoothMovement(boost::shared_ptr<world::ServerObject> obj, uint8_t direction, unsigned int durationMillis) :
-        movingObject_(obj), duration_(durationMillis), wasStarted_(false) {
-
-    switch (direction & 0x7) {
-        case Direction::N: diff_ = CL_Vec3f(0, -1, 0); break;
-        case Direction::NE: diff_ = CL_Vec3f(1, -1, 0); break;
-        case Direction::E: diff_ = CL_Vec3f(1, 0, 0); break;
-        case Direction::SE: diff_ = CL_Vec3f(1, 1, 0); break;
-        case Direction::S: diff_ = CL_Vec3f(0, 1, 0); break;
-        case Direction::SW: diff_ = CL_Vec3f(-1, 1, 0); break;
-        case Direction::W: diff_ = CL_Vec3f(-1, 0, 0); break;
-        case Direction::NW: diff_ = CL_Vec3f(-1, -1, 0); break;
-    }
-
-    // TODO: get z level of the new tile
+SmoothMovement::SmoothMovement(boost::shared_ptr<world::ServerObject> obj, CL_Vec3f targetLoc, unsigned int durationMillis) :
+        movingObject_(obj), targetLoc_(targetLoc), duration_(durationMillis), wasStarted_(false) {
 }
 
 bool SmoothMovement::wasStarted() const {
@@ -58,11 +41,14 @@ void SmoothMovement::start() {
     wasStarted_ = true;
     totalElapsedMillis_ = 0;
     startLoc_ = movingObject_->getLocation();
+    diff_ = targetLoc_ - startLoc_;
 }
 
-void SmoothMovement::finish() {
+void SmoothMovement::finish(bool interrupted) {
     // necessary to set this to the precise target location. otherwise rounding errors might add up
-    movingObject_->setLocation(startLoc_ + diff_);
+    if (!interrupted) {
+        movingObject_->setLocation(targetLoc_);
+    }
     
     if (finishedCallback_) {
         finishedCallback_();
@@ -70,6 +56,10 @@ void SmoothMovement::finish() {
 }
 
 void SmoothMovement::update(unsigned int elapsedMillis) {
+    if (totalElapsedMillis_ + elapsedMillis >= duration_) {
+        elapsedMillis = duration_ - totalElapsedMillis_;
+    }
+    
     CL_Vec3f movementDelta = diff_ * ((float)elapsedMillis / duration_);
 
     CL_Vec3f curLoc = movingObject_->getLocation() + movementDelta;

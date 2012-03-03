@@ -65,19 +65,25 @@ unsigned int Mobile::getBaseBodyId() const {
 }
 
 void Mobile::onClick() {
-    LOG_INFO << "Clicked mobile, id=" << std::hex << getBodyId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
-            getLocZ() << ")" << std::endl;
+    LOG_INFO << "Clicked mobile, id=" << std::hex << getBodyId() << std::dec << " loc=(" << getLocXGame() << "/" << getLocYGame() << "/" <<
+            getLocZGame() << ")" << std::endl;
 
     printRenderDepth();
 
-    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
-    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
+    //std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+    //std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
 
-    for (; iter != end; ++iter) {
-        (*iter)->onClick();
-    }
+    //for (; iter != end; ++iter) {
+        //(*iter)->onClick();
+    //}
 
     //net::packets::SingleClick pkt(getSerial());
+    
+    if (sector_) {
+        LOG_DEBUG << "sector sort request " << sector_->getSectorId().value_ << std::endl;
+        sector_->requestSort();
+    }
+    repaintRectangle(false);
 
     boost::shared_ptr<net::Packet> subPacket(new net::packets::bf::ContextMenuRequest(getSerial()));
     net::packets::BF pkt(subPacket);
@@ -85,8 +91,8 @@ void Mobile::onClick() {
 }
 
 void Mobile::onDoubleClick() {
-    LOG_INFO << "Double clicked mobile, id=" << std::hex << getBodyId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
-            getLocZ() << ")" << std::endl;
+    LOG_INFO << "Double clicked mobile, id=" << std::hex << getBodyId() << std::dec << " loc=(" << getLocXGame() << "/" << getLocYGame() << "/" <<
+            getLocZGame() << ")" << std::endl;
 
     net::packets::DoubleClick pkt(getSerial());
     net::Manager::getSingleton()->send(pkt);
@@ -117,8 +123,8 @@ void Mobile::updateVertexCoordinates() {
     //int py = (getLocX() + getLocY()) * 22 - texHeight + 44;
     //py -= getLocZ() * 4;
 
-    int px = (getLocX() - getLocY()) * 22 + 22;
-    int py = (getLocX() + getLocY()) * 22 - getLocZ() * 4 + 22;
+    int px = (getLocXDraw() - getLocYDraw()) * 22 + 22;
+    int py = (getLocXDraw() + getLocYDraw()) * 22 - getLocZDraw() * 4 + 22;
     py = py - frame.centerY_ - texHeight;
 
     if (isMirrored()) {
@@ -133,10 +139,9 @@ void Mobile::updateVertexCoordinates() {
 }
 
 void Mobile::updateRenderDepth() {
-    uint16_t xy = ceilf(getLocX()) + ceilf(getLocY());
-    int8_t z = ceilf(getLocZ()) + 7;
+    int8_t z = getLocZGame() + 7;
 
-    worldRenderData_.setRenderDepth(xy, z, 30, 0, getSerial() & 0xFF);
+    worldRenderData_.setRenderDepth(getLocXGame(), getLocYGame(), z, 30, 0, getSerial() & 0xFF);
 }
 
 void Mobile::updateTextureProvider() {

@@ -81,25 +81,20 @@ void WorldRenderData::setVertexCoordinates(unsigned int idx, float x, float y) {
     vertexCoordinates_[idx].y = y;
 }
 
-void WorldRenderData::setRenderDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint8_t byte5, uint8_t byte6) { 
+void WorldRenderData::setRenderDepth(uint16_t x, uint16_t y, int8_t z, uint8_t priority, uint8_t byte7, uint8_t byte8) { 
     uint64_t tmp = 0;
-    tmp |= (xPlusY & 0xFFFF);
+    tmp |= ((x+y) & 0xFFFF);
     tmp <<= 8;
     uint8_t tmpZ = (((int)z) + 128) & 0xFF;
     tmp |= (tmpZ);
     tmp <<= 8;
     tmp |= (priority & 0xFF);
     tmp <<= 8;
-    tmp |= (byte5 & 0xFF);
+    tmp |= (byte7 & 0xFF);
     tmp <<= 8;
-    tmp |= (byte6 & 0xFF);
+    tmp |= (byte8 & 0xFF);
 
     renderDepth_ = tmp;
-    
-    float gpuDepth = xPlusY / 32767.f;
-    for (unsigned int i = 0; i < 6; ++i) {
-        vertexCoordinates_[i].z = gpuDepth;
-    }
 }
 
 const RenderDepth& WorldRenderData::getRenderDepth() const {

@@ -22,6 +22,8 @@
 
 #include <typedefs.hpp>
 
+#include <ClanLib/Core/Math/vec3.h>
+
 namespace fluo {
 namespace world {
     
@@ -46,6 +48,8 @@ private:
     bool lastIsWalking_;
     
     int millisToNextMove_;
+    
+    bool checkMovement(const CL_Vec3f& curLoc, unsigned int direction, CL_Vec3f& outLoc) const;
 };
 
 }

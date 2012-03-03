@@ -28,6 +28,8 @@
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>
 
+#include "sector.hpp"
+
 namespace fluo {
 namespace world {
 
@@ -58,9 +60,9 @@ void StaticItem::updateVertexCoordinates() {
     int texWidth = getIngameTexture()->getWidth();
     int texHeight = getIngameTexture()->getHeight();
 
-    int px = (getLocX() - getLocY()) * 22 - texWidth/2 + 22;
-    int py = (getLocX() + getLocY()) * 22 - texHeight + 44;
-    py -= getLocZ() * 4;
+    int px = (getLocXDraw() - getLocYDraw()) * 22 - texWidth/2 + 22;
+    int py = (getLocXDraw() + getLocYDraw()) * 22 - texHeight + 44;
+    py -= getLocZDraw() * 4;
 
     CL_Rectf rect(px, py, px + texWidth, py + texHeight);
 
@@ -69,11 +71,9 @@ void StaticItem::updateVertexCoordinates() {
 
 void StaticItem::updateRenderDepth() {
     // render prio
-    // level 0 x+y
-    uint16_t xy = ceilf(getLocX()) + ceilf(getLocY());
 
     // level 1 z and tiledata flags
-    int8_t z = ceilf(getLocZ());
+    int8_t z = getLocZGame();
     if (tileDataInfo_->background() && tileDataInfo_->surface()) {
         z += 4;
     } else if (tileDataInfo_->background()) {
@@ -84,7 +84,7 @@ void StaticItem::updateRenderDepth() {
         z += 6;
     }
 
-    worldRenderData_.setRenderDepth(xy, z, 10, tileDataInfo_->height_, indexInBlock_);
+    worldRenderData_.setRenderDepth(getLocXGame(), getLocYGame(), z, 10, tileDataInfo_->height_, indexInBlock_);
 }
 
 void StaticItem::updateTextureProvider() {
@@ -100,11 +100,15 @@ const data::StaticTileInfo* StaticItem::getTileDataInfo() const {
 }
 
 void StaticItem::onClick() {
-    LOG_INFO << "Clicked static, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
-            getLocZ() << ") name=" << " hue=" << hue_ << " " << tileDataInfo_->name_ << std::endl;
+    LOG_INFO << "Clicked static, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocXGame() << "/" << getLocYGame() << "/" <<
+            getLocZGame() << ") name=" << " hue=" << hue_ << " " << tileDataInfo_->name_ << std::endl;
 
     //LOG_INFO << "background=" << tileDataInfo_->background() << " surface=" << tileDataInfo_->surface() << " height=" << (unsigned int)tileDataInfo_->height_ <<
             //" hue=" << hue_ << " indexInBlock=" << indexInBlock_ << std::endl;
+            
+    if (sector_) {
+        LOG_DEBUG << "sector id=" << sector_->getSectorId().value_ << std::endl;
+    }
 
     printRenderDepth();
 }

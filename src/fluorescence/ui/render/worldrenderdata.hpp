@@ -60,7 +60,7 @@ public:
     const CL_Vec3f* getVertexCoordinates() const;
     void setVertexCoordinates(unsigned int idx, float x, float y);
     void setVertexCoordinates(const CL_Rectf& rect);
-    void setRenderDepth(uint16_t xPlusY, int8_t z, uint8_t priority, uint8_t byte5, uint8_t byte6);
+    void setRenderDepth(uint16_t x, uint16_t y, int8_t z, uint8_t priority, uint8_t byte7, uint8_t byte8);
     const RenderDepth& getRenderDepth() const;
 
     CL_Vec3f vertexNormals_[6];

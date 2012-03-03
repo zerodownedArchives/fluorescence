@@ -20,6 +20,8 @@
 
 #include "sector.hpp"
 
+#include "dynamicitem.hpp"
+
 #include <data/manager.hpp>
 #include <data/staticsloader.hpp>
 #include <data/maploader.hpp>
@@ -261,6 +263,74 @@ boost::shared_ptr<world::IngameObject> Sector::getFirstObjectAt(int worldX, int 
     }
     
     return ret;
+}
+
+bool Sector::checkMovement(const CL_Vec3f& curLocation, CL_Vec3f& outLoc) const {
+    world::StaticItem compareDummy;
+    compareDummy.getWorldRenderData().setRenderDepth(outLoc.x, outLoc.y, -128, 0, 0, 0);
+    std::list<world::IngameObject*>::const_iterator iter = std::lower_bound(renderList_.begin(), renderList_.end(), &compareDummy, &Sector::renderDepthSortHelper);
+    
+    compareDummy.getWorldRenderData().setRenderDepth(outLoc.x + 1, outLoc.y, -128, 0, 0, 0);
+    std::list<world::IngameObject*>::const_iterator end = std::upper_bound(renderList_.begin(), renderList_.end(), &compareDummy, &Sector::renderDepthSortHelper);
+    
+    
+    std::list<world::IngameObject*> itemList;
+    for (; iter != end; ++iter) {
+        world::IngameObject* curObj = *iter;
+        if (curObj->getLocXGame() == outLoc.x && curObj->getLocYGame() == outLoc.y) {
+            if (curObj->isStaticItem() || curObj->isDynamicItem() || curObj->isMap()) {
+                itemList.push_back(curObj);
+            }
+        }
+    }
+    
+    itemList.sort(&Sector::renderDepthSortHelper);
+    iter = itemList.begin();
+    end = itemList.end();
+    
+    //float curLocMaxCheck = curLocation.z + 15;
+    bool movePossible = false;
+    
+    for (; iter != end; ++iter) {
+        world::IngameObject* curObj = *iter;
+        
+        // first, check if we can step on this tile
+        if (curObj->isMap()) {
+            world::MapTile* mapTile = dynamic_cast<world::MapTile*>(curObj);
+            if (mapTile->getTileDataInfo()->impassable()) {
+                continue;
+            }
+            
+            float newZ = mapTile->getAverageZ();
+            //float maxCheck = (std::max)(curLocMaxCheck, newZ + 15);
+            
+            // check
+            
+            movePossible = true;
+            outLoc.z = newZ;
+            
+        } else {
+            // is static or dynamic item, because other stuff was not added to the list
+            world::DynamicItem* dynamicObj = dynamic_cast<world::DynamicItem*>(curObj);
+            world::StaticItem* staticObj = dynamic_cast<world::StaticItem*>(curObj);
+            bool isDynamic = (dynamicObj != nullptr);
+            const data::StaticTileInfo* tileInfo = isDynamic ? dynamicObj->getTileDataInfo() : staticObj->getTileDataInfo();
+            
+            if (!tileInfo->surface() || tileInfo->impassable()) {
+                continue;
+            }
+            
+            movePossible = true;
+            if (tileInfo->bridge()) {
+                outLoc.z = curObj->getLocZGame() + tileInfo->height_ / 2.0f;
+            } else {
+                outLoc.z = curObj->getLocZGame() + tileInfo->height_;
+            }
+        }
+    }
+    
+    outLoc.z = floor(outLoc.z);
+    return movePossible;
 }
 
 }

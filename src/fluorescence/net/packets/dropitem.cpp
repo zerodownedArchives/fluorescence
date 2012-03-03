@@ -27,7 +27,7 @@ namespace net {
 namespace packets {
 
 DropItem::DropItem(const world::DynamicItem* itm, boost::shared_ptr<world::DynamicItem> target) : Packet(0x08, 14),
-    serial_(itm->getSerial()), locX_(target->getLocX()), locY_(target->getLocY()), locZ_(target->getLocZ()), containerSerial_(target->getSerial()) {
+    serial_(itm->getSerial()), locX_(target->getLocXGame()), locY_(target->getLocYGame()), locZ_(target->getLocZGame()), containerSerial_(target->getSerial()) {
 }
 
 DropItem::DropItem(const world::DynamicItem* itm, unsigned int x, unsigned int y, int z) : Packet(0x08, 14),

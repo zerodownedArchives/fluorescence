@@ -65,12 +65,12 @@ void MapTile::set(int locX, int locY, int locZ, unsigned int artId) {
 
 void MapTile::updateVertexCoordinates() {
     // top left corner of a rectangle spanning the whole texture
-    int px = (getLocX() - getLocY()) * 22;
-    int py = (getLocX() + getLocY()) * 22;
+    int px = (getLocXDraw() - getLocYDraw()) * 22;
+    int py = (getLocXDraw() + getLocYDraw()) * 22;
 
     if (isFlat_) {
         // flat tile or tile without texture
-        py -= getLocZ() * 4;
+        py -= getLocZDraw() * 4;
         CL_Rectf rect(px, py, px + 44, py + 44);
 
         worldRenderData_.setVertexCoordinates(rect);
@@ -81,7 +81,7 @@ void MapTile::updateVertexCoordinates() {
         //}
     } else {
         // stretched texture
-        worldRenderData_.setVertexCoordinates(0, px + 22,   py - getLocZ() * 4);
+        worldRenderData_.setVertexCoordinates(0, px + 22,   py - getLocZDraw() * 4);
         worldRenderData_.setVertexCoordinates(1, px,        py + 22 - zLeft_ * 4);
         worldRenderData_.setVertexCoordinates(2, px + 44,   py + 22 - zRight_ * 4);
         worldRenderData_.setVertexCoordinates(3, px,        py + 22 - zLeft_ * 4);
@@ -91,11 +91,11 @@ void MapTile::updateVertexCoordinates() {
 }
 
 void MapTile::calculateIsFlat() {
-    isFlat_ = (zLeft_ == zRight_ && zLeft_ == zBottom_ && zLeft_ == getLocZ()) || tileDataInfo_->textureId_ <= 0;
+    isFlat_ = (zLeft_ == zRight_ && zLeft_ == zBottom_ && zLeft_ == getLocZGame()) || tileDataInfo_->textureId_ <= 0;
 }
 
 void MapTile::updateRenderDepth() {
-    worldRenderData_.setRenderDepth(getLocX() + getLocY(), getLocZ(), 0, 0, 0);
+    worldRenderData_.setRenderDepth(getLocXGame(), getLocYGame(), getLocZGame(), 0, 0, 0);
 }
 
 void MapTile::updateTextureProvider() {
@@ -185,10 +185,10 @@ void MapTile::setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const
 }
 
 void MapTile::onClick() {
-    LOG_INFO << "Clicked map, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
-            getLocZ() << ") name=" << tileDataInfo_->name_ << " flat=" << isFlat_ << std::endl;
+    LOG_INFO << "Clicked map, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocXGame() << "/" << getLocYGame() << "/" <<
+            getLocZGame() << ") name=" << tileDataInfo_->name_ << " flat=" << isFlat_ << std::endl;
 
-    LOG_INFO << "z value: self=" << getLocZ() << " right=" << zRight_ << " bottom=" << zBottom_ << " left=" << zLeft_ << std::endl;
+    LOG_INFO << "z value: self=" << getLocZGame() << " right=" << zRight_ << " bottom=" << zBottom_ << " left=" << zLeft_ << std::endl;
 
     //const CL_Vec3f* vc = worldRenderData_.getVertexCoordinates();
     //LOG_INFO << vc[0].x << " " << (unsigned int)vc[0].y << " " << vc[0].z << std::endl;
@@ -197,6 +197,14 @@ void MapTile::onClick() {
     //LOG_INFO << vc[5].x << " " << (unsigned int)vc[5].y << " " << vc[5].z << std::endl;
 
     printRenderDepth();
+}
+
+float MapTile::getAverageZ() const {
+    if (isFlat_) {
+        return getLocZGame();
+    } else {
+        return (getLocZGame() + zLeft_ + zRight_ + zBottom_) / 4;
+    }
 }
 
 

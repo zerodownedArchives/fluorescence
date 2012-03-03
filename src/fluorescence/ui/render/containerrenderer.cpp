@@ -154,7 +154,7 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
             continue;
         }
 
-        CL_Rectf rect(curObj->getLocX(), curObj->getLocY(), CL_Sizef(tex->getWidth(), tex->getHeight()));
+        CL_Rectf rect(curObj->getLocXDraw(), curObj->getLocYDraw(), CL_Sizef(tex->getWidth(), tex->getHeight()));
 
         vertexCoords[0] = CL_Vec2f(rect.left, rect.top);
         vertexCoords[1] = CL_Vec2f(rect.right, rect.top);

@@ -135,7 +135,7 @@ void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item) {
     for (unsigned int x = 0; x < 15; ++x) {
         for (unsigned int y = 0; y < 15; ++y) {
             if (blocksLoaded[blockIndices[x]][blockIndices[y]]) {
-                zValues[x][y] = blocks[blockIndices[x]][blockIndices[y]]->get(tileIndices[x], tileIndices[y])->getLocZ();
+                zValues[x][y] = blocks[blockIndices[x]][blockIndices[y]]->get(tileIndices[x], tileIndices[y])->getLocZGame();
             }
         }
     }

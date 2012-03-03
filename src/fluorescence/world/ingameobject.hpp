@@ -59,9 +59,13 @@ public:
     IngameObject(unsigned int objectType);
     virtual ~IngameObject();
 
-    float getLocX() const;
-    float getLocY() const;
-    float getLocZ() const;
+    unsigned int getLocXGame() const;
+    unsigned int getLocYGame() const;
+    int getLocZGame() const;
+    float getLocXDraw() const;
+    float getLocYDraw() const;
+    float getLocZDraw() const;
+    
     CL_Vec3f getLocation() const;
     void setLocation(float locX, float locY, float locZ);
     void setLocation(CL_Vec3f loc);
@@ -131,6 +135,7 @@ public:
     bool isParticleEffect() const;
 
     const ui::WorldRenderData& getWorldRenderData() const;
+    ui::WorldRenderData& getWorldRenderData();
 
     void invalidateTextureProvider();
     void invalidateVertexCoordinates();

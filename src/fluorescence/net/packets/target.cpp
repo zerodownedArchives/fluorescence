@@ -44,9 +44,9 @@ Target::Target() : Packet(0x6c, 19), targetType_(0), flags_(0), targetSerial_(0)
 Target::Target(boost::shared_ptr<world::IngameObject> obj) : Packet(0x6c, 19) {
     senderSerial_ = world::Manager::getSingleton()->getPlayer()->getSerial();
     flags_ = 0;
-    locX_ = obj->getLocX();
-    locY_ = obj->getLocY();
-    locZ_ = obj->getLocZ();
+    locX_ = obj->getLocXGame();
+    locY_ = obj->getLocYGame();
+    locZ_ = obj->getLocZGame();
 
     if (obj->isMobile()) {
         boost::shared_ptr<world::Mobile> mob = boost::dynamic_pointer_cast<world::Mobile>(obj);

@@ -51,6 +51,8 @@ public:
     void setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const CL_Vec3f& bottom, const CL_Vec3f& left);
 
     virtual void onClick();
+    
+    float getAverageZ() const;
 
 private:
     unsigned int artId_;

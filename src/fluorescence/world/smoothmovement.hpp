@@ -35,7 +35,6 @@ public:
     typedef boost::function<void ()> FinishedCallback;
 
     SmoothMovement(boost::shared_ptr<world::ServerObject> obj, CL_Vec3f diff, unsigned int durationMillis);
-    SmoothMovement(boost::shared_ptr<world::ServerObject> obj, uint8_t direction, unsigned int durationMillis);
 
     bool wasStarted() const;
     void start();
@@ -43,12 +42,13 @@ public:
     void update(unsigned int elapsedMillis);
 
     bool isFinished() const;
-    void finish();
+    void finish(bool interrupted);
     
     void setFinishedCallback(FinishedCallback cb);
 
 private:
     boost::shared_ptr<world::ServerObject> movingObject_;
+    CL_Vec3f targetLoc_;
     CL_Vec3f diff_;
     unsigned int duration_;
 

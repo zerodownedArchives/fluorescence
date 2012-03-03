@@ -24,21 +24,26 @@
 #include "smoothmovement.hpp"
 #include "smoothmovementmanager.hpp"
 #include "mobile.hpp"
+#include "sectormanager.hpp"
+#include "sector.hpp"
 
 #include <net/manager.hpp>
 #include <net/walkpacketmanager.hpp>
+
+#include <data/manager.hpp>
+#include <data/maploader.hpp>
 
 #include <misc/log.hpp>
 
 namespace fluo {
 namespace world {
 
-PlayerWalkManager::PlayerWalkManager() : isWalking_(false), lastIsWalking_(false) {
+PlayerWalkManager::PlayerWalkManager() : isWalking_(false), lastIsWalking_(false), millisToNextMove_(0) {
 }
     
 void PlayerWalkManager::setWalkDirection(uint8_t direction) {
-    isWalking_ = true;
     requestedDirection_ = direction;
+    isWalking_ = true;
 }
 
 void PlayerWalkManager::stopAtNextTile() {
@@ -47,10 +52,13 @@ void PlayerWalkManager::stopAtNextTile() {
 
 void PlayerWalkManager::stopImmediately() {
     isWalking_ = false;
+    millisToNextMove_ = 0;
     world::Manager::getSmoothMovementManager()->clear(world::Manager::getSingleton()->getPlayer()->getSerial());
 }
 
 void PlayerWalkManager::update(unsigned int elapsedMillis) {
+    millisToNextMove_ -= elapsedMillis;
+    
     if (!isWalking_) {
         lastIsWalking_ = false;
         // anim is ended automatically by smooth movement object
@@ -59,39 +67,41 @@ void PlayerWalkManager::update(unsigned int elapsedMillis) {
     
     boost::shared_ptr<world::Mobile> player = world::Manager::getSingleton()->getPlayer();
     
-    if (!lastIsWalking_) {
+    if (!lastIsWalking_ && player->getDirection() != requestedDirection_) {
+        // just turn and wait for a bit
+        millisToNextMove_ = 150;
+        player->setDirection(requestedDirection_);
+        net::Manager::getWalkPacketManager()->sendMovementRequest(requestedDirection_);
+        lastIsWalking_ = false;
+    } else if (millisToNextMove_ <= 0) {
         // starting to walk now => start anim
-        player->animate(player->getWalkAnim(), 0, AnimRepeatMode::LOOP);
-        millisToNextMove_ = 0;
-    } else {
-        millisToNextMove_ -= elapsedMillis;
-    }
-    
-    // don't wait until the smooth movement is completely over to avoid jerking motions
-    if (millisToNextMove_ <= 0) {
+        if (!lastIsWalking_) {
+            player->animate(player->getWalkAnim(), 0, AnimRepeatMode::LOOP);
+        }
+
         if (player->getDirection() != requestedDirection_) {
-            if (!lastIsWalking_) {
-                // just turn and wait for a bit
-                millisToNextMove_ = 150;
-            }
-            
             player->setDirection(requestedDirection_);
             net::Manager::getWalkPacketManager()->sendMovementRequest(requestedDirection_);
         }
         
-        if (lastIsWalking_) {
+        CL_Vec3f newLoc;
+        bool movementPossible = checkMovement(player->getLocation(), requestedDirection_, newLoc);
+        if (movementPossible) {
             // TODO: check running, mounted. different speed
             unsigned int moveDuration = 100;
             
             millisToNextMove_ = moveDuration;;
             
-            world::SmoothMovement mov(player, requestedDirection_, moveDuration);
+            world::SmoothMovement mov(player, newLoc, moveDuration);
             mov.setFinishedCallback(boost::bind(&PlayerWalkManager::onSmoothMovementFinish, this));
             world::Manager::getSmoothMovementManager()->add(player->getSerial(), mov);
             net::Manager::getWalkPacketManager()->sendMovementRequest(requestedDirection_);
+            
+            lastIsWalking_ = true;
+        } else {
+            player->stopAnim();
+            lastIsWalking_ = false;
         }
-        
-        lastIsWalking_ = true;
     }
 }
 
@@ -104,6 +114,40 @@ void PlayerWalkManager::onSmoothMovementFinish() {
         boost::shared_ptr<world::Mobile> player = world::Manager::getSingleton()->getPlayer();
         player->stopAnim();
     }
+}
+
+bool PlayerWalkManager::checkMovement(const CL_Vec3f& curLoc, unsigned int direction, CL_Vec3f& outLoc) const {
+    CL_Vec3f diff;
+    CL_Vec3f curRound = CL_Vec3f(curLoc).round();
+    
+    switch (direction & 0x7) {
+        case Direction::N: diff = CL_Vec3f(0, -1, 0); break;
+        case Direction::NE: diff = CL_Vec3f(1, -1, 0); break;
+        case Direction::E: diff = CL_Vec3f(1, 0, 0); break;
+        case Direction::SE: diff = CL_Vec3f(1, 1, 0); break;
+        case Direction::S: diff = CL_Vec3f(0, 1, 0); break;
+        case Direction::SW: diff = CL_Vec3f(-1, 1, 0); break;
+        case Direction::W: diff = CL_Vec3f(-1, 0, 0); break;
+        case Direction::NW: diff = CL_Vec3f(-1, -1, 0); break;
+    }
+    
+    outLoc = curRound + diff;
+    
+    // don't run out of bounds
+    boost::shared_ptr<data::MapLoader> mapLoader = data::Manager::getMapLoader(world::Manager::getSingleton()->getCurrentMapId());
+    if (!mapLoader || outLoc.x < 0 || outLoc.y < 0 || outLoc.x > mapLoader->getBlockCountX() * 8 || outLoc.y > mapLoader->getBlockCountY() * 8) {
+        outLoc = curLoc;
+        return false;
+    }
+    
+    //bool checkDiagonals = (direction & 0x1) == 0x1;
+    
+    boost::shared_ptr<Sector> newSector = world::Manager::getSectorManager()->getSectorForCoordinates(outLoc.x, outLoc.y);
+    bool sectorOkay = newSector->checkMovement(curRound, outLoc);
+    
+    sectorOkay = !sectorOkay;
+    
+    return true;
 }
 
 }

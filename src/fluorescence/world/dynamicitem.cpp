@@ -137,8 +137,8 @@ void DynamicItem::updateVertexCoordinates() {
 
         boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
 
-        int px = (parent->getLocX() - parent->getLocY()) * 22 + 22;
-        int py = (parent->getLocX() + parent->getLocY()) * 22 - parent->getLocZ() * 4 + 22;
+        int px = (parent->getLocXDraw() - parent->getLocYDraw()) * 22 + 22;
+        int py = (parent->getLocXDraw() + parent->getLocYDraw()) * 22 - parent->getLocZDraw() * 4 + 22;
         py = py - frame.centerY_ - texHeight;
 
         if (isMirrored()) {
@@ -152,9 +152,9 @@ void DynamicItem::updateVertexCoordinates() {
         int texWidth = getIngameTexture()->getWidth();
         int texHeight = getIngameTexture()->getHeight();
 
-        int px = (getLocX() - getLocY()) * 22 - texWidth/2 + 22;
-        int py = (getLocX() + getLocY()) * 22 - texHeight + 44;
-        py -= getLocZ() * 4;
+        int px = (getLocXDraw() - getLocYDraw()) * 22 - texWidth/2 + 22;
+        int py = (getLocXDraw() + getLocYDraw()) * 22 - texHeight + 44;
+        py -= getLocZDraw() * 4;
 
         rect = CL_Rectf(px, py, px + texWidth, py + texHeight);
     }
@@ -188,14 +188,11 @@ void DynamicItem::updateRenderDepth() {
             layerTmp = 0;
         }
 
-        uint16_t xy = ceilf(parent->getLocX()) + ceilf(parent->getLocY());
-        int8_t z = ceilf(parent->getLocZ()) + 7;
+        int8_t z = parent->getLocZGame() + 7;
 
-        worldRenderData_.setRenderDepth(xy, z, 40, layerPriorities[parent->getDirection()][layerTmp], getSerial() & 0xFF);
+        worldRenderData_.setRenderDepth(parent->getLocXGame(), parent->getLocYGame(), z, 40, layerPriorities[parent->getDirection()][layerTmp], getSerial() & 0xFF);
     } else {
-        uint16_t xy = ceilf(getLocX()) + ceilf(getLocY());
-
-        int8_t z = ceilf(getLocZ());
+        int8_t z = getLocZGame();
         if (tileDataInfo_->background() && tileDataInfo_->surface()) {
             z += 4;
         } else if (tileDataInfo_->background()) {
@@ -206,7 +203,7 @@ void DynamicItem::updateRenderDepth() {
             z += 6;
         }
 
-        worldRenderData_.setRenderDepth(xy, z, 20, tileDataInfo_->height_, getSerial() & 0xFF);
+        worldRenderData_.setRenderDepth(getLocXGame(), getLocYGame(), z, 20, tileDataInfo_->height_, getSerial() & 0xFF);
     }
 }
 
@@ -241,8 +238,8 @@ const data::StaticTileInfo* DynamicItem::getTileDataInfo() const {
 }
 
 void DynamicItem::onClick() {
-    LOG_INFO << "Clicked dynamic, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
-            getLocZ() << ") name=" << tileDataInfo_->name_ << " equipped=" << equipped_ << std::endl;
+    LOG_INFO << "Clicked dynamic, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocXGame() << "/" << getLocYGame() << "/" <<
+            getLocZGame() << ") name=" << tileDataInfo_->name_ << " equipped=" << equipped_ << std::endl;
 
     printRenderDepth();
 
@@ -251,8 +248,8 @@ void DynamicItem::onClick() {
 }
 
 void DynamicItem::onDoubleClick() {
-    LOG_INFO << "Double clicked dynamic, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocX() << "/" << getLocY() << "/" <<
-            getLocZ() << ") name=" << tileDataInfo_->name_ << std::endl;
+    LOG_INFO << "Double clicked dynamic, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocXGame() << "/" << getLocYGame() << "/" <<
+            getLocZGame() << ") name=" << tileDataInfo_->name_ << std::endl;
 
     net::packets::DoubleClick pkt(getSerial());
     net::Manager::getSingleton()->send(pkt);
@@ -268,14 +265,14 @@ void DynamicItem::onDraggedOnto(boost::shared_ptr<IngameObject> obj) {
 
     const MapTile* mapTile = dynamic_cast<const MapTile*>(rawPtr);
     if (mapTile) {
-        net::packets::DropItem pkt(this, mapTile->getLocX(), mapTile->getLocY(), mapTile->getLocZ());
+        net::packets::DropItem pkt(this, mapTile->getLocXGame(), mapTile->getLocYGame(), mapTile->getLocZGame());
         net::Manager::getSingleton()->send(pkt);
         return;
     }
 
     const StaticItem* sItem = dynamic_cast<const StaticItem*>(rawPtr);
     if (sItem) {
-        net::packets::DropItem pkt(this, sItem->getLocX(), sItem->getLocY(), sItem->getLocZ());
+        net::packets::DropItem pkt(this, sItem->getLocXGame(), sItem->getLocYGame(), sItem->getLocZGame());
         net::Manager::getSingleton()->send(pkt);
         return;
     }

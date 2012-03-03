@@ -49,7 +49,7 @@ void ServerObject::setHue(unsigned int hue) {
 }
 
 void ServerObject::onLocationChanged(const CL_Vec3f& oldLocation) {
-    boost::shared_ptr<Sector> newSector = world::Manager::getSectorManager()->getSectorForCoordinates(getLocX(), getLocY());
+    boost::shared_ptr<Sector> newSector = world::Manager::getSectorManager()->getSectorForCoordinates(getLocXGame(), getLocYGame());
     
     if (sector_ != newSector) {
         if (sector_) {

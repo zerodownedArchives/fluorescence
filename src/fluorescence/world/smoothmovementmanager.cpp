@@ -41,7 +41,7 @@ void SmoothMovementManager::update(unsigned int elapsedMillis) {
         }
 
         if (curMov->isFinished()) {
-            curMov->finish();
+            curMov->finish(false);
             iter->second.pop_front();
 
             if (iter->second.empty()) {
@@ -63,7 +63,14 @@ void SmoothMovementManager::add(Serial serial, SmoothMovement& movement) {
 }
 
 void SmoothMovementManager::clear(Serial serial) {
-    movementQueues_.erase(serial);
+    std::map<Serial, std::list<SmoothMovement> >::iterator it = movementQueues_.find(serial);
+    if (it != movementQueues_.end()) {
+        if (!it->second.empty()) {
+            it->second.front().finish(true);
+        }
+        
+        movementQueues_.erase(it);
+    }
 }
 
 }

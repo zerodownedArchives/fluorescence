@@ -61,10 +61,9 @@ void OverheadMessage::updateRenderDepth() {
     // TODO: Handle mouse over
     boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
 
-    uint16_t xy = ceilf(parent->getLocX()) + ceilf(parent->getLocY());
-    int8_t z = ceilf(parent->getLocZ()) + 7;
+    int8_t z = parent->getLocZGame() + 7;
 
-    worldRenderData_.setRenderDepth(xy + 40, z, 50, 0, 0);
+    worldRenderData_.setRenderDepth(parent->getLocXGame() + 40, parent->getLocYGame(), z, 50, 0, 0);
 }
 
 void OverheadMessage::updateTextureProvider() {
@@ -143,7 +142,7 @@ void OverheadMessage::onRemovedFromParent() {
 }
 
 void OverheadMessage::onLocationChanged(const CL_Vec3f& oldLocation) {
-    boost::shared_ptr<Sector> newSector = world::Manager::getSectorManager()->getSectorForCoordinates(getLocX(), getLocY());
+    boost::shared_ptr<Sector> newSector = world::Manager::getSectorManager()->getSectorForCoordinates(getLocXGame(), getLocYGame());
     
     if (sector_ != newSector) {
         if (sector_) {

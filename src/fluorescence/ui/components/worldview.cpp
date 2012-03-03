@@ -72,7 +72,7 @@ WorldView::~WorldView() {
 
 float WorldView::getCenterTileX() const {
     if (centerObject_) {
-        return centerObject_->getLocX();
+        return centerObject_->getLocXDraw();
     } else {
         return centerTileX_;
     }
@@ -80,7 +80,7 @@ float WorldView::getCenterTileX() const {
 
 float WorldView::getCenterTileY() const {
     if (centerObject_) {
-        return centerObject_->getLocY();
+        return centerObject_->getLocYDraw();
     } else {
         return centerTileY_;
     }
@@ -88,7 +88,7 @@ float WorldView::getCenterTileY() const {
 
 float WorldView::getCenterTileZ() const {
     if (centerObject_) {
-        return centerObject_->getLocZ();
+        return centerObject_->getLocZDraw();
     } else {
         return centerTileZ_;
     }

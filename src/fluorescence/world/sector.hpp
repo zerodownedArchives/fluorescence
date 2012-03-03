@@ -60,6 +60,8 @@ public:
     void requestSort();
     
     boost::shared_ptr<world::IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopObject) const;
+    
+    bool checkMovement(const CL_Vec3f& curLocation, CL_Vec3f& outLoc) const;
 
 private:
     unsigned int mapId_;
