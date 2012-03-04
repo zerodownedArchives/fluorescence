@@ -108,7 +108,6 @@ void WorldViewRenderer::renderPreviousTexture(CL_GraphicContext& gc, float pixel
     if (abs(pixelX) >= textureWidth_ || abs(pixelY) >= textureHeight_) {
         // need to paint everything from scratch
         ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(textureWidth_, textureHeight_)).translate(worldView_->getTopLeftPixel()));
-        LOG_DEBUG << "center moved x=" << pixelX << " y=" << pixelY << std::endl;
     } else {
         unsigned int oldTexture = (frameBufferIndex_ + 1) % 2;
         

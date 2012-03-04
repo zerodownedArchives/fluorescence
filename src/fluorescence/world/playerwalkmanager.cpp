@@ -75,18 +75,16 @@ void PlayerWalkManager::update(unsigned int elapsedMillis) {
         lastIsWalking_ = false;
     } else if (millisToNextMove_ <= 0) {
         // starting to walk now => start anim
-        if (!lastIsWalking_) {
-            player->animate(player->getWalkAnim(), 0, AnimRepeatMode::LOOP);
-        }
 
-        if (player->getDirection() != requestedDirection_) {
-            player->setDirection(requestedDirection_);
-            net::Manager::getWalkPacketManager()->sendMovementRequest(requestedDirection_);
-        }
-        
         CL_Vec3f newLoc;
-        bool movementPossible = checkMovement(player->getLocation(), requestedDirection_, newLoc);
+        uint8_t curDirection = requestedDirection_;
+        bool movementPossible = checkMovement(player->getLocation(), curDirection, newLoc);
         if (movementPossible) {
+            if (player->getDirection() != curDirection) {
+                player->setDirection(curDirection);
+                net::Manager::getWalkPacketManager()->sendMovementRequest(curDirection);
+            }
+        
             // TODO: check running, mounted. different speed
             unsigned int moveDuration = 100;
             
@@ -95,7 +93,11 @@ void PlayerWalkManager::update(unsigned int elapsedMillis) {
             world::SmoothMovement mov(player, newLoc, moveDuration);
             mov.setFinishedCallback(boost::bind(&PlayerWalkManager::onSmoothMovementFinish, this));
             world::Manager::getSmoothMovementManager()->add(player->getSerial(), mov);
-            net::Manager::getWalkPacketManager()->sendMovementRequest(requestedDirection_);
+            net::Manager::getWalkPacketManager()->sendMovementRequest(curDirection);
+            
+            if (!lastIsWalking_) {
+                player->animate(player->getWalkAnim(), 0, AnimRepeatMode::LOOP);
+            }
             
             lastIsWalking_ = true;
         } else {
@@ -116,20 +118,9 @@ void PlayerWalkManager::onSmoothMovementFinish() {
     }
 }
 
-bool PlayerWalkManager::checkMovement(const CL_Vec3f& curLoc, unsigned int direction, CL_Vec3f& outLoc) const {
-    CL_Vec3f diff;
+bool PlayerWalkManager::checkMovement(const CL_Vec3f& curLoc, uint8_t& direction, CL_Vec3f& outLoc) const {
+    CL_Vec3f diff = getDirectionOffset(direction);
     CL_Vec3f curRound = CL_Vec3f(curLoc).round();
-    
-    switch (direction & 0x7) {
-        case Direction::N: diff = CL_Vec3f(0, -1, 0); break;
-        case Direction::NE: diff = CL_Vec3f(1, -1, 0); break;
-        case Direction::E: diff = CL_Vec3f(1, 0, 0); break;
-        case Direction::SE: diff = CL_Vec3f(1, 1, 0); break;
-        case Direction::S: diff = CL_Vec3f(0, 1, 0); break;
-        case Direction::SW: diff = CL_Vec3f(-1, 1, 0); break;
-        case Direction::W: diff = CL_Vec3f(-1, 0, 0); break;
-        case Direction::NW: diff = CL_Vec3f(-1, -1, 0); break;
-    }
     
     outLoc = curRound + diff;
     
@@ -140,14 +131,91 @@ bool PlayerWalkManager::checkMovement(const CL_Vec3f& curLoc, unsigned int direc
         return false;
     }
     
-    //bool checkDiagonals = (direction & 0x1) == 0x1;
+    boost::shared_ptr<Sector> curSector = world::Manager::getSectorManager()->getSectorForCoordinates(curRound.x, curRound.y);
+    int stepReach = curSector->getStepReach(curRound);
+    
+    bool checkDiagonals = (direction & 0x1) == 0x1;
     
     boost::shared_ptr<Sector> newSector = world::Manager::getSectorManager()->getSectorForCoordinates(outLoc.x, outLoc.y);
-    bool sectorOkay = newSector->checkMovement(curRound, outLoc);
+    bool sectorOkay = newSector->checkMovement(curRound, stepReach, outLoc);
     
-    sectorOkay = !sectorOkay;
+    if (checkDiagonals) {
+        if (sectorOkay) {
+            // check if the way is free on both sides
+            unsigned int plusDirection = (direction & ~0x7) | ((direction + 1) & 0x7);
+            diff = getDirectionOffset(plusDirection);
+            CL_Vec3f plusLoc = curRound + diff;
+            newSector = world::Manager::getSectorManager()->getSectorForCoordinates(plusLoc.x, plusLoc.y);
+            bool plusOkay = newSector->checkMovement(curRound, stepReach, plusLoc);
+            
+            unsigned int minusDirection = (direction & ~0x7) | ((direction - 1) & 0x7);
+            diff = getDirectionOffset(minusDirection);
+            CL_Vec3f minusLoc = curRound + diff;
+            newSector = world::Manager::getSectorManager()->getSectorForCoordinates(minusLoc.x, minusLoc.y);
+            bool minusOkay = newSector->checkMovement(curRound, stepReach, minusLoc);
+            
+            if (plusOkay) {
+                if (minusOkay) {
+                    // okay
+                } else {
+                    direction = plusDirection;
+                    outLoc = plusLoc;
+                }
+            } else {
+                if (minusOkay) {
+                    direction = minusDirection;
+                    outLoc = minusLoc;
+                } else {
+                    // blocked
+                    sectorOkay = false;
+                }
+            }
+            
+        } else {
+            // maybe we can move in an adjacent direction (+1)
+            unsigned int newDirection = (direction & ~0x7) | ((direction + 1) & 0x7);
+            diff = getDirectionOffset(newDirection);
+            outLoc = curRound + diff;
+            newSector = world::Manager::getSectorManager()->getSectorForCoordinates(outLoc.x, outLoc.y);
+            sectorOkay = newSector->checkMovement(curRound, stepReach, outLoc);
+            
+            if (sectorOkay) {
+                direction = newDirection;
+            } else {
+                // check other direction (-1)
+                unsigned int newDirection = (direction & ~0x7) | ((direction - 1) & 0x7);
+                diff = getDirectionOffset(newDirection);
+                outLoc = curRound + diff;
+                newSector = world::Manager::getSectorManager()->getSectorForCoordinates(outLoc.x, outLoc.y);
+                sectorOkay = newSector->checkMovement(curRound, stepReach, outLoc);
+                
+                if (sectorOkay) {
+                    direction = newDirection;
+                }
+            } 
+        }
+    }
     
-    return true;
+    if (sectorOkay) {
+        LOG_DEBUG << "try movement to: " << outLoc.x << "/" << outLoc.y << "/" << outLoc.z << std::endl;
+    }
+    
+    return sectorOkay;
+}
+
+CL_Vec3f PlayerWalkManager::getDirectionOffset(unsigned int direction) const {
+    switch (direction & 0x7) {
+        case Direction::N: return CL_Vec3f(0, -1, 0);
+        case Direction::NE: return CL_Vec3f(1, -1, 0);
+        case Direction::E:  return CL_Vec3f(1, 0, 0);
+        case Direction::SE: return CL_Vec3f(1, 1, 0);
+        case Direction::S: return CL_Vec3f(0, 1, 0);
+        case Direction::SW: return CL_Vec3f(-1, 1, 0);
+        case Direction::W: return CL_Vec3f(-1, 0, 0);
+        case Direction::NW: return CL_Vec3f(-1, -1, 0);
+    }
+    
+    return CL_Vec3f(0, 0, 0);
 }
 
 }

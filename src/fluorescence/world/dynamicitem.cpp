@@ -240,6 +240,7 @@ const data::StaticTileInfo* DynamicItem::getTileDataInfo() const {
 void DynamicItem::onClick() {
     LOG_INFO << "Clicked dynamic, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocXGame() << "/" << getLocYGame() << "/" <<
             getLocZGame() << ") name=" << tileDataInfo_->name_ << " equipped=" << equipped_ << std::endl;
+    LOG_INFO << "impassable=" << tileDataInfo_->impassable() << " surface=" << tileDataInfo_->surface() << " bridge=" << tileDataInfo_->bridge() << " height=" << (unsigned int)tileDataInfo_->height_ << std::endl;
 
     printRenderDepth();
 

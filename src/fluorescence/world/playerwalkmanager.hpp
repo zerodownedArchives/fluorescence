@@ -49,7 +49,8 @@ private:
     
     int millisToNextMove_;
     
-    bool checkMovement(const CL_Vec3f& curLoc, unsigned int direction, CL_Vec3f& outLoc) const;
+    bool checkMovement(const CL_Vec3f& curLoc, uint8_t& direction, CL_Vec3f& outLoc) const;
+    CL_Vec3f getDirectionOffset(unsigned int direction) const;
 };
 
 }

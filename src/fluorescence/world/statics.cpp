@@ -102,6 +102,8 @@ const data::StaticTileInfo* StaticItem::getTileDataInfo() const {
 void StaticItem::onClick() {
     LOG_INFO << "Clicked static, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocXGame() << "/" << getLocYGame() << "/" <<
             getLocZGame() << ") name=" << " hue=" << hue_ << " " << tileDataInfo_->name_ << std::endl;
+            
+    LOG_INFO << "impassable=" << tileDataInfo_->impassable() << " surface=" << tileDataInfo_->surface() << " bridge=" << tileDataInfo_->bridge() << " height=" << (unsigned int)tileDataInfo_->height_ << std::endl;
 
     //LOG_INFO << "background=" << tileDataInfo_->background() << " surface=" << tileDataInfo_->surface() << " height=" << (unsigned int)tileDataInfo_->height_ <<
             //" hue=" << hue_ << " indexInBlock=" << indexInBlock_ << std::endl;

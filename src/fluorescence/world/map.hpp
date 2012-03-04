@@ -53,6 +53,7 @@ public:
     virtual void onClick();
     
     float getAverageZ() const;
+    int getMaxZ() const;
 
 private:
     unsigned int artId_;

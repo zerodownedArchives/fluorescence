@@ -207,6 +207,10 @@ float MapTile::getAverageZ() const {
     }
 }
 
+int MapTile::getMaxZ() const {
+    return (std::max)(getLocZGame(), (std::max)(zLeft_, (std::max(zRight_, zBottom_))));
+}
+
 
 MapBlock::MapBlock() : repaintRequested_(false) {
     for (unsigned int i = 0; i < 64; ++i) {

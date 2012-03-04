@@ -61,7 +61,9 @@ public:
     
     boost::shared_ptr<world::IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopObject) const;
     
-    bool checkMovement(const CL_Vec3f& curLocation, CL_Vec3f& outLoc) const;
+    // height that we can reach with one step from the given location
+    int getStepReach(const CL_Vec3f& loc) const;
+    bool checkMovement(const CL_Vec3f& curLocation, int stepReach, CL_Vec3f& outLoc) const;
 
 private:
     unsigned int mapId_;
@@ -84,6 +86,9 @@ private:
     std::list<world::IngameObject*> renderList_;
     
     static bool renderDepthSortHelper(const world::IngameObject* a, const world::IngameObject* b);
+    
+    bool checkFreeSpace(const std::list<world::IngameObject*>& list, int zFrom, int zTo) const;
+    void getWalkObjectsOn(unsigned int x, unsigned int y, std::list<world::IngameObject*>& list) const;
 };
 
 }

@@ -265,30 +265,35 @@ boost::shared_ptr<world::IngameObject> Sector::getFirstObjectAt(int worldX, int 
     return ret;
 }
 
-bool Sector::checkMovement(const CL_Vec3f& curLocation, CL_Vec3f& outLoc) const {
+void Sector::getWalkObjectsOn(unsigned int x, unsigned int y, std::list<world::IngameObject*>& list) const {
     world::StaticItem compareDummy;
-    compareDummy.getWorldRenderData().setRenderDepth(outLoc.x, outLoc.y, -128, 0, 0, 0);
+    compareDummy.getWorldRenderData().setRenderDepth(x, y, -128, 0, 0, 0);
     std::list<world::IngameObject*>::const_iterator iter = std::lower_bound(renderList_.begin(), renderList_.end(), &compareDummy, &Sector::renderDepthSortHelper);
     
-    compareDummy.getWorldRenderData().setRenderDepth(outLoc.x + 1, outLoc.y, -128, 0, 0, 0);
+    compareDummy.getWorldRenderData().setRenderDepth(x + 1, y, -128, 0, 0, 0);
     std::list<world::IngameObject*>::const_iterator end = std::upper_bound(renderList_.begin(), renderList_.end(), &compareDummy, &Sector::renderDepthSortHelper);
     
-    
-    std::list<world::IngameObject*> itemList;
     for (; iter != end; ++iter) {
         world::IngameObject* curObj = *iter;
-        if (curObj->getLocXGame() == outLoc.x && curObj->getLocYGame() == outLoc.y) {
+        if (curObj->getLocXGame() == x && curObj->getLocYGame() == y) {
             if (curObj->isStaticItem() || curObj->isDynamicItem() || curObj->isMap()) {
-                itemList.push_back(curObj);
+                list.push_back(curObj);
             }
         }
     }
     
-    itemList.sort(&Sector::renderDepthSortHelper);
-    iter = itemList.begin();
-    end = itemList.end();
+    list.sort(&Sector::renderDepthSortHelper);
+}
+
+bool Sector::checkMovement(const CL_Vec3f& curLocation, int stepReach, CL_Vec3f& outLoc) const {
+    std::list<world::IngameObject*> itemList;
+    getWalkObjectsOn(outLoc.x, outLoc.y, itemList);
     
-    //float curLocMaxCheck = curLocation.z + 15;
+    std::list<world::IngameObject*>::const_iterator iter = itemList.begin();
+    std::list<world::IngameObject*>::const_iterator end = itemList.end();
+    
+    outLoc.z = -99999;
+    int curLocMaxCheck = ceilf(curLocation.z + 15);
     bool movePossible = false;
     
     for (; iter != end; ++iter) {
@@ -301,36 +306,137 @@ bool Sector::checkMovement(const CL_Vec3f& curLocation, CL_Vec3f& outLoc) const 
                 continue;
             }
             
-            float newZ = mapTile->getAverageZ();
-            //float maxCheck = (std::max)(curLocMaxCheck, newZ + 15);
+            int newZ = mapTile->getAverageZ();
+            int maxCheck = (std::max)(curLocMaxCheck, newZ + 15);
             
-            // check
-            
-            movePossible = true;
-            outLoc.z = newZ;
+            if (newZ > outLoc.z && checkFreeSpace(itemList, newZ, maxCheck)) {
+                movePossible = true;
+                outLoc.z = newZ;
+            }
             
         } else {
             // is static or dynamic item, because other stuff was not added to the list
-            world::DynamicItem* dynamicObj = dynamic_cast<world::DynamicItem*>(curObj);
-            world::StaticItem* staticObj = dynamic_cast<world::StaticItem*>(curObj);
-            bool isDynamic = (dynamicObj != nullptr);
+            world::DynamicItem* dynamicObj = nullptr;
+            world::StaticItem* staticObj = nullptr;
+            bool isDynamic = false;
+            if (curObj->isDynamicItem()) {
+                isDynamic = true;
+                dynamicObj = (world::DynamicItem*)(curObj);
+            } else {
+                staticObj = (world::StaticItem*)(curObj);
+            }
             const data::StaticTileInfo* tileInfo = isDynamic ? dynamicObj->getTileDataInfo() : staticObj->getTileDataInfo();
             
             if (!tileInfo->surface() || tileInfo->impassable()) {
                 continue;
             }
             
-            movePossible = true;
-            if (tileInfo->bridge()) {
-                outLoc.z = curObj->getLocZGame() + tileInfo->height_ / 2.0f;
+            bool isBridge = tileInfo->bridge();
+            int newZ = curObj->getLocZGame();
+            int checkZ = newZ + tileInfo->height_;
+            if (isBridge) {
+                // with bridge items, check that we can reach the base of the item
+                if (newZ > stepReach) {
+                    continue;
+                }
+                newZ += floorf(tileInfo->height_ / 2.0f);
             } else {
-                outLoc.z = curObj->getLocZGame() + tileInfo->height_;
+                // for non-bridges, we have to be able to reach the top
+                newZ += tileInfo->height_;
+                if (newZ > stepReach) {
+                    continue;
+                }
+            }
+            
+            int maxCheck = (std::max)(curLocMaxCheck, newZ + 15);
+            
+            if (newZ > outLoc.z && checkFreeSpace(itemList, checkZ, maxCheck)) {
+                movePossible = true;
+                outLoc.z = newZ;
             }
         }
     }
     
-    outLoc.z = floor(outLoc.z);
     return movePossible;
+}
+
+bool Sector::checkFreeSpace(const std::list<world::IngameObject*>& checkList, int zFrom, int zTo) const {
+    std::list<world::IngameObject*>::const_iterator iter = checkList.begin();
+    std::list<world::IngameObject*>::const_iterator end = checkList.end();
+    
+    for (; iter != end; ++iter) {
+        world::IngameObject* curObj = *iter;
+        
+        int itemZ = curObj->getLocZGame();
+        if (itemZ > zTo) {
+            break;
+        }
+        
+        int itemTop = itemZ;
+        bool canPass = true;
+        
+        if (curObj->isMap()) {
+            canPass = !((world::MapTile*)curObj)->getTileDataInfo()->impassable();
+        } else if (curObj->isStaticItem()) {
+            world::StaticItem* staticObj = (world::StaticItem*)(curObj);
+            const data::StaticTileInfo* tileInfo = staticObj->getTileDataInfo();
+            itemTop += tileInfo->bridge() ? ceilf(tileInfo->height_ / 2.0) :  tileInfo->height_;
+            canPass = !tileInfo->surface() && !tileInfo->impassable();
+        } else if (curObj->isDynamicItem()) {
+            world::DynamicItem* dynamicObj = (world::DynamicItem*)(curObj);
+            const data::StaticTileInfo* tileInfo = dynamicObj->getTileDataInfo();
+            itemTop += tileInfo->bridge() ? ceilf(tileInfo->height_ / 2.0) :  tileInfo->height_;
+            canPass = !tileInfo->surface() && !tileInfo->impassable();
+        }
+        
+        if (zFrom < itemTop && zTo > itemZ && !canPass) {
+            return false;
+        }
+    }
+    
+    return true;
+} 
+
+int Sector::getStepReach(const CL_Vec3f& loc) const {
+    int ret = loc.z + 2;
+    // if we are currently standing on a bridge or map tile, we can reach (bridge.top + 2), otherwise just (loc.z + 2)
+    std::list<world::IngameObject*> itemList;
+    getWalkObjectsOn(loc.x, loc.y, itemList);
+    
+    std::list<world::IngameObject*>::const_iterator iter = itemList.begin();
+    std::list<world::IngameObject*>::const_iterator end = itemList.end();
+    
+    for (; iter != end; ++iter) {
+        world::IngameObject* curObj = *iter;
+        if (curObj->getLocZGame() > loc.z) {
+            break;
+        }
+        
+        if (curObj->isMap()) {
+            world::MapTile* mapTile = (world::MapTile*)(curObj);
+            int top = mapTile->getMaxZ();
+            if (!mapTile->getTileDataInfo()->impassable() && top > ret) {
+                ret = top;
+            }
+        } else if (curObj->isStaticItem()) {
+            world::StaticItem* staticObj = (world::StaticItem*)(curObj);
+            const data::StaticTileInfo* tileInfo = staticObj->getTileDataInfo();
+
+            int top = curObj->getLocZGame() + tileInfo->height_ + 2;
+            if (!tileInfo->impassable() && tileInfo->surface() && tileInfo->bridge() && top > ret) {
+                ret = top;
+            }
+        } else if (curObj->isDynamicItem()) {
+            world::DynamicItem* dynamicObj = (world::DynamicItem*)(curObj);
+            const data::StaticTileInfo* tileInfo = dynamicObj->getTileDataInfo();
+            int top = curObj->getLocZGame() + tileInfo->height_ + 2;
+            if (!tileInfo->impassable() && tileInfo->surface() && tileInfo->bridge() && top > ret) {
+                ret = top;
+            }
+        }
+    }
+    
+    return ret;
 }
 
 }
