@@ -39,7 +39,8 @@ public:
     bool wasStarted() const;
     void start();
 
-    void update(unsigned int elapsedMillis);
+    // returns >0 if at the end of this movement there are still some millis lef
+    unsigned int update(unsigned int elapsedMillis);
 
     bool isFinished() const;
     void finish(bool interrupted);

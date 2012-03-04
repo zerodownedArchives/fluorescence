@@ -212,6 +212,8 @@ void DynamicItem::updateTextureProvider() {
         animTextureProvider_.reset(new ui::AnimTextureProvider(tileDataInfo_->animId_));
         boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
         animTextureProvider_->setDirection(getDirection());
+        // TODO: real one- and two-handed warmode info
+        updateIdleAnimInfo(parent->isMounted(), false, false);
 
         unsigned int gumpId = data::Manager::getGumpIdForItem(artId_, parent->getBodyId());
 
@@ -308,12 +310,6 @@ void DynamicItem::animate(unsigned int animId, unsigned int delay, unsigned int 
     }
 }
 
-void DynamicItem::stopAnim() {
-    if (equipped_ && animTextureProvider_) {
-        animTextureProvider_->setIdleAnim();
-    }
-}
-
 void DynamicItem::onAddedToParent() {
     if (parentObject_.lock()->isMobile()) {
         equipped_ = true;
@@ -378,6 +374,12 @@ void DynamicItem::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
         } else {
             LOG_ERROR << "Unable to find container component in container gump" << std::endl;
         }
+    }
+}
+
+void DynamicItem::updateIdleAnimInfo(bool mounted, bool warmodeOneHanded, bool warmodeTwoHanded) {
+    if (animTextureProvider_) {
+        animTextureProvider_->updateIdleInfo(mounted, warmodeOneHanded, warmodeTwoHanded);
     }
 }
 

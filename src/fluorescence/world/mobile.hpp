@@ -83,11 +83,11 @@ public:
     virtual void onDelete();
 
     virtual void onChildObjectAdded(boost::shared_ptr<IngameObject> obj);
-    virtual void onChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
+    virtual void onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
+    virtual void onAfterChildObjectRemoved();
 
     bool isMounted() const;
     bool isArmed() const;
-    unsigned int getIdleAnim() const;
     unsigned int getWalkAnim() const;
     unsigned int getRunAnim() const;
 

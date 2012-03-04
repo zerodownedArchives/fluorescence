@@ -35,25 +35,22 @@ void SmoothMovementManager::update(unsigned int elapsedMillis) {
             continue;
         }
 
-        SmoothMovement* curMov = &iter->second.front();
-        if (!curMov->wasStarted()) {
-            curMov->start();
-        }
-
-        if (curMov->isFinished()) {
-            curMov->finish(false);
-            iter->second.pop_front();
-
-            if (iter->second.empty()) {
-                movementQueues_.erase(iter++);
-                continue;
-            } else {
-                curMov = &iter->second.front();
+        unsigned int millisLeft = elapsedMillis;
+        while (millisLeft > 0 && !iter->second.empty()) {
+            SmoothMovement* curMov = &iter->second.front();
+            
+            if (!curMov->wasStarted()) {
                 curMov->start();
             }
+            
+            millisLeft = curMov->update(millisLeft);
+            
+            if (curMov->isFinished()) {
+                curMov->finish(false);
+                iter->second.pop_front();
+            }
         }
-
-        curMov->update(elapsedMillis);
+        
         ++iter;
     }
 }

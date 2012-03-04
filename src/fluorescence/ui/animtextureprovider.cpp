@@ -29,7 +29,7 @@ namespace ui {
 
 AnimTextureProvider::AnimTextureProvider(unsigned int bodyId) : bodyId_(bodyId), direction_(0), currentIdx_(0),
         millis_(0), frameMillis_(100), repeatMode_(AnimRepeatMode::DEFAULT), nextAnimId_(0xFFFFFFFFu), nextDirection_(0) {
-    defaultAnimId_ = data::Manager::getMobTypesLoader()->getIdleAction(bodyId);
+    defaultAnimId_ = data::Manager::getMobTypesLoader()->getIdleAction(bodyId, false, false, false);
     currentAnimId_ = defaultAnimId_;
 
     animations_[defaultAnimId_] = data::Manager::getAnim(bodyId, defaultAnimId_);
@@ -146,6 +146,19 @@ void AnimTextureProvider::setIdleAnim() {
 
 void AnimTextureProvider::setDelay(unsigned int delay) {
     frameMillis_ = 100 + delay * 50;
+}
+
+void AnimTextureProvider::updateIdleInfo(bool mounted, bool warmodeOneHanded, bool warmodeTwoHanded) {
+    bool changeCurrent = currentAnimId_ == defaultAnimId_;
+    defaultAnimId_ = data::Manager::getMobTypesLoader()->getIdleAction(bodyId_, mounted, warmodeOneHanded, warmodeTwoHanded);
+    
+    if (changeCurrent) {
+        setIdleAnim();
+    }
+}
+
+unsigned int AnimTextureProvider::getIdleAnimId() const {
+    return defaultAnimId_;
 }
 
 }

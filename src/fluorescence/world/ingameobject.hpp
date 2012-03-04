@@ -118,7 +118,8 @@ public:
     virtual void onAddedToParent();
     virtual void onRemovedFromParent();
     virtual void onChildObjectAdded(boost::shared_ptr<IngameObject> obj);
-    virtual void onChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
+    virtual void onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
+    virtual void onAfterChildObjectRemoved();
 
     virtual void onDelete();
     

@@ -364,9 +364,10 @@ void IngameObject::removeChildObject(boost::shared_ptr<IngameObject> obj) {
     std::list<boost::shared_ptr<IngameObject> >::iterator iter = std::find(childObjects_.begin(), childObjects_.end(), obj);
 
     if (iter != childObjects_.end()) {
-        onChildObjectRemoved(*iter);
+        onBeforeChildObjectRemoved(*iter);
         obj->setParentObject();
         childObjects_.erase(iter);
+        onAfterChildObjectRemoved();
     }
 }
 
@@ -379,7 +380,10 @@ void IngameObject::onRemovedFromParent() {
 void IngameObject::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
 }
 
-void IngameObject::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
+void IngameObject::onAfterChildObjectRemoved() {
+}
+
+void IngameObject::onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
 }
 
 void IngameObject::onAddedToSector(world::Sector* sector) {

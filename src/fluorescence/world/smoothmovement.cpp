@@ -55,17 +55,20 @@ void SmoothMovement::finish(bool interrupted) {
     }
 }
 
-void SmoothMovement::update(unsigned int elapsedMillis) {
+unsigned int SmoothMovement::update(unsigned int elapsedMillis) {
+    unsigned int usedMillis = elapsedMillis;
     if (totalElapsedMillis_ + elapsedMillis >= duration_) {
-        elapsedMillis = duration_ - totalElapsedMillis_;
+        usedMillis = duration_ - totalElapsedMillis_;
     }
     
-    CL_Vec3f movementDelta = diff_ * ((float)elapsedMillis / duration_);
+    CL_Vec3f movementDelta = diff_ * ((float)usedMillis / duration_);
 
     CL_Vec3f curLoc = movingObject_->getLocation() + movementDelta;
     movingObject_->setLocation(curLoc);
 
-    totalElapsedMillis_ += elapsedMillis;
+    totalElapsedMillis_ += usedMillis;
+    
+    return elapsedMillis - usedMillis;
 }
 
 void SmoothMovement::setFinishedCallback(FinishedCallback cb) {

@@ -85,8 +85,20 @@ void PlayerWalkManager::update(unsigned int elapsedMillis) {
                 net::Manager::getWalkPacketManager()->sendMovementRequest(curDirection);
             }
         
-            // TODO: check running, mounted. different speed
-            unsigned int moveDuration = 100;
+            unsigned int moveDuration;
+            if (player->isMounted()) {
+                if (curDirection & Direction::RUNNING) {
+                    moveDuration = 95;
+                } else {
+                    moveDuration = 185;
+                }
+            } else {
+                if (curDirection & Direction::RUNNING) {
+                    moveDuration = 175;
+                } else {
+                    moveDuration = 375;
+                }
+            }
             
             millisToNextMove_ = moveDuration;;
             
@@ -194,10 +206,6 @@ bool PlayerWalkManager::checkMovement(const CL_Vec3f& curLoc, uint8_t& direction
                 }
             } 
         }
-    }
-    
-    if (sectorOkay) {
-        LOG_DEBUG << "try movement to: " << outLoc.x << "/" << outLoc.y << "/" << outLoc.z << std::endl;
     }
     
     return sectorOkay;

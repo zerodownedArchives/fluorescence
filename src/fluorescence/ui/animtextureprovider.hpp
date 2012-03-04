@@ -50,6 +50,8 @@ public:
     void setDirection(unsigned int direction);
     void setAnimId(unsigned int animId);
     
+    unsigned int getIdleAnimId() const;
+    void updateIdleInfo(bool mounted, bool warmodeOneHanded, bool warmodeTwoHanded);
     void setIdleAnim();
 
 private:

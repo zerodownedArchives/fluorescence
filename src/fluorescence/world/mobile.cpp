@@ -147,6 +147,9 @@ void Mobile::updateRenderDepth() {
 void Mobile::updateTextureProvider() {
     textureProvider_.reset(new ui::AnimTextureProvider(bodyId_));
     textureProvider_->setDirection(direction_);
+    
+    // TODO: check for one- and two-handed warmode here
+    textureProvider_->updateIdleInfo(isMounted_, false, false);
 
     data::PaperdollDef pdDef = data::Manager::getPaperdollDef(bodyId_);
     if (pdDef.bodyId_ == 0) {
@@ -186,16 +189,7 @@ void Mobile::animate(unsigned int animId, unsigned int delay, unsigned int repea
 }
 
 void Mobile::stopAnim() {
-    textureProvider_->setIdleAnim();
-    
-    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
-    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
-
-    for (; iter != end; ++iter) {
-        if ((*iter)->isDynamicItem()) {
-            boost::dynamic_pointer_cast<DynamicItem>(*iter)->stopAnim();
-        }
-    }
+    animate(textureProvider_->getIdleAnimId(), 0, AnimRepeatMode::LOOP);
 }
 
 void Mobile::setDirection(unsigned int direction) {
@@ -368,7 +362,7 @@ void Mobile::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
     checkItemLayerFlags();
 }
 
-void Mobile::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
+void Mobile::onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = rqBegin();
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator end = rqEnd();
 
@@ -382,7 +376,9 @@ void Mobile::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
     if (sector_) {
         sector_->removeDynamicObject(obj.get());
     }
+}
 
+void Mobile::onAfterChildObjectRemoved() {
     checkItemLayerFlags();
 }
 
@@ -399,8 +395,8 @@ bool Mobile::isWarmode() const {
 }
 
 void Mobile::checkItemLayerFlags() {
-    std::list<boost::shared_ptr<IngameObject> >::const_iterator iter = childObjects_.begin();
-    std::list<boost::shared_ptr<IngameObject> >::const_iterator end = childObjects_.end();
+    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
 
     bool mnt = false;
     bool arm = false;
@@ -421,6 +417,18 @@ void Mobile::checkItemLayerFlags() {
 
     isMounted_ = mnt;
     isArmed_ = arm;
+    
+    // TODO: check one/two handed warmode
+    if (textureProvider_) {
+        textureProvider_->updateIdleInfo(isMounted_, false, false);
+    }
+    
+    iter = childObjects_.begin();
+    for (; iter != end; ++iter) {
+        if ((*iter)->isDynamicItem()) {
+            boost::dynamic_pointer_cast<DynamicItem>(*iter)->updateIdleAnimInfo(isMounted_, false, false);
+        }
+    }
 }
 
 unsigned int Mobile::getWalkAnim() const {

@@ -70,8 +70,8 @@ public:
     void setLayer(unsigned int layer);
     unsigned int getLayer() const;
 
+    void updateIdleAnimInfo(bool mounted, bool warmodeOneHanded, bool warmodeTwoHanded);
     void animate(unsigned int animId, unsigned int delay = 1, unsigned int repeatMode = AnimRepeatMode::DEFAULT);
-    void stopAnim();
 
     virtual void onAddedToParent();
     virtual void onRemovedFromParent();
