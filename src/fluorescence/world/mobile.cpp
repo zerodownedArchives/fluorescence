@@ -359,6 +359,7 @@ void Mobile::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
     }
     
     updateIdleAnim();
+    repaintRectangle(true);
 }
 
 void Mobile::onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
@@ -377,8 +378,10 @@ void Mobile::onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
     }
 }
 
-void Mobile::onAfterChildObjectAdded() {
+void Mobile::onAfterChildObjectRemoved() {
     updateIdleAnim();
+    
+    repaintRectangle(true);
 }
 
 void Mobile::updateIdleAnim() {

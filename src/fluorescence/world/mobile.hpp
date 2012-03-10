@@ -85,7 +85,7 @@ public:
 
     virtual void onChildObjectAdded(boost::shared_ptr<IngameObject> obj);
     virtual void onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
-    virtual void onAfterChildObjectAdded();
+    virtual void onAfterChildObjectRemoved();
 
     bool isPlayer() const;
     bool isMounted() const;

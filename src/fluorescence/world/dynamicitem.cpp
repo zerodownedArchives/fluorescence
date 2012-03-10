@@ -190,7 +190,8 @@ void DynamicItem::updateRenderDepth() {
 
         int8_t z = parent->getLocZGame() + 7;
 
-        worldRenderData_.setRenderDepth(parent->getLocXGame(), parent->getLocYGame(), z, 40, layerPriorities[parent->getDirection()][layerTmp], getSerial() & 0xFF);
+        uint8_t order = (equipped_ && getLayer() == Layer::MOUNT) ? 29 : 40;
+        worldRenderData_.setRenderDepth(parent->getLocXGame(), parent->getLocYGame(), z, order, layerPriorities[parent->getDirection()][layerTmp], getSerial() & 0xFF);
     } else {
         int8_t z = getLocZGame();
         if (tileDataInfo_->background() && tileDataInfo_->surface()) {
