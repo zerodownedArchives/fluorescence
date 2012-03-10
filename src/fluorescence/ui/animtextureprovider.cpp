@@ -27,11 +27,8 @@
 namespace fluo {
 namespace ui {
 
-AnimTextureProvider::AnimTextureProvider(unsigned int bodyId) : bodyId_(bodyId), direction_(0), currentIdx_(0),
-        millis_(0), frameMillis_(100), repeatMode_(AnimRepeatMode::DEFAULT), nextAnimId_(0xFFFFFFFFu), nextDirection_(0) {
-    defaultAnimId_ = data::Manager::getMobTypesLoader()->getIdleAction(bodyId, false, false, false);
-    currentAnimId_ = defaultAnimId_;
-
+AnimTextureProvider::AnimTextureProvider(unsigned int bodyId, unsigned int defaultAnim) : bodyId_(bodyId), nextAnimId_(0xFFFFFFFFu), currentAnimId_(defaultAnim),
+        direction_(0), currentIdx_(0), millis_(0), frameMillis_(100), repeatMode_(AnimRepeatMode::DEFAULT), defaultAnimId_(defaultAnim), nextDirection_(0) {
     animations_[defaultAnimId_] = data::Manager::getAnim(bodyId, defaultAnimId_);
 }
 
@@ -116,7 +113,7 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
                 // we are already at the last frame here
                 break;
             case AnimRepeatMode::DEFAULT:
-                setIdleAnim();
+                activateDefaultAnim();
                 //frameChanged = true;
                 break;
         }
@@ -140,7 +137,7 @@ void AnimTextureProvider::setRepeatMode(unsigned int mode) {
     repeatMode_ = mode;
 }
 
-void AnimTextureProvider::setIdleAnim() {
+void AnimTextureProvider::activateDefaultAnim() {
     setAnimId(defaultAnimId_);
 }
 
@@ -148,16 +145,16 @@ void AnimTextureProvider::setDelay(unsigned int delay) {
     frameMillis_ = 100 + delay * 50;
 }
 
-void AnimTextureProvider::updateIdleInfo(bool mounted, bool warmodeOneHanded, bool warmodeTwoHanded) {
+void AnimTextureProvider::setDefaultAnimId(unsigned int animId) {
     bool changeCurrent = currentAnimId_ == defaultAnimId_;
-    defaultAnimId_ = data::Manager::getMobTypesLoader()->getIdleAction(bodyId_, mounted, warmodeOneHanded, warmodeTwoHanded);
+    defaultAnimId_ = animId;
     
     if (changeCurrent) {
-        setIdleAnim();
+        activateDefaultAnim();
     }
 }
 
-unsigned int AnimTextureProvider::getIdleAnimId() const {
+unsigned int AnimTextureProvider::getDefaultAnimId() const {
     return defaultAnimId_;
 }
 

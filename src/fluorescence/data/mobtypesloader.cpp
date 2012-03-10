@@ -106,31 +106,5 @@ unsigned int MobTypesLoader::getType(unsigned int bodyId) {
     return typeTable_[bodyId];
 }
 
-unsigned int MobTypesLoader::getIdleAction(unsigned int bodyId, bool mounted, bool warmodeOneHanded, bool warmodeTwoHanded) {
-    switch (getType(bodyId)) {
-        case TYPE_ANIMAL:
-            return 2;
-        case TYPE_SEA_MONSTER: // TODO: is this correct?
-        case TYPE_MONSTER:
-            return 1;
-        case TYPE_HUMAN:
-        case TYPE_EQUIPMENT:
-        default:
-            if (mounted) {
-                return 25;
-            } else if (warmodeOneHanded) {
-                return 7;
-            } else if (warmodeTwoHanded) {
-                return 8;
-            } else {
-                return 4;
-            }
-    }
-    
-    LOG_WARN << "Unable to provide idle action for mobile " << bodyId << " mounted=" << mounted << 
-            " warmodeOneHanded=" << warmodeOneHanded << " warmodeTwoHanded=" << warmodeTwoHanded << std::endl;
-    return 4;
-}
-
 }
 }

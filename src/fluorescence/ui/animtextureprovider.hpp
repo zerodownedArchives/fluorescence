@@ -37,7 +37,7 @@ namespace ui {
 
 class AnimTextureProvider : public TextureProvider {
 public:
-    AnimTextureProvider(unsigned int animId);
+    AnimTextureProvider(unsigned int animId, unsigned int defaultAnim);
 
     virtual boost::shared_ptr<ui::Texture> getTexture() const;
     AnimationFrame getCurrentFrame() const;
@@ -48,16 +48,18 @@ public:
     void setDelay(unsigned int delay);
 
     void setDirection(unsigned int direction);
-    void setAnimId(unsigned int animId);
+    virtual void setAnimId(unsigned int animId);
     
-    unsigned int getIdleAnimId() const;
-    void updateIdleInfo(bool mounted, bool warmodeOneHanded, bool warmodeTwoHanded);
-    void setIdleAnim();
-
+    void setDefaultAnimId(unsigned int id);
+    unsigned int getDefaultAnimId() const;
+    
+    void activateDefaultAnim();
+    
 private:
     // stores for each anim (walk, run, ...) the frames for all directions
     std::map<unsigned int, std::vector<boost::shared_ptr<Animation> > > animations_;
     unsigned int bodyId_;
+    unsigned int nextAnimId_;
     unsigned int currentAnimId_;
     unsigned int direction_;
     unsigned int currentIdx_;
@@ -66,7 +68,6 @@ private:
     unsigned int repeatMode_;
 
     unsigned int defaultAnimId_;
-    unsigned int nextAnimId_;
     unsigned int nextDirection_;
 };
 

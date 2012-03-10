@@ -108,7 +108,7 @@ void PlayerWalkManager::update(unsigned int elapsedMillis) {
             net::Manager::getWalkPacketManager()->sendMovementRequest(curDirection);
             
             if (!lastIsWalking_) {
-                player->animate(player->getWalkAnim(), 0, AnimRepeatMode::LOOP);
+                player->animate(player->getMoveAnim(), 0, AnimRepeatMode::LOOP);
             }
             
             lastIsWalking_ = true;

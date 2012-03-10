@@ -143,7 +143,7 @@ bool GumpView::onDoubleClick(const CL_InputEvent& e) {
         if (!clickedObject) {
             LOG_DEBUG << "doublelicked, but found no object" << std::endl;
         } else {
-            clickedObject->onClick();
+            clickedObject->onDoubleClick();
         }
 
         return true;

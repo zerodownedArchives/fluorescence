@@ -45,7 +45,7 @@
 namespace fluo {
 namespace world {
 
-Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE), bodyId_(0), isMounted_(false), isArmed_(false), isWarmode_(false) {
+Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE), bodyId_(0), isWarmode_(false) {
 }
 
 boost::shared_ptr<ui::Texture> Mobile::getIngameTexture() const {
@@ -108,6 +108,8 @@ void Mobile::setBodyId(unsigned int value) {
         } else {
             bodyId_ = baseBodyId_;
         }
+        
+        animType_ = data::Manager::getAnimType(bodyId_);
 
         invalidateTextureProvider();
     }
@@ -145,12 +147,9 @@ void Mobile::updateRenderDepth() {
 }
 
 void Mobile::updateTextureProvider() {
-    textureProvider_.reset(new ui::AnimTextureProvider(bodyId_));
+    textureProvider_.reset(new ui::AnimTextureProvider(bodyId_, getIdleAnim()));
     textureProvider_->setDirection(direction_);
     
-    // TODO: check for one- and two-handed warmode here
-    textureProvider_->updateIdleInfo(isMounted_, false, false);
-
     data::PaperdollDef pdDef = data::Manager::getPaperdollDef(bodyId_);
     if (pdDef.bodyId_ == 0) {
         LOG_ERROR << "Unable to find paperdoll.def entry for body " << bodyId_ << std::endl;
@@ -189,7 +188,7 @@ void Mobile::animate(unsigned int animId, unsigned int delay, unsigned int repea
 }
 
 void Mobile::stopAnim() {
-    animate(textureProvider_->getIdleAnimId(), 0, AnimRepeatMode::LOOP);
+    animate(getIdleAnim(), 0, AnimRepeatMode::LOOP);
 }
 
 void Mobile::setDirection(unsigned int direction) {
@@ -308,7 +307,7 @@ void Mobile::setRace(unsigned int race) {
         race_ = race;
     }
 
-    // TODO
+    // TODO: what does this affect?
 }
 
 unsigned int Mobile::getRace() const {
@@ -316,7 +315,7 @@ unsigned int Mobile::getRace() const {
 }
 
 void Mobile::setGender(unsigned int gender) {
-    // TODO
+    // TODO: what does this affect?
 }
 
 unsigned int Mobile::isFemale() const {
@@ -359,7 +358,7 @@ void Mobile::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
         boost::dynamic_pointer_cast<DynamicItem>(obj)->setDirection(getDirection());
     }
     
-    checkItemLayerFlags();
+    updateIdleAnim();
 }
 
 void Mobile::onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
@@ -378,82 +377,71 @@ void Mobile::onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
     }
 }
 
-void Mobile::onAfterChildObjectRemoved() {
-    checkItemLayerFlags();
+void Mobile::onAfterChildObjectAdded() {
+    updateIdleAnim();
+}
+
+void Mobile::updateIdleAnim() {
+    unsigned int idleAnim = getIdleAnim();
+    if (textureProvider_) {
+        textureProvider_->setDefaultAnimId(idleAnim);
+    }
+    
+    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
+    
+    for (; iter != end; ++iter) {
+        if ((*iter)->isDynamicItem()) {
+             boost::dynamic_pointer_cast<DynamicItem>(*iter)->setIdleAnim(idleAnim);
+        }
+    }
 }
 
 bool Mobile::isMounted() const {
-    return isMounted_;
-}
-
-bool Mobile::isArmed() const {
-    return isArmed_;
+    return hasItemOnLayer(Layer::MOUNT);
 }
 
 bool Mobile::isWarmode() const {
     return isWarmode_;
 }
 
-void Mobile::checkItemLayerFlags() {
-    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
-    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
-
-    bool mnt = false;
-    bool arm = false;
-    for (; iter != end; ++iter) {
-        if ((*iter)->isDynamicItem()) {
-            unsigned int layer = boost::dynamic_pointer_cast<DynamicItem>(*iter)->getLayer();
-            switch (layer) {
-            case Layer::MOUNT:
-                mnt = true;
-                break;
-            case Layer::ONEHANDED:
-            case Layer::TWOHANDED:
-                arm = true;
-                break;
+unsigned int Mobile::getMoveAnim() const {
+    switch (animType_) {
+        case AnimType::HIGH_DETAIL:
+            return 0;
+        case AnimType::LOW_DETAIL:
+            return isRunning_ ? 1 : 0;
+        default:
+        case AnimType::PEOPLE:
+            if (isMounted()) {
+                return isRunning_ ? 24 : 23;
+            } else if (isWarmode_) {
+                return 15;
+            } else if (hasItemOnLayer(Layer::ONEHANDED) || hasItemOnLayer(Layer::TWOHANDED)) {
+                return isRunning_ ? 3 : 1;
+            } else {
+                return isRunning_ ? 2 : 0;
             }
-        }
-    }
-
-    isMounted_ = mnt;
-    isArmed_ = arm;
-    
-    // TODO: check one/two handed warmode
-    if (textureProvider_) {
-        textureProvider_->updateIdleInfo(isMounted_, false, false);
-    }
-    
-    iter = childObjects_.begin();
-    for (; iter != end; ++iter) {
-        if ((*iter)->isDynamicItem()) {
-            boost::dynamic_pointer_cast<DynamicItem>(*iter)->updateIdleAnimInfo(isMounted_, false, false);
-        }
     }
 }
 
-unsigned int Mobile::getWalkAnim() const {
-    // TODO: at the moment this is only valid for people
-    if (isMounted_) {
-        return 23;
-    } else if (isWarmode_) {
-        return 15;
-    } else if (isArmed_) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-unsigned int Mobile::getRunAnim() const {
-    // TODO: at the moment this is only valid for people
-    if (isMounted_) {
-        return 24;
-    } else if (isWarmode_) {
-        return 15;
-    } else if (isArmed_) {
-        return 3;
-    } else {
-        return 2;
+unsigned int Mobile::getIdleAnim() const {
+    switch (animType_) {
+        case AnimType::HIGH_DETAIL:
+            return 1;
+        case AnimType::LOW_DETAIL:
+            return 2;
+        default:
+        case AnimType::PEOPLE:
+            if (isMounted()) {
+                return 25;
+            } else if (hasItemOnLayer(Layer::TWOHANDED)) {
+                return 8;
+            } else if (hasItemOnLayer(Layer::ONEHANDED)) {
+                return 7;
+            } else {
+                return 4;
+            }
     }
 }
 
@@ -473,6 +461,19 @@ void Mobile::onRemovedFromSector(world::Sector* sector) {
     for (; iter != end; ++iter) {
         sector->removeDynamicObject(iter->get());
     }
+}
+
+bool Mobile::hasItemOnLayer(unsigned int layer) const {
+    std::list<boost::shared_ptr<IngameObject> >::const_iterator iter = childObjects_.begin();
+    std::list<boost::shared_ptr<IngameObject> >::const_iterator end = childObjects_.end();
+    
+    for (; iter != end; ++iter) {
+        if ((*iter)->isDynamicItem() && boost::dynamic_pointer_cast<DynamicItem>(*iter)->getLayer() == layer) {
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 }

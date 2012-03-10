@@ -73,6 +73,14 @@ enum {
 };
 };
 
+struct AnimType {
+enum {
+    HIGH_DETAIL = 0,
+    LOW_DETAIL = 1,
+    PEOPLE = 2,
+};
+};
+
 struct IsoIndex {
 public:
     IsoIndex() : value_(0), x_(0), y_(0) { }

@@ -37,7 +37,6 @@ public:
     MobTypesLoader(const boost::filesystem::path& path);
 
     unsigned int getType(unsigned int bodyId);
-    unsigned int getIdleAction(unsigned int bodyId, bool mounted, bool warmodeOneHanded, bool warmodeTwoHanded);
 
 private:
     uint8_t typeTable_[4096];

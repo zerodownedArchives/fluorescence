@@ -21,9 +21,9 @@
 #include "animloader.hpp"
 #include "util.hpp"
 
+#include <typedefs.hpp>
 #include <ui/texture.hpp>
 #include <ui/animation.hpp>
-
 #include <misc/log.hpp>
 
 namespace fluo {
@@ -49,10 +49,19 @@ boost::shared_ptr<ui::Animation> AnimLoader::getAnimation(unsigned int bodyId, u
 
     realId += 5*animId + direction;
 
-    return cache_.get(realId);
+    boost::shared_ptr<ui::Animation> ret = cache_.get(realId);
+    return ret;
 }
 
-
+unsigned int AnimLoader::getAnimType(unsigned int bodyId) const {
+    if (bodyId < highDetailCount_) {
+        return AnimType::HIGH_DETAIL;
+    } else if (bodyId < highDetailCount_ + lowDetailCount_) {
+        return AnimType::LOW_DETAIL;
+    } else {
+        return AnimType::PEOPLE;
+    }
+}
 
 void AnimLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Animation> anim, unsigned int extra, unsigned int userData) {
     //LOGARG_DEBUG(LOGTYPE_DATA, "AnimLoader::readCallback index=%u len=%u", index, len);

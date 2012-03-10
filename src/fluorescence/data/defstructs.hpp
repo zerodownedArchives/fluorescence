@@ -102,6 +102,11 @@ struct GumpDef {
     unsigned int hue_;
 };
 
+struct MountDef {
+    unsigned int mountItemId_;
+    unsigned int animId_;
+};
+
 }
 }
 

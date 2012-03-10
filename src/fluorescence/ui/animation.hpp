@@ -28,6 +28,8 @@
 
 #include "texture.hpp"
 
+#include <typedefs.hpp>
+
 namespace fluo {
 namespace ui {
 
@@ -51,7 +53,7 @@ public:
     unsigned int getHeight(unsigned int idx) const;
 
     bool hasPixel(unsigned int idx, unsigned int pixelX, unsigned int pixelY) const;
-
+    
 private:
     std::vector<AnimationFrame> frames_;
 };

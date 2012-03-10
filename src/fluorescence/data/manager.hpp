@@ -81,9 +81,11 @@ public:
     static BodyDef getBodyDef(unsigned int baseBodyId);
     static GumpDef getGumpDef(unsigned int gumpId);
     static unsigned int getGumpIdForItem(unsigned int itemId, unsigned int parentBodyId);
+    static MountDef getMountDef(unsigned int itemId);
 
     static boost::shared_ptr<ui::TextureProvider> getItemTextureProvider(unsigned int artId);
     static std::vector<boost::shared_ptr<ui::Animation> > getAnim(unsigned int bodyId, unsigned int animId);
+    static unsigned int getAnimType(unsigned int bodyId);
 
     static boost::shared_ptr<ArtLoader> getArtLoader() { return getSingleton()->artLoader_; }
     static boost::shared_ptr<TileDataLoader> getTileDataLoader() { return getSingleton()->tileDataLoader_; }
@@ -142,6 +144,7 @@ private:
     boost::shared_ptr<DefFileLoader<PaperdollDef> > paperdollDefLoader_;
     boost::shared_ptr<DefFileLoader<GumpDef> > gumpDefLoader_;
     boost::shared_ptr<EquipConvDefLoader> equipConvDefLoader_;
+    boost::shared_ptr<DefFileLoader<MountDef> > mountDefLoader_;
 
     boost::shared_ptr<ClilocLoader> clilocLoader_;
     

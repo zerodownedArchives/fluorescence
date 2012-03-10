@@ -209,14 +209,28 @@ void DynamicItem::updateRenderDepth() {
 
 void DynamicItem::updateTextureProvider() {
     if (equipped_) {
-        animTextureProvider_.reset(new ui::AnimTextureProvider(tileDataInfo_->animId_));
         boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
+        
+        unsigned int animId;
+        unsigned int idleAnim = parent->getIdleAnim();
+        
+        if (layer_ == Layer::MOUNT) {
+            animId = data::Manager::getMountDef(artId_).animId_;
+            animType_ = data::Manager::getAnimType(animId);
+            if (animType_ == AnimType::HIGH_DETAIL) {
+                idleAnim = 1;
+            } else {
+                idleAnim = 2;
+            }
+        } else {
+            animId = tileDataInfo_->animId_;
+        }
+        
+        animTextureProvider_.reset(new ui::AnimTextureProvider(animId, idleAnim));
         animTextureProvider_->setDirection(getDirection());
-        // TODO: real one- and two-handed warmode info
-        updateIdleAnimInfo(parent->isMounted(), false, false);
 
+        // TODO: load this on demand
         unsigned int gumpId = data::Manager::getGumpIdForItem(artId_, parent->getBodyId());
-
         gumpTextureProvider_.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_GUMPART_MUL, gumpId));
         //LOG_DEBUG << "Gump idx " << gumpId << std::endl;
     } else {
@@ -304,9 +318,30 @@ bool DynamicItem::isMirrored() const {
 
 void DynamicItem::animate(unsigned int animId, unsigned int delay, unsigned int repeatMode) {
     if (equipped_ && animTextureProvider_) {
+        if (getLayer() == Layer::MOUNT) {
+            // translate all anim ids to either walk, run or mount
+            if (animId == 24) {
+                // running
+                animId = (animType_ == AnimType::HIGH_DETAIL ? 0 : 1);
+            } else if (animId == 23) {
+                // walking
+                animId = 1;
+            } else {
+                // no special anims for other actions
+                animId = animTextureProvider_->getDefaultAnimId();
+            }
+        }
+            
         animTextureProvider_->setAnimId(animId);
         animTextureProvider_->setRepeatMode(repeatMode);
         animTextureProvider_->setDelay(delay);
+    }
+}
+
+void DynamicItem::setIdleAnim(unsigned int animId) {
+    if (equipped_ && animTextureProvider_ && getLayer() != Layer::MOUNT) {
+        // idle anim does not change for mounts
+        animTextureProvider_->setDefaultAnimId(animId);
     }
 }
 
@@ -374,12 +409,6 @@ void DynamicItem::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
         } else {
             LOG_ERROR << "Unable to find container component in container gump" << std::endl;
         }
-    }
-}
-
-void DynamicItem::updateIdleAnimInfo(bool mounted, bool warmodeOneHanded, bool warmodeTwoHanded) {
-    if (animTextureProvider_) {
-        animTextureProvider_->updateIdleInfo(mounted, warmodeOneHanded, warmodeTwoHanded);
     }
 }
 

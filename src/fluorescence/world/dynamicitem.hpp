@@ -70,8 +70,8 @@ public:
     void setLayer(unsigned int layer);
     unsigned int getLayer() const;
 
-    void updateIdleAnimInfo(bool mounted, bool warmodeOneHanded, bool warmodeTwoHanded);
     void animate(unsigned int animId, unsigned int delay = 1, unsigned int repeatMode = AnimRepeatMode::DEFAULT);
+    void setIdleAnim(unsigned int animId);
 
     virtual void onAddedToParent();
     virtual void onRemovedFromParent();
@@ -102,6 +102,8 @@ private:
     boost::shared_ptr<ui::AnimTextureProvider> animTextureProvider_;
 
     ui::GumpMenu* containerGump_;
+    
+    unsigned int animType_; // only relevant when mounted
 };
 
 }

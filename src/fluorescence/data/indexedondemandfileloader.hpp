@@ -42,7 +42,7 @@ public:
         const IndexBlock indexBlock = indexLoader_.get(index);
 
         // e.g. static blocks containing no data use an offset of 0xFFFFFFFFu
-        if (indexBlock.offset_ == 0xFFFFFFFFu || indexBlock.length_ == 0xFFFFFFFFu) {
+        if (indexBlock.offset_ == 0xFFFFFFFFu || indexBlock.length_ == 0xFFFFFFFFu || indexBlock.length_ == 0) {
             //LOG_WARN << "Trying to read nonexistant index entry " << index << std::endl;
             boost::shared_ptr<ValueType> empty;
             return empty;

@@ -62,6 +62,9 @@ public:
 
     void animate(unsigned int animId, unsigned int delay = 1, unsigned int repeatType = AnimRepeatMode::DEFAULT);
     void stopAnim();
+    unsigned int getMoveAnim() const;
+    unsigned int getIdleAnim() const;
+    void updateIdleAnim();
 
     virtual bool isMirrored() const;
     void setDirection(unsigned int direction);
@@ -78,23 +81,20 @@ public:
 
     void openPaperdoll();
 
-    bool isPlayer() const;
-
     virtual void onDelete();
 
     virtual void onChildObjectAdded(boost::shared_ptr<IngameObject> obj);
     virtual void onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
-    virtual void onAfterChildObjectRemoved();
+    virtual void onAfterChildObjectAdded();
 
+    bool isPlayer() const;
     bool isMounted() const;
-    bool isArmed() const;
-    unsigned int getWalkAnim() const;
-    unsigned int getRunAnim() const;
-
     bool isWarmode() const;
     
     virtual void onAddedToSector(world::Sector* sector);
     virtual void onRemovedFromSector(world::Sector* sector);
+    
+    bool hasItemOnLayer(unsigned int layer) const;
 
 private:
     unsigned int baseBodyId_; // as sent by the server
@@ -119,11 +119,10 @@ private:
     unsigned int race_;
     bool female_;
 
-    bool isMounted_;
-    bool isArmed_;
-    void checkItemLayerFlags();
-
     bool isWarmode_;
+    
+    unsigned int animType_; // high detail, low detail, people
+    
 };
 
 }

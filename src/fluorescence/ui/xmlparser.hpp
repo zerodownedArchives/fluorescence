@@ -116,7 +116,6 @@ private:
     bool parseBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    // TODO
 
     bool parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);

@@ -312,6 +312,11 @@ void Manager::init(Config& config) {
     path = filePathMap_["equipconv.def"];
     LOG_INFO << "Opening equipconv.def from path=" << path << std::endl;
     equipConvDefLoader_.reset(new EquipConvDefLoader(path));
+    
+    checkFileExists("mount.def");
+    path = filePathMap_["mount.def"];
+    LOG_INFO << "Opening mount.def from path=" << path << std::endl;
+    mountDefLoader_.reset(new DefFileLoader<MountDef>(path));
 
     checkFileExists("cliloc.enu");
     path = filePathMap_["cliloc.enu"];
@@ -388,6 +393,21 @@ boost::shared_ptr<ui::TextureProvider> Manager::getItemTextureProvider(unsigned 
     }
 
     return ret;
+}
+
+unsigned int Manager::getAnimType(unsigned int bodyId) {
+    Manager* sing = getSingleton();
+    
+    BodyConvDef bodyConvEntry = sing->bodyConvDefLoader_->get(bodyId);
+    boost::shared_ptr<AnimLoader> ldr;
+    if (bodyConvEntry.bodyId_ != 0) {
+        //LOG_DEBUG << "redirecting anim! body=" << bodyId << " fileIdx=" << bodyConvEntry.getAnimFileIdx() << " idx in file=" << bodyConvEntry.getAnimIdxInFile() << std::endl;
+        ldr = getAnimLoader(bodyConvEntry.getAnimFileIdx());
+    } else {
+        ldr = getAnimLoader(0);
+    }
+    
+    return ldr->getAnimType(bodyId);
 }
 
 std::vector<boost::shared_ptr<ui::Animation> > Manager::getAnim(unsigned int bodyId, unsigned int animId) {
@@ -482,6 +502,12 @@ GumpDef Manager::getGumpDef(unsigned int gumpId) {
     Manager* sing = getSingleton();
 
     return sing->gumpDefLoader_->get(gumpId);
+}
+
+MountDef Manager::getMountDef(unsigned int itemId) {
+    Manager* sing = getSingleton();
+
+    return sing->mountDefLoader_->get(itemId);
 }
 
 void Manager::buildFilePathMap(Config& config) {
@@ -657,7 +683,6 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(const UnicodeString& source, 
     if (sourceId != 0) {
         return getTexture(sourceId, id);
     } else {
-		// TODO: more resources ?
         LOG_ERROR << "Unknown texture source \"" << source << "\"" << std::endl;
         boost::shared_ptr<ui::Texture> ret;
         return ret;
