@@ -71,7 +71,8 @@ public:
     static boost::shared_ptr<ShaderManager> getShaderManager();
     static boost::shared_ptr<ClipRectManager> getClipRectManager();
 
-    void step();
+    void stepInput();
+    void stepDraw();
 
     GumpMenu* openXmlGump(const UnicodeString& name);
     void closeGumpMenu(const UnicodeString& name);

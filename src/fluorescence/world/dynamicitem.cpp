@@ -184,7 +184,10 @@ void DynamicItem::updateRenderDepth() {
 
         unsigned int layerTmp = layer_ - 1;
         if (layerTmp >= layerPriorities[parent->getDirection()].size()) {
-            LOG_WARN << "Rendering item with invalid layer " << layer_ << ". Unable to assign render priority" << std::endl;
+            if (layerTmp > 0x1D) {
+                // up to 0x1d are some special layers, like mounts, bank box, etc
+                LOG_WARN << "Rendering item with invalid layer " << layer_ << ". Unable to assign render priority" << std::endl;
+            }
             layerTmp = 0;
         }
 

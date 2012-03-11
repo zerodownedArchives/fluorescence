@@ -145,9 +145,7 @@ Manager::~Manager() {
     LOG_INFO << "ui::Manager shutdown" << std::endl;
 }
 
-void Manager::step() {
-    windowManager_->process();
-
+void Manager::stepInput() {
     while (!singleClickQueue_.empty()) {
         boost::shared_ptr<world::IngameObject> obj = singleClickQueue_.front();
         singleClickQueue_.pop();
@@ -162,7 +160,7 @@ void Manager::step() {
     while (!doubleClickQueue_.empty()) {
         boost::shared_ptr<world::IngameObject> obj = doubleClickQueue_.front();
         doubleClickQueue_.pop();
-        obj->onDoubleClick();
+        //obj->onDoubleClick();
     }
 
     while (!dragQueue_.empty()) {
@@ -175,7 +173,11 @@ void Manager::step() {
             dragPair.first->onDraggedToVoid();
         }
     }
+}
 
+void Manager::stepDraw() {
+    windowManager_->process();
+    
     getGraphicContext().clear();
     windowManager_->draw_windows(getGraphicContext());
     mainWindow_->flip(); // use parameter 1 here for vsync

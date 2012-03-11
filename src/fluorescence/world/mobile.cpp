@@ -45,7 +45,7 @@
 namespace fluo {
 namespace world {
 
-Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE), bodyId_(0), isWarmode_(false) {
+Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE), baseBodyId_(0), bodyId_(0), isWarmode_(false) {
 }
 
 boost::shared_ptr<ui::Texture> Mobile::getIngameTexture() const {
@@ -70,20 +70,18 @@ void Mobile::onClick() {
 
     printRenderDepth();
 
-    //std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
-    //std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
+    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
 
-    //for (; iter != end; ++iter) {
-        //(*iter)->onClick();
-    //}
+    for (; iter != end; ++iter) {
+        boost::shared_ptr<DynamicItem> dyn = boost::dynamic_pointer_cast<DynamicItem>(*iter);
+        if (dyn && dyn->getLayer() == Layer::MOUNT) {
+            dyn->onClick();
+            //LOG_DEBUG << "dyn has sector: " << dyn->hasSector() << std::endl;
+        }
+    }
 
     //net::packets::SingleClick pkt(getSerial());
-    
-    if (sector_) {
-        LOG_DEBUG << "sector sort request " << sector_->getSectorId().value_ << std::endl;
-        sector_->requestSort();
-    }
-    repaintRectangle(false);
 
     boost::shared_ptr<net::Packet> subPacket(new net::packets::bf::ContextMenuRequest(getSerial()));
     net::packets::BF pkt(subPacket);
@@ -351,7 +349,7 @@ void Mobile::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
     }
 
     if (sector_) {
-        sector_->addDynamicObject(obj.get());
+        obj->setSector(sector_);
     }
     
     if (obj->isDynamicItem()) {

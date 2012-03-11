@@ -55,12 +55,12 @@ bool GumpRenderQueue::renderDepthComparator(const boost::shared_ptr<world::Ingam
     unsigned int bLayer = bDyn->getLayer() - 1;
 
     if (aLayer >= layerPriorities_.size()) {
-        LOG_WARN << "Rendering item with invalid layer " << aDyn->getLayer() << ". Unable to assign render priority" << std::endl;
+        // LOG_WARN << "Rendering item with invalid layer " << aDyn->getLayer() << ". Unable to assign render priority" << std::endl;
         aLayer = 0;
     }
 
     if (bLayer >= layerPriorities_.size()) {
-        LOG_WARN << "Rendering item with invalid layer " << bDyn->getLayer() << ". Unable to assign render priority" << std::endl;
+        // LOG_WARN << "Rendering item with invalid layer " << bDyn->getLayer() << ". Unable to assign render priority" << std::endl;
         bLayer = 0;
     }
 

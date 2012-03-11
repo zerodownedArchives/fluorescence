@@ -392,6 +392,11 @@ void IngameObject::onAddedToSector(world::Sector* sector) {
 void IngameObject::onRemovedFromSector(world::Sector* sector) {
 }
 
+void IngameObject::setSector(boost::shared_ptr<world::Sector> sector) {
+    sector_ = sector;
+    sector_->addDynamicObject(this);
+}
+
 void IngameObject::onLocationChanged(const CL_Vec3f& oldLocation) {
 }
 

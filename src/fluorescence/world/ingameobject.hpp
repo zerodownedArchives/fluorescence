@@ -126,6 +126,7 @@ public:
     virtual void onLocationChanged(const CL_Vec3f& oldLocation);
     virtual void onAddedToSector(world::Sector* sector);
     virtual void onRemovedFromSector(world::Sector* sector);
+    void setSector(boost::shared_ptr<world::Sector> sector);
 
 
     bool isMap() const;
@@ -173,7 +174,7 @@ protected:
     void forceRepaint();
     
     boost::shared_ptr<Sector> sector_;
-
+    
 private:
     unsigned int objectType_;
     bool visible_;

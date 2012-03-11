@@ -36,6 +36,7 @@
 #include <world/particleeffect.hpp>
 #include <world/sectormanager.hpp>
 #include <world/sector.hpp>
+#include <world/dynamicitem.hpp>
 
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
@@ -205,6 +206,10 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
             
             // check if texture is ready to be drawn
             ui::Texture* tex = curObj->getIngameTexture().get();
+            
+            if (tex && !tex->isReadComplete() && curObj->isDynamicItem() && ((world::DynamicItem*)(curObj))->getLayer() == Layer::MOUNT) {
+                LOG_ERROR << "\n\nmount with incomplete texture\n\n" << std::endl;
+            }
 
             if (!tex || !tex->isReadComplete() || !curObj->isVisible()) {
                 continue;
