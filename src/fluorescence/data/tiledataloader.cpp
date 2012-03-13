@@ -29,7 +29,7 @@
 namespace fluo {
 namespace data {
 
-TileDataLoader::TileDataLoader(const boost::filesystem::path& path) {
+TileDataLoader::TileDataLoader(const boost::filesystem::path& path, bool highSeasFormat) : highSeasFormat_(highSeasFormat) {
     FullFileLoader ldr(path);
     ldr.read(boost::bind(&TileDataLoader::read, this, _1, _2));
 }
@@ -78,7 +78,7 @@ void TileDataLoader::read(int8_t* buf, unsigned int len) {
         }
 
         landTileInfos_[i].flags_ = *(reinterpret_cast<uint32_t*>(ptr));
-        ptr += 4;
+        ptr += highSeasFormat_ ? 8 : 4;
         landTileInfos_[i].textureId_ = *(reinterpret_cast<uint16_t*>(ptr));
         ptr += 2;
         landTileInfos_[i].name_ = StringConverter::fromUtf8(reinterpret_cast<char*>(ptr), 20);
@@ -87,7 +87,12 @@ void TileDataLoader::read(int8_t* buf, unsigned int len) {
 
     // calculate number of static tile blocks
 
-    staticTileCount_ = ((len - (ptr - buf)) / 1188) * 32;
+    if (highSeasFormat_) {
+        staticTileCount_ = ((len - (ptr - buf)) / 1316) * 32;
+    } else {
+        staticTileCount_ = ((len - (ptr - buf)) / 1188) * 32;
+    }
+    
     LOG_DEBUG << "Static tile count: " << staticTileCount_ << std::endl;
 
     staticTileInfos_ = new StaticTileInfo[staticTileCount_];
@@ -99,7 +104,7 @@ void TileDataLoader::read(int8_t* buf, unsigned int len) {
         }
 
         staticTileInfos_[i].flags_ = *(reinterpret_cast<uint32_t*>(ptr));
-        ptr += 4;
+        ptr += highSeasFormat_ ? 8 : 4;
 
         staticTileInfos_[i].weight_ = *(reinterpret_cast<uint8_t*>(ptr));
         ++ptr;

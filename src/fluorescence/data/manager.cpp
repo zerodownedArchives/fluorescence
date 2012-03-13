@@ -84,6 +84,19 @@ Manager::Manager() {
 }
 
 void Manager::init(Config& config) {
+    if (config["/fluo/files/format"].asString() == "mul") {
+        fileFormat_ = FileFormat::MUL;
+    } else if (config["/fluo/files/format"].asString() == "mul-hs") {
+        fileFormat_ = FileFormat::MUL_HIGH_SEAS;
+    } else if (config["/fluo/files/format"].asString() == "uop") {
+        fileFormat_ = FileFormat::UOP;
+        LOG_ERROR << "UOP file format not qupported yet" << std::endl;
+        throw Exception("Unsupported file format");
+    } else {
+        LOG_ERROR << "Unsupported file format. Supported: \"mul\" for pre high seas files, \"mul-hs\" for high seas files" << std::endl;
+        throw Exception("Unsupported file format");
+    }
+    
     buildFilePathMap(config);
 
     //std::map<std::string, boost::filesystem::path>::iterator iter = filePathMap_.begin();
@@ -103,7 +116,7 @@ void Manager::init(Config& config) {
     checkFileExists("tiledata.mul");
     path = filePathMap_["tiledata.mul"];
     LOG_INFO << "Opening tiledata.mul from mul=" << path << std::endl;
-    tileDataLoader_.reset(new TileDataLoader(path));
+    tileDataLoader_.reset(new TileDataLoader(path, fileFormat_ == FileFormat::MUL_HIGH_SEAS));
 
     checkFileExists("hues.mul");
     path = filePathMap_["hues.mul"];

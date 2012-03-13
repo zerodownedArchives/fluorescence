@@ -65,6 +65,14 @@ enum {
 };
 };
 
+struct FileFormat {
+enum {
+    MUL = 1,
+    MUL_HIGH_SEAS = 2,
+    UOP = 3,
+};
+};
+
 
 class Manager {
 public:
@@ -106,6 +114,8 @@ public:
 
 private:
     static Manager* singleton_;
+    
+    unsigned int fileFormat_;
 
     Manager();
     void init(Config& config);

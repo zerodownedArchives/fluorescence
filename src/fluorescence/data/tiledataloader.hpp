@@ -130,7 +130,7 @@ class TileDataLoader {
 public:
     enum { LAND_TILE_COUNT = 0x4000 };
 
-    TileDataLoader(const boost::filesystem::path& path);
+    TileDataLoader(const boost::filesystem::path& path, bool highSeasFormat);
     ~TileDataLoader();
 
     const LandTileInfo* getLandTileInfo(unsigned int id);
@@ -145,6 +145,8 @@ private:
 
     unsigned int staticTileCount_;
     StaticTileInfo* staticTileInfos_;
+    
+    bool highSeasFormat_;
 };
 
 }

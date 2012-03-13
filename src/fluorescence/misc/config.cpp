@@ -36,6 +36,7 @@ Config::Config() {
     // file paths
     variablesMap_["/fluo/files/mul-directory@path"].setPath("./", true);
     variablesMap_["/fluo/files/cliloc@language"].setString("enu", true);
+    variablesMap_["/fluo/files/format"].setString("mul", true);
 
     // maps
     variablesMap_["/fluo/files/map0@enabled"].setBool(true, true);
