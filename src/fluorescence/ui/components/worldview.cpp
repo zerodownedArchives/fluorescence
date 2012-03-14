@@ -343,23 +343,27 @@ unsigned int WorldView::getDirectionForMousePosition(const CL_Point& mouse) cons
     float posX = mouse.x - (get_width() / 2);
     float angle = atan2(posY, posX);
     
-    float absangle = fabs(angle);
-    if (absangle >= 2.7489) {
-        return Direction::SW;
+    unsigned int runDir = 0;
+    if (fabs(posY) > 200 || fabs(posX) > 150) {
+        runDir = Direction::RUNNING;
+    }
+    
+    if (fabs(angle) >= 2.7489) {
+        return runDir | Direction::SW;
     } else if (angle <= -1.9635) {
-        return Direction::W;
+        return runDir | Direction::W;
     } else if (angle <= -1.1781) {
-        return Direction::NW;
+        return runDir | Direction::NW;
     } else if (angle <= -0.3927) {
-        return Direction::N;
+        return runDir | Direction::N;
     } else if (angle <= 0.3927) {
-        return Direction::NE;
+        return runDir | Direction::NE;
     } else if (angle <= 1.1781) {
-        return Direction::E;
+        return runDir | Direction::E;
     } else if (angle <= 1.9635) {
-        return Direction::SE;
+        return runDir | Direction::SE;
     } else {
-        return Direction::S;
+        return runDir | Direction::S;
     }
 }
 

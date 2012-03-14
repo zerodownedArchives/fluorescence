@@ -67,7 +67,7 @@ void PlayerWalkManager::update(unsigned int elapsedMillis) {
     
     boost::shared_ptr<world::Mobile> player = world::Manager::getSingleton()->getPlayer();
     
-    if (!lastIsWalking_ && player->getDirection() != requestedDirection_) {
+    if (!lastIsWalking_ && player->getDirection() != (requestedDirection_ & 0x7)) {
         // just turn and wait for a bit
         millisToNextMove_ = 150;
         player->setDirection(requestedDirection_);
@@ -80,10 +80,14 @@ void PlayerWalkManager::update(unsigned int elapsedMillis) {
         uint8_t curDirection = requestedDirection_;
         bool movementPossible = checkMovement(player->getLocation(), curDirection, newLoc);
         if (movementPossible) {
-            if (player->getDirection() != curDirection) {
-                player->setDirection(curDirection);
+            if (player->getDirection() != (curDirection & 0x7)) {
                 net::Manager::getWalkPacketManager()->sendMovementRequest(curDirection);
             }
+            
+            bool shouldRun = (curDirection & Direction::RUNNING) != 0;
+            bool changeAnim = player->isRunning() != shouldRun;
+            
+            player->setDirection(curDirection);
         
             unsigned int moveDuration;
             if (player->isMounted()) {
@@ -107,7 +111,7 @@ void PlayerWalkManager::update(unsigned int elapsedMillis) {
             world::Manager::getSmoothMovementManager()->add(player->getSerial(), mov);
             net::Manager::getWalkPacketManager()->sendMovementRequest(curDirection);
             
-            if (!lastIsWalking_) {
+            if (!lastIsWalking_ || changeAnim) {
                 player->animate(player->getMoveAnim(), 0, AnimRepeatMode::LOOP);
             }
             

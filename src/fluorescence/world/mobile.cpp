@@ -190,7 +190,7 @@ void Mobile::stopAnim() {
 }
 
 void Mobile::setDirection(unsigned int direction) {
-    isRunning_ = direction_ & Direction::RUNNING;
+    isRunning_ = (direction & Direction::RUNNING) != 0;
     direction_ = direction & 0x7;
 
     if (textureProvider_) {
@@ -211,6 +211,10 @@ void Mobile::setDirection(unsigned int direction) {
 
 unsigned int Mobile::getDirection() const {
     return direction_;
+}
+
+bool Mobile::isRunning() const {
+    return isRunning_;
 }
 
 bool Mobile::isMirrored() const {

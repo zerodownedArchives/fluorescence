@@ -69,6 +69,7 @@ public:
     virtual bool isMirrored() const;
     void setDirection(unsigned int direction);
     unsigned int getDirection() const;
+    bool isRunning() const;
 
     bool hasProperty(const UnicodeString& name) const;
     Variable& getProperty(const UnicodeString& name);
