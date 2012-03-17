@@ -284,7 +284,7 @@ void IngameObject::setOverheadMessageOffsets() {
 
     for (; iter != end; ++iter) {
         if ((*iter)->isSpeech()) {
-            boost::shared_ptr<OverheadMessage> msgObj = boost::dynamic_pointer_cast<OverheadMessage>(*iter);
+            boost::shared_ptr<OverheadMessage> msgObj = boost::static_pointer_cast<OverheadMessage>(*iter);
             int curHeight = (*iter)->getIngameTexture()->getHeight();
             int curOffset = offset - curHeight;
             msgObj->setParentPixelOffset(curOffset);
@@ -441,6 +441,10 @@ bool IngameObject::isSpeech() const {
 
 bool IngameObject::isParticleEffect() const {
     return objectType_ == TYPE_PARTICLE_EFFECT;
+}
+
+bool IngameObject::isOsiEffect() const {
+    return objectType_ == TYPE_OSI_EFFECT;
 }
 
 void IngameObject::onDelete() {

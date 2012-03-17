@@ -135,7 +135,7 @@ void DynamicItem::updateVertexCoordinates() {
         //int py = (getLocX() + getLocY()) * 22 - texHeight + 44;
         //py -= getLocZ() * 4;
 
-        boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
+        boost::shared_ptr<Mobile> parent = boost::static_pointer_cast<Mobile>(parentObject_.lock());
 
         int px = (parent->getLocXDraw() - parent->getLocYDraw()) * 22 + 22;
         int py = (parent->getLocXDraw() + parent->getLocYDraw()) * 22 - parent->getLocZDraw() * 4 + 22;
@@ -180,7 +180,7 @@ void DynamicItem::updateRenderDepth() {
     }
 
     if (equipped_) {
-        boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
+        boost::shared_ptr<Mobile> parent = boost::static_pointer_cast<Mobile>(parentObject_.lock());
 
         unsigned int layerTmp = layer_ - 1;
         if (layerTmp >= layerPriorities[parent->getDirection()].size()) {
@@ -213,7 +213,7 @@ void DynamicItem::updateRenderDepth() {
 
 void DynamicItem::updateTextureProvider() {
     if (equipped_) {
-        boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
+        boost::shared_ptr<Mobile> parent = boost::static_pointer_cast<Mobile>(parentObject_.lock());
         
         unsigned int animId;
         unsigned int idleAnim = parent->getIdleAnim();
@@ -284,27 +284,22 @@ void DynamicItem::onStartDrag(const CL_Point& mousePos) {
 void DynamicItem::onDraggedOnto(boost::shared_ptr<IngameObject> obj) {
     const IngameObject* rawPtr = obj.get();
 
-    const MapTile* mapTile = dynamic_cast<const MapTile*>(rawPtr);
-    if (mapTile) {
+    if (obj->isMap()) {
+        const MapTile* mapTile = static_cast<const MapTile*>(rawPtr);
         net::packets::DropItem pkt(this, mapTile->getLocXGame(), mapTile->getLocYGame(), mapTile->getLocZGame());
         net::Manager::getSingleton()->send(pkt);
         return;
-    }
-
-    const StaticItem* sItem = dynamic_cast<const StaticItem*>(rawPtr);
-    if (sItem) {
+    } else if (obj->isStaticItem()) {
+        const StaticItem* sItem = static_cast<const StaticItem*>(rawPtr);
         net::packets::DropItem pkt(this, sItem->getLocXGame(), sItem->getLocYGame(), sItem->getLocZGame());
         net::Manager::getSingleton()->send(pkt);
         return;
-    }
+    } else if (obj->isDynamicItem()) {
 
-    // TODO
-    const DynamicItem* dItem = dynamic_cast<const DynamicItem*>(rawPtr);
-    if (dItem) {
-    }
-
-    const Mobile* mobile = dynamic_cast<const Mobile*>(rawPtr);
-    if (mobile) {
+        // TODO
+        //const DynamicItem* dItem = dynamic_cast<const DynamicItem*>(rawPtr);
+    } else if (obj->isMobile()) {
+        //const Mobile* mobile = static_cast<const Mobile*>(rawPtr);
     }
 }
 
@@ -375,7 +370,7 @@ void DynamicItem::openContainerGump(unsigned int gumpId) {
     ui::components::ContainerView* contView = dynamic_cast<ui::components::ContainerView*>(containerGump_->get_named_item("container"));
     if (contView) {
         contView->setBackgroundGumpId(gumpId);
-        boost::shared_ptr<DynamicItem> dynSelf = boost::dynamic_pointer_cast<DynamicItem>(shared_from_this());
+        boost::shared_ptr<DynamicItem> dynSelf = boost::static_pointer_cast<DynamicItem>(shared_from_this());
         contView->setContainerObject(dynSelf);
     } else {
         LOG_ERROR << "Unable to find container component in container gump" << std::endl;

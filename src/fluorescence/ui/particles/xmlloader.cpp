@@ -178,10 +178,10 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node)
         ret->emitPerSecond_.set(frequency, frequency);
         
         if (motionModelExplosion) {
-            boost::shared_ptr<MotionModelAwayFromEmitter> motionMod = boost::dynamic_pointer_cast<MotionModelAwayFromEmitter>(ret->emittedMotionModel_);
+            boost::shared_ptr<MotionModelAwayFromEmitter> motionMod = boost::static_pointer_cast<MotionModelAwayFromEmitter>(ret->emittedMotionModel_);
             motionMod->setAccelerationT0(accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
         } else if (motionModelVelocities) {
-            boost::shared_ptr<MotionModelStartEndVelocity> motionMod = boost::dynamic_pointer_cast<MotionModelStartEndVelocity>(ret->emittedMotionModel_);
+            boost::shared_ptr<MotionModelStartEndVelocity> motionMod = boost::static_pointer_cast<MotionModelStartEndVelocity>(ret->emittedMotionModel_);
             motionMod->setVelocitiesT0(velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax);
         }
         
@@ -219,10 +219,10 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node)
         ret->emitPerSecond_.setT1(frequency);
         
         if (motionModelExplosion) {
-            boost::shared_ptr<MotionModelAwayFromEmitter> motionMod = boost::dynamic_pointer_cast<MotionModelAwayFromEmitter>(ret->emittedMotionModel_);
+            boost::shared_ptr<MotionModelAwayFromEmitter> motionMod = boost::static_pointer_cast<MotionModelAwayFromEmitter>(ret->emittedMotionModel_);
             motionMod->setAccelerationT1(accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
         } else if (motionModelVelocities) {
-            boost::shared_ptr<MotionModelStartEndVelocity> motionMod = boost::dynamic_pointer_cast<MotionModelStartEndVelocity>(ret->emittedMotionModel_);
+            boost::shared_ptr<MotionModelStartEndVelocity> motionMod = boost::static_pointer_cast<MotionModelStartEndVelocity>(ret->emittedMotionModel_);
             motionMod->setVelocitiesT1(velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax);
         }
         

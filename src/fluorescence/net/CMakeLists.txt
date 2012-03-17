@@ -78,6 +78,8 @@ set (PACKETS_HPP
     net/packets/gumpmenu.hpp
     net/packets/gumpreply.hpp
     net/packets/updaterange.hpp
+    net/packets/osieffect.hpp
+    net/packets/osieffectextended.hpp
 
     net/packets/bf.hpp
     net/packets/bf/changemap.hpp
@@ -137,6 +139,8 @@ set (PACKETS_CPP
     net/packets/gumpmenu.cpp
     net/packets/gumpreply.cpp
     net/packets/updaterange.cpp
+    net/packets/osieffect.cpp
+    net/packets/osieffectextended.cpp
 
     net/packets/bf.cpp
     net/packets/bf/changemap.cpp

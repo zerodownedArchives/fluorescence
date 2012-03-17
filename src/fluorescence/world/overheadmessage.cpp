@@ -88,7 +88,7 @@ void OverheadMessage::expire() {
         removeFromAllRenderQueues();
     }
 
-    boost::shared_ptr<OverheadMessage> sharedThis = boost::dynamic_pointer_cast<OverheadMessage>(shared_from_this());
+    boost::shared_ptr<OverheadMessage> sharedThis = boost::static_pointer_cast<OverheadMessage>(shared_from_this());
     world::Manager::getSingleton()->unregisterOverheadMessage(sharedThis);
     
     if (sector_) {

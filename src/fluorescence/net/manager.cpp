@@ -137,7 +137,9 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0xB0: ret.reset(new packets::GumpMenu()); break;
         case 0xBD: ret.reset(new packets::ClientVersion()); break;
         case 0xBF: ret.reset(new packets::BF()); break;
+        case 0xC0: ret.reset(new packets::OsiEffect()); break;
         case 0xC1: ret.reset(new packets::LocalizedText()); break;
+        case 0xC7: ret.reset(new packets::OsiEffectExtended()); break;
         case 0xC8: ret.reset(new packets::UpdateRange()); break;
         case 0xCC: ret.reset(new packets::LocalizedTextAffix()); break;
         default: ret.reset(new packets::Unknown(id)); break;

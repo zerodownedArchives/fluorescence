@@ -48,8 +48,8 @@ bool GumpRenderQueue::renderDepthComparator(const boost::shared_ptr<world::Ingam
         return true;
     }
 
-    boost::shared_ptr<world::DynamicItem> aDyn = boost::dynamic_pointer_cast<world::DynamicItem>(a);
-    boost::shared_ptr<world::DynamicItem> bDyn = boost::dynamic_pointer_cast<world::DynamicItem>(b);
+    boost::shared_ptr<world::DynamicItem> aDyn = boost::static_pointer_cast<world::DynamicItem>(a);
+    boost::shared_ptr<world::DynamicItem> bDyn = boost::static_pointer_cast<world::DynamicItem>(b);
 
     unsigned int aLayer = aDyn->getLayer() - 1;
     unsigned int bLayer = bDyn->getLayer() - 1;

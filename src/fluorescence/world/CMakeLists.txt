@@ -15,6 +15,8 @@ set (WORLD_HPP
     world/smoothmovementmanager.hpp
     world/particleeffect.hpp
     world/playerwalkmanager.hpp
+    world/effect.hpp
+    world/osieffect.hpp
     )
 
 set (WORLD_CPP
@@ -33,6 +35,8 @@ set (WORLD_CPP
     world/smoothmovementmanager.cpp
     world/particleeffect.cpp
     world/playerwalkmanager.cpp
+    world/effect.cpp
+    world/osieffect.cpp
     )
 
 set(WORLD_FILES ${WORLD_HPP} ${WORLD_CPP} PARENT_SCOPE)

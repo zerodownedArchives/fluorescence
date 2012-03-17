@@ -17,38 +17,33 @@
  */
 
 
-#ifndef FLUO_WORLD_PARTICLEFFECT_HPP
-#define FLUO_WORLD_PARTICLEFFECT_HPP
+#ifndef FLUO_WORLD_OSIEFFECT_HPP
+#define FLUO_WORLD_OSIEFFECT_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <list>
-#include <ClanLib/Display/Render/graphic_context.h>
+#include "effect.hpp"
+
+#include <ui/textureprovider.hpp>
 
 namespace fluo {
-
-namespace ui {
-namespace particles {
-class Emitter;
-}
-}
-    
 namespace world {
-
-class ParticleEffect {
+    
+class OsiEffect : public Effect {
 public:
-    ParticleEffect();
-    
-    virtual void update(unsigned int elapsedMillis);
-    
-    bool isExpired() const;
-    void renderAll(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader);
-    void addEmitter(boost::shared_ptr<ui::particles::Emitter> emitter);
+    OsiEffect(unsigned int artId);
+
+    virtual boost::shared_ptr<ui::Texture> getIngameTexture() const;
+    virtual void updateTextureProvider();
+    virtual bool updateAnimation(unsigned int elapsedMillis);
+    virtual void updateVertexCoordinates();
+    virtual void updateRenderDepth();
     
 private:
-    std::list<boost::shared_ptr<ui::particles::Emitter> > emitters_;
+    unsigned int artId_;
+    boost::shared_ptr<ui::TextureProvider> textureProvider_;
 };
 
 }
 }
 
 #endif
+

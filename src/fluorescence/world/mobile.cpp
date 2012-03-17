@@ -180,7 +180,7 @@ void Mobile::animate(unsigned int animId, unsigned int delay, unsigned int repea
 
     for (; iter != end; ++iter) {
         if ((*iter)->isDynamicItem()) {
-            boost::dynamic_pointer_cast<DynamicItem>(*iter)->animate(animId, delay, repeatMode);
+            boost::static_pointer_cast<DynamicItem>(*iter)->animate(animId, delay, repeatMode);
         }
     }
 }
@@ -204,7 +204,7 @@ void Mobile::setDirection(unsigned int direction) {
 
     for (; iter != end; ++iter) {
         if ((*iter)->isDynamicItem()) {
-            boost::dynamic_pointer_cast<DynamicItem>(*iter)->setDirection(direction_);
+            boost::static_pointer_cast<DynamicItem>(*iter)->setDirection(direction_);
         }
     }
 }
@@ -357,7 +357,7 @@ void Mobile::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
     }
     
     if (obj->isDynamicItem()) {
-        boost::dynamic_pointer_cast<DynamicItem>(obj)->setDirection(getDirection());
+        boost::static_pointer_cast<DynamicItem>(obj)->setDirection(getDirection());
     }
     
     updateIdleAnim();
@@ -397,7 +397,7 @@ void Mobile::updateIdleAnim() {
     
     for (; iter != end; ++iter) {
         if ((*iter)->isDynamicItem()) {
-             boost::dynamic_pointer_cast<DynamicItem>(*iter)->setIdleAnim(idleAnim);
+             boost::static_pointer_cast<DynamicItem>(*iter)->setIdleAnim(idleAnim);
         }
     }
 }
@@ -473,7 +473,7 @@ bool Mobile::hasItemOnLayer(unsigned int layer) const {
     std::list<boost::shared_ptr<IngameObject> >::const_iterator end = childObjects_.end();
     
     for (; iter != end; ++iter) {
-        if ((*iter)->isDynamicItem() && boost::dynamic_pointer_cast<DynamicItem>(*iter)->getLayer() == layer) {
+        if ((*iter)->isDynamicItem() && boost::static_pointer_cast<DynamicItem>(*iter)->getLayer() == layer) {
             return true;
         }
     }

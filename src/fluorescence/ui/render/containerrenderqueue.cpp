@@ -41,8 +41,8 @@ bool ContainerRenderQueue::renderDepthComparator(const boost::shared_ptr<world::
         return true;
     }
 
-    boost::shared_ptr<world::DynamicItem> aDyn = boost::dynamic_pointer_cast<world::DynamicItem>(a);
-    boost::shared_ptr<world::DynamicItem> bDyn = boost::dynamic_pointer_cast<world::DynamicItem>(b);
+    boost::shared_ptr<world::DynamicItem> aDyn = boost::static_pointer_cast<world::DynamicItem>(a);
+    boost::shared_ptr<world::DynamicItem> bDyn = boost::static_pointer_cast<world::DynamicItem>(b);
 
     return aDyn->getSerial() <= bDyn->getSerial();
 }

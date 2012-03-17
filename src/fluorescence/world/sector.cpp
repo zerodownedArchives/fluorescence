@@ -301,7 +301,7 @@ bool Sector::checkMovement(const CL_Vec3f& curLocation, int stepReach, CL_Vec3f&
         
         // first, check if we can step on this tile
         if (curObj->isMap()) {
-            world::MapTile* mapTile = dynamic_cast<world::MapTile*>(curObj);
+            world::MapTile* mapTile = static_cast<world::MapTile*>(curObj);
             if (mapTile->getTileDataInfo()->impassable()) {
                 continue;
             }
@@ -321,9 +321,9 @@ bool Sector::checkMovement(const CL_Vec3f& curLocation, int stepReach, CL_Vec3f&
             bool isDynamic = false;
             if (curObj->isDynamicItem()) {
                 isDynamic = true;
-                dynamicObj = (world::DynamicItem*)(curObj);
+                dynamicObj = static_cast<world::DynamicItem*>(curObj);
             } else {
-                staticObj = (world::StaticItem*)(curObj);
+                staticObj = static_cast<world::StaticItem*>(curObj);
             }
             const data::StaticTileInfo* tileInfo = isDynamic ? dynamicObj->getTileDataInfo() : staticObj->getTileDataInfo();
             

@@ -17,38 +17,31 @@
  */
 
 
-#ifndef FLUO_WORLD_PARTICLEFFECT_HPP
-#define FLUO_WORLD_PARTICLEFFECT_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <list>
-#include <ClanLib/Display/Render/graphic_context.h>
+#include "osieffectextended.hpp"
 
 namespace fluo {
+namespace net {
+namespace packets {
 
-namespace ui {
-namespace particles {
-class Emitter;
-}
-}
-    
-namespace world {
-
-class ParticleEffect {
-public:
-    ParticleEffect();
-    
-    virtual void update(unsigned int elapsedMillis);
-    
-    bool isExpired() const;
-    void renderAll(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader);
-    void addEmitter(boost::shared_ptr<ui::particles::Emitter> emitter);
-    
-private:
-    std::list<boost::shared_ptr<ui::particles::Emitter> > emitters_;
-};
-
-}
+OsiEffectExtended::OsiEffectExtended() : OsiEffect(0xC7, 49) {
 }
 
-#endif
+bool OsiEffectExtended::read(const int8_t* buf, unsigned int len, unsigned int& index) {
+    bool ret = OsiEffect::read(buf, len, index);;
+    
+    ret &= PacketReader::read(buf, len, index, effectArtId_);
+    ret &= PacketReader::read(buf, len, index, explodeArtId_);
+    ret &= PacketReader::read(buf, len, index, explodeSound_);
+    ret &= PacketReader::read(buf, len, index, unknownSerial_);
+    ret &= PacketReader::read(buf, len, index, layer_);
+    
+    // jump 2 unknown bytes
+    index += 2;
+
+    return ret;
+}
+
+}
+}
+}

@@ -54,6 +54,7 @@ public:
         TYPE_MOBILE,
         TYPE_SPEECH,
         TYPE_PARTICLE_EFFECT,
+        TYPE_OSI_EFFECT,
     };
 
     IngameObject(unsigned int objectType);
@@ -135,6 +136,7 @@ public:
     bool isMobile() const;
     bool isSpeech() const;
     bool isParticleEffect() const;
+    bool isOsiEffect() const;
 
     const ui::WorldRenderData& getWorldRenderData() const;
     ui::WorldRenderData& getWorldRenderData();

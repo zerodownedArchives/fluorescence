@@ -137,13 +137,13 @@ void WorldViewRenderer::renderPreviousTexture(CL_GraphicContext& gc, float pixel
 
 
 void WorldViewRenderer::render(CL_GraphicContext& gc) {
-    CL_BufferControl buffer_control;
-    buffer_control.set_depth_compare_function(cl_comparefunc_lequal);
-    buffer_control.enable_depth_write(false);
-    buffer_control.enable_depth_test(false);
-    buffer_control.enable_stencil_test(false);
-    buffer_control.enable_color_write(true);
-    gc.set_buffer_control(buffer_control);
+    CL_BufferControl bufferControl;
+    bufferControl.set_depth_compare_function(cl_comparefunc_lequal);
+    bufferControl.enable_depth_write(false);
+    bufferControl.enable_depth_test(false);
+    bufferControl.enable_stencil_test(false);
+    bufferControl.enable_color_write(true);
+    gc.set_buffer_control(bufferControl);
     
     CL_Vec2f clippingTopLeftCorner = worldView_->getTopLeftPixel();
     
@@ -235,50 +235,28 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
         }
     }
     
-    gc.reset_program_object();
-    gc.reset_textures();
-    
     ui::Manager::getClipRectManager()->clear();
     
-    //buffer_control.enable_depth_write(false);
-    //buffer_control.enable_depth_test(false);
-    //buffer_control.enable_stencil_test(false);
-    //buffer_control.enable_color_write(true);
-    //gc.set_buffer_control(buffer_control);
 
-
-    //static unsigned int cnt = 0;
-    //static boost::shared_ptr<world::ParticleEffect> testEmitter3 = particles::XmlLoader::fromFile("gate");
+    // render particle effects
+    //CL_Pen defPen = gc.get_pen();
+    //CL_Pen pen;
+    //pen.enable_vertex_program_point_size(true);
+    //pen.enable_point_sprite(true);
+    //gc.set_pen(pen);
     
-    //if (cnt >= 150) {
-        //testEmitter3->update(20);
-        
-        //// render particle effects
-        //shader = ui::Manager::getShaderManager()->getParticleShader();
-        //gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
+    //shader = ui::Manager::getShaderManager()->getParticleShader();
+    //gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
+    
+    //std::list<boost::shared_ptr<world::ParticleEffect> >::iterator particleIter = world::Manager::getParticleEffectManager()->begin();
+    //std::list<boost::shared_ptr<world::ParticleEffect> >::iterator particleEnd = world::Manager::getParticleEffectManager()->end();
 
-        //CL_Pen defPen = gc.get_pen();
-        //CL_Pen pen;
-        //pen.set_point_size(1.0); // TODO: make this dynamic
-        //pen.enable_vertex_program_point_size(true);
-        //pen.enable_point_sprite(true);
-        //gc.set_pen(pen);
-
-        //testEmitter3->renderAll(gc, shader);
-
-        ////++renderDiff;
-        ////fluo::sleepMs(20);
-
-        //gc.set_pen(defPen);
-        //gc.reset_program_object();
+    //for (; particleIter != particleEnd; ++particleIter) {
+        //(*particleIter)->renderAll(gc, shader);
     //}
-
-    //++cnt;
     
-    
-    if (totalCount > 0) {
-        //LOG_DEBUG << "total: " << totalCount << " not in: " << notInCount << std::endl;
-    }
+    //gc.set_pen(defPen);
+    //gc.reset_program_object();
 }
 
 boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {

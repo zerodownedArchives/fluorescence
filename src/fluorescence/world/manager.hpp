@@ -40,6 +40,7 @@ class DynamicItem;
 class OverheadMessage;
 class PlayerWalkManager;
 class IngameObject;
+class Effect;
 
 class Manager {
 public:
@@ -70,6 +71,8 @@ public:
     void unregisterOverheadMessage(boost::shared_ptr<OverheadMessage> msg);
     
     void setAutoDeleteRange(unsigned int range);
+    
+    void addEffect(boost::shared_ptr<Effect> effect);
 
 private:
     static Manager* singleton_;
@@ -96,6 +99,8 @@ private:
     unsigned int autoDeleteRange_;
     
     std::list<boost::shared_ptr<OverheadMessage> > overheadMessages_;
+    
+    std::list<boost::shared_ptr<world::Effect> > effects_;
 };
 
 }

@@ -27,6 +27,7 @@
 #include "dynamicitem.hpp"
 #include "overheadmessage.hpp"
 #include "playerwalkmanager.hpp"
+#include "effect.hpp"
 
 #include <ui/manager.hpp>
 #include <ui/cliprectmanager.hpp>
@@ -217,6 +218,32 @@ void Manager::update(unsigned int elapsedMillis) {
         }
     }
     
+    
+    std::list<boost::shared_ptr<Effect> >::iterator effectIter = effects_.begin();
+    std::list<boost::shared_ptr<Effect> >::iterator effectEnd = effects_.end();
+    std::list<boost::shared_ptr<Effect> > expiredEffects;
+
+    for (; effectIter != effectEnd; ++effectIter) {
+        (*effectIter)->update(elapsedMillis); // update effect itself (e.g. position)
+        updateObject(effectIter->get(), elapsedMillis);
+
+        if ((*effectIter)->isExpired()) {
+            expiredEffects.push_back(*effectIter);
+        }
+    }
+
+    if (!expiredEffects.empty()) {
+        effectIter = expiredEffects.begin();
+        effectEnd = expiredEffects.end();
+
+        for (; effectIter != effectEnd; ++effectIter) {
+            (*effectIter)->repaintRectangle(false);
+            (*effectIter)->onDelete();
+            effects_.remove(*effectIter);
+        }
+    }
+        
+    
     if (!outOfRangeDelete.empty()) {
         //LOG_DEBUG << "out of range coords=" << playerX << "/" << playerY << std::endl;
         std::list<Serial>::const_iterator iter = outOfRangeDelete.begin();
@@ -253,6 +280,10 @@ void Manager::unregisterOverheadMessage(boost::shared_ptr<OverheadMessage> msg) 
 
 void Manager::setAutoDeleteRange(unsigned int range) {
     autoDeleteRange_ = range + 2;
+}
+
+void Manager::addEffect(boost::shared_ptr<Effect> effect) {
+    effects_.push_back(effect);
 }
 
 }

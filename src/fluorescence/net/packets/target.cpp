@@ -49,17 +49,17 @@ Target::Target(boost::shared_ptr<world::IngameObject> obj) : Packet(0x6c, 19) {
     locZ_ = obj->getLocZGame();
 
     if (obj->isMobile()) {
-        boost::shared_ptr<world::Mobile> mob = boost::dynamic_pointer_cast<world::Mobile>(obj);
+        boost::shared_ptr<world::Mobile> mob = boost::static_pointer_cast<world::Mobile>(obj);
         targetType_ = 0;
         targetSerial_ = mob->getSerial();
         graphicId_ = mob->getBaseBodyId();
     } else if (obj->isDynamicItem()) {
-        boost::shared_ptr<world::DynamicItem> itm = boost::dynamic_pointer_cast<world::DynamicItem>(obj);
+        boost::shared_ptr<world::DynamicItem> itm = boost::static_pointer_cast<world::DynamicItem>(obj);
         targetType_ = 0;
         targetSerial_ = itm->getSerial();
         graphicId_ = itm->getArtId();
     } else if (obj->isStaticItem()) {
-        boost::shared_ptr<world::StaticItem> itm = boost::dynamic_pointer_cast<world::StaticItem>(obj);
+        boost::shared_ptr<world::StaticItem> itm = boost::static_pointer_cast<world::StaticItem>(obj);
         targetType_ = 1;
         targetSerial_ = 0;
         graphicId_ = itm->getArtId();

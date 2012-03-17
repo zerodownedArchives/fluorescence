@@ -17,37 +17,31 @@
  */
 
 
-#ifndef FLUO_WORLD_PARTICLEFFECT_HPP
-#define FLUO_WORLD_PARTICLEFFECT_HPP
+#ifndef FLUO_NET_PACKETS_OSIEFFECTEXTENDED_HPP
+#define FLUO_NET_PACKETS_OSIEFFECTEXTENDED_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <list>
-#include <ClanLib/Display/Render/graphic_context.h>
+#include "osieffect.hpp"
 
 namespace fluo {
+namespace net {
 
-namespace ui {
-namespace particles {
-class Emitter;
-}
-}
-    
-namespace world {
+namespace packets {
 
-class ParticleEffect {
+class OsiEffectExtended : public OsiEffect {
 public:
-    ParticleEffect();
-    
-    virtual void update(unsigned int elapsedMillis);
-    
-    bool isExpired() const;
-    void renderAll(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader);
-    void addEmitter(boost::shared_ptr<ui::particles::Emitter> emitter);
-    
+    OsiEffectExtended();
+
+    virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
+
 private:
-    std::list<boost::shared_ptr<ui::particles::Emitter> > emitters_;
+    uint16_t effectArtId_; // ??
+    uint16_t explodeArtId_;
+    uint16_t explodeSound_;
+    Serial unknownSerial_; // ??
+    uint8_t layer_;
 };
 
+}
 }
 }
 

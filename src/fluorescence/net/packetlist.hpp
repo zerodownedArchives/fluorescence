@@ -63,7 +63,9 @@
 #include "packets/gumpreply.hpp" // 0xb1
 #include "packets/clientversion.hpp" // 0xbd
 #include "packets/bf.hpp" // 0xbf
+#include "packets/osieffect.hpp" // 0xc0
 #include "packets/localizedtext.hpp" // 0xc1
+#include "packets/osieffectextended.hpp" // 0xc7
 #include "packets/updaterange.hpp" // 0xc8
 #include "packets/localizedtextaffix.hpp" // 0xcc
 

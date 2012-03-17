@@ -17,37 +17,47 @@
  */
 
 
-#ifndef FLUO_WORLD_PARTICLEFFECT_HPP
-#define FLUO_WORLD_PARTICLEFFECT_HPP
+#ifndef FLUO_NET_PACKETS_OSIEFFECT_HPP
+#define FLUO_NET_PACKETS_OSIEFFECT_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <list>
-#include <ClanLib/Display/Render/graphic_context.h>
+#include <net/packet.hpp>
+#include <typedefs.hpp>
 
 namespace fluo {
+namespace net {
 
-namespace ui {
-namespace particles {
-class Emitter;
-}
-}
-    
-namespace world {
+namespace packets {
 
-class ParticleEffect {
+class OsiEffect : public Packet {
 public:
-    ParticleEffect();
-    
-    virtual void update(unsigned int elapsedMillis);
-    
-    bool isExpired() const;
-    void renderAll(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader);
-    void addEmitter(boost::shared_ptr<ui::particles::Emitter> emitter);
-    
+    OsiEffect(uint8_t packetId = 0xC0, uint16_t packetLen = 36);
+
+    virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
+
+    virtual void onReceive();
+
 private:
-    std::list<boost::shared_ptr<ui::particles::Emitter> > emitters_;
+    uint8_t effectType_;
+    Serial sourceSerial_;
+    Serial targetSerial_;
+    uint16_t artId_;
+    
+    uint16_t sourceX_;
+    uint16_t sourceY_;
+    int8_t sourceZ_;
+    uint16_t targetX_;
+    uint16_t targetY_;
+    int8_t targetZ_;
+    
+    uint8_t speed_;
+    uint8_t duration_;
+    uint8_t fixedDirection_;
+    uint8_t explode_;
+    uint32_t hue_;
+    uint32_t renderMode_;
 };
 
+}
 }
 }
 
