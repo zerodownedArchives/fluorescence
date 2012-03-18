@@ -19,6 +19,7 @@
 #include "osieffect.hpp"
 
 #include <data/manager.hpp>
+#include <data/animdataloader.hpp>
 
 namespace fluo {
 namespace world {
@@ -55,6 +56,19 @@ void OsiEffect::updateVertexCoordinates() {
 
 void OsiEffect::updateRenderDepth() {
     worldRenderData_.setRenderDepth(getLocXGame(), getLocYGame(), getLocZGame() + 7, 50, 0, 0);
+}
+
+unsigned int OsiEffect::startExplosion() {
+    switch (rand() % 3) {
+        default:
+        case 0: artId_ = 0x36B0; break;
+        case 1: artId_ = 0x36BD; break;
+        case 2: artId_ = 0x36CB; break;
+    }
+    
+    invalidateTextureProvider();
+    data::AnimDataInfo explosionInfo = data::Manager::getAnimDataLoader()->getInfo(artId_);
+    return explosionInfo.frameCount_ * explosionInfo.frameIntervalMillis_;
 }
 
 }

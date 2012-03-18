@@ -37,6 +37,8 @@ public:
     virtual void updateVertexCoordinates();
     virtual void updateRenderDepth();
     
+    virtual unsigned int startExplosion();
+    
 private:
     unsigned int artId_;
     boost::shared_ptr<ui::TextureProvider> textureProvider_;

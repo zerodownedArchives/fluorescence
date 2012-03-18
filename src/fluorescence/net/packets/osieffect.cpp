@@ -39,8 +39,6 @@ OsiEffect::OsiEffect(uint8_t packetId, uint16_t len) : Packet(packetId, len) {
 bool OsiEffect::read(const int8_t* buf, unsigned int len, unsigned int& index) {
     bool ret = true;
     
-    unsigned int origIndex = index;
-    
     ret &= PacketReader::read(buf, len, index, effectType_);
     ret &= PacketReader::read(buf, len, index, sourceSerial_);
     ret &= PacketReader::read(buf, len, index, targetSerial_);
@@ -62,15 +60,13 @@ bool OsiEffect::read(const int8_t* buf, unsigned int len, unsigned int& index) {
     ret &= PacketReader::read(buf, len, index, hue_);
     ret &= PacketReader::read(buf, len, index, renderMode_);
     
-    LOG_DEBUG << "read in osieffect: " << (index - origIndex) << std::endl;
-
     return ret;
 }
 
 void OsiEffect::onReceive() {
     world::Manager* worldMan = world::Manager::getSingleton();
     
-    boost::shared_ptr<world::IngameObject> sourceObj = boost::static_pointer_cast<world::IngameObject>(worldMan->getMobile(sourceSerial_, false));
+    boost::shared_ptr<world::IngameObject> sourceObj = worldMan->getMobile(sourceSerial_, false);
     if (!sourceObj) {
         sourceObj = boost::static_pointer_cast<world::IngameObject>(worldMan->getDynamicItem(sourceSerial_, false));
     }
@@ -87,7 +83,7 @@ void OsiEffect::onReceive() {
     
     switch (effectType_) {
         case world::Effect::TYPE_SOURCE_TO_TARGET:
-            effect->setMoving(sourceObj, targetObj);
+            effect->setMoving(sourceObj, targetObj, speed_);
             break;
             
         case world::Effect::TYPE_LIGHTNING:
@@ -95,7 +91,7 @@ void OsiEffect::onReceive() {
             break;
             
         case world::Effect::TYPE_AT_POSITION:
-            effect->setAtPosition(targetX_, targetY_, targetZ_);
+            effect->setAtPosition(sourceX_, sourceY_, sourceZ_);
             break;
             
         case world::Effect::TYPE_AT_SOURCE:
@@ -104,6 +100,7 @@ void OsiEffect::onReceive() {
     }
     
     effect->setLifetimeMillis(duration_ * 50);
+    effect->setShouldExplode(explode_ != 0);
     
     worldMan->addEffect(effect);
 }

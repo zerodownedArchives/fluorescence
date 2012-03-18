@@ -18,6 +18,8 @@
 
 #include "effect.hpp"
 
+#include <iomanip>
+
 #include "sector.hpp"
 #include "sectormanager.hpp"
 #include "manager.hpp"
@@ -28,12 +30,18 @@ namespace fluo {
 namespace world {
     
 Effect::Effect(unsigned int ingameObjectType) :
-        IngameObject(ingameObjectType), expired_(false), lifetimeMillisLeft_(0) {
+        IngameObject(ingameObjectType), expired_(false), lifetimeMillisLeft_(0), shouldExplode_(false), exploding_(false) {
 }
 
-void Effect::setMoving(boost::shared_ptr<IngameObject> source, boost::shared_ptr<IngameObject> target) {
+void Effect::setMoving(boost::shared_ptr<IngameObject> source, boost::shared_ptr<IngameObject> target, unsigned int speed) {
     sourceObject_ = source;
     targetObject_ = target;
+    speed_ = speed;
+    speedPerSecond_ = (target->getLocation() - source->getLocation()).length() * (speed_ / 2.f) + 0.5f;
+    if (speedPerSecond_ < 1) {
+        speedPerSecond_ = 1.0f;
+    }
+    setLocation(source->getLocation());
     effectType_ = TYPE_SOURCE_TO_TARGET;
 }
 
@@ -41,6 +49,8 @@ void Effect::setLightning(boost::shared_ptr<IngameObject> source, boost::shared_
     sourceObject_ = source;
     targetObject_ = target;
     effectType_ = TYPE_LIGHTNING;
+    
+    // ligthing effect is composed of 10 gump graphics starting from 0x4e20 (20000)
 }
 
 void Effect::setAtPosition(unsigned int x, unsigned int y, int z) {
@@ -59,9 +69,38 @@ void Effect::setLifetimeMillis(unsigned int millis) {
 
 void Effect::update(unsigned int elapsedMillis) {
     switch (effectType_) {
-        case TYPE_SOURCE_TO_TARGET:
-            // interpolate
+        case TYPE_SOURCE_TO_TARGET: {
+            boost::shared_ptr<IngameObject> targetObj = targetObject_.lock();
+            boost::shared_ptr<IngameObject> sourceObj = sourceObject_.lock();
+            if (!targetObj || !sourceObj) {
+                expired_ = true;
+                break;
+            }
+            
+            if (exploding_) {
+                if (getLocation() != targetObj->getLocation()) {
+                    setLocation(targetObj->getLocation());
+                }
+            } else {
+                // interpolate
+                float timeFactor = elapsedMillis / 1000.f * speedPerSecond_;
+                
+                CL_Vec3f totalDistance = targetObj->getLocation() - getLocation();
+                
+                if (totalDistance.length() <= timeFactor) {
+                    // reached target
+                    setLocation(targetObj->getLocation());
+                    lifetimeMillisLeft_ = -1;
+                } else {
+                    CL_Vec3f step = totalDistance.normalize() * timeFactor;
+                    setLocation(getLocation() + step);
+                    
+                    // does not expire while moving
+                    lifetimeMillisLeft_ = elapsedMillis;
+                }
+            }
             break;
+        }
             
         case TYPE_LIGHTNING:
             break;
@@ -85,7 +124,13 @@ void Effect::update(unsigned int elapsedMillis) {
     // check expire time
     lifetimeMillisLeft_ -= elapsedMillis;
     if (lifetimeMillisLeft_ < 0) {
-        expired_ = true;
+        if (shouldExplode_) {
+            shouldExplode_ = false;
+            exploding_ = true;
+            lifetimeMillisLeft_ = startExplosion();
+        } else {
+            expired_ = true;
+        }
     }
 }
 
@@ -117,6 +162,10 @@ void Effect::onLocationChanged(const CL_Vec3f& oldLocation) {
     }
     
     sector_ = newSector;
+}
+
+void Effect::setShouldExplode(bool value) {
+    shouldExplode_ = value;
 }
 
 }

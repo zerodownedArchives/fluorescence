@@ -237,7 +237,7 @@ void Manager::update(unsigned int elapsedMillis) {
         effectEnd = expiredEffects.end();
 
         for (; effectIter != effectEnd; ++effectIter) {
-            (*effectIter)->repaintRectangle(false);
+            (*effectIter)->repaintRectangle(true);
             (*effectIter)->onDelete();
             effects_.remove(*effectIter);
         }

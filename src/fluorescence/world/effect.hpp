@@ -38,7 +38,7 @@ public:
 
     Effect(unsigned int ingameObjectType);
     
-    void setMoving(boost::shared_ptr<IngameObject> source, boost::shared_ptr<IngameObject> target);
+    void setMoving(boost::shared_ptr<IngameObject> source, boost::shared_ptr<IngameObject> target, unsigned int speed);
     void setLightning(boost::shared_ptr<IngameObject> source, boost::shared_ptr<IngameObject> target);
     void setAtPosition(unsigned int x, unsigned int y, int z);
     void setAtSource(boost::shared_ptr<IngameObject> source);
@@ -53,7 +53,11 @@ public:
     
     void onDelete();
 
-private:
+    void setShouldExplode(bool value);
+    // returns the explosion duration in milliseconds
+    virtual unsigned int startExplosion() = 0;
+
+protected:
     unsigned int effectType_;
     
     boost::weak_ptr<IngameObject> sourceObject_;
@@ -61,6 +65,12 @@ private:
     
     bool expired_;
     int lifetimeMillisLeft_;
+    
+    bool shouldExplode_;
+    bool exploding_;
+
+    unsigned int speed_;
+    float speedPerSecond_;
 };
     
 }
