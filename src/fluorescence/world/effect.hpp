@@ -54,6 +54,8 @@ public:
     void onDelete();
 
     void setShouldExplode(bool value);
+    void setFixedAngle(bool value);
+    
     // returns the explosion duration in milliseconds
     virtual unsigned int startExplosion() = 0;
 
@@ -71,6 +73,9 @@ protected:
 
     unsigned int speed_;
     float speedPerSecond_;
+    
+    bool fixedAngle_;
+    float currentAngle_;
 };
     
 }

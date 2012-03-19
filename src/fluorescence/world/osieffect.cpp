@@ -48,10 +48,32 @@ void OsiEffect::updateVertexCoordinates() {
     int px = (getLocXDraw() - getLocYDraw()) * 22 - texWidth/2 + 22;
     int py = (getLocXDraw() + getLocYDraw()) * 22 - texHeight + 44;
     py -= getLocZDraw() * 4;
-
-    CL_Rectf rect(px, py, px + texWidth, py + texHeight);
-
-    worldRenderData_.setVertexCoordinates(rect);
+    
+    if (fixedAngle_) {
+        CL_Rectf rect(px, py, px + texWidth, py + texHeight);
+        worldRenderData_.setVertexCoordinates(rect);
+    } else {
+        float centerX = px + texWidth / 2.0f;
+        float centerY = py + texHeight / 2.0f;
+        
+        float sinCur = sin(currentAngle_);
+        float cosCur = cos(currentAngle_);
+        
+        float tmpX = px - centerX;
+        float tmpY = py - centerY;
+        worldRenderData_.setVertexCoordinates(0, (centerX + tmpX * cosCur - tmpY * sinCur), (centerY + tmpX * sinCur + tmpY * cosCur));
+        
+        tmpX = px + texWidth - centerX;
+        worldRenderData_.setVertexCoordinates(1, (centerX + tmpX * cosCur - tmpY * sinCur), (centerY + tmpX * sinCur + tmpY * cosCur));
+        worldRenderData_.setVertexCoordinates(3, (centerX + tmpX * cosCur - tmpY * sinCur), (centerY + tmpX * sinCur + tmpY * cosCur));
+        
+        tmpY = py + texHeight - centerY;
+        worldRenderData_.setVertexCoordinates(5, (centerX + tmpX * cosCur - tmpY * sinCur), (centerY + tmpX * sinCur + tmpY * cosCur));
+        
+        tmpX = px - centerX;
+        worldRenderData_.setVertexCoordinates(2, (centerX + tmpX * cosCur - tmpY * sinCur), (centerY + tmpX * sinCur + tmpY * cosCur));
+        worldRenderData_.setVertexCoordinates(4, (centerX + tmpX * cosCur - tmpY * sinCur), (centerY + tmpX * sinCur + tmpY * cosCur));
+    }
 }
 
 void OsiEffect::updateRenderDepth() {

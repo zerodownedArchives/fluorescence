@@ -30,16 +30,17 @@ namespace fluo {
 namespace world {
     
 Effect::Effect(unsigned int ingameObjectType) :
-        IngameObject(ingameObjectType), expired_(false), lifetimeMillisLeft_(0), shouldExplode_(false), exploding_(false) {
+        IngameObject(ingameObjectType), expired_(false), lifetimeMillisLeft_(0), shouldExplode_(false), exploding_(false), fixedAngle_(true), currentAngle_(0) {
 }
 
 void Effect::setMoving(boost::shared_ptr<IngameObject> source, boost::shared_ptr<IngameObject> target, unsigned int speed) {
     sourceObject_ = source;
     targetObject_ = target;
     speed_ = speed;
-    speedPerSecond_ = (target->getLocation() - source->getLocation()).length() * (speed_ / 2.f) + 0.5f;
-    if (speedPerSecond_ < 1) {
-        speedPerSecond_ = 1.0f;
+    float dist = (target->getLocation() - source->getLocation()).length();
+    speedPerSecond_ = dist * (speed_ / 2.f);
+    if (speedPerSecond_ < dist) {
+        speedPerSecond_ = dist;
     }
     setLocation(source->getLocation());
     effectType_ = TYPE_SOURCE_TO_TARGET;
@@ -83,20 +84,36 @@ void Effect::update(unsigned int elapsedMillis) {
                 }
             } else {
                 // interpolate
+                // movement is not exactly like osi, but close enough
                 float timeFactor = elapsedMillis / 1000.f * speedPerSecond_;
                 
-                CL_Vec3f totalDistance = targetObj->getLocation() - getLocation();
+                CL_Vec3f targetLoc = targetObj->getLocation();
+                CL_Vec3f selfLoc = getLocation();
+                CL_Vec3f totalDistance = targetLoc - selfLoc;
                 
                 if (totalDistance.length() <= timeFactor) {
                     // reached target
-                    setLocation(targetObj->getLocation());
+                    setLocation(targetLoc);
                     lifetimeMillisLeft_ = -1;
+                    
+                    fixedAngle_ = true;
+                    currentAngle_ = 0;
                 } else {
                     CL_Vec3f step = totalDistance.normalize() * timeFactor;
-                    setLocation(getLocation() + step);
+                    selfLoc += step;
+                    setLocation(selfLoc);
                     
                     // does not expire while moving
                     lifetimeMillisLeft_ = elapsedMillis;
+                    
+                    if (!fixedAngle_) {
+                        // this has to be in screen coordinates
+                        totalDistance -= step;
+                        float screenDiffX = (totalDistance.x - totalDistance.y) * 44;
+                        float screenDiffY = (totalDistance.x + totalDistance.y) * 44 + totalDistance.z * 4;
+                        
+                        currentAngle_ = atan2(screenDiffY, screenDiffX) + 3.14159265;;
+                    }
                 }
             }
             break;
@@ -166,6 +183,10 @@ void Effect::onLocationChanged(const CL_Vec3f& oldLocation) {
 
 void Effect::setShouldExplode(bool value) {
     shouldExplode_ = value;
+}
+
+void Effect::setFixedAngle(bool value) {
+    fixedAngle_ = value;
 }
 
 }

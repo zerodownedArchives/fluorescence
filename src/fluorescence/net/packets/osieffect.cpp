@@ -76,8 +76,7 @@ void OsiEffect::onReceive() {
         targetObj = boost::static_pointer_cast<world::IngameObject>(worldMan->getDynamicItem(targetSerial_, false));
     }
     
-    LOG_DEBUG << "Effect src!=NULL: " << (bool)sourceObj << " targ!=NULL:" << (bool)targetObj << " duration=" << (unsigned int)duration_ << " speed=" << (unsigned int)speed_ << std::endl;
-    
+    //LOG_DEBUG << "Effect src!=NULL: " << (bool)sourceObj << " targ!=NULL:" << (bool)targetObj << " duration=" << (unsigned int)duration_ << " speed=" << (unsigned int)speed_ << std::endl;
     
     boost::shared_ptr<world::Effect> effect(new world::OsiEffect(artId_));
     
@@ -101,6 +100,7 @@ void OsiEffect::onReceive() {
     
     effect->setLifetimeMillis(duration_ * 50);
     effect->setShouldExplode(explode_ != 0);
+    effect->setFixedAngle(fixedDirection_ != 0);
     
     worldMan->addEffect(effect);
 }
