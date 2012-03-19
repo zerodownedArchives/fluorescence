@@ -17,6 +17,7 @@ set (WORLD_HPP
     world/playerwalkmanager.hpp
     world/effect.hpp
     world/osieffect.hpp
+    world/syslog.hpp
     )
 
 set (WORLD_CPP
@@ -37,6 +38,7 @@ set (WORLD_CPP
     world/playerwalkmanager.cpp
     world/effect.cpp
     world/osieffect.cpp
+    world/syslog.cpp
     )
 
 set(WORLD_FILES ${WORLD_HPP} ${WORLD_CPP} PARENT_SCOPE)

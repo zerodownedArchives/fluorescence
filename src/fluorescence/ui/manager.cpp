@@ -137,7 +137,7 @@ bool Manager::setShardConfig(Config& config) {
     shaderManager_.reset(new ShaderManager(getGraphicContext()));
     
     clipRectManager_.reset(new ClipRectManager());
-
+    
     return true;
 }
 
@@ -331,11 +331,6 @@ void Manager::enterTest(CL_GUIMessage msg, CL_AcceleratorKey key) {
     } else {
         LOG_ERROR << "Unable to find gamewindow gump to activate speech lineedit" << std::endl;
     }
-}
-
-void Manager::systemMessage(const UnicodeString& msg) {
-    // TODO: display, add to journal
-    LOG_INFO << "SysMsg: " << msg << std::endl;
 }
 
 void Manager::queueSingleClick(boost::shared_ptr<world::IngameObject> obj) {

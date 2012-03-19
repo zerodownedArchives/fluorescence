@@ -28,6 +28,7 @@
 #include "overheadmessage.hpp"
 #include "playerwalkmanager.hpp"
 #include "effect.hpp"
+#include "syslog.hpp"
 
 #include <ui/manager.hpp>
 #include <ui/cliprectmanager.hpp>
@@ -73,6 +74,8 @@ Manager::Manager(const Config& config) : currentMapId_(0) {
     smoothMovementManager_.reset(new SmoothMovementManager());
     playerWalkManager_.reset(new PlayerWalkManager());
     
+    sysLog_.reset(new SysLog());
+    
     setAutoDeleteRange(18);
 }
 
@@ -91,6 +94,11 @@ boost::shared_ptr<SmoothMovementManager> Manager::getSmoothMovementManager() {
 boost::shared_ptr<PlayerWalkManager> Manager::getPlayerWalkManager() {
     return getSingleton()->playerWalkManager_;
 }
+
+boost::shared_ptr<SysLog> Manager::getSysLog() {
+    return getSingleton()->sysLog_;
+}
+
 
 unsigned int Manager::getCurrentMapId() {
     return currentMapId_;
@@ -160,6 +168,8 @@ boost::shared_ptr<DynamicItem> Manager::getDynamicItem(Serial serial, bool creat
 void Manager::step(unsigned int elapsedMillis) {
     world::Manager::getSectorManager()->deleteSectors();
     world::Manager::getSectorManager()->addNewSectors();
+    
+    sysLog_->update(elapsedMillis);
 
     update(elapsedMillis);
 }
@@ -284,6 +294,12 @@ void Manager::setAutoDeleteRange(unsigned int range) {
 
 void Manager::addEffect(boost::shared_ptr<Effect> effect) {
     effects_.push_back(effect);
+}
+
+void Manager::systemMessage(const UnicodeString& msg, unsigned int hue, unsigned int font) {
+    sysLog_->add(msg, hue, font);
+    
+    // TODO: add to journal
 }
 
 }

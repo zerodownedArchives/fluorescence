@@ -43,6 +43,7 @@
 #include "components/image.hpp"
 #include "components/background.hpp"
 #include "components/uocheckbox.hpp"
+#include "components/sysloglabel.hpp"
 
 namespace fluo {
 namespace ui {
@@ -924,6 +925,30 @@ bool XmlParser::parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     ui::components::WorldView* worldView = new ui::components::WorldView(parent, bounds);
 
     parseId(node, worldView);
+    
+    
+    
+    
+    
+    
+    
+    components::SysLogLabel* sysLogLabel = new components::SysLogLabel(top);
+    sysLogLabel->setMaxGeometry(CL_Rectf(0, 0, 200, 600));
+    top->addToCurrentPage(sysLogLabel);
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     return true;
 }

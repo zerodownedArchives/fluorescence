@@ -85,8 +85,6 @@ public:
     void installMacros();
     void uninstallMacros();
 
-    void systemMessage(const UnicodeString& msg);
-
     // called by the doubleclick handler, resp. the cursor manager
     void queueSingleClick(boost::shared_ptr<world::IngameObject> obj);
     void queueDoubleClick(boost::shared_ptr<world::IngameObject> obj);

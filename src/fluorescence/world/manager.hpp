@@ -41,6 +41,7 @@ class OverheadMessage;
 class PlayerWalkManager;
 class IngameObject;
 class Effect;
+class SysLog;
 
 class Manager {
 public:
@@ -53,6 +54,7 @@ public:
     static boost::shared_ptr<LightManager> getLightManager();
     static boost::shared_ptr<SmoothMovementManager> getSmoothMovementManager();
     static boost::shared_ptr<PlayerWalkManager> getPlayerWalkManager();
+    static boost::shared_ptr<SysLog> getSysLog();
 
     unsigned int getCurrentMapId();
     void setCurrentMapId(unsigned int id);
@@ -73,6 +75,8 @@ public:
     void setAutoDeleteRange(unsigned int range);
     
     void addEffect(boost::shared_ptr<Effect> effect);
+    
+    void systemMessage(const UnicodeString& msg, unsigned int hue = 0, unsigned int font = 0);
 
 private:
     static Manager* singleton_;
@@ -101,6 +105,8 @@ private:
     std::list<boost::shared_ptr<OverheadMessage> > overheadMessages_;
     
     std::list<boost::shared_ptr<world::Effect> > effects_;
+    
+    boost::shared_ptr<SysLog> sysLog_;
 };
 
 }

@@ -60,6 +60,7 @@ set (GUMPMENU_HPP
     ui/components/uocheckbox.hpp
     ui/components/textentry.hpp
     ui/components/uoradiobutton.hpp
+    ui/components/sysloglabel.hpp
     )
 
 set (GUMPMENU_CPP
@@ -83,6 +84,7 @@ set (GUMPMENU_CPP
     ui/components/uocheckbox.cpp
     ui/components/textentry.cpp
     ui/components/uoradiobutton.cpp
+    ui/components/sysloglabel.cpp
     )
 
 set (RENDER_HPP

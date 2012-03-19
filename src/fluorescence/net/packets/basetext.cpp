@@ -27,8 +27,6 @@
 #include <world/dynamicitem.hpp>
 #include <world/overheadmessage.hpp>
 
-#include <ui/manager.hpp>
-
 namespace fluo {
 namespace net {
 namespace packets {
@@ -38,7 +36,7 @@ BaseText::BaseText(uint8_t packetId) : Packet(packetId) {
 
 void BaseText::onReceive() {
     if (type_ == TextType::SYSTEM || serial_ == 0xFFFFFFFF) {
-        ui::Manager::getSingleton()->systemMessage(text_);
+        world::Manager::getSingleton()->systemMessage(text_, hue_, font_);
     } else if (mobileMessage()) {
     } else if (itemMessage()) {
     } else {
