@@ -67,7 +67,9 @@ public:
     CL_Vec3f hueInfo_;
     
     CL_Rectf previousVertexRect_;
+    
     CL_Rectf getCurrentVertexRect() const;
+    CL_Rectf getCurrentVertexRectFast() const;
 
 private:
     void invalidateTextureProvider();
@@ -88,6 +90,9 @@ private:
     CL_Vec3f vertexCoordinates_[6];
 
     RenderDepth renderDepth_;
+    
+    // stores if the vertex coordinates were set with a simple rectangle. makes calculating the current rectangle faster
+    bool vertexRectFast_;
 };
 
 }

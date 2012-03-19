@@ -20,13 +20,15 @@
 
 #include "worldrenderdata.hpp"
 
+#include <float.h>
+
 #include <misc/log.hpp>
 
 namespace fluo {
 namespace ui {
 
 WorldRenderData::WorldRenderData() :
-            textureProviderUpdateRequired_(true), vertexCoordinatesUpdateRequired_(true), renderDepthUpdateRequired_(true) {
+            textureProviderUpdateRequired_(true), vertexCoordinatesUpdateRequired_(true), renderDepthUpdateRequired_(true), vertexRectFast_(false) {
     for (unsigned int i = 0; i < 6; ++i) {
         vertexNormals_[i] = CL_Vec3f(0, 0, 1);
     }
@@ -79,6 +81,8 @@ void WorldRenderData::onRenderDepthUpdate() {
 void WorldRenderData::setVertexCoordinates(unsigned int idx, float x, float y) {
     vertexCoordinates_[idx].x = x;
     vertexCoordinates_[idx].y = y;
+    
+    vertexRectFast_ = false;
 }
 
 void WorldRenderData::setRenderDepth(uint16_t x, uint16_t y, int8_t z, uint8_t priority, uint8_t byte7, uint8_t byte8) { 
@@ -118,6 +122,8 @@ void WorldRenderData::setVertexCoordinates(const CL_Rectf& rect) {
     vertexCoordinates_[4].y = rect.bottom;
     vertexCoordinates_[5].x = rect.right;
     vertexCoordinates_[5].y = rect.bottom;
+    
+    vertexRectFast_ = true;
 }
 
 void WorldRenderData::resetPreUpdate() {
@@ -130,11 +136,29 @@ void WorldRenderData::resetPreUpdate() {
     }
 }
 
-CL_Rectf WorldRenderData::getCurrentVertexRect() const {
-    // this is only used to get the rectangular areas we need to redraw. it does not give a correct rectangle for map tiles, 
-    // but if map tiles are updated the sector provides a big rectangle anyways
+CL_Rectf WorldRenderData::getCurrentVertexRectFast() const {
     return CL_Rectf(vertexCoordinates_[0].x, vertexCoordinates_[0].y, vertexCoordinates_[5].x, vertexCoordinates_[5].y);
 };
+
+CL_Rectf WorldRenderData::getCurrentVertexRect() const {
+    if (vertexRectFast_) {
+        return getCurrentVertexRectFast();
+    }
+    
+    float xmin = FLT_MAX;
+    float xmax = FLT_MIN;
+    float ymin = FLT_MAX;
+    float ymax = FLT_MIN;
+    
+    for (unsigned int i = 0; i < 6; ++i) {
+        xmin = (std::min)(xmin, vertexCoordinates_[i].x);
+        xmax = (std::max)(xmax, vertexCoordinates_[i].x);
+        ymin = (std::min)(ymin, vertexCoordinates_[i].y);
+        ymax = (std::max)(ymax, vertexCoordinates_[i].y);
+    }
+    
+    return CL_Rectf(xmin, ymin, xmax, ymax);
+}
 
 bool WorldRenderData::textureOrVerticesUpdated() const {
     return textureOrVerticesUpdated_;
