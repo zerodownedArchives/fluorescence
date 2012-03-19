@@ -208,7 +208,7 @@ float MapTile::getAverageZ() const {
 }
 
 int MapTile::getMaxZ() const {
-    return (std::max)(getLocZGame(), (std::max)(zLeft_, (std::max(zRight_, zBottom_))));
+    return (std::max)(getLocZGame(), (std::max)(zLeft_, (std::max)(zRight_, zBottom_)));
 }
 
 

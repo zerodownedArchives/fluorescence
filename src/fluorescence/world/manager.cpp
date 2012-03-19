@@ -167,8 +167,8 @@ void Manager::step(unsigned int elapsedMillis) {
 void Manager::update(unsigned int elapsedMillis) {
     smoothMovementManager_->update(elapsedMillis);
     
-    unsigned int playerX = player_->getLocXGame();
-    unsigned int playerY = player_->getLocYGame();
+    int playerX = player_->getLocXGame();
+    int playerY = player_->getLocYGame();
     
     std::list<Serial> outOfRangeDelete;
 
@@ -176,8 +176,8 @@ void Manager::update(unsigned int elapsedMillis) {
     std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobEnd = mobiles_.end();
 
     for (; mobIter != mobEnd; ++mobIter) {
-        if (abs(mobIter->second->getLocXGame() - playerX) > autoDeleteRange_ || 
-                abs(mobIter->second->getLocYGame() - playerY) > autoDeleteRange_) {
+        if (abs((int)mobIter->second->getLocXGame() - playerX) > autoDeleteRange_ || 
+                abs((int)mobIter->second->getLocYGame() - playerY) > autoDeleteRange_) {
             outOfRangeDelete.push_back(mobIter->first);
         } else {
             updateObject(mobIter->second.get(), elapsedMillis);
@@ -188,8 +188,8 @@ void Manager::update(unsigned int elapsedMillis) {
     std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator itmEnd = dynamicItems_.end();
 
     for (; itmIter != itmEnd; ++itmIter) {
-        if ((abs(itmIter->second->getLocXGame() - playerX) > autoDeleteRange_ || 
-                abs(itmIter->second->getLocYGame() - playerY) > autoDeleteRange_) && !itmIter->second->hasParent()) {
+        if ((abs((int)itmIter->second->getLocXGame() - playerX) > autoDeleteRange_ || 
+                abs((int)itmIter->second->getLocYGame() - playerY) > autoDeleteRange_) && !itmIter->second->hasParent()) {
             outOfRangeDelete.push_back(itmIter->first);
         } else {
             updateObject(itmIter->second.get(), elapsedMillis);
