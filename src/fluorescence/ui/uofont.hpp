@@ -26,8 +26,6 @@ namespace ui {
     
 class UoFont : public CL_Font {
 public:
-    UoFont();
-    
     UoFont(unsigned int unifontId);
 };
 

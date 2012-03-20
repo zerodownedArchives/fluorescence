@@ -35,8 +35,6 @@
 
 #include <misc/config.hpp>
 
-#include "uofont.hpp"
-
 namespace fluo {
 namespace world {
     class IngameObject;
@@ -51,6 +49,7 @@ class GumpMenu;
 class FontEngine;
 class ShaderManager;
 class ClipRectManager;
+class UoFont;
 
 class Manager {
 public:
@@ -128,7 +127,7 @@ private:
 
     void loadFontDirectory(const boost::filesystem::path& path);
     void loadUnifonts();
-    UoFont unifonts_[12];
+    boost::shared_ptr<UoFont> unifonts_[13];
 
     CL_AcceleratorTable macros_;
 
