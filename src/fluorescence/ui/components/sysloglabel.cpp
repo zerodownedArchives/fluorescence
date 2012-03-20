@@ -21,9 +21,12 @@
 
 #include <ClanLib/Display/2D/span_layout.h>
 
-#include <world/manager.hpp>
-#include <ui/uofont.hpp>
+#include <data/manager.hpp>
+#include <data/huesloader.hpp>
 #include <misc/log.hpp>
+#include <ui/manager.hpp>
+#include <ui/uofont.hpp>
+#include <world/manager.hpp>
 
 namespace fluo {
 namespace ui {
@@ -33,6 +36,10 @@ SysLogLabel::SysLogLabel(CL_GUIComponent* parent) : Label(parent) {
     world::Manager::getSysLog()->registerNotify(this);
 }
 
+SysLogLabel::~SysLogLabel() {
+    world::Manager::getSysLog()->unregisterNotify(this);
+}
+
 void SysLogLabel::setMaxGeometry(const CL_Rectf& rect) {
     maxGeometry_ = rect;
 }
@@ -40,15 +47,23 @@ void SysLogLabel::setMaxGeometry(const CL_Rectf& rect) {
 void SysLogLabel::notify(std::list<world::SysLogEntry>::const_iterator iter, std::list<world::SysLogEntry>::const_iterator end) {
     CL_SpanLayout span;
     
-    static UoFont font(0);
-    
     for (; iter != end; ++iter) {
-        span.add_text(StringConverter::toUtf8String(iter->text_), font, CL_Colorf::blue);
+        unsigned int font = iter->font_;
+        
+        // runuo always sends font id 3, but osi displays it as 0 (??)
+        if (font == 3) {
+            font = 0;
+        }
+        
+        span.add_text("\n", ui::Manager::getUnifont(font), CL_Colorf::blue);
+        span.add_text(StringConverter::toUtf8String(iter->text_), ui::Manager::getUnifont(font), data::Manager::getHuesLoader()->getFontClColor(iter->hue_));
     }
     
+    span.layout(ui::Manager::getGraphicContext(), maxGeometry_.get_width());
     set_span(span);
     
-    set_geometry(maxGeometry_);
+    CL_Rectf newGeom(maxGeometry_.left, maxGeometry_.bottom - span.get_size().height, maxGeometry_.right, maxGeometry_.bottom);
+    set_geometry(newGeom);
 }
 
 }

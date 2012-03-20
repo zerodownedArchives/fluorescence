@@ -104,9 +104,11 @@ uint32_t HuesLoader::getFontRgbColor(unsigned int hue) const {
     if (hue >= hueCount_) {
         LOG_WARN << "Trying to access too high hue index " << hue << std::endl;
         hue = 0;
+    } else if (hue >= 1) {
+        hue--;
     }
 
-    return hues_[hue].colorTable_[15];
+    return hues_[hue].colorTable_[31];
 }
 
 unsigned int HuesLoader::translateHue(unsigned int hue) const {

@@ -104,6 +104,7 @@ XmlParser::XmlParser() {
     functionTable_["worldview"] = boost::bind(&XmlParser::parseWorldView, this, _1, _2, _3);
     functionTable_["paperdoll"] = boost::bind(&XmlParser::parsePaperdoll, this, _1, _2, _3);
     functionTable_["container"] = boost::bind(&XmlParser::parseContainer, this, _1, _2, _3);
+    functionTable_["sysloglabel"] = boost::bind(&XmlParser::parseSysLogLabel, this, _1, _2, _3);
 }
 
 void XmlParser::addRepeatContext(const UnicodeString& name, const RepeatContext& context) {
@@ -926,29 +927,7 @@ bool XmlParser::parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, Gu
 
     parseId(node, worldView);
     
-    
-    
-    
-    
-    
-    
-    components::SysLogLabel* sysLogLabel = new components::SysLogLabel(top);
-    sysLogLabel->setMaxGeometry(CL_Rectf(0, 0, 200, 600));
-    top->addToCurrentPage(sysLogLabel);
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    top->addToCurrentPage(worldView);
 
     return true;
 }
@@ -956,9 +935,11 @@ bool XmlParser::parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, Gu
 bool XmlParser::parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
 
-    ui::components::GumpView* worldView = new ui::components::GumpView(parent, bounds);
+    ui::components::GumpView* gumpView = new ui::components::GumpView(parent, bounds);
 
-    parseId(node, worldView);
+    parseId(node, gumpView);
+    
+    top->addToCurrentPage(gumpView);
 
     return true;
 }
@@ -966,9 +947,11 @@ bool XmlParser::parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, Gu
 bool XmlParser::parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, parent);
 
-    ui::components::ContainerView* worldView = new ui::components::ContainerView(parent, bounds);
+    ui::components::ContainerView* contView = new ui::components::ContainerView(parent, bounds);
 
-    parseId(node, worldView);
+    parseId(node, contView);
+    
+    top->addToCurrentPage(contView);
 
     return true;
 }
@@ -1018,6 +1001,16 @@ bool XmlParser::parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     cb->set_geometry(bounds);
 
     top->addToCurrentPage(cb);
+    return true;
+}
+
+bool XmlParser::parseSysLogLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, parent);
+    components::SysLogLabel* sysLogLabel = new components::SysLogLabel(top);
+    sysLogLabel->setMaxGeometry(bounds);
+    parseId(node, sysLogLabel);
+    top->addToCurrentPage(sysLogLabel);
+    
     return true;
 }
 

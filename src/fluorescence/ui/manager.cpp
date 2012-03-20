@@ -184,7 +184,7 @@ void Manager::stepDraw() {
 
     CL_KeepAlive::process();
 
-    processCloseList();
+    processGumpCloseList();
 }
 
 boost::shared_ptr<CL_DisplayWindow> Manager::getMainWindow() {
@@ -216,14 +216,10 @@ boost::shared_ptr<FontEngine> Manager::getFontEngine() {
 }
 
 void Manager::closeGumpMenu(GumpMenu* menu) {
-    closeListMutex_.lock();
-    closeList_.push_back(menu);
-    closeListMutex_.unlock();
+    gumpCloseList_.push_back(menu);
 }
 
 void Manager::closeGumpMenu(const UnicodeString& gumpName) {
-    boost::recursive_mutex::scoped_lock myLock(gumpListMutex_);
-
     GumpMenu* menu = getGumpMenu(gumpName);
     if (menu) {
         closeGumpMenu(menu);
@@ -231,8 +227,6 @@ void Manager::closeGumpMenu(const UnicodeString& gumpName) {
 }
 
 GumpMenu* Manager::getGumpMenu(const UnicodeString& gumpName) {
-    boost::recursive_mutex::scoped_lock myLock(gumpListMutex_);
-
     std::list<GumpMenu*>::iterator iter = gumpList_.begin();
     std::list<GumpMenu*>::iterator end = gumpList_.end();
 
@@ -245,12 +239,9 @@ GumpMenu* Manager::getGumpMenu(const UnicodeString& gumpName) {
     return NULL;
 }
 
-void Manager::processCloseList() {
-    closeListMutex_.lock();
-    gumpListMutex_.lock();
-
-    std::list<GumpMenu*>::iterator iter = closeList_.begin();
-    std::list<GumpMenu*>::iterator end = closeList_.end();
+void Manager::processGumpCloseList() {
+    std::list<GumpMenu*>::iterator iter = gumpCloseList_.begin();
+    std::list<GumpMenu*>::iterator end = gumpCloseList_.end();
 
     for (; iter != end; ++iter) {
         (*iter)->onClose();
@@ -258,10 +249,7 @@ void Manager::processCloseList() {
         gumpList_.remove(*iter);
     }
 
-    closeList_.clear();
-
-    gumpListMutex_.unlock();
-    closeListMutex_.unlock();
+    gumpCloseList_.clear();
 }
 
 void Manager::loadFontDirectory(const boost::filesystem::path& path) {
@@ -295,9 +283,7 @@ GumpMenu* Manager::openXmlGump(const UnicodeString& name) {
 }
 
 void Manager::registerGumpMenu(GumpMenu* menu) {
-    gumpListMutex_.lock();
     gumpList_.push_back(menu);
-    gumpListMutex_.unlock();
 }
 
 void Manager::installMacros() {
@@ -364,26 +350,35 @@ UnicodeString Manager::getOpenGLExtensions() const {
 }
 
 void Manager::loadUnifonts() {
-    UoFont uni0(0);
+    unifonts_[0] = UoFont(0);
     CL_FontDescription fontDesc;
     fontDesc.set_typeface_name("unifont");
     LOG_DEBUG << "Registering font unifont" << std::endl;
-    getGuiManager()->register_font(uni0, fontDesc);
+    getGuiManager()->register_font(unifonts_[0], fontDesc);
     
     for (unsigned int i = 1; i <= 12; ++i) {
-        UoFont uniCur(i);
+        unifonts_[i] = UoFont(i);
         CL_FontDescription curDesc;
         std::stringstream sstr;
         sstr << "unifont" << i;
         curDesc.set_typeface_name(sstr.str());
         LOG_DEBUG << "Registering font " << sstr.str() << std::endl;
-        getGuiManager()->register_font(uniCur, curDesc);
+        getGuiManager()->register_font(unifonts_[i], curDesc);
     }
 }
 
 boost::shared_ptr<ClipRectManager> Manager::getClipRectManager() {
     return getSingleton()->clipRectManager_;
-}    
+}
+
+const UoFont& Manager::getUnifont(unsigned int index) {
+    if (index < 13) {
+        return getSingleton()->unifonts_[index];
+    } else {
+        LOG_WARN << "Trying to access unifont with id " << index << std::endl;
+        return getSingleton()->unifonts_[0];
+    }
+}
 
 }
 }

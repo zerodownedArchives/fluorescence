@@ -29,12 +29,13 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options.hpp>
 #include <boost/filesystem/path.hpp>
-#include <boost/thread/recursive_mutex.hpp>
 
 #include <list>
 #include <queue>
 
 #include <misc/config.hpp>
+
+#include "uofont.hpp"
 
 namespace fluo {
 namespace world {
@@ -70,6 +71,8 @@ public:
     static boost::shared_ptr<FontEngine> getFontEngine();
     static boost::shared_ptr<ShaderManager> getShaderManager();
     static boost::shared_ptr<ClipRectManager> getClipRectManager();
+    
+    static const UoFont& getUnifont(unsigned int index);
 
     void stepInput();
     void stepDraw();
@@ -117,17 +120,15 @@ private:
 
     boost::shared_ptr<DoubleClickHandler> doubleClickHandler_;
 
-    boost::recursive_mutex closeListMutex_;
-    std::list<GumpMenu*> closeList_;
-    void processCloseList();
+    std::list<GumpMenu*> gumpList_;
+    std::list<GumpMenu*> gumpCloseList_;
+    void processGumpCloseList();
 
     CL_Slot slotCloseWindow;
 
     void loadFontDirectory(const boost::filesystem::path& path);
     void loadUnifonts();
-
-    boost::recursive_mutex gumpListMutex_;
-    std::list<GumpMenu*> gumpList_;
+    UoFont unifonts_[12];
 
     CL_AcceleratorTable macros_;
 

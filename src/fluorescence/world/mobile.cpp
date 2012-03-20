@@ -171,6 +171,11 @@ bool Mobile::updateAnimation(unsigned int elapsedMillis) {
 }
 
 void Mobile::animate(unsigned int animId, unsigned int delay, unsigned int repeatMode) {
+    if (!textureProvider_) {
+        // not yet initialized
+        return;
+    }
+    
     textureProvider_->setAnimId(animId);
     textureProvider_->setRepeatMode(repeatMode);
     textureProvider_->setDelay(delay);

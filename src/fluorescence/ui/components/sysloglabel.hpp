@@ -33,6 +33,7 @@ namespace components {
 class SysLogLabel : public Label, public world::SysLogNotify {
 public:
     SysLogLabel(CL_GUIComponent* parent);
+    ~SysLogLabel();
     
     void setMaxGeometry(const CL_Rectf& rect);
     
