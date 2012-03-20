@@ -114,7 +114,8 @@ void WorldViewRenderer::renderPreviousTexture(CL_GraphicContext& gc, float pixel
         
         if (texturesInitialized_[oldTexture]) {
             gc.clear_depth(1.0);
-            CL_Draw::texture(gc, *textures_[oldTexture]->getTexture(), CL_Rectf(-pixelX, -pixelY, CL_Sizef(textureWidth_, textureHeight_)));
+            CL_Rectf geom = worldView_->get_geometry();
+            CL_Draw::texture(gc, *textures_[oldTexture]->getTexture(), CL_Rectf(-(pixelX + geom.left), -(pixelY + geom.top), CL_Sizef(textureWidth_, textureHeight_)));
             
             if (pixelX < 0) {
                 ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(-pixelX, textureHeight_)).translate(worldView_->getTopLeftPixel()));
