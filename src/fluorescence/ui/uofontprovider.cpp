@@ -19,6 +19,7 @@
 #include "uofontprovider.hpp"
 
 #include <unicode/schriter.h>
+#include <typeinfo>
 
 #include <data/manager.hpp>
 #include <data/unifontloader.hpp>
@@ -60,10 +61,12 @@ void UoFontProvider::draw_text(CL_GraphicContext& gc, float x, float y, const CL
 CL_Size UoFontProvider::get_text_size(CL_GraphicContext& gc, const CL_StringRef& text) {
     // calculate size
     unsigned int width = borderWidth_ * 2;
+    
+    UnicodeString uniStr = StringConverter::fromUtf8(text.c_str());
+    StringCharacterIterator iter(uniStr);
 
-    for (CL_String::size_type p = 0; p < text.length(); p++)
-	{
-        unsigned int charCode = text[p];
+    while (iter.hasNext()) {
+        unsigned int charCode = iter.nextPostInc();
         boost::shared_ptr<data::UnicodeCharacter> curChar = fontLoader_->getCharacter(charCode);
         
         if (!curChar) {
@@ -96,15 +99,19 @@ int UoFontProvider::get_character_index(CL_GraphicContext& gc, const CL_String& 
     int targetYMin = lineHeight * lineIdx;
     int targetYMax = targetYMin + lineHeight;
     
-    CL_String::size_type stringLen = text.length();
-    for (CL_String::size_type p = 0; p < stringLen; p++) {
-        if (text[p] == '\n') {
+    UnicodeString uniStr = StringConverter::fromUtf8(text.c_str());
+    StringCharacterIterator iter(uniStr);
+
+    int p = 0;
+    while (iter.hasNext()) {
+        unsigned int charCode = iter.nextPostInc();
+        if (charCode == '\n') {
             curY += lineHeight;
             continue;
         }
         if (curY >= targetYMin && curY < targetYMax) {
             // this is the line we really need to look at
-            boost::shared_ptr<data::UnicodeCharacter> curChar = fontLoader_->getCharacter(text[p]);
+            boost::shared_ptr<data::UnicodeCharacter> curChar = fontLoader_->getCharacter(charCode);
             if (point.x >= curX && point.x < (curX + curChar->getTotalWidth())) {
                 return p;
             } else {
@@ -114,6 +121,8 @@ int UoFontProvider::get_character_index(CL_GraphicContext& gc, const CL_String& 
             // target was the last character on the previous line
             return (p-1);
         }
+        
+        ++p;
     }
     
 	return -1;	// Not found
