@@ -167,11 +167,12 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
         gc.clear(CL_Colorf::black);
         gc.pop_cliprect();
     }
-
+    
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getWorldShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
     
-    shader->set_uniform2f("PositionOffset", clippingTopLeftCorner);
+    CL_Mat4f modelViewBefore = gc.get_modelview();
+    gc.set_translate(-clippingTopLeftCorner.x, -clippingTopLeftCorner.y, 0);
     
     boost::shared_ptr<ui::Texture> huesTexture = data::Manager::getSingleton()->getHuesLoader()->getHuesTexture();
     gc.set_texture(0, *(huesTexture->getTexture()));
@@ -223,7 +224,6 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
                     CL_Rectf clipRect(*clipRectIter);
                     clipRect.translate(-clippingTopLeftCorner);
                     gc.push_cliprect(clipRect);
-                    //gc.set_texture(0, *(huesTexture->getTexture()));
                     renderObject(gc, curObj, tex);
                     drawn = true;
                     gc.pop_cliprect();
@@ -237,6 +237,8 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     }
     
     ui::Manager::getClipRectManager()->clear();
+    
+    gc.set_modelview(modelViewBefore);
     
 
     // render particle effects
