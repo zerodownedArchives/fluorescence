@@ -280,7 +280,7 @@ void Manager::init(Config& config) {
     checkFileExists("mobtypes.txt");
     path = filePathMap_["mobtypes.txt"];
     LOG_INFO << "Opening mobtypes.txt from path=" << path << std::endl;
-    mobTypesLoader_.reset(new MobTypesLoader(path));
+    mobTypesLoader_.reset(new DefFileLoader<MobTypeDef>(path, "isi", &MobTypesLoader::parseType));
 
 
     const char* unifontNames[] = { "unifont", "unifont1", "unifont2", "unifont3", "unifont4", "unifont4", "unifont5", "unifont6", "unifont7", "unifont8", "unifont9", "unifont10", "unifont11", "unifont12" };
@@ -304,22 +304,22 @@ void Manager::init(Config& config) {
     checkFileExists("body.def");
     path = filePathMap_["body.def"];
     LOG_INFO << "Opening body.def from path=" << path << std::endl;
-    bodyDefLoader_.reset(new DefFileLoader<BodyDef>(path));
+    bodyDefLoader_.reset(new DefFileLoader<BodyDef>(path, "iri"));
 
     checkFileExists("bodyconv.def");
     path = filePathMap_["bodyconv.def"];
     LOG_INFO << "Opening bodyconv.def from path=" << path << std::endl;
-    bodyConvDefLoader_.reset(new DefFileLoader<BodyConvDef>(path));
+    bodyConvDefLoader_.reset(new DefFileLoader<BodyConvDef>(path, "iiiii"));
 
     checkFileExists("paperdoll.def");
     path = filePathMap_["paperdoll.def"];
     LOG_INFO << "Opening paperdoll.def from path=" << path << std::endl;
-    paperdollDefLoader_.reset(new DefFileLoader<PaperdollDef>(path));
+    paperdollDefLoader_.reset(new DefFileLoader<PaperdollDef>(path, "iiii"));
 
     checkFileExists("gump.def");
     path = filePathMap_["gump.def"];
     LOG_INFO << "Opening gump.def from path=" << path << std::endl;
-    gumpDefLoader_.reset(new DefFileLoader<GumpDef>(path));
+    gumpDefLoader_.reset(new DefFileLoader<GumpDef>(path, "iri"));
 
     checkFileExists("equipconv.def");
     path = filePathMap_["equipconv.def"];
@@ -329,7 +329,7 @@ void Manager::init(Config& config) {
     checkFileExists("mount.def");
     path = filePathMap_["mount.def"];
     LOG_INFO << "Opening mount.def from path=" << path << std::endl;
-    mountDefLoader_.reset(new DefFileLoader<MountDef>(path));
+    mountDefLoader_.reset(new DefFileLoader<MountDef>(path, "ii"));
 
     checkFileExists("cliloc.enu");
     path = filePathMap_["cliloc.enu"];
@@ -521,6 +521,12 @@ MountDef Manager::getMountDef(unsigned int itemId) {
     Manager* sing = getSingleton();
 
     return sing->mountDefLoader_->get(itemId);
+}
+
+MobTypeDef Manager::getMobTypeDef(unsigned int bodyId) {
+    Manager* sing = getSingleton();
+    
+    return sing->mobTypesLoader_->get(bodyId);
 }
 
 void Manager::buildFilePathMap(Config& config) {

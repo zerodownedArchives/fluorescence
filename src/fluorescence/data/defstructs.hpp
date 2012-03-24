@@ -107,6 +107,12 @@ struct MountDef {
     unsigned int animId_;
 };
 
+struct MobTypeDef {
+    unsigned int bodyId_;
+    unsigned int mobType_;
+    unsigned int flags_;
+};
+
 }
 }
 

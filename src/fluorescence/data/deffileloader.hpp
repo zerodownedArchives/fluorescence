@@ -22,75 +22,103 @@
 
 #include <map>
 #include <boost/filesystem/path.hpp>
+#include <boost/function.hpp>
+
+#include <misc/exception.hpp>
 
 namespace fluo {
 namespace data {
 
 template<typename ValueType>
 class DefFileLoader {
+
+private:
+    typedef boost::function<void (ValueType&, unsigned int, const char*, int*&)> StringParseFunction;
+
 public:
-    DefFileLoader(const boost::filesystem::path& path) {
+    DefFileLoader(const boost::filesystem::path& path, const char* pattern, StringParseFunction stringParseFunction = StringParseFunction()) {
         std::ifstream ifs(path.string().c_str());
         if (!ifs.is_open() || !ifs.good()) {
             LOG_ERROR << "Unable to open DefFileLoader for path: " << path.string() << std::endl;
             return;
         }
-
-        unsigned int numbersPerLine = sizeof(ValueType) / sizeof(int);
-        do {
-            int peekChar = ifs.peek();
-            while (!isdigit(peekChar) && peekChar != '-' && peekChar != '#' && ifs.good()) {
-                // jump leading whitespaces and empty lines
-                ifs.ignore();
-                peekChar = ifs.peek();
-            }
-
-            if (!ifs.good()) {
-                break;
-            }
-
-            if (peekChar == '#') {
-                // jump comment
-                ifs.ignore(1024, '\n');
+        
+        unsigned int patternCount = strlen(pattern);
+        char strBuf[256];
+        while (ifs.good()) {
+            if (ifs.peek() == '#' || ifs.peek() == '\n' || ifs.peek() == '\r') {
+                ifs.ignore(1000, '\n');
                 continue;
             }
-
+            
             ValueType curValue;
             int* ptr = reinterpret_cast<int*>(&curValue);
-            bool bracketFlag = false; // used to jump the { } groups
-
-            for (unsigned int num = 0; num < numbersPerLine; ++num) {
-                while (!isdigit(ifs.peek()) && ifs.peek() != '-' && ifs.peek() != '{') {
-                    ifs.ignore();
-                }
-
-                if (ifs.peek() == '{') { // why, osi? ^^
-                    bracketFlag = true;
-                    while (!isdigit(ifs.peek()) && ifs.peek() != '-') {
-                        ifs.ignore();
-                    }
-                }
-
-                ifs >> (*ptr);
-                ++ptr;
-
-                if (bracketFlag) {
-                    ifs.ignore(1024, '}');
-                    bracketFlag = false;
-                }
-
+            
+            for (unsigned int patternIdx = 0; patternIdx < patternCount; ++patternIdx) {
                 if (!ifs.good()) {
-                    LOG_ERROR << "Error parsing def file " << path.string() << std::endl;
                     break;
                 }
+                
+                switch (pattern[patternIdx]) {
+                    case 'i': {
+                        int newNum = 0;
+                        ifs >> newNum;
+                        *ptr = newNum;
+                        ++ptr;
+                        
+                        break;
+                    }
+                    
+                    case 'r': {
+                        ifs.ignore(100, '{');
+                        ifs.get(strBuf, 256, '}');
+                        ifs.ignore(1);
+                        std::istringstream iss(strBuf);
+                        
+                        std::vector<int> randNrs;
+                        while (iss.good()) {
+                            int newRand;
+                            iss >> newRand;
+                            if (!iss.fail()) {
+                                randNrs.push_back(newRand);
+                            }
+                            iss.ignore(100, ',');
+                        }
+                        
+                        if (randNrs.size() == 0 && ifs.good()) {
+                            LOG_ERROR << "Unable to extract number from random group {" << strBuf << "} in file " << path << std::endl;
+                            throw Exception("Error parsing def file");
+                        } else if (randNrs.size() >= 1) {
+                            *ptr = randNrs[0];
+                            ++ptr;
+                        }
+                        // TODO: random information is discarded here
+                        
+                        break;
+                    }
+                    
+                    case 's': {
+                        ifs >> strBuf;
+                        if (stringParseFunction) {
+                            stringParseFunction(curValue, patternIdx, strBuf, ptr);
+                        } else {
+                            LOG_ERROR << "No string parse function given for pattern " << pattern << " for file " << path << std::endl;
+                            throw Exception("Error parsing def file");
+                        }
+                        break;
+                    }
+                }
             }
-
-            ifs.ignore(1024, '\n'); // jump to next line
-
-            int id = *(reinterpret_cast<int*>(&curValue));
-            //LOG_DEBUG << "store id " << id << std::endl;
-            table_[id] = curValue;
-        } while (ifs.good());
+            
+            if (!ifs.fail()) {
+                // reading new value was ok, insert now
+                int id = *(reinterpret_cast<int*>(&curValue));
+                //LOG_DEBUG << "store id " << id << std::endl;
+                table_[id] = curValue;
+            }
+            
+            ifs.ignore(1000, '\n');
+        }
     }
 
     bool hasValue(int id) const {
@@ -104,6 +132,14 @@ public:
         } else {
             return ValueType();
         }
+    }
+    
+    typename std::map<int, ValueType>::const_iterator begin() {
+        return table_.begin();
+    }
+    
+    typename std::map<int, ValueType>::const_iterator end() {
+        return table_.end();
     }
 
 private:

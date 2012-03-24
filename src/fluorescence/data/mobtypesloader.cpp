@@ -23,87 +23,26 @@
 #include <string.h>
 #include <fstream>
 
-#include <misc/log.hpp>
-
 namespace fluo {
 namespace data {
 
-MobTypesLoader::MobTypesLoader(const boost::filesystem::path& path) {
-    memset(typeTable_, 0, 4096);
-
-    std::ifstream ifs(path.string().c_str());
-    if (!ifs.is_open() || !ifs.good()) {
-        LOG_ERROR << "Unable to open mobtypes.txt from path: " << path.string() << std::endl;
-        return;
+void MobTypesLoader::parseType(MobTypeDef& def, unsigned int strIndex, const char* str, int*& ptr) {
+    if (strncmp(str, "MONSTER", 7) == 0) {
+        def.mobType_ = TYPE_MONSTER;
+    } else if (strncmp(str, "ANIMAL", 6) == 0) {
+        def.mobType_ = TYPE_ANIMAL;
+    } else if (strncmp(str, "HUMAN", 5) == 0) {
+        def.mobType_ = TYPE_HUMAN;
+    } else if (strncmp(str, "EQUIPMENT", 9) == 0) {
+        def.mobType_ = TYPE_EQUIPMENT;
+    } else if (strncmp(str, "SEA_MONSTER", 11) == 0) {
+        def.mobType_ = TYPE_SEA_MONSTER;
+    } else {
+        LOG_ERROR << "Unknown type in mobtypes.txt: " << str << std::endl;
+        def.mobType_ = TYPE_MONSTER;
     }
-
-    char buf[1024];
-    char* ptr;
-    unsigned int line = 0;
-    do {
-        ++line;
-
-        ifs.getline(buf, 1024);
-
-        ptr = buf;
-
-        // skip leading spaces
-        while (*ptr == ' ' || *ptr == '\t') {
-            ++ptr;
-        }
-
-        // skip comments and empty lines
-        if (*ptr == '#' || *ptr == '\0' || *ptr == '\r' || *ptr == '\n') {
-            continue;
-        }
-
-        int id = strtol(ptr, &ptr, 10);
-
-        if (id == 0) {
-            LOG_ERROR << "Failed to parse id in mobtypes.txt, line " << line << std::endl;
-            continue;
-        } else if (id >= 4096) {
-            LOG_ERROR << "Id > 4096 in mobtypes.txt, line " << line << std::endl;
-            continue;
-        } else {
-            // id okay,
-            while (*ptr == ' ' || *ptr == '\t') {
-                ++ptr;
-            }
-
-            if (*ptr == '#' || *ptr == '\0' || *ptr == '\r' || *ptr == '\n') {
-                LOG_ERROR << "Incomplete line in mobtypes.txt, line " << line << std::endl;
-                continue;
-            }
-
-            if (strncmp(ptr, "MONSTER", 7) == 0) {
-                typeTable_[id] = TYPE_MONSTER;
-            } else if (strncmp(ptr, "ANIMAL", 6) == 0) {
-                typeTable_[id] = TYPE_ANIMAL;
-            } else if (strncmp(ptr, "HUMAN", 5) == 0) {
-                typeTable_[id] = TYPE_HUMAN;
-            } else if (strncmp(ptr, "EQUIPMENT", 9) == 0) {
-                typeTable_[id] = TYPE_EQUIPMENT;
-            } else if (strncmp(ptr, "SEA_MONSTER", 11) == 0) {
-                typeTable_[id] = TYPE_SEA_MONSTER;
-            } else {
-                LOG_ERROR << "Unknown type in mobtypes.txt, line " << line << std::endl;
-                continue;
-            }
-
-            //LOG_DEBUG << "mobtypes id=" << id << " type=" << (unsigned int)typeTable_[id] << std::endl;
-        }
-    } while (ifs.good());
-
-}
-
-unsigned int MobTypesLoader::getType(unsigned int bodyId) {
-    if (bodyId > 4096) {
-        LOG_WARN << "MobTypesLoader::getType with too high body id: " << bodyId << std::endl;
-        bodyId = 0;
-    }
-
-    return typeTable_[bodyId];
+    
+    ++ptr;
 }
 
 }

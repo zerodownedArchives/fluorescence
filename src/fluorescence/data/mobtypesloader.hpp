@@ -20,26 +20,22 @@
 #ifndef FLUO_DATA_MOBTYPESLOADER_HPP
 #define FLUO_DATA_MOBTYPESLOADER_HPP
 
-
-#include <boost/filesystem/path.hpp>
+#include "defstructs.hpp"
 
 namespace fluo {
 namespace data {
 
 class MobTypesLoader {
 public:
-    static const unsigned int TYPE_HUMAN = 0;
-    static const unsigned int TYPE_MONSTER = 1;
-    static const unsigned int TYPE_ANIMAL = 2;
-    static const unsigned int TYPE_EQUIPMENT = 3;
-    static const unsigned int TYPE_SEA_MONSTER = 4;
-
-    MobTypesLoader(const boost::filesystem::path& path);
-
-    unsigned int getType(unsigned int bodyId);
-
-private:
-    uint8_t typeTable_[4096];
+    enum {
+        TYPE_HUMAN = 0,
+        TYPE_MONSTER = 1,
+        TYPE_ANIMAL = 2,
+        TYPE_EQUIPMENT = 3,
+        TYPE_SEA_MONSTER = 4,
+    };
+    
+    static void parseType(MobTypeDef& def, unsigned int strIndex, const char* str, int*& ptr);
 };
 }
 }

@@ -45,7 +45,6 @@ class StaticsLoader;
 class MapTexLoader;
 class AnimDataLoader;
 class AnimLoader;
-class MobTypesLoader;
 class UniFontLoader;
 class EquipConvDefLoader;
 class ClilocLoader;
@@ -90,6 +89,7 @@ public:
     static GumpDef getGumpDef(unsigned int gumpId);
     static unsigned int getGumpIdForItem(unsigned int itemId, unsigned int parentBodyId);
     static MountDef getMountDef(unsigned int itemId);
+    static MobTypeDef getMobTypeDef(unsigned int bodyId);
 
     static boost::shared_ptr<ui::TextureProvider> getItemTextureProvider(unsigned int artId);
     static std::vector<boost::shared_ptr<ui::Animation> > getAnim(unsigned int bodyId, unsigned int animId);
@@ -104,7 +104,6 @@ public:
     static boost::shared_ptr<MapTexLoader> getMapTexLoader() { return getSingleton()->mapTexLoader_; }
     static boost::shared_ptr<AnimDataLoader> getAnimDataLoader() { return getSingleton()->animDataLoader_; }
     static boost::shared_ptr<AnimLoader> getAnimLoader(unsigned int index);
-    static boost::shared_ptr<MobTypesLoader> getMobTypesLoader() { return getSingleton()->mobTypesLoader_; }
     static boost::shared_ptr<UniFontLoader> getUniFontLoader(unsigned int index);
     static boost::shared_ptr<ClilocLoader> getClilocLoader();
     
@@ -147,8 +146,7 @@ private:
     boost::shared_ptr<UniFontLoader> uniFontLoader_[13];
     boost::shared_ptr<UniFontLoader> fallbackUniFontLoader_;
 
-    boost::shared_ptr<MobTypesLoader> mobTypesLoader_;
-
+    boost::shared_ptr<DefFileLoader<MobTypeDef> > mobTypesLoader_;
     boost::shared_ptr<DefFileLoader<BodyDef> > bodyDefLoader_;
     boost::shared_ptr<DefFileLoader<BodyConvDef> > bodyConvDefLoader_;
     boost::shared_ptr<DefFileLoader<PaperdollDef> > paperdollDefLoader_;
