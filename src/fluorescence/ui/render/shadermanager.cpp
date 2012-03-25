@@ -53,7 +53,7 @@ ShaderManager::ShaderManager(CL_GraphicContext& gc) {
 
 
     particleShader_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/particles_vertex.glsl", "shader/particles_fragment.glsl")));
-    particleShader_->bind_attribute_location(0, "PositionStart");
+    particleShader_->bind_attribute_location(0, "LocationStart");
     particleShader_->bind_attribute_location(1, "VelocityStart");
     particleShader_->bind_attribute_location(2, "VelocityEnd");
     particleShader_->bind_attribute_location(3, "Lifetime");

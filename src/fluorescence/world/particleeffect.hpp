@@ -24,6 +24,8 @@
 #include <list>
 #include <ClanLib/Display/Render/graphic_context.h>
 
+#include "effect.hpp"
+
 namespace fluo {
 
 namespace ui {
@@ -34,11 +36,18 @@ class Emitter;
     
 namespace world {
 
-class ParticleEffect {
+class ParticleEffect : public world::Effect {
 public:
     ParticleEffect();
     
     virtual void update(unsigned int elapsedMillis);
+    virtual void updateTextureProvider();
+    virtual bool updateAnimation(unsigned int elapsedMillis);
+    virtual void updateVertexCoordinates();
+    virtual void updateRenderDepth();
+    virtual boost::shared_ptr<ui::Texture> getIngameTexture() const;
+    
+    virtual unsigned int startExplosion();
     
     bool isExpired() const;
     void renderAll(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader);

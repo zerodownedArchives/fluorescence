@@ -90,6 +90,7 @@ public:
     static unsigned int getGumpIdForItem(unsigned int itemId, unsigned int parentBodyId);
     static MountDef getMountDef(unsigned int itemId);
     static MobTypeDef getMobTypeDef(unsigned int bodyId);
+    static EffectTranslationDef getEffectTranslationDef(unsigned int effectId);
 
     static boost::shared_ptr<ui::TextureProvider> getItemTextureProvider(unsigned int artId);
     static std::vector<boost::shared_ptr<ui::Animation> > getAnim(unsigned int bodyId, unsigned int animId);
@@ -153,6 +154,7 @@ private:
     boost::shared_ptr<DefFileLoader<GumpDef> > gumpDefLoader_;
     boost::shared_ptr<EquipConvDefLoader> equipConvDefLoader_;
     boost::shared_ptr<DefFileLoader<MountDef> > mountDefLoader_;
+    boost::shared_ptr<DefFileLoader<EffectTranslationDef> > effectTranslationDefLoader_;
 
     boost::shared_ptr<ClilocLoader> clilocLoader_;
     

@@ -32,8 +32,6 @@ SysLog::SysLog() : newEntry_(false) {
 }
 
 void SysLog::add(const UnicodeString& text, unsigned int hue, unsigned int font) {
-    LOG_INFO << "SysMsg: " << text << std::endl;
-    
     entries_.push_back(SysLogEntry(text, hue, font));
     
     newEntry_ = true;

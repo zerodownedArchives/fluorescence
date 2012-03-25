@@ -53,13 +53,15 @@ public:
     virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc);
     
     virtual boost::shared_ptr<RenderQueue> getRenderQueue() const;
+    
+    void renderParticleEffects(CL_GraphicContext& gc);
 
 private:
     components::WorldView* worldView_;
     
     virtual void render(CL_GraphicContext& gc);
     void renderObject(CL_GraphicContext& gc, world::IngameObject* obj, ui::Texture* tex) const;
-
+    
     unsigned int textureWidth_;
     unsigned int textureHeight_;
     boost::shared_ptr<Texture> textures_[2];

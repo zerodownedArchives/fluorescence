@@ -30,7 +30,7 @@ void MotionModelStatic::setNormalizedAge(float age) {
     // do nothing
 }
 
-void MotionModelStatic::get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const {
+void MotionModelStatic::get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& param1, CL_Vec3f& param2) const {
     param1 = CL_Vec3f(0, 0, 0);
     param2 = CL_Vec3f(0, 0, 0);
 }
@@ -68,7 +68,7 @@ void MotionModelStartEndVelocity::setNormalizedAge(float age) {
     endVelocityMax_.setNormalizedAge(age);
 }
 
-void MotionModelStartEndVelocity::get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const {
+void MotionModelStartEndVelocity::get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& param1, CL_Vec3f& param2) const {
     param1 = Random::randomMinMax(startVelocityMin_, startVelocityMax_);
     param2 = Random::randomMinMax(endVelocityMin_, endVelocityMax_);
 }
@@ -98,8 +98,8 @@ void MotionModelAwayFromEmitter::setNormalizedAge(float age) {
     endAccelerationMax_.setNormalizedAge(age);
 }
 
-void MotionModelAwayFromEmitter::get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const {
-    CL_Vec3f direction = particlePosition - emitterPosition;
+void MotionModelAwayFromEmitter::get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& param1, CL_Vec3f& param2) const {
+    CL_Vec3f direction = particleLocation - emitterLocation;
     direction.normalize();
 
     param1 = direction * Random::randomMinMax(startAccelerationMin_, startAccelerationMax_);

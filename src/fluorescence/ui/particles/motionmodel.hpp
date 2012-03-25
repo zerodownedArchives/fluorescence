@@ -31,14 +31,14 @@ namespace particles {
 class MotionModel {
 public:
     virtual void setNormalizedAge(float age) = 0;
-    virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const = 0;
+    virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& param1, CL_Vec3f& param2) const = 0;
 };
 
 
 class MotionModelStatic : public MotionModel {
 public:
     virtual void setNormalizedAge(float age);
-    virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const;
+    virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& param1, CL_Vec3f& param2) const;
 };
 
 
@@ -53,7 +53,7 @@ public:
     void setVelocityAndAccelerationT1(const CL_Vec3f& startMin, const CL_Vec3f& startMax, float accelMin, float accelMax);
 
     virtual void setNormalizedAge(float age);
-    virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const;
+    virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& param1, CL_Vec3f& param2) const;
 
 private:
     InterpolatedValue<CL_Vec3f> startVelocityMin_;
@@ -71,7 +71,7 @@ public:
     void setAccelerationT1(float startMin, float startMax, float endMin, float endMax);
 
     virtual void setNormalizedAge(float age);
-    virtual void get(const CL_Vec3f& emitterPosition, const CL_Vec3f& particlePosition, CL_Vec3f& param1, CL_Vec3f& param2) const;
+    virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& param1, CL_Vec3f& param2) const;
 
 private:
     InterpolatedValue<float> startAccelerationMin_;

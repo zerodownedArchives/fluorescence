@@ -171,7 +171,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getWorldShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
     
-    CL_Mat4f modelViewBefore = gc.get_modelview();
+    gc.push_modelview();
     gc.set_translate(-clippingTopLeftCorner.x, -clippingTopLeftCorner.y, 0);
     
     boost::shared_ptr<ui::Texture> huesTexture = data::Manager::getSingleton()->getHuesLoader()->getHuesTexture();
@@ -238,28 +238,45 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     
     ui::Manager::getClipRectManager()->clear();
     
-    gc.set_modelview(modelViewBefore);
-    
+    gc.pop_modelview();
+}
 
-    // render particle effects
-    //CL_Pen defPen = gc.get_pen();
-    //CL_Pen pen;
-    //pen.enable_vertex_program_point_size(true);
-    //pen.enable_point_sprite(true);
-    //gc.set_pen(pen);
+void WorldViewRenderer::renderParticleEffects(CL_GraphicContext& gc) {
+    CL_Pen defPen = gc.get_pen();
+    CL_Pen pen;
+    pen.enable_vertex_program_point_size(true);
+    pen.enable_point_sprite(true);
+    gc.set_pen(pen);
     
-    //shader = ui::Manager::getShaderManager()->getParticleShader();
-    //gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
+    CL_BufferControl bufferControl;
+    bufferControl.set_depth_compare_function(cl_comparefunc_lequal);
+    bufferControl.enable_depth_write(false);
+    bufferControl.enable_depth_test(false);
+    bufferControl.enable_stencil_test(false);
+    bufferControl.enable_color_write(true);
+    gc.set_buffer_control(bufferControl);
     
-    //std::list<boost::shared_ptr<world::ParticleEffect> >::iterator particleIter = world::Manager::getParticleEffectManager()->begin();
-    //std::list<boost::shared_ptr<world::ParticleEffect> >::iterator particleEnd = world::Manager::getParticleEffectManager()->end();
+    //CL_Vec2f clippingTopLeftCorner = worldView_->getTopLeftPixel();
+    
+    boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getParticleShader();
+    gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
+    
+    gc.push_modelview();
+    //gc.set_translate(-clippingTopLeftCorner.x, -clippingTopLeftCorner.y, 0);
+    
+    std::list<boost::shared_ptr<world::Effect> >::iterator particleIter = world::Manager::getSingleton()->effectsBegin();
+    std::list<boost::shared_ptr<world::Effect> >::iterator particleEnd = world::Manager::getSingleton()->effectsEnd();
 
-    //for (; particleIter != particleEnd; ++particleIter) {
-        //(*particleIter)->renderAll(gc, shader);
-    //}
+    for (; particleIter != particleEnd; ++particleIter) {
+        if ((*particleIter)->isParticleEffect()) {
+            boost::static_pointer_cast<world::ParticleEffect>(*particleIter)->renderAll(gc, shader);
+        }
+    }
     
-    //gc.set_pen(defPen);
-    //gc.reset_program_object();
+    gc.set_pen(defPen);
+    gc.reset_program_object();
+    
+    gc.pop_modelview();
 }
 
 boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {

@@ -47,7 +47,7 @@ public:
     
     virtual void onLocationChanged(const CL_Vec3f& oldLocation);
     
-    void update(unsigned int elapsedMillis);
+    virtual void update(unsigned int elapsedMillis);
     
     bool isExpired() const;
     

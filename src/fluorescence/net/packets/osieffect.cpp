@@ -22,12 +22,15 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <data/manager.hpp>
+#include <data/defstructs.hpp>
+#include <misc/log.hpp>
+#include <ui/particles/xmlloader.hpp>
 #include <world/manager.hpp>
 #include <world/osieffect.hpp>
 #include <world/mobile.hpp>
 #include <world/dynamicitem.hpp>
-
-#include <misc/log.hpp>
+#include <world/particleeffect.hpp>
 
 namespace fluo {
 namespace net {
@@ -64,6 +67,7 @@ bool OsiEffect::read(const int8_t* buf, unsigned int len, unsigned int& index) {
 }
 
 void OsiEffect::onReceive() {
+    LOG_DEBUG << "show effect " << artId_ << std::endl;
     world::Manager* worldMan = world::Manager::getSingleton();
     
     boost::shared_ptr<world::IngameObject> sourceObj = worldMan->getMobile(sourceSerial_, false);
@@ -78,7 +82,14 @@ void OsiEffect::onReceive() {
     
     //LOG_DEBUG << "Effect src!=NULL: " << (bool)sourceObj << " targ!=NULL:" << (bool)targetObj << " duration=" << (unsigned int)duration_ << " speed=" << (unsigned int)speed_ << std::endl;
     
-    boost::shared_ptr<world::Effect> effect(new world::OsiEffect(artId_));
+    boost::shared_ptr<world::Effect> effect;
+    data::EffectTranslationDef translation = data::Manager::getEffectTranslationDef(artId_);
+    if (translation.effectId_ == artId_) {
+        // has translation
+        effect = ui::particles::XmlLoader::fromFile(translation.particleEffectName_);
+    } else {
+        effect.reset(new world::OsiEffect(artId_));
+    }
     
     switch (effectType_) {
         case world::Effect::TYPE_SOURCE_TO_TARGET:

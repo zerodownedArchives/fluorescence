@@ -44,7 +44,7 @@ bool Particle::isRemoved() const {
 
 void Particle::remove() {
     isRemoved_ = true;
-    startPosition_.z = 10.0;
+    startLocation_.z = 10.0;
 }
 
 }

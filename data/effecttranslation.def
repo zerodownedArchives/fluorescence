@@ -1,0 +1,4 @@
+# translates OSI effect ids to new particle effect names
+# format: <osi effect id> <particle effect name>
+
+14120 gate

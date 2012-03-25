@@ -113,6 +113,15 @@ struct MobTypeDef {
     unsigned int flags_;
 };
 
+struct EffectTranslationDef {
+    unsigned int effectId_;
+    UnicodeString particleEffectName_;
+    
+    static void setEffectName(EffectTranslationDef& def, unsigned int strIndex, const char* str, int*& ptr) {
+        def.particleEffectName_ = str;
+    }
+};
+
 }
 }
 

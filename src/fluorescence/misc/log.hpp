@@ -93,6 +93,7 @@ public:
     Log& operator<<(const struct timeval& v);
     
     Log& operator<<(const CL_Rectf& rect);
+    Log& operator<<(const CL_Vec3f& vec);
 
 private:
     Log();

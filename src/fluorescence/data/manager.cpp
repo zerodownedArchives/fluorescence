@@ -330,6 +330,11 @@ void Manager::init(Config& config) {
     path = filePathMap_["mount.def"];
     LOG_INFO << "Opening mount.def from path=" << path << std::endl;
     mountDefLoader_.reset(new DefFileLoader<MountDef>(path, "ii"));
+    
+    checkFileExists("effecttranslation.def");
+    path = filePathMap_["effecttranslation.def"];
+    LOG_INFO << "Opening effecttranslation.def from path=" << path << std::endl;
+    effectTranslationDefLoader_.reset(new DefFileLoader<EffectTranslationDef>(path, "is", &EffectTranslationDef::setEffectName));
 
     checkFileExists("cliloc.enu");
     path = filePathMap_["cliloc.enu"];
@@ -507,26 +512,27 @@ BodyDef Manager::getBodyDef(unsigned int baseBodyId) {
 
 PaperdollDef Manager::getPaperdollDef(unsigned int bodyId) {
     Manager* sing = getSingleton();
-
     return sing->paperdollDefLoader_->get(bodyId);
 }
 
 GumpDef Manager::getGumpDef(unsigned int gumpId) {
     Manager* sing = getSingleton();
-
     return sing->gumpDefLoader_->get(gumpId);
 }
 
 MountDef Manager::getMountDef(unsigned int itemId) {
     Manager* sing = getSingleton();
-
     return sing->mountDefLoader_->get(itemId);
 }
 
 MobTypeDef Manager::getMobTypeDef(unsigned int bodyId) {
     Manager* sing = getSingleton();
-    
     return sing->mobTypesLoader_->get(bodyId);
+}
+
+EffectTranslationDef Manager::getEffectTranslationDef(unsigned int effectId) {
+    Manager* sing = getSingleton();
+    return sing->effectTranslationDefLoader_->get(effectId);
 }
 
 void Manager::buildFilePathMap(Config& config) {

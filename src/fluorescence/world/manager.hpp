@@ -75,6 +75,8 @@ public:
     void setAutoDeleteRange(unsigned int range);
     
     void addEffect(boost::shared_ptr<Effect> effect);
+    std::list<boost::shared_ptr<world::Effect> >::iterator effectsBegin();
+    std::list<boost::shared_ptr<world::Effect> >::iterator effectsEnd();
     
     void systemMessage(const UnicodeString& msg, unsigned int hue = 0, unsigned int font = 0);
 

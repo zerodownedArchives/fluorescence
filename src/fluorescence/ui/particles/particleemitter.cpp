@@ -21,11 +21,13 @@
 #include "particleemitter.hpp"
 
 #include <ClanLib/Display/Render/program_object.h>
+#include <ClanLib/Display/2D/draw.h>
 
 #include <misc/random.hpp>
+#include <misc/log.hpp>
 #include <ui/texture.hpp>
 
-#include "startpositionprovider.hpp"
+#include "startlocationprovider.hpp"
 #include "motionmodel.hpp"
 
 namespace fluo {
@@ -36,7 +38,6 @@ ParticleEmitter::ParticleEmitter(unsigned int maxSize) :
         particleCount_(0) {
 
     particles_ = new Particle[maxSize];
-    startPosition_ = CL_Vec3f(422, 300, 0); // TODO: remove this from here
 }
 
 ParticleEmitter::~ParticleEmitter() {
@@ -93,13 +94,16 @@ void ParticleEmitter::updateSet(unsigned int newCount, float elapsedSeconds) {
 }
 
 void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader) {
+    LOG_DEBUG << "particleemitter render " << location_ << " #particles: " << emittedCount() << std::endl;
     if (!emittedTexture_ || !emittedTexture_->isReadComplete()) {
         return;
     }
     
+    //CL_Draw::fill(gc, 100, 100, 300, 300, CL_Colorf::green);
+    
     // set shader uniform variables
     shader->set_uniform1i("Texture0", 0);
-    CL_Vec3f emitterMovement = emittedMoveWithEmitter_ ? (position_ - startPosition_) : CL_Vec3f(0, 0, 0);
+    CL_Vec3f emitterMovement = emittedMoveWithEmitter_ ? (location_ - startLocation_) : CL_Vec3f(0, 0, 0);
     shader->set_uniform3f("EmitterMovement", emitterMovement);
     shader->set_uniform1f("CurrentTime", age_);
     
@@ -108,7 +112,7 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
     // collect particle data in primarray
     CL_PrimitivesArray primarray(gc);
 
-    primarray.set_attributes(0, &particles_[0].startPosition_, sizeof(Particle));
+    primarray.set_attributes(0, &particles_[0].startLocation_, sizeof(Particle));
     primarray.set_attributes(1, &particles_[0].velocityStart_, sizeof(Particle));
     primarray.set_attributes(2, &particles_[0].velocityEnd_, sizeof(Particle));
     primarray.set_attributes(3, &particles_[0].lifetimes_, sizeof(Particle));
@@ -120,13 +124,13 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
 }
 
 void ParticleEmitter::initParticle(unsigned int index) {
-    CL_Vec3f particlePosition = emittedStartPositionProvider_->get(position_);
+    CL_Vec3f particleLocation = emittedStartLocationProvider_->get(location_);
 
     CL_Vec3f velocity1, velocity2;
-    emittedMotionModel_->get(position_, particlePosition, velocity1, velocity2);
+    emittedMotionModel_->get(location_, particleLocation, velocity1, velocity2);
 
     particles_[index].reset(
-        particlePosition,
+        particleLocation,
         velocity1,
         velocity2,
         age_, // creation time

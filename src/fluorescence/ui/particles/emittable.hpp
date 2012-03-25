@@ -41,7 +41,7 @@ public:
     bool isExpired(float emitterAge) const;
 
 protected:
-    CL_Vec3f startPosition_;
+    CL_Vec3f startLocation_;
 
     CL_Vec3f velocityStart_;
     CL_Vec3f velocityEnd_;

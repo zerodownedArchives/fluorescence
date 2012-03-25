@@ -297,9 +297,19 @@ void Manager::addEffect(boost::shared_ptr<Effect> effect) {
 }
 
 void Manager::systemMessage(const UnicodeString& msg, unsigned int hue, unsigned int font) {
+    LOG_INFO << "SysMsg: " << msg << std::endl;
+    
     sysLog_->add(msg, hue, font);
     
     // TODO: add to journal
+}
+
+std::list<boost::shared_ptr<world::Effect> >::iterator Manager::effectsBegin() {
+    return effects_.begin();
+}
+
+std::list<boost::shared_ptr<world::Effect> >::iterator Manager::effectsEnd() {
+    return effects_.end();
 }
 
 }

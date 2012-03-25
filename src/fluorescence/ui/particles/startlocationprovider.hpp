@@ -17,8 +17,8 @@
  */
 
 
-#ifndef FLUO_UI_PARTICLES_STARTPOSITIONPROVIDER_HPP
-#define FLUO_UI_PARTICLES_STARTPOSITIONPROVIDER_HPP
+#ifndef FLUO_UI_PARTICLES_STARTLOCATIONPROVIDER_HPP
+#define FLUO_UI_PARTICLES_STARTLOCATIONPROVIDER_HPP
 
 #include <ClanLib/Core/Math/vec3.h>
 
@@ -28,21 +28,21 @@ namespace fluo {
 namespace ui {
 namespace particles {
 
-class StartPositionProvider {
+class StartLocationProvider {
 public:
-    virtual CL_Vec3f get(const CL_Vec3f& emitterPosition) const = 0;
+    virtual CL_Vec3f get(const CL_Vec3f& emitterLocation) const = 0;
     virtual void setNormalizedAge(float age) = 0;
 };
 
 
-class StartPositionProviderEmitter {
+class StartLocationProviderEmitter {
 public:
-    virtual CL_Vec3f get(const CL_Vec3f& emitterPosition) const;
+    virtual CL_Vec3f get(const CL_Vec3f& emitterLocation) const;
     virtual void setNormalizedAge(float age);
 };
 
 
-class StartPositionProviderWithSize : public StartPositionProvider {
+class StartLocationProviderWithSize : public StartLocationProvider {
 public:
     void setSize(float widthStart, float widthEnd, float heightStart, float heightEnd);
     void setSizeT1(float width, float height);
@@ -53,25 +53,25 @@ protected:
     InterpolatedValue<float> heightHalf_;
 };
 
-class StartPositionProviderBox : public StartPositionProviderWithSize {
+class StartLocationProviderBox : public StartLocationProviderWithSize {
 public:
-    virtual CL_Vec3f get(const CL_Vec3f& emitterPosition) const;
+    virtual CL_Vec3f get(const CL_Vec3f& emitterLocation) const;
 };
 
-class StartPositionProviderBoxOutline : public StartPositionProviderWithSize {
+class StartLocationProviderBoxOutline : public StartLocationProviderWithSize {
 public:
-    virtual CL_Vec3f get(const CL_Vec3f& emitterPosition) const;
+    virtual CL_Vec3f get(const CL_Vec3f& emitterLocation) const;
 };
 
 
-class StartPositionProviderOval : public StartPositionProviderWithSize {
+class StartLocationProviderOval : public StartLocationProviderWithSize {
 public:
-    virtual CL_Vec3f get(const CL_Vec3f& emitterPosition) const;
+    virtual CL_Vec3f get(const CL_Vec3f& emitterLocation) const;
 };
 
-class StartPositionProviderOvalOutline : public StartPositionProviderWithSize {
+class StartLocationProviderOvalOutline : public StartLocationProviderWithSize {
 public:
-    virtual CL_Vec3f get(const CL_Vec3f& emitterPosition) const;
+    virtual CL_Vec3f get(const CL_Vec3f& emitterLocation) const;
 };
 
 }

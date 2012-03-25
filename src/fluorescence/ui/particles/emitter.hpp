@@ -32,7 +32,7 @@ namespace fluo {
 namespace ui {
 namespace particles {
 
-class StartPositionProvider;
+class StartLocationProvider;
 class MotionModel;
 
 class Emitter : public Emittable {
@@ -48,6 +48,8 @@ public:
     
     virtual bool isExpired() const = 0;
     bool isEmitting() const;
+    
+    void setLocation(const CL_Vec3f& location);
 
 
 protected:
@@ -57,7 +59,7 @@ protected:
     unsigned int emittedMaxCount_;
     InterpolatedValue<float> emitPerSecond_;
 
-    CL_Vec3f position_;
+    CL_Vec3f location_;
 
     float age_;
     float normalizedAge_;
@@ -70,7 +72,7 @@ protected:
 
     bool emittedMoveWithEmitter_;
 
-    boost::shared_ptr<StartPositionProvider> emittedStartPositionProvider_;
+    boost::shared_ptr<StartLocationProvider> emittedStartLocationProvider_;
     boost::shared_ptr<MotionModel> emittedMotionModel_;
 };
 

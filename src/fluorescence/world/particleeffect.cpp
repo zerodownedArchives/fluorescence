@@ -26,25 +26,34 @@
 namespace fluo {
 namespace world {
 
-ParticleEffect::ParticleEffect() {
+ParticleEffect::ParticleEffect() :
+        Effect(IngameObject::TYPE_PARTICLE_EFFECT) {
 }
 
 void ParticleEffect::update(unsigned int elapsedMillis) {
+    Effect::update(elapsedMillis);
+    
     float elapsedSeconds = elapsedMillis / 1000.f;
+    //CL_Vec3f curLocation = getLocation();
+    
+    CL_Vec3f locationPixels(
+        300, //(curLocation.x - curLocation.y) * 22 + 22,
+        300, //(curLocation.x + curLocation.y) * 22 + 22,
+        0);
     
     std::list<boost::shared_ptr<ui::particles::Emitter> > expired;
-
     std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator iter = emitters_.begin();
     std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator end = emitters_.end();
     
     for (; iter != end; ++iter) {
+        (*iter)->setLocation(locationPixels);
         (*iter)->update(elapsedSeconds);
         
         if ((*iter)->isExpired()) {
             expired.push_back(*iter);
         }
     }
-
+    
     if (!expired.empty()) {
         iter = expired.begin();
         end = expired.end();
@@ -56,6 +65,7 @@ void ParticleEffect::update(unsigned int elapsedMillis) {
 }
 
 void ParticleEffect::renderAll(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader) {
+    LOG_DEBUG << "renderAll particle effect " << getLocation() << std::endl;
     std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator iter = emitters_.begin();
     std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator end = emitters_.end();
 
@@ -72,6 +82,32 @@ bool ParticleEffect::isExpired() const {
     return emitters_.empty();
 }
 
+void ParticleEffect::updateTextureProvider() {
+    // do nothing
+}
+
+bool ParticleEffect::updateAnimation(unsigned int elapsedMillis) {
+    // do nothing
+    return false;
+}
+
+void ParticleEffect::updateVertexCoordinates() {
+    // do nothing
+}
+
+void ParticleEffect::updateRenderDepth() {
+    // do nothing
+}
+
+unsigned int ParticleEffect::startExplosion() {
+    // TODO
+    return 0;
+}
+
+boost::shared_ptr<ui::Texture> ParticleEffect::getIngameTexture() const {
+    boost::shared_ptr<ui::Texture> ret;
+    return ret;
+}
 
 }
 }

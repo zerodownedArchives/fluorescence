@@ -22,7 +22,7 @@
 
 #include <algorithm>
 
-#include "startpositionprovider.hpp"
+#include "startlocationprovider.hpp"
 #include "motionmodel.hpp"
 
 namespace fluo {
@@ -42,12 +42,14 @@ void Emitter::update(float elapsedSeconds) {
     age_ += elapsedSeconds;
     float expireAge = (lifetimes_[1u] - lifetimes_[0u]);
     normalizedAge_ = (std::min)(1.0f, age_ / expireAge); // limit to 1.0
-    CL_Vec3f positionDelta = velocityStart_ * normalizedAge_ +
-            (velocityEnd_ - velocityStart_) * normalizedAge_ * normalizedAge_ / 2.0;
-    position_ = startPosition_ + positionDelta * expireAge;
+    
+    // emitter location is (for now) only dependent on the location of the parent world object
+    //CL_Vec3f locationDelta = velocityStart_ * normalizedAge_ +
+            //(velocityEnd_ - velocityStart_) * normalizedAge_ * normalizedAge_ / 2.0;
+    //location_ = startLocation_ + locationDelta * expireAge;
 
     emitPerSecond_.setNormalizedAge(normalizedAge_);
-    emittedStartPositionProvider_->setNormalizedAge(normalizedAge_);
+    emittedStartLocationProvider_->setNormalizedAge(normalizedAge_);
     emittedMotionModel_->setNormalizedAge(normalizedAge_);
     emittedLifetimeMin_.setNormalizedAge(normalizedAge_);
     emittedLifetimeMax_.setNormalizedAge(normalizedAge_);
@@ -65,6 +67,10 @@ void Emitter::update(float elapsedSeconds) {
 
 bool Emitter::isEmitting() const {
     return lifetimes_[0u] + age_ <= lifetimes_[1u];
+}
+
+void Emitter::setLocation(const CL_Vec3f& location) {
+    location_ = location;
 }
 
 }

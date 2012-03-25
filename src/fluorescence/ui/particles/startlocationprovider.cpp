@@ -18,7 +18,7 @@
 
 
 
-#include "startpositionprovider.hpp"
+#include "startlocationprovider.hpp"
 
 #include <stdlib.h>
 
@@ -28,33 +28,33 @@ namespace fluo {
 namespace ui {
 namespace particles {
 
-CL_Vec3f StartPositionProviderEmitter::get(const CL_Vec3f& emitterPosition) const {
-    return emitterPosition;
+CL_Vec3f StartLocationProviderEmitter::get(const CL_Vec3f& emitterLocation) const {
+    return emitterLocation;
 }
 
-void StartPositionProviderEmitter::setNormalizedAge(float age) {
+void StartLocationProviderEmitter::setNormalizedAge(float age) {
     // do nothing
 }
 
 
-void StartPositionProviderWithSize::setSize(float widthStart, float widthEnd, float heightStart, float heightEnd) {
+void StartLocationProviderWithSize::setSize(float widthStart, float widthEnd, float heightStart, float heightEnd) {
     widthHalf_ = InterpolatedValue<float>(widthStart / 2, widthEnd / 2);
     heightHalf_ =  InterpolatedValue<float>(heightStart / 2, heightEnd / 2);
 }
 
-void StartPositionProviderWithSize::setSizeT1(float width, float height) {
+void StartLocationProviderWithSize::setSizeT1(float width, float height) {
     widthHalf_.setT1(width / 2);
     heightHalf_.setT1(height / 2);
 }
 
-void StartPositionProviderWithSize::setNormalizedAge(float age) {
+void StartLocationProviderWithSize::setNormalizedAge(float age) {
     widthHalf_.setNormalizedAge(age);
     heightHalf_.setNormalizedAge(age);
 }
 
 
-CL_Vec3f StartPositionProviderBox::get(const CL_Vec3f& emitterPosition) const {
-    CL_Vec3f ret(emitterPosition);
+CL_Vec3f StartLocationProviderBox::get(const CL_Vec3f& emitterLocation) const {
+    CL_Vec3f ret(emitterLocation);
 
     ret.x += Random::randomMinMax(-widthHalf_.get(), widthHalf_.get());
     ret.y += Random::randomMinMax(-heightHalf_.get(), heightHalf_.get());
@@ -63,8 +63,8 @@ CL_Vec3f StartPositionProviderBox::get(const CL_Vec3f& emitterPosition) const {
 }
 
 
-CL_Vec3f StartPositionProviderBoxOutline::get(const CL_Vec3f& emitterPosition) const {
-    CL_Vec3f ret(emitterPosition);
+CL_Vec3f StartLocationProviderBoxOutline::get(const CL_Vec3f& emitterLocation) const {
+    CL_Vec3f ret(emitterLocation);
 
     if (Random::randomBool()) {
         ret.x += Random::randomBool() ? -heightHalf_.get() : heightHalf_.get();
@@ -78,8 +78,8 @@ CL_Vec3f StartPositionProviderBoxOutline::get(const CL_Vec3f& emitterPosition) c
 }
 
 
-CL_Vec3f StartPositionProviderOval::get(const CL_Vec3f& emitterPosition) const {
-    CL_Vec3f ret(emitterPosition);
+CL_Vec3f StartLocationProviderOval::get(const CL_Vec3f& emitterLocation) const {
+    CL_Vec3f ret(emitterLocation);
 
     float theta = Random::random01() * 6.283185;
     float length = Random::random01();
@@ -91,8 +91,8 @@ CL_Vec3f StartPositionProviderOval::get(const CL_Vec3f& emitterPosition) const {
 }
 
 
-CL_Vec3f StartPositionProviderOvalOutline::get(const CL_Vec3f& emitterPosition) const {
-    CL_Vec3f ret(emitterPosition);
+CL_Vec3f StartLocationProviderOvalOutline::get(const CL_Vec3f& emitterLocation) const {
+    CL_Vec3f ret(emitterLocation);
 
     float theta = Random::random01() * 6.283185;
 

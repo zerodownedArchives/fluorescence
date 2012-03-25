@@ -27,7 +27,7 @@
 #include <world/particleeffect.hpp>
 
 #include "particleemitter.hpp"
-#include "startpositionprovider.hpp"
+#include "startlocationprovider.hpp"
 #include "motionmodel.hpp"
 
 namespace fluo {
@@ -136,19 +136,19 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node)
     std::string shapeType = node.child("shape").attribute("type").value();
     bool shapeHasSize = true;
     if (shapeType == "oval") {
-        ret->emittedStartPositionProvider_.reset((StartPositionProvider*)new StartPositionProviderOval());
+        ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderOval());
     } else if (shapeType == "oval-outline") {
-        ret->emittedStartPositionProvider_.reset((StartPositionProvider*)new StartPositionProviderOvalOutline());
+        ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderOvalOutline());
     } else if (shapeType == "box") {
-        ret->emittedStartPositionProvider_.reset((StartPositionProvider*)new StartPositionProviderBox());
+        ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderBox());
     } else if (shapeType == "box-outline") {
-        ret->emittedStartPositionProvider_.reset((StartPositionProvider*)new StartPositionProviderBoxOutline());
+        ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderBoxOutline());
     } else if (shapeType == "point") {
-        ret->emittedStartPositionProvider_.reset((StartPositionProvider*)new StartPositionProviderEmitter());
+        ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderEmitter());
         shapeHasSize = false;
     } else {
         LOG_WARN << "Unknown particle emitter shape \"" << shapeType << "\", assuming point" << std::endl;
-        ret->emittedStartPositionProvider_.reset((StartPositionProvider*)new StartPositionProviderEmitter());
+        ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderEmitter());
         shapeHasSize = false;
     }
     
@@ -186,8 +186,8 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node)
         }
         
         if (shapeHasSize) {
-            boost::shared_ptr<StartPositionProviderWithSize> startPosProv = 
-                    boost::dynamic_pointer_cast<StartPositionProviderWithSize>(ret->emittedStartPositionProvider_);
+            boost::shared_ptr<StartLocationProviderWithSize> startPosProv = 
+                    boost::dynamic_pointer_cast<StartLocationProviderWithSize>(ret->emittedStartLocationProvider_);
             if (startPosProv) {
                 startPosProv->setSize(shapeWidth, shapeWidth, shapeHeight, shapeHeight);
             }
@@ -227,8 +227,8 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node)
         }
         
         if (shapeHasSize) {
-            boost::shared_ptr<StartPositionProviderWithSize> startPosProv = 
-                    boost::dynamic_pointer_cast<StartPositionProviderWithSize>(ret->emittedStartPositionProvider_);
+            boost::shared_ptr<StartLocationProviderWithSize> startPosProv = 
+                    boost::dynamic_pointer_cast<StartLocationProviderWithSize>(ret->emittedStartLocationProvider_);
             if (startPosProv) {
                 startPosProv->setSizeT1(shapeWidth, shapeHeight);
             }
