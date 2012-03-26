@@ -1,0 +1,56 @@
+<particleeffect>
+    <emitter>
+        <lifetime duration="0.5" />
+        <size init="500" max="10000" />
+        <shape type="oval" />
+        
+        <particles>
+            <movewithemitter value="false" />
+            <motion model="explosion" />
+            <texture source="file" id="effects/textures/small.png" />
+        </particles>
+
+        <t0>
+            <frequency value="5000" />
+            <shape width="20" height="20" />
+            
+            <particles>
+                <lifetime min="0.2" max="0.5" />
+                <t0>
+                    <colormin r="0.7" g="0" b="0" a="0.8" />
+                    <colormax r="1" g="0" b="0" a="1.0" />
+                    <acceleration min="5" max="100" />
+                </t0>
+                
+                <t1>
+                    <colormin r="0.7" g="0" b="0" a="0.1" />
+                    <colormax r="1" g="0" b="0" a="0.4" />
+                    <acceleration min="5" max="50" />
+                </t1>
+            </particles>
+        </t0>
+        
+        <t1>
+            <frequency value="1000" />
+            <shape width="20" height="20" />
+            
+            <particles>
+                <lifetime min="0.3" max="0.7" />
+                
+                <t0>
+                    <colormin r="0.7" g="0" b="0" a="0.8" />
+                    <colormax r="1" g="0" b="0" a="1.0" />
+                    <acceleration min="5" max="80" />
+                </t0>
+                
+                <t1>
+                    <colormin r="0.7" g="0" b="0" a="0.1" />
+                    <colormax r="1" g="0" b="0" a="0.4" />
+                    <acceleration min="5" max="40" />
+                </t1>
+                
+            </particles>
+        </t1>
+    </emitter>
+    
+</particleeffect>

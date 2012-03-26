@@ -46,7 +46,7 @@ XmlLoader* XmlLoader::getSingleton() {
 XmlLoader::XmlLoader() {
 }
 
-boost::shared_ptr<world::ParticleEffect> XmlLoader::fromFile(const UnicodeString& name) {
+bool XmlLoader::fromFile(const UnicodeString& name, world::ParticleEffect* effect) {
     boost::filesystem::path path = "effects";
     std::string utf8FileName = StringConverter::toUtf8String(name) + ".xml";
     path = path / utf8FileName;
@@ -55,8 +55,7 @@ boost::shared_ptr<world::ParticleEffect> XmlLoader::fromFile(const UnicodeString
     
     if (!boost::filesystem::exists(path)) {
         LOG_ERROR << "Unable to particle effect xml, file not found: " << utf8FileName << std::endl;
-        boost::shared_ptr<world::ParticleEffect> ret;
-        return ret;
+        return false;
     }
 
     LOG_DEBUG << "Parsing xml particle effect file: " << path << std::endl;
@@ -65,38 +64,34 @@ boost::shared_ptr<world::ParticleEffect> XmlLoader::fromFile(const UnicodeString
     pugi::xml_parse_result result = doc.load_file(path.string().c_str());
 
     if (result) {
-        return getSingleton()->parse(doc);
+        return getSingleton()->parse(doc, effect);
     } else {
         LOG_ERROR << "Error parsing particle effect xml file at offset " << result.offset << ": " << result.description() << std::endl;
-        boost::shared_ptr<world::ParticleEffect> ret;
-        return ret;
+        return false;
     }
 }
 
-boost::shared_ptr<world::ParticleEffect> XmlLoader::fromString(const UnicodeString& str) {
+bool XmlLoader::fromString(const UnicodeString& str, world::ParticleEffect* effect) {
     pugi::xml_document doc;
     std::string utf8String = StringConverter::toUtf8String(str);
     pugi::xml_parse_result result = doc.load_buffer(utf8String.c_str(), utf8String.length());
 
     if (result) {
-        return getSingleton()->parse(doc);
+        return getSingleton()->parse(doc, effect);
     } else {
         LOG_ERROR << "Error parsing particle effect xml string at offset " << result.offset << ": " << result.description() << std::endl;
-        boost::shared_ptr<world::ParticleEffect> ret;
-        return ret;
+        return false;
     }
 }
 
-boost::shared_ptr<world::ParticleEffect> XmlLoader::parse(pugi::xml_document& doc) const {
-    boost::shared_ptr<world::ParticleEffect> ret(new world::ParticleEffect());;
-    
+bool XmlLoader::parse(pugi::xml_document& doc, world::ParticleEffect* effect) const {
     pugi::xml_node iter = doc.document_element().first_child();
     while (iter) {
-        ret->addEmitter(parseEmitter(iter));
+        effect->addEmitter(parseEmitter(iter));
         iter = iter.next_sibling();
     }
     
-    return ret;
+    return true;
 }
 
 boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node) const {

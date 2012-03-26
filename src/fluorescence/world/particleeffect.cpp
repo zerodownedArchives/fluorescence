@@ -22,6 +22,7 @@
 
 #include <misc/log.hpp>
 #include <ui/particles/emitter.hpp>
+#include <ui/particles/xmlloader.hpp>
 
 namespace fluo {
 namespace world {
@@ -78,7 +79,19 @@ void ParticleEffect::addEmitter(boost::shared_ptr<ui::particles::Emitter> emitte
 }
 
 bool ParticleEffect::shouldExpireTimeout() const {
-    return emitters_.empty();
+    if (shouldExplode_) {
+        std::list<boost::shared_ptr<ui::particles::Emitter> >::const_iterator iter = emitters_.begin();
+        std::list<boost::shared_ptr<ui::particles::Emitter> >::const_iterator end = emitters_.end();
+
+        for (; iter != end; ++iter) {
+            if ((*iter)->isEmitting()) {
+                return false;
+            }
+        }
+        return true;
+    } else {
+        return emitters_.empty();
+    }
 }
 
 void ParticleEffect::updateTextureProvider() {
@@ -99,7 +112,7 @@ void ParticleEffect::updateRenderDepth() {
 }
 
 unsigned int ParticleEffect::startExplosion() {
-    // TODO
+    ui::particles::XmlLoader::fromFile("explosion", this);
     return 0;
 }
 

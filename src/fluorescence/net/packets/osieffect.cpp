@@ -86,7 +86,9 @@ void OsiEffect::onReceive() {
     data::EffectTranslationDef translation = data::Manager::getEffectTranslationDef(artId_);
     if (translation.effectId_ == artId_) {
         // has translation
-        effect = ui::particles::XmlLoader::fromFile(translation.particleEffectName_);
+        world::ParticleEffect* peff = new world::ParticleEffect();
+        ui::particles::XmlLoader::fromFile(translation.particleEffectName_, peff);
+        effect.reset(peff);
     } else {
         effect.reset(new world::OsiEffect(artId_));
     }

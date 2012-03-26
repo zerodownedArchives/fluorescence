@@ -39,8 +39,8 @@ class ParticleEmitter;
 
 class XmlLoader {
 public:
-    static boost::shared_ptr<world::ParticleEffect> fromFile(const UnicodeString& name);
-    static boost::shared_ptr<world::ParticleEffect> fromString(const UnicodeString& str);
+    static bool fromFile(const UnicodeString& name, world::ParticleEffect* effect);
+    static bool fromString(const UnicodeString& str, world::ParticleEffect* effect);
     
 private:
     static XmlLoader* singleton_;
@@ -49,7 +49,7 @@ private:
     XmlLoader(const XmlLoader& l) { }
     XmlLoader& operator=(const XmlLoader& l) { return *this; }
     
-    boost::shared_ptr<world::ParticleEffect> parse(pugi::xml_document& doc) const;
+    bool parse(pugi::xml_document& doc, world::ParticleEffect* effect) const;
     
     boost::shared_ptr<ParticleEmitter> parseEmitter(pugi::xml_node& node) const;
     
