@@ -67,6 +67,8 @@ protected:
     
     bool expired_;
     int lifetimeMillisLeft_;
+    bool shouldExpireMoving_;
+    virtual bool shouldExpireTimeout() const;
     
     bool shouldExplode_;
     bool exploding_;

@@ -22,6 +22,11 @@ void main(void) {
     float expireAge = (Lifetime[1] - Lifetime[0]);
     float normalizedAge = age / expireAge;
     
+    if (normalizedAge > 1.0) {
+        Color = vec4(0);
+        return;
+    }
+    
     // interpolate position
     vec3 positionDelta = VelocityStart * normalizedAge + 
             (VelocityEnd - VelocityStart) * normalizedAge * normalizedAge / 2.0;
@@ -31,7 +36,7 @@ void main(void) {
     
     gl_Position = cl_ModelViewProjectionMatrix * gl_Position;
     
-    gl_PointSize = 20.0;
+    gl_PointSize = 5.0;
     
     // interpolate color
     Color = mix(ColorStart, ColorEnd, normalizedAge);

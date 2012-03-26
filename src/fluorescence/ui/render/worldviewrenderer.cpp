@@ -256,13 +256,15 @@ void WorldViewRenderer::renderParticleEffects(CL_GraphicContext& gc) {
     bufferControl.enable_color_write(true);
     gc.set_buffer_control(bufferControl);
     
-    //CL_Vec2f clippingTopLeftCorner = worldView_->getTopLeftPixel();
+    glEnable(0x8861); // GL_POINT_SPRITE
+    
+    CL_Vec2f clippingTopLeftCorner = worldView_->getTopLeftPixel();
     
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getParticleShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
     
     gc.push_modelview();
-    //gc.set_translate(-clippingTopLeftCorner.x, -clippingTopLeftCorner.y, 0);
+    gc.set_translate(-clippingTopLeftCorner.x, -clippingTopLeftCorner.y, 0);
     
     std::list<boost::shared_ptr<world::Effect> >::iterator particleIter = world::Manager::getSingleton()->effectsBegin();
     std::list<boost::shared_ptr<world::Effect> >::iterator particleEnd = world::Manager::getSingleton()->effectsEnd();

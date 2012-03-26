@@ -34,11 +34,11 @@ void ParticleEffect::update(unsigned int elapsedMillis) {
     Effect::update(elapsedMillis);
     
     float elapsedSeconds = elapsedMillis / 1000.f;
-    //CL_Vec3f curLocation = getLocation();
+    CL_Vec3f curLocation = getLocation();
     
     CL_Vec3f locationPixels(
-        300, //(curLocation.x - curLocation.y) * 22 + 22,
-        300, //(curLocation.x + curLocation.y) * 22 + 22,
+        (curLocation.x - curLocation.y) * 22 + 22,
+        (curLocation.x + curLocation.y) * 22 + 22 - getLocZDraw() * 4,
         0);
     
     std::list<boost::shared_ptr<ui::particles::Emitter> > expired;
@@ -65,7 +65,6 @@ void ParticleEffect::update(unsigned int elapsedMillis) {
 }
 
 void ParticleEffect::renderAll(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader) {
-    LOG_DEBUG << "renderAll particle effect " << getLocation() << std::endl;
     std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator iter = emitters_.begin();
     std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator end = emitters_.end();
 
@@ -78,7 +77,7 @@ void ParticleEffect::addEmitter(boost::shared_ptr<ui::particles::Emitter> emitte
     emitters_.push_back(emitter);
 }
 
-bool ParticleEffect::isExpired() const {
+bool ParticleEffect::shouldExpireTimeout() const {
     return emitters_.empty();
 }
 

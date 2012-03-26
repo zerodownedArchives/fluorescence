@@ -30,7 +30,7 @@ namespace fluo {
 namespace world {
     
 Effect::Effect(unsigned int ingameObjectType) :
-        IngameObject(ingameObjectType), expired_(false), lifetimeMillisLeft_(0), shouldExplode_(false), exploding_(false), fixedAngle_(true), currentAngle_(0) {
+        IngameObject(ingameObjectType), expired_(false), lifetimeMillisLeft_(0), shouldExpireMoving_(true), shouldExplode_(false), exploding_(false), fixedAngle_(true), currentAngle_(0) {
 }
 
 void Effect::setMoving(boost::shared_ptr<IngameObject> source, boost::shared_ptr<IngameObject> target, unsigned int speed) {
@@ -44,6 +44,7 @@ void Effect::setMoving(boost::shared_ptr<IngameObject> source, boost::shared_ptr
     }
     setLocation(source->getLocation());
     effectType_ = TYPE_SOURCE_TO_TARGET;
+    shouldExpireMoving_ = false;
 }
 
 void Effect::setLightning(boost::shared_ptr<IngameObject> source, boost::shared_ptr<IngameObject> target) {
@@ -98,13 +99,14 @@ void Effect::update(unsigned int elapsedMillis) {
                     
                     fixedAngle_ = true;
                     currentAngle_ = 0;
+                    shouldExpireMoving_ = true;
                 } else {
                     CL_Vec3f step = totalDistance.normalize() * timeFactor;
                     selfLoc += step;
                     setLocation(selfLoc);
                     
                     // does not expire while moving
-                    lifetimeMillisLeft_ = elapsedMillis;
+                    shouldExpireMoving_ = false;
                     
                     if (!fixedAngle_) {
                         // this has to be in screen coordinates
@@ -140,7 +142,7 @@ void Effect::update(unsigned int elapsedMillis) {
     
     // check expire time
     lifetimeMillisLeft_ -= elapsedMillis;
-    if (lifetimeMillisLeft_ < 0) {
+    if (shouldExpireMoving_ && shouldExpireTimeout()) {
         if (shouldExplode_) {
             shouldExplode_ = false;
             exploding_ = true;
@@ -187,6 +189,10 @@ void Effect::setShouldExplode(bool value) {
 
 void Effect::setFixedAngle(bool value) {
     fixedAngle_ = value;
+}
+
+bool Effect::shouldExpireTimeout() const {
+    return lifetimeMillisLeft_ < 0;
 }
 
 }

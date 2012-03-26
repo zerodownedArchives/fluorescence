@@ -94,12 +94,9 @@ void ParticleEmitter::updateSet(unsigned int newCount, float elapsedSeconds) {
 }
 
 void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader) {
-    LOG_DEBUG << "particleemitter render " << location_ << " #particles: " << emittedCount() << std::endl;
     if (!emittedTexture_ || !emittedTexture_->isReadComplete()) {
         return;
     }
-    
-    //CL_Draw::fill(gc, 100, 100, 300, 300, CL_Colorf::green);
     
     // set shader uniform variables
     shader->set_uniform1i("Texture0", 0);
@@ -141,6 +138,7 @@ void ParticleEmitter::initParticle(unsigned int index) {
 }
 
 bool ParticleEmitter::isExpired() const {
+    //LOG_DEBUG << "ParticleEmitter::isExpired: " << lifetimes_[0u] << " + " << age_ << " >= " << lifetimes_[1u] << " + " << emittedLifetimeMax_.get() << std::endl;
     return lifetimes_[0u] + age_ >= lifetimes_[1u] + emittedLifetimeMax_.get();
 }
 

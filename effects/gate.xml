@@ -1,7 +1,7 @@
 <particleeffect>
     <emitter>
-        <lifetime duration="2.0" />
-        <size init="50" max="3000" />
+        <lifetime duration="0.5" />
+        <size init="200" max="3000" />
         <shape type="oval-outline" />
         
         <particles>
@@ -11,42 +11,42 @@
         </particles>
 
         <t0>
-            <frequency value="1000" />
-            <shape width="70" height="140" />
+            <frequency value="3000" />
+            <shape width="20" height="70" />
             
             <particles>
-                <lifetime min="0.5" max="1.0" />
+                <lifetime min="0.3" max="0.7" />
                 <t0>
                     <colormin r="0" g="0.5" b="0" a="0.8" />
                     <colormax r="0" g="0.7" b="0.2" a="1.0" />
-                    <acceleration min="5" max="10" />
+                    <acceleration min="15" max="25" />
                 </t0>
                 
                 <t1>
                     <colormin r="0" g="0" b="0.8" a="0.4" />
                     <colormax r="0.3" g="0" b="1.0" a="0.7" />
-                    <acceleration min="8" max="15" />
+                    <acceleration min="5" max="15" />
                 </t1>
             </particles>
         </t0>
         
         <t1>
-            <frequency value="400" />
-            <shape width="1" height="10" />
+            <frequency value="1000" />
+            <shape width="50" height="120" />
             
             <particles>
-                <lifetime min="0.5" max="1.0" />
+                <lifetime min="0.3" max="0.7" />
                 
                 <t0>
                     <colormin r="0.5" g="0" b="0" a="0.8" />
                     <colormax r="0.7" g="0" b="0.2" a="1.0" />
-                    <acceleration min="10" max="15" />
+                    <acceleration min="15" max="25" />
                 </t0>
                 
                 <t1>
                     <colormin r="0" g="0" b="0.8" a="0.4" />
                     <colormax r="0.3" g="0" b="1.0" a="0.7" />
-                    <acceleration min="5" max="8" />
+                    <acceleration min="5" max="15" />
                 </t1>
                 
             </particles>

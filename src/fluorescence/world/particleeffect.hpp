@@ -49,7 +49,7 @@ public:
     
     virtual unsigned int startExplosion();
     
-    bool isExpired() const;
+    virtual bool shouldExpireTimeout() const;
     void renderAll(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader);
     void addEmitter(boost::shared_ptr<ui::particles::Emitter> emitter);
     
