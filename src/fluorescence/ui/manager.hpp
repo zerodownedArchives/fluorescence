@@ -50,6 +50,7 @@ class FontEngine;
 class ShaderManager;
 class ClipRectManager;
 class UoFont;
+class AudioManager;
 
 class Manager {
 public:
@@ -70,6 +71,7 @@ public:
     static boost::shared_ptr<FontEngine> getFontEngine();
     static boost::shared_ptr<ShaderManager> getShaderManager();
     static boost::shared_ptr<ClipRectManager> getClipRectManager();
+    static boost::shared_ptr<AudioManager> getAudioManager();
     
     static const UoFont& getUnifont(unsigned int index);
 
@@ -144,6 +146,8 @@ private:
     UnicodeString getOpenGLExtensions() const;
     
     boost::shared_ptr<ClipRectManager> clipRectManager_;
+    
+    boost::shared_ptr<AudioManager> audioManager_;
 };
 
 }

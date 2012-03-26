@@ -32,6 +32,7 @@
 #include "render/shadermanager.hpp"
 #include "uofont.hpp"
 #include "cliprectmanager.hpp"
+#include "audiomanager.hpp"
 
 #include <client.hpp>
 
@@ -138,6 +139,8 @@ bool Manager::setShardConfig(Config& config) {
     
     clipRectManager_.reset(new ClipRectManager());
     
+    audioManager_.reset(new AudioManager(config));
+    
     return true;
 }
 
@@ -213,6 +216,10 @@ boost::shared_ptr<DoubleClickHandler> Manager::getDoubleClickHandler() {
 
 boost::shared_ptr<FontEngine> Manager::getFontEngine() {
     return singleton_->fontEngine_;
+}
+
+boost::shared_ptr<AudioManager> Manager::getAudioManager() {
+    return singleton_->audioManager_;
 }
 
 void Manager::closeGumpMenu(GumpMenu* menu) {

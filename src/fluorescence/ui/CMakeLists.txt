@@ -17,6 +17,7 @@ set (UI_HPP
     ui/uofont.hpp
     ui/uofontprovider.hpp
     ui/cliprectmanager.hpp
+    ui/audiomanager.hpp
     )
 
 set (UI_CPP
@@ -36,6 +37,7 @@ set (UI_CPP
     ui/uofont.cpp
     ui/uofontprovider.cpp
     ui/cliprectmanager.cpp
+    ui/audiomanager.cpp
     )
 
 set (GUMPMENU_HPP

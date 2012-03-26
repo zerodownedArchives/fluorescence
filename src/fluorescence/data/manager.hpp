@@ -91,6 +91,7 @@ public:
     static MountDef getMountDef(unsigned int itemId);
     static MobTypeDef getMobTypeDef(unsigned int bodyId);
     static EffectTranslationDef getEffectTranslationDef(unsigned int effectId);
+    static MusicConfigDef getMusicConfigDef(unsigned int musicId);
 
     static boost::shared_ptr<ui::TextureProvider> getItemTextureProvider(unsigned int artId);
     static std::vector<boost::shared_ptr<ui::Animation> > getAnim(unsigned int bodyId, unsigned int animId);
@@ -111,6 +112,8 @@ public:
     static boost::shared_ptr<ui::Texture> getTexture(unsigned int source, unsigned int id);
     static boost::shared_ptr<ui::Texture> getTexture(unsigned int source, const UnicodeString& id);
     static boost::shared_ptr<ui::Texture> getTexture(const UnicodeString& source, const UnicodeString& id);
+    
+    static const boost::filesystem::path& getFilePathFor(const UnicodeString& string);
 
 private:
     static Manager* singleton_;
@@ -124,7 +127,7 @@ private:
 
     std::map<std::string, boost::filesystem::path> filePathMap_;
     void buildFilePathMap(Config& config);
-    void addToFilePathMap(const boost::filesystem::path& directory);
+    void addToFilePathMap(const boost::filesystem::path& directory, bool addSubdirectories = false, const UnicodeString& prefix = "");
     bool hasPathFor(const std::string& file) const;
     void checkFileExists(const std::string& file) const;
 
@@ -155,6 +158,7 @@ private:
     boost::shared_ptr<EquipConvDefLoader> equipConvDefLoader_;
     boost::shared_ptr<DefFileLoader<MountDef> > mountDefLoader_;
     boost::shared_ptr<DefFileLoader<EffectTranslationDef> > effectTranslationDefLoader_;
+    boost::shared_ptr<DefFileLoader<MusicConfigDef> > musicConfigDefLoader_;
 
     boost::shared_ptr<ClilocLoader> clilocLoader_;
     

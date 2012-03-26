@@ -122,6 +122,32 @@ struct EffectTranslationDef {
     }
 };
 
+struct MusicConfigDef {
+    unsigned int musicId_;
+    UnicodeString fileName_;
+    bool loop_;
+    
+    static void parse(MusicConfigDef& def, unsigned int strIndex, const char* str, int*& ptr) {
+        UnicodeString ustr(str);
+        ustr.trim();
+        
+        UnicodeString fileStr(ustr);
+        if (ustr.endsWith(",loop")) {
+            def.loop_ = true;
+            fileStr.remove(ustr.indexOf(','));
+        } else {
+            def.loop_ = true;
+        }
+        
+        fileStr.trim();
+        if (!fileStr.endsWith(".mp3")) {
+            fileStr += ".mp3";
+        }
+        
+        def.fileName_ = fileStr;
+    }
+};
+
 }
 }
 

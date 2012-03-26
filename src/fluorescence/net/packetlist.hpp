@@ -43,6 +43,7 @@
 #include "packets/logincomplete.hpp" // 0x55
 #include "packets/characterselect.hpp" // 0x5d
 #include "packets/target.hpp" // 0x6c
+#include "packets/playmusic.hpp" // 0x6d
 #include "packets/mobileanimation.hpp" // 0x6e
 #include "packets/nakedmobile.hpp" // 0x77
 #include "packets/equippedmobile.hpp" // 0x78

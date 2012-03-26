@@ -335,6 +335,11 @@ void Manager::init(Config& config) {
     path = filePathMap_["effecttranslation.def"];
     LOG_INFO << "Opening effecttranslation.def from path=" << path << std::endl;
     effectTranslationDefLoader_.reset(new DefFileLoader<EffectTranslationDef>(path, "is", &EffectTranslationDef::setEffectName));
+    
+    checkFileExists("music/digital/config.txt");
+    path = filePathMap_["music/digital/config.txt"];
+    LOG_INFO << "Opening sound config.txt from path=" << path << std::endl;
+    musicConfigDefLoader_.reset(new DefFileLoader<MusicConfigDef>(path, "is", &MusicConfigDef::parse));
 
     checkFileExists("cliloc.enu");
     path = filePathMap_["cliloc.enu"];
@@ -535,13 +540,22 @@ EffectTranslationDef Manager::getEffectTranslationDef(unsigned int effectId) {
     return sing->effectTranslationDefLoader_->get(effectId);
 }
 
+MusicConfigDef Manager::getMusicConfigDef(unsigned int musicId) {
+    Manager* sing = getSingleton();
+    return sing->musicConfigDefLoader_->get(musicId);
+}
+
+const boost::filesystem::path& Manager::getFilePathFor(const UnicodeString& string) {
+    return getSingleton()->filePathMap_[StringConverter::toUtf8String(string)];
+}
+
 void Manager::buildFilePathMap(Config& config) {
     boost::filesystem::path mulDirPath = config["/fluo/files/mul-directory@path"].asPath();
     if (!boost::filesystem::exists(mulDirPath) || !boost::filesystem::is_directory(mulDirPath)) {
         throw Exception("Invalid mul directory");
     }
 
-    addToFilePathMap(mulDirPath);
+    addToFilePathMap(mulDirPath, true);
 
     boost::filesystem::path fluoDataPath("data");
     addToFilePathMap(fluoDataPath);
@@ -551,7 +565,7 @@ void Manager::buildFilePathMap(Config& config) {
     addToFilePathMap(shardDataPath);
 }
 
-void Manager::addToFilePathMap(const boost::filesystem::path& directory) {
+void Manager::addToFilePathMap(const boost::filesystem::path& directory, bool addSubdirectories, const UnicodeString& prefix) {
     namespace bfs = boost::filesystem;
 
     if (!bfs::exists(directory) || !bfs::is_directory(directory)) {
@@ -563,11 +577,15 @@ void Manager::addToFilePathMap(const boost::filesystem::path& directory) {
 
     for (; nameIter != nameEnd; ++nameIter) {
         if (bfs::is_directory(nameIter->status())) {
-            // no subdirectories
+            if (addSubdirectories) {
+                UnicodeString nextPre = prefix + StringConverter::fromUtf8(nameIter->path().filename()) + "/";
+                addToFilePathMap(nameIter->path(), true, nextPre);
+            }
+            
             continue;
         }
 
-        UnicodeString str = StringConverter::fromUtf8(nameIter->path().filename());
+        UnicodeString str = prefix + StringConverter::fromUtf8(nameIter->path().filename());
         str.toLower();
 
         filePathMap_[StringConverter::toUtf8String(str)] = nameIter->path();
