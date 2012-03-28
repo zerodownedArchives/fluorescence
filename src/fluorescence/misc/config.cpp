@@ -120,6 +120,12 @@ Config::Config() {
     variablesMap_["/fluo/shard/address@host"].setString("", true);
     variablesMap_["/fluo/shard/address@port"].setInt(2593, true);
     variablesMap_["/fluo/shard/client@version-id"].setString("fluorescence 0.1", true);
+    
+    // audio
+    variablesMap_["/fluo/audio/music@off"].setBool(false, true);
+    variablesMap_["/fluo/audio/sound@off"].setBool(false, true);
+    variablesMap_["/fluo/audio/music@volume"].setInt(66, true);
+    variablesMap_["/fluo/audio/sound@volume"].setInt(100, true);
 }
 
 bool Config::parseCommandLine(const std::vector<CL_String8>& args) {

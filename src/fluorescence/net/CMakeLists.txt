@@ -81,6 +81,7 @@ set (PACKETS_HPP
     net/packets/osieffect.hpp
     net/packets/osieffectextended.hpp
     net/packets/playmusic.hpp
+    net/packets/playsound.hpp
 
     net/packets/bf.hpp
     net/packets/bf/changemap.hpp
@@ -143,6 +144,7 @@ set (PACKETS_CPP
     net/packets/osieffect.cpp
     net/packets/osieffectextended.cpp
     net/packets/playmusic.cpp
+    net/packets/playsound.cpp
 
     net/packets/bf.cpp
     net/packets/bf/changemap.cpp

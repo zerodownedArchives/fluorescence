@@ -40,17 +40,28 @@ public:
     AudioManager(Config& config);
     ~AudioManager();
     
+    // starts playing the corresponding mp3 file
     void playMusic(unsigned int musicId);
-    void playMusic(const UnicodeString& name);
+    
+    // calls the data::Sound loader to load the sound. The loader will also asynchronously call playSoundFromMul
+    void playSound(unsigned int soundId);
 
+    void playSoundFromMul(const char* buf, unsigned int length);
+    void stopMusic();
 
 private:
     FMOD::System* fmodSystem_;
     FMOD::Sound* backgroundMusic_;
-    FMOD::Channel* backgroundMusicChannel_;
     
     void initMusicConfig();
     std::map<unsigned int, MusicConfig> musicConfig_;
+    
+    bool musicOff_;
+    bool soundOff_;
+    float musicVolume_;
+    float soundVolume_;
+    
+    void playSound(FMOD::Sound* sound);
 };
 
 }

@@ -121,6 +121,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0x27: ret.reset(new packets::PickUpReject()); break;
         case 0x2E: ret.reset(new packets::EquippedItem()); break;
         case 0x3C: ret.reset(new packets::ContainerContent()); break;
+        case 0x54: ret.reset(new packets::PlaySound()); break;
         case 0x55: ret.reset(new packets::LoginComplete()); break;
         case 0x6C: ret.reset(new packets::Target()); break;
         case 0x6D: ret.reset(new packets::PlayMusic()); break;

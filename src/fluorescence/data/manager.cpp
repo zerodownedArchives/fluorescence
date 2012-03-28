@@ -38,6 +38,7 @@
 #include "clilocloader.hpp"
 #include "httploader.hpp"
 #include "filepathloader.hpp"
+#include "soundloader.hpp"
 
 #include <client.hpp>
 
@@ -299,6 +300,13 @@ void Manager::init(Config& config) {
             LOG_WARN << "Unable to find " << unifontNames[index] << ".mul" << std::endl;
         }
     }
+    
+    checkFileExists("soundidx.mul");
+    checkFileExists("sound.mul");
+    idxPath = filePathMap_["soundidx.mul"];
+    path = filePathMap_["sound.mul"];
+    LOG_INFO << "Opening sound from idx=" << idxPath << " mul=" << path << std::endl;
+    soundLoader_.reset(new SoundLoader(idxPath, path));
 
 
     checkFileExists("body.def");
@@ -340,6 +348,11 @@ void Manager::init(Config& config) {
     path = filePathMap_["music/digital/config.txt"];
     LOG_INFO << "Opening sound config.txt from path=" << path << std::endl;
     musicConfigDefLoader_.reset(new DefFileLoader<MusicConfigDef>(path, "is", &MusicConfigDef::parse));
+    
+    checkFileExists("sound.def");
+    path = filePathMap_["sound.def"];
+    LOG_INFO << "Opening sound.def from path=" << path << std::endl;
+    soundDefLoader_.reset(new DefFileLoader<SoundDef>(path, "iii"));
 
     checkFileExists("cliloc.enu");
     path = filePathMap_["cliloc.enu"];
@@ -545,6 +558,11 @@ MusicConfigDef Manager::getMusicConfigDef(unsigned int musicId) {
     return sing->musicConfigDefLoader_->get(musicId);
 }
 
+SoundDef Manager::getSoundDef(unsigned int soundId) {
+    Manager* sing = getSingleton();
+    return sing->soundDefLoader_->get(soundId);
+}
+
 const boost::filesystem::path& Manager::getFilePathFor(const UnicodeString& string) {
     return getSingleton()->filePathMap_[StringConverter::toUtf8String(string)];
 }
@@ -639,6 +657,35 @@ unsigned int Manager::getGumpIdForItem(unsigned int itemId, unsigned int parentB
 boost::shared_ptr<ClilocLoader> Manager::getClilocLoader() {
     return getSingleton()->clilocLoader_;
 }
+
+boost::shared_ptr<ArtLoader> Manager::getArtLoader() { 
+    return getSingleton()->artLoader_; 
+}
+
+boost::shared_ptr<TileDataLoader> Manager::getTileDataLoader() { 
+    return getSingleton()->tileDataLoader_; 
+}
+
+boost::shared_ptr<HuesLoader> Manager::getHuesLoader() { 
+    return getSingleton()->huesLoader_; 
+}
+
+boost::shared_ptr<GumpArtLoader> Manager::getGumpArtLoader() { 
+    return getSingleton()->gumpArtLoader_; 
+}
+
+boost::shared_ptr<MapTexLoader> Manager::getMapTexLoader() { 
+    return getSingleton()->mapTexLoader_; 
+}
+
+boost::shared_ptr<AnimDataLoader> Manager::getAnimDataLoader() { 
+    return getSingleton()->animDataLoader_; 
+}
+
+boost::shared_ptr<SoundLoader> Manager::getSoundLoader() {
+    return getSingleton()->soundLoader_;
+}
+
 
 boost::filesystem::path Manager::getShardFilePath(const boost::filesystem::path& innerPath) {
     boost::filesystem::path ret;

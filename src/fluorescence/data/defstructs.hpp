@@ -148,6 +148,12 @@ struct MusicConfigDef {
     }
 };
 
+struct SoundDef {
+    unsigned int soundId_;
+    int translateId_;
+    int unknown_;
+};
+
 }
 }
 

@@ -30,6 +30,7 @@ set(DATA_LOADERS_HPP
     data/animloader.hpp
     data/unifontloader.hpp
     data/clilocloader.hpp
+    data/soundloader.hpp
     
     data/httploader.hpp
     data/filepathloader.hpp
@@ -52,6 +53,7 @@ set(DATA_LOADERS_CPP
     data/animloader.cpp
     data/unifontloader.cpp
     data/clilocloader.cpp
+    data/soundloader.cpp
     
     data/httploader.cpp
     data/filepathloader.cpp

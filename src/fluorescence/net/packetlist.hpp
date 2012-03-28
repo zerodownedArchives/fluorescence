@@ -40,6 +40,7 @@
 #include "packets/equippeditem.hpp" // 0x2e
 #include "packets/statskillquery.hpp" //0x34
 #include "packets/containercontent.hpp" // 0x3c
+#include "packets/playsound.hpp" // 0x54
 #include "packets/logincomplete.hpp" // 0x55
 #include "packets/characterselect.hpp" // 0x5d
 #include "packets/target.hpp" // 0x6c

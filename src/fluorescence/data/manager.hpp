@@ -50,6 +50,7 @@ class EquipConvDefLoader;
 class ClilocLoader;
 class HttpLoader;
 class FilePathLoader;
+class SoundLoader;
 
 template<typename ValueType>
 class DefFileLoader;
@@ -92,22 +93,24 @@ public:
     static MobTypeDef getMobTypeDef(unsigned int bodyId);
     static EffectTranslationDef getEffectTranslationDef(unsigned int effectId);
     static MusicConfigDef getMusicConfigDef(unsigned int musicId);
+    static SoundDef getSoundDef(unsigned int soundId);
 
     static boost::shared_ptr<ui::TextureProvider> getItemTextureProvider(unsigned int artId);
     static std::vector<boost::shared_ptr<ui::Animation> > getAnim(unsigned int bodyId, unsigned int animId);
     static unsigned int getAnimType(unsigned int bodyId);
 
-    static boost::shared_ptr<ArtLoader> getArtLoader() { return getSingleton()->artLoader_; }
-    static boost::shared_ptr<TileDataLoader> getTileDataLoader() { return getSingleton()->tileDataLoader_; }
-    static boost::shared_ptr<HuesLoader> getHuesLoader() { return getSingleton()->huesLoader_; }
-    static boost::shared_ptr<GumpArtLoader> getGumpArtLoader() { return getSingleton()->gumpArtLoader_; }
+    static boost::shared_ptr<ArtLoader> getArtLoader();
+    static boost::shared_ptr<TileDataLoader> getTileDataLoader();
+    static boost::shared_ptr<HuesLoader> getHuesLoader();
+    static boost::shared_ptr<GumpArtLoader> getGumpArtLoader();
     static boost::shared_ptr<MapLoader> getMapLoader(unsigned int index);
     static boost::shared_ptr<StaticsLoader> getStaticsLoader(unsigned int index);
-    static boost::shared_ptr<MapTexLoader> getMapTexLoader() { return getSingleton()->mapTexLoader_; }
-    static boost::shared_ptr<AnimDataLoader> getAnimDataLoader() { return getSingleton()->animDataLoader_; }
+    static boost::shared_ptr<MapTexLoader> getMapTexLoader();
+    static boost::shared_ptr<AnimDataLoader> getAnimDataLoader();
     static boost::shared_ptr<AnimLoader> getAnimLoader(unsigned int index);
     static boost::shared_ptr<UniFontLoader> getUniFontLoader(unsigned int index);
     static boost::shared_ptr<ClilocLoader> getClilocLoader();
+    static boost::shared_ptr<SoundLoader> getSoundLoader();
     
     static boost::shared_ptr<ui::Texture> getTexture(unsigned int source, unsigned int id);
     static boost::shared_ptr<ui::Texture> getTexture(unsigned int source, const UnicodeString& id);
@@ -149,6 +152,8 @@ private:
 
     boost::shared_ptr<UniFontLoader> uniFontLoader_[13];
     boost::shared_ptr<UniFontLoader> fallbackUniFontLoader_;
+    
+    boost::shared_ptr<SoundLoader> soundLoader_;
 
     boost::shared_ptr<DefFileLoader<MobTypeDef> > mobTypesLoader_;
     boost::shared_ptr<DefFileLoader<BodyDef> > bodyDefLoader_;
@@ -159,6 +164,7 @@ private:
     boost::shared_ptr<DefFileLoader<MountDef> > mountDefLoader_;
     boost::shared_ptr<DefFileLoader<EffectTranslationDef> > effectTranslationDefLoader_;
     boost::shared_ptr<DefFileLoader<MusicConfigDef> > musicConfigDefLoader_;
+    boost::shared_ptr<DefFileLoader<SoundDef> > soundDefLoader_;
 
     boost::shared_ptr<ClilocLoader> clilocLoader_;
     
