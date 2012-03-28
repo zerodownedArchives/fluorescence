@@ -20,12 +20,19 @@
 #ifndef FLUO_UI_AUDIOMANAGER_HPP
 #define FLUO_UI_AUDIOMANAGER_HPP
 
+#include <list>
 #include <map>
 #include <fmodex/fmod.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include <misc/config.hpp>
 
 namespace fluo {
+
+namespace data {
+class Sound;
+}
+
 namespace ui {
 
 class AudioManager {
@@ -40,13 +47,14 @@ public:
     AudioManager(Config& config);
     ~AudioManager();
     
+    void step();
+    
     // starts playing the corresponding mp3 file
     void playMusic(unsigned int musicId);
     
-    // calls the data::Sound loader to load the sound. The loader will also asynchronously call playSoundFromMul
+    // starts to load a sound from sound.mul and puts it in the waiting list, to wait for the asynchronous loading to complete
     void playSound(unsigned int soundId);
 
-    void playSoundFromMul(const char* buf, unsigned int length);
     void stopMusic();
 
 private:
@@ -61,7 +69,16 @@ private:
     float musicVolume_;
     float soundVolume_;
     
-    void playSound(FMOD::Sound* sound);
+    void playSound(boost::shared_ptr<data::Sound> sound);
+    
+    std::list<boost::shared_ptr<data::Sound> > waitingList_;
+    
+    static FMOD_RESULT F_CALLBACK fmodChannelCallback(FMOD_CHANNEL *channel, FMOD_CHANNEL_CALLBACKTYPE type, void *commanddata1, void *commanddata2);
+    void onSoundEnd(FMOD::Sound* channel);
+    std::list<FMOD::Sound*> soundEndedList_;
+    
+    // we need to keep the data from data::Sound alive until the sound playback has finished
+    std::map<FMOD::Sound*, boost::shared_ptr<data::Sound> > playingSounds_;
 };
 
 }

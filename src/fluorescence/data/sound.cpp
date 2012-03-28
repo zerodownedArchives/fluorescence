@@ -16,35 +16,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-#ifndef FLUO_DATA_SOUNDLOADER_HPP
-#define FLUO_DATA_SOUNDLOADER_HPP
-
-#include <boost/shared_ptr.hpp>
-#include <boost/filesystem/path.hpp>
-
-#include "indexedondemandfileloader.hpp"
-#include "weakptrcache.hpp"
 #include "sound.hpp"
 
 namespace fluo {
 namespace data {
+
+Sound::Sound() : dataLength_(0), rawData_(nullptr) {
+}
+
+Sound::~Sound() {
+    if (rawData_) {
+        free(rawData_);
+    }
+}
+
+void Sound::setName(const int8_t* nameRaw) {
+    name_ = StringConverter::fromUtf8(nameRaw, 20);
+}
+
+void Sound::setData(const int8_t* buf, unsigned int len) {
+    dataLength_ = len + 44;
+    rawData_ = (char*)malloc(dataLength_);
     
-class SoundLoader {
-public:
-    SoundLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath);
+    WaveHeader header(len);
+    memcpy(rawData_, &header, sizeof(WaveHeader));
+    memcpy(rawData_ + sizeof(WaveHeader), buf, len);
+}
 
-    boost::shared_ptr<Sound> get(unsigned int soundId);
+unsigned int Sound::getDataLength() const {
+    return dataLength_;
+}
 
-    void readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<Sound>, unsigned int extra, unsigned int userData);
-    
-private:
-    WeakPtrCache<unsigned int, Sound, IndexedOnDemandFileLoader> cache_;
+const char* Sound::getData() const {
+    return rawData_;
+}
 
-};
+const UnicodeString& Sound::getName() const {
+    return name_;
+}
 
 }
 }
-
-#endif
-

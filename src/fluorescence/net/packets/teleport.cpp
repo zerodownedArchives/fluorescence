@@ -60,7 +60,7 @@ void Teleport::onReceive() {
 
         // TODO: handle status
         
-        ui::Manager::getAudioManager()->stopMusic();
+        //ui::Manager::getAudioManager()->stopMusic();
     }
 }
 

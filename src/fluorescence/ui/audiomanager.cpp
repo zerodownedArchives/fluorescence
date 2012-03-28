@@ -52,6 +52,7 @@ AudioManager::AudioManager(Config& config) : fmodSystem_(nullptr), backgroundMus
 }
 
 AudioManager::~AudioManager() {
+    LOG_DEBUG << "fmod shutdown" << std::endl;
     FMOD_RESULT result;
     
     if (backgroundMusic_) {
@@ -67,6 +68,43 @@ AudioManager::~AudioManager() {
         if (result != FMOD_OK) {
             LOG_ERROR << "fmod error on FMOD::System::release: " << FMOD_ErrorString(result) << " (" << result << ")" << std::endl;
         }
+    }
+}
+
+void AudioManager::step() {
+    if (!waitingList_.empty()) {
+        std::list<boost::shared_ptr<data::Sound> >::iterator iter = waitingList_.begin();
+        std::list<boost::shared_ptr<data::Sound> >::iterator end = waitingList_.end();
+        std::list<boost::shared_ptr<data::Sound> > waitingDone;
+        
+        for (; iter != end; ++iter) {
+            if ((*iter)->isReadComplete()) {
+                playSound(*iter);
+                waitingDone.push_back(*iter);
+            }
+        }
+        
+        if (!waitingDone.empty()) {
+            iter = waitingDone.begin();
+            end = waitingDone.end();
+            
+            for (; iter != end; ++iter) {
+                waitingList_.remove(*iter);
+            }
+        }
+    }
+    
+    fmodSystem_->update();
+    
+    if (!soundEndedList_.empty()) {
+        std::list<FMOD::Sound*>::iterator iter = soundEndedList_.begin();
+        std::list<FMOD::Sound*>::iterator end = soundEndedList_.end();
+        
+        for (; iter != end; ++iter) {
+            onSoundEnd(*iter);
+        }
+        
+        soundEndedList_.clear();
     }
 }
 
@@ -132,6 +170,8 @@ void AudioManager::stopMusic() {
             LOG_ERROR << "AudioManager::playMusic: fmod error on FMOD::Sound::release: " << FMOD_ErrorString(result) << " (" << result << ")" << std::endl;
         }
     }
+    
+    backgroundMusic_ = nullptr;
 }
 
 void AudioManager::playSound(unsigned int soundId) {
@@ -148,42 +188,90 @@ void AudioManager::playSound(unsigned int soundId) {
         }
     }
     
-    data::Manager::getSoundLoader()->loadAndPlay(soundId);
+    boost::shared_ptr<data::Sound> snd = data::Manager::getSoundLoader()->get(soundId);
+    
+    if (snd) {
+        waitingList_.push_back(snd);
+    }
 }
 
-void AudioManager::playSoundFromMul(const char* buf, unsigned int length) {
+void AudioManager::playSound(boost::shared_ptr<data::Sound> soundData) {
+    LOG_DEBUG << "Playing sound " << soundData->getName() << std::endl;
+    FMOD_RESULT result;
     FMOD::Sound* sound;
     FMOD_CREATESOUNDEXINFO exinfo;
-    FMOD_RESULT       result;
     
     memset(&exinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
     exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
-    exinfo.length = length;
-    result = fmodSystem_->createSound(buf, FMOD_HARDWARE | FMOD_2D | FMOD_OPENMEMORY, &exinfo, &sound);
+    exinfo.length = soundData->getDataLength();
+    result = fmodSystem_->createSound(soundData->getData(), FMOD_HARDWARE | FMOD_2D | FMOD_OPENMEMORY_POINT, &exinfo, &sound);
     
     if (result != FMOD_OK) {
-        LOG_ERROR << "AudioManager::createSoundFromMul: fmod error on FMOD::System::createSound: " << FMOD_ErrorString(result) << " (" << result << ")" << std::endl;
+        LOG_ERROR << "AudioManager::playSound: fmod error on FMOD::System::createSound: " << FMOD_ErrorString(result) << " (" << result << ")" << std::endl;
         return;
     }
     
-    playSound(sound);
-}
-
-void AudioManager::playSound(FMOD::Sound* sound) {
     FMOD::Channel* channel;
-    FMOD_RESULT       result;
-    
     result = fmodSystem_->playSound(FMOD_CHANNEL_FREE, sound, false, &channel);
     if (result != FMOD_OK) {
         LOG_ERROR << "AudioManager::playSound: fmod error on FMOD::System::playSound: " << FMOD_ErrorString(result) << " (" << result << ")" << std::endl;
         return;
     }
     
+    channel->setUserData(this);
+    result = channel->setCallback(&AudioManager::fmodChannelCallback);
+    if (result != FMOD_OK) {
+        LOG_ERROR << "AudioManager::playSound: fmod error on FMOD::Channel::setCallback: " << FMOD_ErrorString(result) << " (" << result << ")" << std::endl;
+        return;
+    }
+    
+    // insert into map of playing sounds to keep the raw data valid. The created FMOD::Sound relies on the data staying available in memory
+    playingSounds_[sound] = soundData;
+    
     result = channel->setVolume(soundVolume_);
     if (result != FMOD_OK) {
         LOG_ERROR << "AudioManager::playSound: fmod error on FMOD::Channel::setVolume: " << FMOD_ErrorString(result) << " (" << result << ")" << std::endl;
         return;
     }
+}
+
+void AudioManager::onSoundEnd(FMOD::Sound* sound) {
+    FMOD_RESULT result;
+    
+    result = sound->release();
+    if (result != FMOD_OK) {
+        LOG_ERROR << "AudioManager::onSoundEnd: fmod error on FMOD::Sound::release: " << FMOD_ErrorString(result) << " (" << result << ")" << std::endl;
+        return;
+    }
+    
+    std::map<FMOD::Sound*, boost::shared_ptr<data::Sound> >::iterator iter = playingSounds_.find(sound);
+    if (iter != playingSounds_.end()) {
+        playingSounds_.erase(iter);
+    }
+}
+
+FMOD_RESULT F_CALLBACK AudioManager::fmodChannelCallback(FMOD_CHANNEL *channel, FMOD_CHANNEL_CALLBACKTYPE type, void *commanddata1, void *commanddata2) {
+    if (type == FMOD_CHANNEL_CALLBACKTYPE_END) {
+        FMOD::Channel* cppChannel = reinterpret_cast<FMOD::Channel*>(channel);
+        void* userData;
+        cppChannel->getUserData(&userData);
+        if (userData) {
+            FMOD_RESULT result;
+            FMOD::Sound* snd;
+    
+            result = cppChannel->getCurrentSound(&snd);
+            if (result != FMOD_OK) {
+                LOG_ERROR << "AudioManager::onSoundEnd: fmod error on FMOD::Channel::getCurrentSound: " << FMOD_ErrorString(result) << " (" << result << ")" << std::endl;
+                return result;
+            }
+            
+            // this function is called from inside FMOD::System::update, so we do not need explicit synchronization here
+            
+            AudioManager* self = reinterpret_cast<AudioManager*>(userData);
+            self->soundEndedList_.push_back(snd);
+        }
+    }
+    return FMOD_OK;
 }
 
 }

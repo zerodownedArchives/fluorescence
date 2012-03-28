@@ -25,25 +25,19 @@
 namespace fluo {
 namespace data {
     
-SoundLoader::SoundLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath) :
-        loader_(idxPath, mulPath, boost::bind(&SoundLoader::readCallback, this, _1, _2, _3, _4, _5, _6)) {
+SoundLoader::SoundLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath) {
+    boost::shared_ptr<IndexedOnDemandFileLoader<unsigned int, Sound> > loader(new IndexedOnDemandFileLoader<unsigned int, Sound>(idxPath, mulPath,
+            boost::bind(&SoundLoader::readCallback, this, _1, _2, _3, _4, _5, _6)));
+    cache_.init(loader);
 }
 
-void SoundLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<OnDemandReadable<void> >, unsigned int extra, unsigned int userData) {
-    char waveBuf[len + 4]; // 40 bytes of data ignored (20 bytes filename, 20 unknown bytes), but need 44 byte header
-    
-    unsigned int dataLen = len - 40;
-    // set up file header
-    WaveHeader header(dataLen);
-    
-    memcpy(waveBuf, &header, sizeof(WaveHeader));
-    memcpy(waveBuf + sizeof(WaveHeader), buf, dataLen);
-    
-    ui::Manager::getAudioManager()->playSoundFromMul(waveBuf, len + 4);
+void SoundLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<Sound> sound, unsigned int extra, unsigned int userData) {
+    sound->setName(buf);
+    sound->setData(buf + 40, len - 40);
 }
 
-void SoundLoader::loadAndPlay(unsigned int soundId) {
-    loader_.get(soundId, 0);
+boost::shared_ptr<Sound> SoundLoader::get(unsigned int soundId) {
+    return cache_.get(soundId);
 }
 
 }

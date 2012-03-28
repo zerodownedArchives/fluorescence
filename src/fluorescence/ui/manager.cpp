@@ -188,6 +188,8 @@ void Manager::stepDraw() {
     CL_KeepAlive::process();
 
     processGumpCloseList();
+    
+    audioManager_->step();
 }
 
 boost::shared_ptr<CL_DisplayWindow> Manager::getMainWindow() {
