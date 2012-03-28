@@ -37,7 +37,11 @@ bool PlayMusic::read(const int8_t* buf, unsigned int len, unsigned int& index) {
 }
 
 void PlayMusic::onReceive() {
-    ui::Manager::getAudioManager()->playMusic(musicId_);
+    if (musicId_ == 0xFFFF) {
+        ui::Manager::getAudioManager()->stopMusic();
+    } else {
+        ui::Manager::getAudioManager()->playMusic(musicId_);
+    }
 }
 
 }

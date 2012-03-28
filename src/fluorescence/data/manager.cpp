@@ -352,7 +352,7 @@ void Manager::init(Config& config) {
     checkFileExists("sound.def");
     path = filePathMap_["sound.def"];
     LOG_INFO << "Opening sound.def from path=" << path << std::endl;
-    soundDefLoader_.reset(new DefFileLoader<SoundDef>(path, "iii"));
+    soundDefLoader_.reset(new DefFileLoader<SoundDef>(path, "iri"));
 
     checkFileExists("cliloc.enu");
     path = filePathMap_["cliloc.enu"];
