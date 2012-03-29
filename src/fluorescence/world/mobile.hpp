@@ -90,7 +90,9 @@ public:
 
     bool isPlayer() const;
     bool isMounted() const;
-    bool isWarmode() const;
+    bool isWarMode() const;
+    
+    void setWarMode(bool warMode);
     
     virtual void onAddedToSector(world::Sector* sector);
     virtual void onRemovedFromSector(world::Sector* sector);
@@ -120,7 +122,7 @@ private:
     unsigned int race_;
     bool female_;
 
-    bool isWarmode_;
+    bool isWarMode_;
     
     unsigned int animType_; // high detail, low detail, people
     

@@ -45,7 +45,7 @@
 namespace fluo {
 namespace world {
 
-Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE), baseBodyId_(0), bodyId_(0), isWarmode_(false) {
+Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE), baseBodyId_(0), bodyId_(0), isWarMode_(false) {
 }
 
 boost::shared_ptr<ui::Texture> Mobile::getIngameTexture() const {
@@ -411,8 +411,8 @@ bool Mobile::isMounted() const {
     return hasItemOnLayer(Layer::MOUNT);
 }
 
-bool Mobile::isWarmode() const {
-    return isWarmode_;
+bool Mobile::isWarMode() const {
+    return isWarMode_;
 }
 
 unsigned int Mobile::getMoveAnim() const {
@@ -425,7 +425,7 @@ unsigned int Mobile::getMoveAnim() const {
         case AnimType::PEOPLE:
             if (isMounted()) {
                 return isRunning_ ? 24 : 23;
-            } else if (isWarmode_) {
+            } else if (isWarMode_) {
                 return 15;
             } else if (hasItemOnLayer(Layer::ONEHANDED) || hasItemOnLayer(Layer::TWOHANDED)) {
                 return isRunning_ ? 3 : 1;
@@ -484,6 +484,13 @@ bool Mobile::hasItemOnLayer(unsigned int layer) const {
     }
     
     return false;
+}
+
+void Mobile::setWarMode(bool warMode) {
+    if (isWarMode_ != isWarMode_) {
+        isWarMode_ = warMode;
+        invalidateTextureProvider();
+    }
 }
 
 }

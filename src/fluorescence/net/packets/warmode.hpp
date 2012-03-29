@@ -17,37 +17,32 @@
  */
 
 
-#include "playsound.hpp"
+#ifndef FLUO_NET_PACKETS_WARMODE_HPP
+#define FLUO_NET_PACKETS_WARMODE_HPP
 
-#include <ui/audiomanager.hpp>
-#include <ui/manager.hpp>
+#include <net/packet.hpp>
 
 namespace fluo {
 namespace net {
+
 namespace packets {
 
-PlaySound::PlaySound() : Packet(0x54, 12) {
-}
+class WarMode : public Packet {
+public:
+    WarMode();
+    WarMode(bool warMode);
 
-bool PlaySound::read(const int8_t* buf, unsigned int len, unsigned int& index) {
-    bool ret = true;
-    
-    ret &= PacketReader::read(buf, len, index, playMode_);
-    ret &= PacketReader::read(buf, len, index, soundId_);
-    
-    index += 2;
-    
-    ret &= PacketReader::read(buf, len, index, locX_);
-    ret &= PacketReader::read(buf, len, index, locY_);
-    ret &= PacketReader::read(buf, len, index, locZ_);
+    virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
+    virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
 
-    return ret;
-}
+    virtual void onReceive();
 
-void PlaySound::onReceive() {
-    ui::Manager::getAudioManager()->playSound(soundId_);
-}
+private:
+    uint8_t warMode_;
+};
 
 }
 }
 }
+
+#endif
