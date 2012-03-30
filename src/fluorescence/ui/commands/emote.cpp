@@ -16,33 +16,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "emote.hpp"
 
-#ifndef FLUO_NET_PACKETS_SPEECHREQUEST_HPP
-#define FLUO_NET_PACKETS_SPEECHREQUEST_HPP
-
-#include <net/packet.hpp>
+#include <typedefs.hpp>
+#include <net/manager.hpp>
+#include <net/packets/speechrequest.hpp>
 
 namespace fluo {
-namespace net {
+namespace ui {
+namespace commands {
+    
+Emote::Emote(Config& config) : font_(1), hue_(1) {
+    // TODO: pull the properties from the config
+}
 
-namespace packets {
-
-class SpeechRequest : public Packet {
-public:
-    SpeechRequest(unsigned int speechMode, unsigned int hue, unsigned int font, const UnicodeString& text);
-
-    virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
-
-    uint8_t speechMode_;
-    uint16_t hue_;
-    uint16_t font_;
-    int8_t language_[4];
-    // TODO: keywords
-    UnicodeString text_;
-};
+void Emote::execute(const UnicodeString& args) {
+    UnicodeString emoteMsg("*");
+    emoteMsg += args;
+    emoteMsg += '*';
+    net::packets::SpeechRequest pkt(TextType::EMOTE, hue_, font_, emoteMsg);
+    net::Manager::getSingleton()->send(pkt);
+}
 
 }
 }
 }
 
-#endif

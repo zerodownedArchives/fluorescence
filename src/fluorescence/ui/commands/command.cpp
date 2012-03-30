@@ -16,33 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "command.hpp"
 
-#ifndef FLUO_NET_PACKETS_SPEECHREQUEST_HPP
-#define FLUO_NET_PACKETS_SPEECHREQUEST_HPP
-
-#include <net/packet.hpp>
+#include <ui/manager.hpp>
+#include <ui/commandmanager.hpp>
 
 namespace fluo {
-namespace net {
+namespace ui {
+namespace commands {
+    
+Command::Command(Config& config) {
+}
 
-namespace packets {
-
-class SpeechRequest : public Packet {
-public:
-    SpeechRequest(unsigned int speechMode, unsigned int hue, unsigned int font, const UnicodeString& text);
-
-    virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
-
-    uint8_t speechMode_;
-    uint16_t hue_;
-    uint16_t font_;
-    int8_t language_[4];
-    // TODO: keywords
-    UnicodeString text_;
-};
+void Command::execute(const UnicodeString& args) {
+    int spaceIdx = args.indexOf(' ');
+    if (spaceIdx == -1) {
+        ui::Manager::getCommandManager()->execute(args);
+    } else {
+        UnicodeString cmd(args, 0, spaceIdx);
+        UnicodeString cmdArgs(args, spaceIdx + 1);
+        ui::Manager::getCommandManager()->execute(cmd, cmdArgs);
+    }
+}
 
 }
 }
 }
 
-#endif

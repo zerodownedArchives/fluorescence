@@ -16,29 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef FLUO_UI_COMMANDS_YELL_HPP
+#define FLUO_UI_COMMANDS_YELL_HPP
 
-#ifndef FLUO_NET_PACKETS_SPEECHREQUEST_HPP
-#define FLUO_NET_PACKETS_SPEECHREQUEST_HPP
-
-#include <net/packet.hpp>
+#include "clientcommand.hpp"
+#include <misc/config.hpp>
 
 namespace fluo {
-namespace net {
-
-namespace packets {
-
-class SpeechRequest : public Packet {
+namespace ui {
+namespace commands {
+    
+class Yell : public ClientCommand {
 public:
-    SpeechRequest(unsigned int speechMode, unsigned int hue, unsigned int font, const UnicodeString& text);
-
-    virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
-
-    uint8_t speechMode_;
-    uint16_t hue_;
-    uint16_t font_;
-    int8_t language_[4];
-    // TODO: keywords
-    UnicodeString text_;
+    Yell(Config& config);
+    
+    virtual void execute(const UnicodeString& args);
+    
+private:
+    unsigned int font_;
+    unsigned int hue_;
 };
 
 }
@@ -46,3 +42,4 @@ public:
 }
 
 #endif
+

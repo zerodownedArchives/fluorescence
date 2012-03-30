@@ -18,6 +18,7 @@ set (UI_HPP
     ui/uofontprovider.hpp
     ui/cliprectmanager.hpp
     ui/audiomanager.hpp
+    ui/commandmanager.hpp
     )
 
 set (UI_CPP
@@ -38,6 +39,7 @@ set (UI_CPP
     ui/uofontprovider.cpp
     ui/cliprectmanager.cpp
     ui/audiomanager.cpp
+    ui/commandmanager.cpp
     )
 
 set (GUMPMENU_HPP
@@ -144,7 +146,24 @@ set (PARTICLES_CPP
     ui/particles/motionmodel.cpp
     ui/particles/xmlloader.cpp
     )
+    
+set (CLIENTCOMMANDS_HPP
+    ui/commands/clientcommand.hpp
+    ui/commands/say.hpp
+    ui/commands/emote.hpp
+    ui/commands/yell.hpp
+    ui/commands/whisper.hpp
+    ui/commands/command.hpp
+    )
+
+set (CLIENTCOMMANDS_CPP
+    ui/commands/say.cpp
+    ui/commands/emote.cpp
+    ui/commands/yell.cpp
+    ui/commands/whisper.cpp
+    ui/commands/command.cpp
+    )
 
 
-SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${RENDER_HPP} ${RENDER_CPP} ${TARGETING_HPP} ${TARGETING_CPP} ${PARTICLES_HPP} ${PARTICLES_CPP} PARENT_SCOPE)
-
+SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${RENDER_HPP} ${RENDER_CPP} ${TARGETING_HPP} ${TARGETING_CPP}
+        ${PARTICLES_HPP} ${PARTICLES_CPP} ${CLIENTCOMMANDS_HPP} ${CLIENTCOMMANDS_CPP} PARENT_SCOPE)

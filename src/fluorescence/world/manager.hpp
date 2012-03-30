@@ -78,7 +78,7 @@ public:
     std::list<boost::shared_ptr<world::Effect> >::iterator effectsBegin();
     std::list<boost::shared_ptr<world::Effect> >::iterator effectsEnd();
     
-    void systemMessage(const UnicodeString& msg, unsigned int hue = 0, unsigned int font = 0);
+    void systemMessage(const UnicodeString& msg, unsigned int hue = 946, unsigned int font = 3);
 
 private:
     static Manager* singleton_;

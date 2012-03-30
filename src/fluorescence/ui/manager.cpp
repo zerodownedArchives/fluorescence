@@ -33,6 +33,7 @@
 #include "uofont.hpp"
 #include "cliprectmanager.hpp"
 #include "audiomanager.hpp"
+#include "commandmanager.hpp"
 
 #include <client.hpp>
 
@@ -140,6 +141,8 @@ bool Manager::setShardConfig(Config& config) {
     clipRectManager_.reset(new ClipRectManager());
     
     audioManager_.reset(new AudioManager(config));
+    
+    commandManager_.reset(new CommandManager(config));
     
     return true;
 }
@@ -387,6 +390,10 @@ const UoFont& Manager::getUnifont(unsigned int index) {
         LOG_WARN << "Trying to access unifont with id " << index << std::endl;
         return *(getSingleton()->unifonts_[0].get());
     }
+}
+
+boost::shared_ptr<CommandManager> Manager::getCommandManager() {
+    return getSingleton()->commandManager_;
 }
 
 }

@@ -25,6 +25,7 @@
 #include <client.hpp>
 
 #include <ui/manager.hpp>
+#include <ui/commandmanager.hpp>
 #include <ui/components/lineedit.hpp>
 #include <ui/components/basebutton.hpp>
 
@@ -132,8 +133,7 @@ bool GumpActions::sendSpeech(GumpMenu* menu, const UnicodeString& action, unsign
     if (line) {
         UnicodeString speechText = line->getText();
         if (speechText.length() > 0) {
-            net::packets::SpeechRequest pkt(speechText);
-            net::Manager::getSingleton()->send(pkt);
+            ui::Manager::getCommandManager()->handleTextInput(speechText);
             line->setText("");
             line->set_focus(false);
             menu->activatePage(0);

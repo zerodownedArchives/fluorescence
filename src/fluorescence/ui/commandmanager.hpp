@@ -17,32 +17,40 @@
  */
 
 
-#ifndef FLUO_NET_PACKETS_SPEECHREQUEST_HPP
-#define FLUO_NET_PACKETS_SPEECHREQUEST_HPP
+#ifndef FLUO_UI_COMMANDMANAGER_HPP
+#define FLUO_UI_COMMANDMANAGER_HPP
 
-#include <net/packet.hpp>
+#include <map>
+#include <boost/function.hpp>
+
+#include <misc/string.hpp>
+#include <misc/config.hpp>
 
 namespace fluo {
-namespace net {
-
-namespace packets {
-
-class SpeechRequest : public Packet {
-public:
-    SpeechRequest(unsigned int speechMode, unsigned int hue, unsigned int font, const UnicodeString& text);
-
-    virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
-
-    uint8_t speechMode_;
-    uint16_t hue_;
-    uint16_t font_;
-    int8_t language_[4];
-    // TODO: keywords
-    UnicodeString text_;
-};
-
+namespace ui {
+    
+namespace commands {
+class ClientCommand;
 }
+    
+class CommandManager {
+public:
+    CommandManager(Config& config);
+    
+    void execute(const UnicodeString& command, const UnicodeString& args = "");
+    void handleTextInput(const UnicodeString& text);
+    
+private:
+    std::map<UnicodeString, boost::shared_ptr<commands::ClientCommand> > commandMap_;
+    
+    char commandPrefix_;
+    char emotePrefix_;
+    char yellPrefix_;
+    char whisperPrefix_;
+};
+    
 }
 }
 
 #endif
+

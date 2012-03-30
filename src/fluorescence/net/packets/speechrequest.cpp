@@ -24,11 +24,9 @@ namespace fluo {
 namespace net {
 namespace packets {
 
-SpeechRequest::SpeechRequest(const UnicodeString& text) : Packet(0xAD), speechMode_(0), hue_(0), font_(0), text_(text) {
-    language_[0] = 'e';
-    language_[1] = 'n';
-    language_[2] = 'u';
-    language_[3] = '\0';
+SpeechRequest::SpeechRequest(unsigned int speechMode, unsigned int hue, unsigned int font, const UnicodeString& text) : 
+        Packet(0xAD), 
+        speechMode_(speechMode), hue_(hue), font_(font), language_({'e', 'n', 'u'}), text_(text) {
 }
 
 bool SpeechRequest::write(int8_t* buf, unsigned int len, unsigned int& index) const {

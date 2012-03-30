@@ -51,6 +51,7 @@ class ShaderManager;
 class ClipRectManager;
 class UoFont;
 class AudioManager;
+class CommandManager;
 
 class Manager {
 public:
@@ -72,6 +73,7 @@ public:
     static boost::shared_ptr<ShaderManager> getShaderManager();
     static boost::shared_ptr<ClipRectManager> getClipRectManager();
     static boost::shared_ptr<AudioManager> getAudioManager();
+    static boost::shared_ptr<CommandManager> getCommandManager();
     
     static const UoFont& getUnifont(unsigned int index);
 
@@ -97,7 +99,7 @@ public:
 
     // called by the various ui components
     void onClickEvent(boost::shared_ptr<world::IngameObject> obj);
-
+    
 private:
     static Manager* singleton_;
 
@@ -148,6 +150,8 @@ private:
     boost::shared_ptr<ClipRectManager> clipRectManager_;
     
     boost::shared_ptr<AudioManager> audioManager_;
+    
+    boost::shared_ptr<CommandManager> commandManager_;
 };
 
 }
