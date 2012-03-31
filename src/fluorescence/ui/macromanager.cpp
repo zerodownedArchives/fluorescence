@@ -19,6 +19,7 @@
 #include "macromanager.hpp"
 
 #include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
 
 #include "manager.hpp"
 #include "commandmanager.hpp"
@@ -102,6 +103,11 @@ void MacroManager::clear() {
 
 void MacroManager::init() {
     boost::filesystem::path path = data::Manager::getShardFilePath("macros.xml");
+    if (!boost::filesystem::exists(path)) {
+        LOG_ERROR << "Unable to load macros.xml: File not found" << std::endl;
+        return;
+    }
+    
     LOG_INFO << "Loading macros from " << path << std::endl;
     
     pugi::xml_document doc;
