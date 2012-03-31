@@ -34,6 +34,7 @@
 #include "cliprectmanager.hpp"
 #include "audiomanager.hpp"
 #include "commandmanager.hpp"
+#include "macromanager.hpp"
 
 #include <client.hpp>
 
@@ -143,6 +144,7 @@ bool Manager::setShardConfig(Config& config) {
     audioManager_.reset(new AudioManager(config));
     
     commandManager_.reset(new CommandManager(config));
+    macroManager_.reset(new MacroManager(config));
     
     return true;
 }
@@ -152,6 +154,8 @@ Manager::~Manager() {
 }
 
 void Manager::stepInput() {
+    CL_KeepAlive::process();
+    
     while (!singleClickQueue_.empty()) {
         boost::shared_ptr<world::IngameObject> obj = singleClickQueue_.front();
         singleClickQueue_.pop();
@@ -179,6 +183,10 @@ void Manager::stepInput() {
             dragPair.first->onDraggedToVoid();
         }
     }
+    
+    processGumpCloseList();
+    
+    audioManager_->step();
 }
 
 void Manager::stepDraw() {
@@ -187,12 +195,6 @@ void Manager::stepDraw() {
     getGraphicContext().clear();
     windowManager_->draw_windows(getGraphicContext());
     mainWindow_->flip(); // use parameter 1 here for vsync
-
-    CL_KeepAlive::process();
-
-    processGumpCloseList();
-    
-    audioManager_->step();
 }
 
 boost::shared_ptr<CL_DisplayWindow> Manager::getMainWindow() {
@@ -201,6 +203,10 @@ boost::shared_ptr<CL_DisplayWindow> Manager::getMainWindow() {
 
 CL_GraphicContext& Manager::getGraphicContext() {
     return singleton_->mainWindow_->get_gc();
+}
+
+CL_InputContext& Manager::getInputContext() {
+    return singleton_->mainWindow_->get_ic();
 }
 
 CL_Texture* Manager::provideTexture(unsigned int width, unsigned int height) {
@@ -299,11 +305,14 @@ void Manager::registerGumpMenu(GumpMenu* menu) {
 }
 
 void Manager::installMacros() {
-    CL_AcceleratorKey keyEnter(CL_KEY_ENTER);
+    CL_AcceleratorKey keyEnter(CL_KEY_B);
+    keyEnter.set_shift(true);
     keyEnter.func_pressed().set(this, &Manager::enterTest);
     macros_.add_accelerator(keyEnter);
 
     guiManager_->set_accelerator_table(macros_);
+    
+    macroManager_->init();
 }
 
 void Manager::uninstallMacros() {
@@ -311,24 +320,26 @@ void Manager::uninstallMacros() {
     macros_ = empty;
 
     guiManager_->set_accelerator_table(macros_);
+    
+    macroManager_->clear();
 }
 
 void Manager::enterTest(CL_GUIMessage msg, CL_AcceleratorKey key) {
-    LOG_DEBUG << "accel Enter pressed" << std::endl;
+    LOG_DEBUG << "accel Shift+B pressed" << std::endl;
 
-    GumpMenu* gameWindow = getGumpMenu("gamewindow");
-    if (gameWindow) {
-        gameWindow->activatePage(2);
+    //GumpMenu* gameWindow = getGumpMenu("gamewindow");
+    //if (gameWindow) {
+        //gameWindow->activatePage(2);
 
-        CL_GUIComponent* lineedit = gameWindow->get_named_item("speechtext");
-        if (lineedit) {
-            lineedit->set_focus();
-        } else {
-            LOG_ERROR << "Unable to find speech lineedit in gamewindow" << std::endl;
-        }
-    } else {
-        LOG_ERROR << "Unable to find gamewindow gump to activate speech lineedit" << std::endl;
-    }
+        //CL_GUIComponent* lineedit = gameWindow->get_named_item("speechtext");
+        //if (lineedit) {
+            //lineedit->set_focus();
+        //} else {
+            //LOG_ERROR << "Unable to find speech lineedit in gamewindow" << std::endl;
+        //}
+    //} else {
+        //LOG_ERROR << "Unable to find gamewindow gump to activate speech lineedit" << std::endl;
+    //}
 }
 
 void Manager::queueSingleClick(boost::shared_ptr<world::IngameObject> obj) {
@@ -394,6 +405,21 @@ const UoFont& Manager::getUnifont(unsigned int index) {
 
 boost::shared_ptr<CommandManager> Manager::getCommandManager() {
     return getSingleton()->commandManager_;
+}
+
+boost::shared_ptr<MacroManager> Manager::getMacroManager() {
+    return getSingleton()->macroManager_;
+}
+
+bool Manager::onUnhandledInputEvent(const CL_InputEvent& event) {
+    switch (event.type) {
+        case CL_InputEvent::pressed:
+            return macroManager_->execute(event);
+        default:
+            break;
+    }
+    
+    return false;
 }
 
 }

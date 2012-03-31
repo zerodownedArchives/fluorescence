@@ -172,28 +172,33 @@ bool GumpMenu::onInputPressed(const CL_InputEvent& msg) {
         consumed = false;
         break;
     }
+    
+    if (!consumed) {
+        consumed = ui::Manager::getSingleton()->onUnhandledInputEvent(msg);
+    }
 
     return consumed;
 }
 
 bool GumpMenu::onInputReleased(const CL_InputEvent& msg) {
-    if (msg.id == CL_MOUSE_LEFT) {
-        if (!draggable_) {
-            return false;
-        }
-
+    bool consumed = false;
+    if (msg.id == CL_MOUSE_LEFT && draggable_) {
         isDragged_ = false;
         capture_mouse(false);
 
-        return true;
+        consumed = true;
     } else if (msg.id == CL_MOUSE_RIGHT && closable_) {
         capture_mouse(false);
         ui::Manager::getSingleton()->closeGumpMenu(this);
 
-        return true;
+        consumed = true;
+    }
+    
+    if (!consumed) {
+        consumed = ui::Manager::getSingleton()->onUnhandledInputEvent(msg);
     }
 
-    return false;
+    return consumed;
 }
 
 bool GumpMenu::onPointerMoved(const CL_InputEvent& msg) {

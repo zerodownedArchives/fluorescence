@@ -85,6 +85,10 @@ void CommandManager::handleTextInput(const UnicodeString& text) {
         command->execute(text);
     }
 }
+
+bool CommandManager::hasCommand(const UnicodeString& cmd) const {
+    return commandMap_.find(cmd) != commandMap_.end();
+}
     
 }
 }

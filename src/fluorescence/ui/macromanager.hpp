@@ -17,40 +17,55 @@
  */
 
 
-#ifndef FLUO_UI_COMMANDMANAGER_HPP
-#define FLUO_UI_COMMANDMANAGER_HPP
+#ifndef FLUO_UI_MACROMANAGER_HPP
+#define FLUO_UI_MACROMANAGER_HPP
 
+#include <list>
 #include <map>
-#include <boost/function.hpp>
+#include <ClanLib/Display/Window/input_event.h>
 
-#include <misc/string.hpp>
+
 #include <misc/config.hpp>
 
 namespace fluo {
 namespace ui {
-    
-namespace commands {
-class ClientCommand;
-}
-    
-class CommandManager {
+
+class Macro {
 public:
-    CommandManager(Config& config);
+    Macro(unsigned int keyCode, bool shift, bool ctrl, bool alt);
+    void addCommand(const UnicodeString& command, const UnicodeString& args);
     
-    void execute(const UnicodeString& command, const UnicodeString& args = "");
-    void handleTextInput(const UnicodeString& text);
+    int getKeyCode() const;
+    bool matchesEvent(const CL_InputEvent& event) const;
     
-    bool hasCommand(const UnicodeString& cmd) const;
+    void execute() const;
+    
+    bool isValid() const;
+    UnicodeString toString() const;
     
 private:
-    std::map<UnicodeString, boost::shared_ptr<commands::ClientCommand> > commandMap_;
+    int keyCode_;
+    bool shift_;
+    bool ctrl_;
+    bool alt_;
     
-    char commandPrefix_;
-    char emotePrefix_;
-    char yellPrefix_;
-    char whisperPrefix_;
+    std::list<std::pair<UnicodeString, UnicodeString> > commands_;
 };
+
+class MacroManager {
+public:
+    MacroManager(Config& config);
     
+    void init();
+    void clear();
+    
+    // return true if the event was consumed (= a macro found)
+    bool execute(const CL_InputEvent& event) const;
+    
+private:
+    std::multimap<int, Macro> macros_;
+};
+
 }
 }
 

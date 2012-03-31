@@ -19,6 +19,7 @@ set (UI_HPP
     ui/cliprectmanager.hpp
     ui/audiomanager.hpp
     ui/commandmanager.hpp
+    ui/macromanager.hpp
     )
 
 set (UI_CPP
@@ -40,6 +41,7 @@ set (UI_CPP
     ui/cliprectmanager.cpp
     ui/audiomanager.cpp
     ui/commandmanager.cpp
+    ui/macromanager.cpp
     )
 
 set (GUMPMENU_HPP

@@ -52,6 +52,7 @@ class ClipRectManager;
 class UoFont;
 class AudioManager;
 class CommandManager;
+class MacroManager;
 
 class Manager {
 public:
@@ -62,6 +63,7 @@ public:
     bool setShardConfig(Config& config);
 
     static CL_GraphicContext& getGraphicContext();
+    static CL_InputContext& getInputContext();
     static boost::shared_ptr<CL_DisplayWindow> getMainWindow();
 
     static CL_Texture* provideTexture(unsigned int width, unsigned int height);
@@ -74,6 +76,7 @@ public:
     static boost::shared_ptr<ClipRectManager> getClipRectManager();
     static boost::shared_ptr<AudioManager> getAudioManager();
     static boost::shared_ptr<CommandManager> getCommandManager();
+    static boost::shared_ptr<MacroManager> getMacroManager();
     
     static const UoFont& getUnifont(unsigned int index);
 
@@ -96,9 +99,10 @@ public:
     void queueDoubleClick(boost::shared_ptr<world::IngameObject> obj);
     void queueDrag(boost::shared_ptr<world::IngameObject> dragObj, boost::shared_ptr<world::IngameObject> dragTarget);
 
-
     // called by the various ui components
     void onClickEvent(boost::shared_ptr<world::IngameObject> obj);
+    
+    bool onUnhandledInputEvent(const CL_InputEvent& event);
     
 private:
     static Manager* singleton_;
@@ -152,6 +156,7 @@ private:
     boost::shared_ptr<AudioManager> audioManager_;
     
     boost::shared_ptr<CommandManager> commandManager_;
+    boost::shared_ptr<MacroManager> macroManager_;
 };
 
 }
