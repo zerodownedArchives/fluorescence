@@ -28,7 +28,7 @@ ClipRectManager::ClipRectManager() {
 }
     
 void ClipRectManager::add(const CL_Rectf& rect) {
-    boost::mutex::scoped_lock myLock(mutex_);
+    boost::recursive_mutex::scoped_lock myLock(mutex_);
     
     // happens when the location is set for the first time (invalid previous coordinates)
     if (rect.top == rect.bottom || rect.left == rect.right) {

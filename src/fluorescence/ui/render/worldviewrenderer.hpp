@@ -22,6 +22,7 @@
 
 #include <ClanLib/Display/Render/graphic_context.h>
 #include <ClanLib/Display/Render/texture.h>
+#include <ClanLib/Display/Render/render_buffer.h>
 
 #include <boost/shared_ptr.hpp>
 
@@ -63,7 +64,8 @@ private:
     unsigned int textureHeight_;
     void checkTextureSize();
     
-    CL_Texture bufferTextures_[2];
+    CL_Texture colorBuffers_[2];
+    CL_RenderBuffer depthStencilBuffers_[2];
     unsigned int frameBufferIndex_;
     void initFrameBuffer(unsigned int index);
     CL_FrameBuffer frameBuffers_[2];
@@ -84,6 +86,8 @@ private:
     CL_Texture lastTexture_;
     unsigned int batchFill_;
     void batchFlush(CL_GraphicContext& gc);
+    
+    void prepareStencil(CL_GraphicContext& gc);
 };
 
 }

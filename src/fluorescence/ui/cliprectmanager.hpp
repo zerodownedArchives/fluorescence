@@ -22,7 +22,7 @@
 
 #include <vector>
 #include <ClanLib/Core/Math/rect.h>
-#include <boost/thread/mutex.hpp>
+#include <boost/thread/recursive_mutex.hpp>
 
 namespace fluo {
 namespace world {
@@ -48,7 +48,7 @@ public:
     
     bool overlapsAny(world::IngameObject* obj);
     
-    boost::mutex mutex_;
+    boost::recursive_mutex mutex_;
     
 private:
     std::vector<CL_Rectf> rectangles_;
