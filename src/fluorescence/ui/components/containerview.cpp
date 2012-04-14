@@ -45,8 +45,6 @@ ContainerView::ContainerView(CL_GUIComponent* parent, const CL_Rect& bounds) : G
     boost::shared_ptr<ContainerRenderQueue> rq(new ContainerRenderQueue());
     renderer_.reset(new ContainerRenderer(rq, this));
 
-    set_constant_repaint(true);
-
     func_render().set(this, &ContainerView::renderOneFrame);
     func_input_pressed().set(this, &ContainerView::onInputPressed);
     func_input_released().set(this, &ContainerView::onInputReleased);
@@ -69,16 +67,12 @@ unsigned int ContainerView::getHeight() {
 
 void ContainerView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     if (!sizeAdjusted && backgroundTexture_ && backgroundTexture_->isReadComplete()) {
-        //CL_GUIComponent* topComponent = get_top_level_component();
-        //CL_Rectf topGeom = topComponent->get_geometry();
-        //topGeom.set_size(CL_Sizef(backgroundTexture_->getWidth(), backgroundTexture_->getHeight()));
-        //topComponent->set_geometry(topGeom);
         sizeAdjusted = true;
 
         renderer_->getRenderQueue()->forceRepaint();
     }
 
-    CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
+    CL_Draw::texture(gc, renderer_->getTexture(gc), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
 }
 
 bool ContainerView::onInputPressed(const CL_InputEvent& e) {
@@ -158,15 +152,18 @@ bool ContainerView::onDoubleClick(const CL_InputEvent& e) {
 
 void ContainerView::addObject(boost::shared_ptr<world::IngameObject> obj) {
     obj->addToRenderQueue(renderer_->getRenderQueue());
+    request_repaint();
 }
 
 void ContainerView::removeObject(boost::shared_ptr<world::IngameObject> obj) {
     obj->removeFromRenderQueue(renderer_->getRenderQueue());
+    request_repaint();
 }
 
 void ContainerView::setBackgroundGumpId(unsigned int gumpId) {
     backgroundTexture_ = data::Manager::getGumpArtLoader()->getTexture(gumpId);
     sizeAdjusted = false;
+    request_repaint();
 }
 
 boost::shared_ptr<ui::Texture> ContainerView::getBackgroundTexture() {

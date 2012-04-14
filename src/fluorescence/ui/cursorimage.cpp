@@ -68,7 +68,7 @@ void CursorImage::set(unsigned int cursorId, unsigned int artId, boost::shared_p
 
     // X11 expects cursor image pixels to be 32bit in argb8 format
     CL_PixelBuffer convertedBuffer = CL_PixelBuffer(width_, height_, cl_argb8);
-    texture->getPixelBuffer()->convert(convertedBuffer);
+    texture->getPixelBuffer().convert(convertedBuffer);
 
     int byteCount = width_ * height_ * sizeof(XcursorPixel);
     memcpy(cursorImage->pixels, convertedBuffer.get_data(), byteCount);

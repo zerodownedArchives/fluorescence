@@ -16,38 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "opengump.hpp"
 
-#ifndef FLUO_UI_BITMASK_HPP
-#define FLUO_UI_BITMASK_HPP
-
-#include <ClanLib/Display/Image/pixel_buffer.h>
-
-#include <stdint.h>
+#include <typedefs.hpp>
+#include <ui/manager.hpp>
 
 namespace fluo {
 namespace ui {
+namespace commands {
+    
+OpenGump::OpenGump(Config& config) {
+}
 
-/// This class is used to store pixel visibility for a texture
-class BitMask {
-public:
-    BitMask();
-    ~BitMask();
-
-    void init(const CL_PixelBuffer& pixBuf);
-
-    bool hasPixel(unsigned int pixelX, unsigned int pixelY);
-
-private:
-    unsigned int width_;
-    unsigned int height_;
-
-    unsigned int bitStoreSize_;
-    uint8_t* bitStore_;
-
-    void setPixel(unsigned int pixelX, unsigned int pixelY);
-};
+void OpenGump::execute(const UnicodeString& args) {
+    // TODO: make this also available for gumps needing a mobile link
+    ui::Manager::getSingleton()->openXmlGump(args);
+}
 
 }
 }
+}
 
-#endif

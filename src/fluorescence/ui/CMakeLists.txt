@@ -95,7 +95,6 @@ set (GUMPMENU_CPP
 
 set (RENDER_HPP
     ui/render/renderqueue.hpp
-    ui/render/ingameobjectrenderer.hpp
     ui/render/worldrenderdata.hpp
     ui/render/worldviewrenderer.hpp
     ui/render/gumprenderer.hpp
@@ -107,7 +106,6 @@ set (RENDER_HPP
 
 set (RENDER_CPP
     ui/render/renderqueue.cpp
-    ui/render/ingameobjectrenderer.cpp
     ui/render/worldrenderdata.cpp
     ui/render/worldviewrenderer.cpp
     ui/render/gumprenderer.cpp
@@ -156,6 +154,7 @@ set (CLIENTCOMMANDS_HPP
     ui/commands/yell.hpp
     ui/commands/whisper.hpp
     ui/commands/command.hpp
+    ui/commands/opengump.hpp
     )
 
 set (CLIENTCOMMANDS_CPP
@@ -164,6 +163,7 @@ set (CLIENTCOMMANDS_CPP
     ui/commands/yell.cpp
     ui/commands/whisper.cpp
     ui/commands/command.cpp
+    ui/commands/opengump.cpp
     )
 
 

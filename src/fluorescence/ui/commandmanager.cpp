@@ -27,6 +27,7 @@
 #include "commands/yell.hpp"
 #include "commands/whisper.hpp"
 #include "commands/command.hpp"
+#include "commands/opengump.hpp"
 
 namespace fluo {
 namespace ui {
@@ -38,6 +39,7 @@ CommandManager::CommandManager(Config& config) {
     commandMap_["emote"].reset(new commands::Emote(config));
     commandMap_["whisper"].reset(new commands::Whisper(config));
     commandMap_["yell"].reset(new commands::Yell(config));
+    commandMap_["opengump"].reset(new commands::OpenGump(config));
     
     // TODO: fill prefixes with values from config
     

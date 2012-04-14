@@ -35,7 +35,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-Background::Background(CL_GUIComponent* parent) : CL_GUIComponent(parent), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white), requireInitialRepaint_(true) {
+Background::Background(CL_GUIComponent* parent) : CL_GUIComponent(parent), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white) {
     func_render().set(this, &Background::render);
 }
 
@@ -53,20 +53,24 @@ void Background::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
         }
     }
     
-    if (requireInitialRepaint_) {
-        // drawing this the first time - calculate texture coordinates
+    if (extractedTextures_[0].is_null()) {
+        // create CL_Texture from ui::Texture. can be very expensive, if the CL_Subtexture was already initialized.
+        // However, this should usually not be the case, as the background texture are most often used as backgrounds (i.e. in this class)
+        // maybe find a better solution (tile and crop textures manually here instead of relying on tex coords?)
+        for (unsigned int i = 0; i < 9; ++i) {
+            extractedTextures_[i] = textures_[i]->extractSingleTexture();
+        }
+        
         if (hueInfo_[1u] == 0) {
             calculateQuadCoordinates();
         } else {
-            request_repaint();
             calculateVertexCoordinates();
         }
-        requireInitialRepaint_ = false;
     }
     
     if (hueInfo_[1u] == 0) {
         for (unsigned int i = 0; i < 9; ++i) {
-            CL_Draw::texture(gc, *(textures_[i]->getTexture()), quadCoords_[i], colorRgba_, quadTextureCoords_[i]);
+            CL_Draw::texture(gc, extractedTextures_[i], quadCoords_[i], colorRgba_, quadTextureCoords_[i]);
         }
     } else {
         renderShader(gc, clipRect);
@@ -99,29 +103,29 @@ void Background::calculateQuadCoordinates() {
     
     quadCoords_[1] = CL_Rectf(texWidths[0], 0, CL_Sizef(centerBarWidthTop, texHeights[1]));
     quadTextureCoords_[1] = CL_Rectf(0.0f, 0.0f, centerBarWidthTop / texWidths[1], 1.0);;
-    textures_[1]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
+    extractedTextures_[1].set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     quadCoords_[2] = CL_Rectf(width - texWidths[2], 0, CL_Sizef(texWidths[2], texHeights[2]));
     quadTextureCoords_[2] = defaultTexCoords;
     
     quadCoords_[3] = CL_Rectf(0, texHeights[0], CL_Sizef(texWidths[3], middleBarHeightLeft));
     quadTextureCoords_[3] = CL_Rectf(0.0f, 0.0f, 1.0, middleBarHeightLeft / texHeights[3]);
-    textures_[3]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
+    extractedTextures_[3].set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     quadCoords_[4] = CL_Rectf(texWidths[3], texHeights[1], CL_Sizef(centerPieceWidth, centerPieceHeight));
     quadTextureCoords_[4] = CL_Rectf(0.0f, 0.0f, centerPieceWidth / texWidths[4], centerPieceHeight / texHeights[4]);
-    textures_[4]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
+    extractedTextures_[4].set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     quadCoords_[5] = CL_Rectf(width - texWidths[5], texHeights[2], CL_Sizef(texWidths[5], middleBarHeightRight));
     quadTextureCoords_[5] = CL_Rectf(0.0f, 0.0f, 1.0f, middleBarHeightRight / texHeights[5]);
-    textures_[5]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
+    extractedTextures_[5].set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     quadCoords_[6] = CL_Rectf(0, height - texHeights[6], CL_Sizef(texWidths[6], texHeights[6]));
     quadTextureCoords_[6] = defaultTexCoords;
     
     quadCoords_[7] = CL_Rectf(texWidths[6], height - texHeights[7], CL_Sizef(centerBarWidthBottom, texHeights[7]));
     quadTextureCoords_[7] = CL_Rectf(0.0f, 0.0f, centerBarWidthBottom / texWidths[7], 1.0);;
-    textures_[7]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
+    extractedTextures_[7].set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     quadCoords_[8] = CL_Rectf(width - texWidths[8], height - texHeights[8], CL_Sizef(texWidths[8], texHeights[8]));
     quadTextureCoords_[8] = defaultTexCoords;
@@ -155,7 +159,7 @@ void Background::calculateVertexCoordinates() {
     // top center bar
     setVertexCoordinates(1, CL_Rectf(texWidths[0], 0, CL_Sizef(centerBarWidth, texHeights[1])));
     setTextureCoordinates(1, centerBarTexCoords);
-    textures_[1]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
+    extractedTextures_[1].set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     // top right corner
     setVertexCoordinates(2, CL_Rectf(width - texWidths[2], 0, CL_Sizef(texWidths[2], texHeights[2])));
@@ -164,17 +168,17 @@ void Background::calculateVertexCoordinates() {
     // middle left bar
     setVertexCoordinates(3, CL_Rectf(0, texHeights[0], CL_Sizef(texWidths[3], middleBarHeight)));
     setTextureCoordinates(3, middleBarTexCoords);
-    textures_[3]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
+    extractedTextures_[3].set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     // center piece
     setVertexCoordinates(4, CL_Rectf(texWidths[0], texHeights[0], CL_Sizef(centerBarWidth, middleBarHeight)));
     setTextureCoordinates(4, centerPieceTexCoords);
-    textures_[4]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
+    extractedTextures_[4].set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     // middle right bar
     setVertexCoordinates(5, CL_Rectf(width - texWidths[2], texHeights[0], CL_Sizef(texWidths[5], middleBarHeight)));
     setTextureCoordinates(5, middleBarTexCoords);
-    textures_[5]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
+    extractedTextures_[5].set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     // bottom left corner
     setVertexCoordinates(6, CL_Rectf(0, height - texHeights[6], CL_Sizef(texWidths[6], texHeights[6])));
@@ -183,7 +187,7 @@ void Background::calculateVertexCoordinates() {
     // bottom center bar
     setVertexCoordinates(7, CL_Rectf(texWidths[0], height - texHeights[6], CL_Sizef(centerBarWidth, texHeights[7])));
     setTextureCoordinates(7, centerBarTexCoords);
-    textures_[7]->getTexture()->set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
+    extractedTextures_[7].set_wrap_mode(cl_wrap_repeat, cl_wrap_repeat);
     
     // bottom right corner
     setVertexCoordinates(8, CL_Rectf(width - texWidths[8], height - texHeights[8], CL_Sizef(texWidths[8], texHeights[8])));
@@ -227,7 +231,7 @@ void Background::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getGumpShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
 
-    gc.set_texture(0, *(data::Manager::getSingleton()->getHuesLoader()->getHuesTexture()->getTexture()));
+    gc.set_texture(0, data::Manager::getHuesLoader()->getHuesTexture());
     shader->set_uniform1i("HueTexture", 0);
     shader->set_uniform1i("ObjectTexture", 1);
 
@@ -238,7 +242,7 @@ void Background::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
 
         primarray.set_attribute(2, hueInfo_);
 
-        gc.set_texture(1, *textures_[i]->getTexture());
+        gc.set_texture(1, extractedTextures_[i]);
         gc.draw_primitives(cl_triangles, 6, primarray);
     }
 

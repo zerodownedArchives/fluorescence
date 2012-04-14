@@ -35,16 +35,15 @@ namespace ui {
 namespace components {
 
 Image::Image(CL_GUIComponent* parent) : CL_GUIComponent(parent), 
-        autoResize_(false), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white), requireInitialRepaint_(true), stretchTexture_(true), tiled_(false) {
+        autoResize_(false), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white), stretchTexture_(true), tiled_(false) {
     func_render().set(this, &Image::render);
 }
 
 void Image::setTexture(boost::shared_ptr<ui::Texture> tex) {
     texture_ = tex;
     request_repaint();
-    if (tiled_) {
-        requireInitialRepaint_ = true; // to recalculate texture coordinates
-    }
+    calculateTextureCoordinates();
+    stretchableTexture_ = CL_Texture();
 }
 
 void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
@@ -57,18 +56,27 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
         set_geometry(geom);
         calculateTextureCoordinates();
         request_repaint();
+    } else if (!tiled_ && stretchTexture_) {
+        if (hueInfo_[1u] == 0) {
+            CL_Draw::texture(gc, texture_->getTexture(), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_, texture_->getNormalizedTextureCoords());
+        } else {
+            renderShader(gc, clipRect);
+        }
     } else {
-        if (requireInitialRepaint_) {
-            if (hueInfo_[1u] != 0) {
-                request_repaint();
-            }
+        if (stretchableTexture_.is_null()) {
+            // create CL_Texture from ui::Texture. can be very expensive, unfortunately.
+            // maybe find a better solution (tile and crop textures manually here instead of relying on tex coords?)
+            stretchableTexture_ = texture_->extractSingleTexture();
             
-            calculateTextureCoordinates();
-            requireInitialRepaint_ = false;
+            if (tiled_) {
+                stretchableTexture_.set_wrap_mode(cl_wrap_repeat , cl_wrap_repeat );
+            } else {
+                stretchableTexture_.set_wrap_mode(cl_wrap_clamp_to_edge , cl_wrap_clamp_to_edge);
+            }
         }
         
         if (hueInfo_[1u] == 0) {
-            CL_Draw::texture(gc, *(texture_->getTexture()), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_, textureRect_);
+            CL_Draw::texture(gc, stretchableTexture_, CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_, textureRect_);
         } else {
             renderShader(gc, clipRect);
         }
@@ -78,11 +86,9 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
 void Image::calculateTextureCoordinates() {
     if (tiled_) {
         textureRect_ = CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight());
-        texture_->getTexture()->set_wrap_mode(cl_wrap_repeat , cl_wrap_repeat );
     } else if (stretchTexture_) {
-        textureRect_ = CL_Rectf(0.0f, 0.0f, 1.0f, 1.0f);
+        textureRect_ = CL_Rectf(0, 0, 1, 1);
     } else {
-        texture_->getTexture()->set_wrap_mode(cl_wrap_clamp_to_edge , cl_wrap_clamp_to_edge);
         textureRect_ = CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight());
     }
 }
@@ -123,9 +129,16 @@ void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
 
 
-    gc.set_texture(0, *(data::Manager::getSingleton()->getHuesLoader()->getHuesTexture()->getTexture()));
+    gc.set_texture(0, data::Manager::getHuesLoader()->getHuesTexture());
     shader->set_uniform1i("HueTexture", 0);
     shader->set_uniform1i("ObjectTexture", 1);
+    
+    if (!tiled_ && stretchTexture_) {
+        gc.set_texture(1, texture_->getTexture());
+        textureRect_ = texture_->getNormalizedTextureCoords();
+    } else {
+        gc.set_texture(1, stretchableTexture_);
+    }
     
 	CL_Vec2f tex1_coords[6] = {
         CL_Vec2f(textureRect_.left, textureRect_.top),
@@ -153,7 +166,6 @@ void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
 
     primarray.set_attribute(2, hueInfo_);
 
-    gc.set_texture(1, *texture_->getTexture());
     gc.draw_primitives(cl_triangles, 6, primarray);
 
     gc.reset_textures();

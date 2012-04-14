@@ -51,8 +51,6 @@ GumpView::GumpView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement
     boost::shared_ptr<GumpRenderQueue> rq(new GumpRenderQueue());
     renderer_.reset(new GumpRenderer(rq, this));
 
-    set_constant_repaint(true);
-
     func_render().set(this, &GumpView::renderOneFrame);
     func_input_pressed().set(this, &GumpView::onInputPressed);
     func_input_released().set(this, &GumpView::onInputReleased);
@@ -71,10 +69,7 @@ unsigned int GumpView::getHeight() {
 }
 
 void GumpView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
-    //gc.push_cliprect(get_geometry());
-    CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
-    //renderer_->render(gc);
-    //gc.pop_cliprect();
+    CL_Draw::texture(gc, renderer_->getTexture(gc), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
 }
 
 bool GumpView::onInputPressed(const CL_InputEvent& e) {
@@ -154,10 +149,12 @@ bool GumpView::onDoubleClick(const CL_InputEvent& e) {
 
 void GumpView::addObject(boost::shared_ptr<world::IngameObject> obj) {
     obj->addToRenderQueue(renderer_->getRenderQueue());
+    request_repaint();
 }
 
 void GumpView::removeObject(boost::shared_ptr<world::IngameObject> obj) {
     obj->removeFromRenderQueue(renderer_->getRenderQueue());
+    request_repaint();
 }
 
 }

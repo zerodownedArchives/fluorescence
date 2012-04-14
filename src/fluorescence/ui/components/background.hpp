@@ -23,6 +23,7 @@
 #include <ClanLib/Core/Math/quad.h>
 #include <ClanLib/GUI/gui_component.h>
 #include <ClanLib/Display/Render/graphic_context.h>
+#include <ClanLib/Display/Render/texture.h>
 #include <boost/shared_ptr.hpp>
 
 namespace fluo {
@@ -49,6 +50,7 @@ public:
     
 private:
     boost::shared_ptr<ui::Texture> textures_[9];
+    CL_Texture extractedTextures_[9];
     CL_Vec2f vertexCoords_[9][6];
     CL_Vec2f textureCoords_[9][6];
     
@@ -56,11 +58,6 @@ private:
     CL_Colorf colorRgba_;
     
     void renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect);
-    
-    // due to some strange clanlib behaviour. when opening a paperdoll for the first time, the hue texture seems
-    // not to be loaded correctly, so the gump is mostly black (with outlines). When rendering it again, all seems
-    // fine. this flag indicates wheter the renderer has to re-render the image because of this condition
-    bool requireInitialRepaint_;
     
     void calculateVertexCoordinates();
     void setVertexCoordinates(unsigned int index, const CL_Rectf& rect);

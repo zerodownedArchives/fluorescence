@@ -156,7 +156,7 @@ boost::shared_ptr<ui::Texture> FontEngine::getUniFontTexture(unsigned int uniFon
 
     boost::shared_ptr<data::UniFontLoader> fontLoader = data::Manager::getUniFontLoader(uniFontId);
 
-    boost::shared_ptr<ui::Texture> tex(new ui::Texture);
+    boost::shared_ptr<ui::Texture> tex(new ui::Texture(ui::Texture::USAGE_FONT));
     tex->initPixelBuffer(width, height);
     uint32_t* pixBufPtr = tex->getPixelBufferData();
 
@@ -330,7 +330,7 @@ boost::shared_ptr<ui::Texture> FontEngine::getFontTexture(CL_Font& font, const U
 
     gc.set_frame_buffer(origBuffer);
 
-    boost::shared_ptr<ui::Texture> fontTexture(new ui::Texture);
+    boost::shared_ptr<ui::Texture> fontTexture(new ui::Texture(ui::Texture::USAGE_FONT));
     fontTexture->initPixelBuffer(width, height);
     memcpy(fontTexture->getPixelBufferData(), tempTex.get_pixeldata().get_data(), width * height * 4);
 
@@ -344,12 +344,12 @@ boost::shared_ptr<ui::Texture> FontEngine::getFontTexture(CL_Font& font, const U
     return fontTexture;
 }
 
-void FontEngine::applyBorder(boost::shared_ptr<CL_PixelBuffer> pxBuf, uint32_t color, unsigned int borderWidth, uint32_t borderColor) {
-    unsigned int width = pxBuf->get_width();
-    unsigned int height = pxBuf->get_height();
+void FontEngine::applyBorder(CL_PixelBuffer pxBuf, uint32_t color, unsigned int borderWidth, uint32_t borderColor) {
+    unsigned int width = pxBuf.get_width();
+    unsigned int height = pxBuf.get_height();
 
     // this is a bit complicated, but as system fonts are directly rendered to a texture there is no easy way around
-    uint32_t* pixBufPtr = (uint32_t*)pxBuf->get_data();
+    uint32_t* pixBufPtr = (uint32_t*)pxBuf.get_data();
     int iBorderWidth = borderWidth;
 
     for (unsigned int y = borderWidth; y < height - borderWidth; ++y) {

@@ -20,6 +20,8 @@
 #ifndef FLUO_UI_PARTICLES_PARTICLEEMITTER_HPP
 #define FLUO_UI_PARTICLES_PARTICLEEMITTER_HPP
 
+#include <ClanLib/Display/Render/texture.h>
+
 #include "emitter.hpp"
 #include "particle.hpp"
 
@@ -60,6 +62,7 @@ private:
     InterpolatedValue<CL_Vec4f> emittedColorEndMax_;
     
     boost::shared_ptr<ui::Texture> emittedTexture_;
+    CL_Texture extractedTexture_;
 };
 
 }

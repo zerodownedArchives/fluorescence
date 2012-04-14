@@ -22,9 +22,7 @@
 
 #include <ClanLib/Display/Image/pixel_buffer.h>
 #include <ClanLib/Display/Image/texture_format.h>
-#include <ClanLib/Display/Render/texture.h>
-
-#include <boost/shared_ptr.hpp>
+#include <ClanLib/Display/2D/subtexture.h>
 
 #include "bitmask.hpp"
 #include <data/ondemandreadable.hpp>
@@ -34,26 +32,50 @@ namespace ui {
 
 class Texture : public fluo::data::OnDemandReadable<Texture> {
 public:
+    enum Usage {
+        USAGE_WORLD = 0,
+        USAGE_GUMP = 1,
+        USAGE_FONT = 2,
+    };
+    
     Texture(bool useBitMask = true);
+    Texture(Usage usage, bool useBitMask = true);
+    ~Texture();
+    
+    void setUsage(unsigned int usage);
 
     void initPixelBuffer(unsigned int width, unsigned int height);
     uint32_t* getPixelBufferData();
 
-    boost::shared_ptr<CL_PixelBuffer> getPixelBuffer();
+    CL_PixelBuffer getPixelBuffer();
 
-    boost::shared_ptr<CL_Texture> getTexture();
-    void setTexture(CL_PixelBuffer& pixBuf);
+    CL_Texture getTexture();
+    void setTexture(const CL_PixelBuffer& pixBuf);
+    CL_Rectf getTextureCoords();
+    CL_Rectf getNormalizedTextureCoords();
 
     float getWidth();
     float getHeight();
 
     bool hasPixel(unsigned int pixelX, unsigned int pixelY);
+    
+    // very expensive operation, if the CL_Subtexture object was already initialized. use with care
+    CL_Texture extractSingleTexture();
+    
+    void setBorderWidth(unsigned int width);
 
 private:
-    boost::shared_ptr<CL_PixelBuffer> pixelBuffer_;
-    boost::shared_ptr<CL_Texture> texture_;
+    CL_PixelBuffer pixelBuffer_;
+    CL_Subtexture texture_;
     bool useBitMask_;
     BitMask bitMask_;
+    unsigned int textureUsage_;
+    CL_Rectf normalizedTextureCoords_;
+    
+    void initSubTexture();
+    
+    unsigned int borderWidth_;
+    CL_Rectf borderlessGeometry_;
 };
 }
 }

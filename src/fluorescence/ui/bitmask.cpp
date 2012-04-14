@@ -56,10 +56,6 @@ void BitMask::setPixel(unsigned int pixelX, unsigned int pixelY) {
     bitStore_[byteIndex] |= (1 << bitOffset);
 }
 
-void BitMask::init(boost::shared_ptr<CL_PixelBuffer> pixBuf) {
-    init(*pixBuf.get());
-}
-
 void BitMask::init(const CL_PixelBuffer& pixBuf) {
     width_ = pixBuf.get_width();
     height_ = pixBuf.get_height();

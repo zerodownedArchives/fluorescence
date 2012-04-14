@@ -20,6 +20,7 @@
 
 #include "particleemitter.hpp"
 
+#include <ClanLib/Display/Render/texture.h>
 #include <ClanLib/Display/Render/program_object.h>
 #include <ClanLib/Display/2D/draw.h>
 
@@ -98,13 +99,18 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
         return;
     }
     
+    if (extractedTexture_.is_null()) {
+        // create CL_Texture from ui::Texture. can be very expensive, if the CL_Subtexture was already initialized.
+        extractedTexture_ = emittedTexture_->extractSingleTexture();
+    }
+    
     // set shader uniform variables
     shader->set_uniform1i("Texture0", 0);
     CL_Vec3f emitterMovement = emittedMoveWithEmitter_ ? (location_ - startLocation_) : CL_Vec3f(0, 0, 0);
     shader->set_uniform3f("EmitterMovement", emitterMovement);
     shader->set_uniform1f("CurrentTime", age_);
     
-    gc.set_texture(0, *(emittedTexture_->getTexture()));
+    gc.set_texture(0, extractedTexture_);
 
     // collect particle data in primarray
     CL_PrimitivesArray primarray(gc);

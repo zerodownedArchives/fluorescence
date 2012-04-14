@@ -51,7 +51,7 @@ private:
     static const unsigned int uniCharSpacing_ = 1;
     static const unsigned int uniLineSpacing_ = 0;
 
-    void applyBorder(boost::shared_ptr<CL_PixelBuffer> tex, uint32_t color, unsigned int borderWidth, uint32_t borderColor);
+    void applyBorder(CL_PixelBuffer tex, uint32_t color, unsigned int borderWidth, uint32_t borderColor);
 
     void calculateSizeAndLinebreaks(unsigned int fontId, const UnicodeString& text, unsigned int maxWidth, unsigned int borderWidth,
         unsigned int& width, unsigned int& height, std::list<unsigned int>& lineBreakIndices);

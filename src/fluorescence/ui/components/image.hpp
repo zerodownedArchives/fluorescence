@@ -22,6 +22,7 @@
 
 #include <ClanLib/GUI/gui_component.h>
 #include <ClanLib/Display/Render/graphic_context.h>
+#include <ClanLib/Display/Render/texture.h>
 #include <boost/shared_ptr.hpp>
 
 namespace fluo {
@@ -63,16 +64,13 @@ private:
     
     void renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect);
     
-    // due to some strange clanlib behaviour. when opening a paperdoll for the first time, the hue texture seems
-    // not to be loaded correctly, so the gump is mostly black (with outlines). When rendering it again, all seems
-    // fine. this flag indicates wheter the renderer has to re-render the image because of this condition
-    bool requireInitialRepaint_;
-    
     bool stretchTexture_;
     bool tiled_;
     CL_Rectf textureRect_;
     
     void calculateTextureCoordinates();
+    
+    CL_Texture stretchableTexture_;
 };
 
 }
