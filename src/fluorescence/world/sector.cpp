@@ -171,6 +171,7 @@ void Sector::update(unsigned int elapsedMillis) {
             
             
             // add repaint rectangle over full sector range, and a bit more
+            // TODO: repaint whole screen instead of this hack
             const CL_Vec3f* vertCoords = mapBlock_->get(0, 0)->getWorldRenderData().getVertexCoordinates();
             float updateLeft = vertCoords[0].x - 150;
             float updateTop = vertCoords[0].y - 150;

@@ -128,7 +128,7 @@ void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     
     renderer_->moveCenter(pixelMoveX, pixelMoveY);
     
-    CL_Draw::texture(gc, *renderer_->getTexture(gc)->getTexture(), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
+    CL_Draw::texture(gc, renderer_->getTexture(gc), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
     
     // particle effects are rendered on top, and not in the cached texture
     // because they are moving too fast, and it is hard to tell their bounding rectangle
