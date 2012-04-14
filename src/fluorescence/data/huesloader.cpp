@@ -22,10 +22,11 @@
 
 #include <sstream>
 #include <boost/bind.hpp>
+#include <ClanLib/Display/Image/pixel_buffer.h>
 
 #include "util.hpp"
 
-#include <ui/texture.hpp>
+#include <ui/manager.hpp>
 #include <misc/log.hpp>
 
 namespace fluo {
@@ -76,12 +77,12 @@ unsigned int HuesLoader::getHueCount() const {
     return hueCount_;
 }
 
-boost::shared_ptr<ui::Texture> HuesLoader::getHuesTexture() {
-    if (!huesTexture_) {
-        huesTexture_.reset(new ui::Texture());
-        huesTexture_->initPixelBuffer(32, hueCount_ + 1);
+CL_Texture& HuesLoader::getHuesTexture() {
+    if (huesTexture_.is_null()) {
+        huesTexture_ = ui::Manager::getSingleton()->providerRenderBufferTexture(CL_Size(32, hueCount_ + 1));
+        CL_PixelBuffer pixelBuffer(32, hueCount_ + 1, cl_rgba8);
 
-        uint32_t* pxBuf = huesTexture_->getPixelBufferData();
+        uint32_t* pxBuf = reinterpret_cast<uint32_t*>(pixelBuffer.get_data());
 
         // set hue 0 to black
         for (unsigned int pxIdx = 0; pxIdx < 32; ++pxIdx) {
@@ -94,7 +95,7 @@ boost::shared_ptr<ui::Texture> HuesLoader::getHuesTexture() {
             }
         }
 
-        huesTexture_->setReadComplete();
+        huesTexture_.set_image(pixelBuffer);
     }
 
     return huesTexture_;

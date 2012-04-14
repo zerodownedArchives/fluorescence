@@ -19,6 +19,7 @@
 #include "filepathloader.hpp"
 
 #include <boost/bind.hpp>
+#include <ClanLib/Core/System/exception.h>
 #include <ClanLib/Display/Image/pixel_buffer.h>
 
 #include <ui/texture.hpp>

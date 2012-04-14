@@ -22,16 +22,13 @@
 
 #include <boost/shared_ptr.hpp>
 #include <ClanLib/Display/2D/color.h>
+#include <ClanLib/Display/Render/texture.h>
 
 #include <misc/string.hpp>
 
 #include "fullfileloader.hpp"
 
 namespace fluo {
-
-namespace ui {
-    class Texture;
-}
 
 namespace data {
 
@@ -51,7 +48,7 @@ public:
 
     unsigned int getHueCount() const;
 
-    boost::shared_ptr<ui::Texture> getHuesTexture();
+    CL_Texture& getHuesTexture();
     uint32_t getFontRgbColor(unsigned int hue) const;
     UnicodeString getFontRgbString(unsigned int hue) const;
     CL_Colorf getFontClColor(unsigned int hue) const;
@@ -62,7 +59,7 @@ private:
     unsigned int hueCount_;
     Hue* hues_;
 
-    boost::shared_ptr<ui::Texture> huesTexture_;
+    CL_Texture huesTexture_;
 };
 
 }

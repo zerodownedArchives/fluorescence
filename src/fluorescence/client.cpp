@@ -138,10 +138,11 @@ bool Client::handleStateChange() {
 }
 
 void Client::cleanUp() {
+    ui::Manager::getSingleton()->destroyAllGumpMenus();
     net::Manager::destroy();
-    ui::Manager::destroy();
     world::Manager::destroy();
     data::Manager::destroy();
+    ui::Manager::destroy();
 }
 
 void Client::saveConfig() {

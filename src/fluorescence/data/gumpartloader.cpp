@@ -40,6 +40,8 @@ boost::shared_ptr<ui::Texture> GumpArtLoader::getTexture(unsigned int id) {
 }
 
 void GumpArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture> tex, unsigned int extra, unsigned int userData) {
+    tex->setUsage(ui::Texture::USAGE_GUMP);
+    
     unsigned int width = (extra >> 16) & 0xFFFF;
     unsigned int height = extra & 0xFFFF;
 

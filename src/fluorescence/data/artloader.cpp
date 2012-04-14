@@ -55,6 +55,8 @@ boost::shared_ptr<ui::Texture> ArtLoader::getItemTexture(unsigned int id) {
 }
 
 void ArtLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture> tex, unsigned int extra, unsigned int userData) {
+    tex->setUsage(ui::Texture::USAGE_WORLD);
+    
     unsigned short height = 44;
     unsigned short width = 44;
 

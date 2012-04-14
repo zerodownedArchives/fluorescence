@@ -19,6 +19,7 @@
 #include "httploader.hpp"
 
 #include <boost/bind.hpp>
+#include <ClanLib/Core/System/exception.h>
 #include <ClanLib/Display/Image/pixel_buffer.h>
 #include <ClanLib/Display/ImageProviders/provider_factory.h>
 
@@ -46,6 +47,8 @@ boost::shared_ptr<ui::Texture> HttpLoader::getTexture(const UnicodeString& url) 
 
 void HttpLoader::readTextureCallback(const UnicodeString& url, boost::shared_ptr<ui::Texture> tex) {
     LOG_DEBUG << "Opening image from url " << StringConverter::toUtf8String(url).c_str() << std::endl;
+    
+    tex->setUsage(ui::Texture::USAGE_GUMP);
     
     curl_easy_setopt(handle_,CURLOPT_WRITEDATA, this);
     

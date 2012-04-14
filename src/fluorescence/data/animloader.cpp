@@ -84,6 +84,7 @@ void AnimLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len,
                 curFrame.centerX_ = 0;
                 curFrame.centerY_ = 0;
                 curFrame.texture_->initPixelBuffer(1, 1);
+                curFrame.texture_->setUsage(ui::Texture::USAGE_WORLD);
             }
 
             continue;
@@ -106,6 +107,7 @@ void AnimLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len,
 
         //LOGARG_DEBUG(LOGTYPE_DATA, "loop frame=%u offset=%u centerX=%u centerY=%u width=%u height=%u", frameIdx, frameOffsets[frameIdx], curFrame.centerX_, curFrame.centerY_, width, height);
 
+        curFrame.texture_->setUsage(ui::Texture::USAGE_WORLD);
         curFrame.texture_->initPixelBuffer(width, height);
         uint32_t* pixBufPtr = curFrame.texture_->getPixelBufferData();
 
