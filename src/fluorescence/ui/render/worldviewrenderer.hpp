@@ -26,7 +26,6 @@
 #include <boost/shared_ptr.hpp>
 
 #include <typedefs.hpp>
-#include <ui/render/ingameobjectrenderer.hpp>
 
 namespace fluo {
 
@@ -44,15 +43,13 @@ class WorldView;
 
 namespace render {
 
-class WorldViewRenderer : public IngameObjectRenderer {
+class WorldViewRenderer {
 public:
     WorldViewRenderer(components::WorldView* ingameView);
     ~WorldViewRenderer();
 
     void moveCenter(float moveX, float moveY);
-    virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc);
-    
-    virtual boost::shared_ptr<RenderQueue> getRenderQueue() const;
+    CL_Texture getTexture(CL_GraphicContext& gc);
     
     void renderParticleEffects(CL_GraphicContext& gc);
 
@@ -60,14 +57,13 @@ private:
     components::WorldView* worldView_;
     
     virtual void render(CL_GraphicContext& gc);
-    void renderObject(CL_GraphicContext& gc, world::IngameObject* obj, ui::Texture* tex) const;
+    void renderObject(CL_GraphicContext& gc, world::IngameObject* obj, ui::Texture* tex);
     
     unsigned int textureWidth_;
     unsigned int textureHeight_;
-    boost::shared_ptr<Texture> textures_[2];
-    CL_Texture depthTextures_[2];
     void checkTextureSize();
-
+    
+    CL_Texture bufferTextures_[2];
     unsigned int frameBufferIndex_;
     void initFrameBuffer(unsigned int index);
     CL_FrameBuffer frameBuffers_[2];
@@ -78,6 +74,16 @@ private:
     
     float movePixelX_;
     float movePixelY_;
+    
+    static const unsigned int BATCH_NUM_VERTICES = 6000; // render up to 1000 objects at the same time
+    CL_Vec3f batchPositions_[BATCH_NUM_VERTICES];
+    CL_Vec3f batchNormals_[BATCH_NUM_VERTICES];
+    CL_Vec2f batchTexCoords_[BATCH_NUM_VERTICES];
+    CL_Vec3f batchHueInfos_[BATCH_NUM_VERTICES];
+
+    CL_Texture lastTexture_;
+    unsigned int batchFill_;
+    void batchFlush(CL_GraphicContext& gc);
 };
 
 }

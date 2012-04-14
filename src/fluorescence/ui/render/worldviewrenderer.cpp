@@ -49,7 +49,7 @@ namespace fluo {
 namespace ui {
 namespace render {
 
-WorldViewRenderer::WorldViewRenderer(components::WorldView* worldView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_WORLD),
+WorldViewRenderer::WorldViewRenderer(components::WorldView* worldView) : 
         worldView_(worldView), textureWidth_(0), textureHeight_(0), frameBufferIndex_(0), movePixelX_(0), movePixelY_(0) {
 }
 
@@ -57,7 +57,7 @@ WorldViewRenderer::~WorldViewRenderer() {
 }
 
 void WorldViewRenderer::checkTextureSize() {
-    if (!textures_[0] || textureWidth_ != worldView_->getWidth() || textureHeight_ != worldView_->getHeight()) {
+    if (bufferTextures_[0].is_null() || textureWidth_ != worldView_->getWidth() || textureHeight_ != worldView_->getHeight()) {
         textureWidth_ = worldView_->getWidth();
         textureHeight_ = worldView_->getHeight();
         
@@ -67,17 +67,12 @@ void WorldViewRenderer::checkTextureSize() {
 }
 
 void WorldViewRenderer::initFrameBuffer(unsigned int index) {
-    textures_[index].reset(new ui::Texture(false));
-    textures_[index]->initPixelBuffer(textureWidth_, textureHeight_);
-    textures_[index]->setReadComplete();
+    bufferTextures_[index] = ui::Manager::getSingleton()->providerRenderBufferTexture(CL_Size(textureWidth_, textureHeight_));
 
     CL_GraphicContext gc = ui::Manager::getGraphicContext();
 
-    depthTextures_[index] = CL_Texture(gc, textureWidth_, textureHeight_, cl_depth_component);
-    
     frameBuffers_[index] = CL_FrameBuffer(gc);
-    frameBuffers_[index].attach_color_buffer(0, *textures_[index]->getTexture());
-    frameBuffers_[index].attach_depth_buffer(depthTextures_[index]);
+    frameBuffers_[index].attach_color_buffer(0, bufferTextures_[index]);
     
     texturesInitialized_[index] = false;
 }
@@ -87,35 +82,33 @@ void WorldViewRenderer::moveCenter(float moveX, float moveY) {
     movePixelY_ = moveY;
 }
 
-boost::shared_ptr<Texture> WorldViewRenderer::getTexture(CL_GraphicContext& gc) {
+CL_Texture WorldViewRenderer::getTexture(CL_GraphicContext& gc) {
     checkTextureSize();
+    
     CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
     
     frameBufferIndex_ = (frameBufferIndex_ + 1) % 2;
-
     gc.set_frame_buffer(frameBuffers_[frameBufferIndex_]);
     
     renderPreviousTexture(gc, movePixelX_, movePixelY_);
-
     render(gc);
     
     gc.set_frame_buffer(origBuffer);
-    
+
     texturesInitialized_[frameBufferIndex_] = true;
-    return textures_[frameBufferIndex_];
+    return bufferTextures_[frameBufferIndex_];
 }
 
 void WorldViewRenderer::renderPreviousTexture(CL_GraphicContext& gc, float pixelX, float pixelY) {
-    if (abs(pixelX) >= textureWidth_ || abs(pixelY) >= textureHeight_) {
+    if (true || abs(pixelX) >= textureWidth_ || abs(pixelY) >= textureHeight_) {
         // need to paint everything from scratch
         ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(textureWidth_, textureHeight_)).translate(worldView_->getTopLeftPixel()));
     } else {
         unsigned int oldTexture = (frameBufferIndex_ + 1) % 2;
         
         if (texturesInitialized_[oldTexture]) {
-            gc.clear_depth(1.0);
             CL_Rectf geom = worldView_->get_geometry();
-            CL_Draw::texture(gc, *textures_[oldTexture]->getTexture(), CL_Rectf(-(pixelX + geom.left), -(pixelY + geom.top), CL_Sizef(textureWidth_, textureHeight_)));
+            CL_Draw::texture(gc, bufferTextures_[oldTexture], CL_Rectf(-(pixelX + geom.left), -(pixelY + geom.top), CL_Sizef(textureWidth_, textureHeight_)));
             
             if (pixelX < 0) {
                 ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(-pixelX, textureHeight_)).translate(worldView_->getTopLeftPixel()));
@@ -174,10 +167,10 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     gc.push_modelview();
     gc.set_translate(-clippingTopLeftCorner.x, -clippingTopLeftCorner.y, 0);
     
-    boost::shared_ptr<ui::Texture> huesTexture = data::Manager::getSingleton()->getHuesLoader()->getHuesTexture();
-    gc.set_texture(0, *(huesTexture->getTexture()));
+    CL_Texture huesTexture = data::Manager::getHuesLoader()->getHuesTexture();
+    gc.set_texture(0, huesTexture);
     // set texture unit 1 active to avoid overriding the hue texture with newly loaded object textures
-    gc.set_texture(1, *(huesTexture->getTexture())); 
+    gc.set_texture(1, huesTexture);
     
     shader->set_uniform1i("HueTexture", 0);
     shader->set_uniform1i("ObjectTexture", 1);
@@ -186,6 +179,8 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     shader->set_uniform3f("AmbientLightIntensity", lightManager->getAmbientIntensity());
     shader->set_uniform3f("GlobalLightIntensity", lightManager->getGlobalIntensity());
     shader->set_uniform3f("GlobalLightDirection", lightManager->getGlobalDirection());
+    
+    gc.set_texture(0, huesTexture);
 
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator secIter = world::Manager::getSectorManager()->begin();
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator secEnd = world::Manager::getSectorManager()->end();
@@ -236,6 +231,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
         }
     }
     
+    batchFlush(gc);
     ui::Manager::getClipRectManager()->clear();
     
     gc.pop_modelview();
@@ -281,45 +277,67 @@ void WorldViewRenderer::renderParticleEffects(CL_GraphicContext& gc) {
     gc.pop_modelview();
 }
 
-boost::shared_ptr<RenderQueue> WorldViewRenderer::getRenderQueue() const {
-    boost::shared_ptr<RenderQueue> rq;
-    return rq;
+void WorldViewRenderer::renderObject(CL_GraphicContext& gc, world::IngameObject* obj, ui::Texture* tex) {
+    CL_Rectf texCoordHelper = tex->getNormalizedTextureCoords();
+
+    if (lastTexture_ != tex->getTexture()) {
+        batchFlush(gc);
+        
+        lastTexture_ = tex->getTexture();
+    }
+    
+    memcpy(&batchPositions_[batchFill_], obj->getVertexCoordinates(), sizeof(CL_Vec3f) * 6);
+    memcpy(&batchNormals_[batchFill_], obj->getVertexNormals(), sizeof(CL_Vec3f) * 6);
+
+    if (obj->isMirrored()) {
+        CL_Vec2f texCoordsMirrored[6] = {
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom),
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom),
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom)
+        };
+        memcpy(&batchTexCoords_[batchFill_], texCoordsMirrored, sizeof(CL_Vec2f) * 6);
+    } else {
+        CL_Vec2f texCoords[6] = {
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom)
+        };
+        memcpy(&batchTexCoords_[batchFill_], texCoords, sizeof(CL_Vec2f) * 6);
+    }
+
+    CL_Vec3f hueInfo = obj->getHueInfo();
+    for (unsigned int i = 0; i < 6; ++i) {
+        batchHueInfos_[batchFill_ + i] = hueInfo;
+    }
+    
+    batchFill_ += 6;
+    
+    if (batchFill_ == BATCH_NUM_VERTICES) {
+        batchFlush(gc);
+    }
 }
 
-void WorldViewRenderer::renderObject(CL_GraphicContext& gc, world::IngameObject* obj, ui::Texture* tex) const {
-    static CL_Rectf texCoordHelper(0.0f, 0.0f, 1.0f, 1.0f);
+void WorldViewRenderer::batchFlush(CL_GraphicContext& gc) {
+    if (batchFill_ > 0 && !lastTexture_.is_null()) {
+        //LOG_DEBUG << "batch flush: " << (batchFill_ / 6) << std::endl;
+        CL_PrimitivesArray primarray(gc);
+        primarray.set_attributes(0, batchPositions_);
+        primarray.set_attributes(1, batchTexCoords_);
+        primarray.set_attributes(2, batchNormals_);
+        primarray.set_attributes(3, batchHueInfos_);
 
-    static CL_Vec2f texCoords[6] = {
-        CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
-        CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
-        CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
-        CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
-        CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
-        CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom)
-    };
+        gc.set_texture(1, lastTexture_);
 
-    static CL_Vec2f texCoordsMirrored[6] = {
-        CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
-        CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
-        CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom),
-        CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
-        CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom),
-        CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom)
-    };
-    
-    CL_PrimitivesArray primarray(gc);
-    primarray.set_attributes(0, obj->getVertexCoordinates());
-    if (obj->isMirrored()) {
-        primarray.set_attributes(1, texCoordsMirrored);
-    } else {
-        primarray.set_attributes(1, texCoords);
+        gc.draw_primitives(cl_triangles, batchFill_, primarray);
+
+        batchFill_ = 0;
     }
-    primarray.set_attributes(2, obj->getVertexNormals());
-    primarray.set_attribute(3, obj->getHueInfo());
-
-    gc.set_texture(1, *(tex->getTexture()));
-
-    gc.draw_primitives(cl_triangles, 6, primarray);
 }
 
 }
