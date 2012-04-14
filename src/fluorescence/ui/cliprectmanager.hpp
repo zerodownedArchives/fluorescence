@@ -46,6 +46,8 @@ public:
     
     void clamp(const CL_Vec2f& topleft, const CL_Size& size);
     
+    bool overlapsAny(world::IngameObject* obj);
+    
     boost::mutex mutex_;
     
 private:

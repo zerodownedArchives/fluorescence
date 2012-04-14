@@ -100,7 +100,7 @@ CL_Texture WorldViewRenderer::getTexture(CL_GraphicContext& gc) {
 }
 
 void WorldViewRenderer::renderPreviousTexture(CL_GraphicContext& gc, float pixelX, float pixelY) {
-    if (true || abs(pixelX) >= textureWidth_ || abs(pixelY) >= textureHeight_) {
+    if (abs(pixelX) >= textureWidth_ || abs(pixelY) >= textureHeight_) {
         // need to paint everything from scratch
         ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(textureWidth_, textureHeight_)).translate(worldView_->getTopLeftPixel()));
     } else {
@@ -187,9 +187,6 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     
     std::list<world::IngameObject*>::iterator objIter;
     std::list<world::IngameObject*>::iterator objEnd;;
-
-    unsigned int notInCount = 0;
-    unsigned int totalCount = 0;
     
     for (; secIter != secEnd; ++secIter) {
         // TOOD: check if we can skip the whole sector
@@ -198,35 +195,28 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
         objEnd = secIter->second->renderEnd();
         
         for (; objIter != objEnd; ++objIter) {
-            totalCount++;
             world::IngameObject* curObj = *objIter;
             
             // check if texture is ready to be drawn
             ui::Texture* tex = curObj->getIngameTexture().get();
-            
-            if (tex && !tex->isReadComplete() && curObj->isDynamicItem() && ((world::DynamicItem*)(curObj))->getLayer() == Layer::MOUNT) {
-                LOG_ERROR << "\n\nmount with incomplete texture\n\n" << std::endl;
-            }
 
             if (!tex || !tex->isReadComplete() || !curObj->isVisible()) {
                 continue;
             }
         
             // check if current object is in the area visible to the player
-            bool drawn = false;
-            for (clipRectIter = clipRectMan->begin(); clipRectIter != clipRectEnd; ++clipRectIter) {
-                if (curObj->overlaps(*clipRectIter)) {
-                    CL_Rectf clipRect(*clipRectIter);
-                    clipRect.translate(-clippingTopLeftCorner);
-                    gc.push_cliprect(clipRect);
-                    renderObject(gc, curObj, tex);
-                    drawn = true;
-                    gc.pop_cliprect();
-                }
-                
-                if (!drawn) {
-                    notInCount++;
-                }
+            //for (clipRectIter = clipRectMan->begin(); clipRectIter != clipRectEnd; ++clipRectIter) {
+                //if (curObj->overlaps(*clipRectIter)) {
+                    //CL_Rectf clipRect(*clipRectIter);
+                    //clipRect.translate(-clippingTopLeftCorner);
+                    //gc.push_cliprect(clipRect);
+                    //renderObject(gc, curObj, tex);
+                    //gc.pop_cliprect();
+                //}
+            //}
+            
+            if (clipRectMan->overlapsAny(curObj)) {
+                renderObject(gc, curObj, tex);
             }
         }
     }

@@ -95,6 +95,19 @@ void ClipRectManager::clamp(const CL_Vec2f& topleftBase, const CL_Size& sizeBase
     
     rectangles_ = clamped;
 }
+
+bool ClipRectManager::overlapsAny(world::IngameObject* obj) {
+    std::vector<CL_Rectf>::iterator iter = rectangles_.begin();
+    std::vector<CL_Rectf>::iterator end = rectangles_.end();
+    
+    for (; iter != end; ++iter) {
+        if (obj->overlaps(*iter)) {
+            return true;
+        }
+    }
+    
+    return false;
+}
     
 }
 }
