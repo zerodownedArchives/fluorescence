@@ -32,6 +32,7 @@
 
 #include <list>
 #include <queue>
+#include <map>
 
 #include <misc/config.hpp>
 
@@ -59,6 +60,9 @@ public:
     static bool create();
     static void destroy();
     static Manager* getSingleton();
+    
+    static const unsigned int TEXTURE_GROUP_WIDTH = 2048;
+    static const unsigned int TEXTURE_GROUP_HEIGHT = 2048;
 
     bool setShardConfig(Config& config);
 
@@ -66,7 +70,9 @@ public:
     static CL_InputContext& getInputContext();
     static boost::shared_ptr<CL_DisplayWindow> getMainWindow();
 
-    static CL_Texture* provideTexture(unsigned int width, unsigned int height);
+    CL_Subtexture provideTexture(unsigned int usage, const CL_Size& size);
+    void freeTexture(unsigned int usage, CL_Subtexture& texture);
+    CL_Texture providerRenderBufferTexture(const CL_Size& size, CL_TextureFormat format = cl_rgba);
 
     static boost::shared_ptr<CL_GUIManager> getGuiManager();
     static boost::shared_ptr<CursorManager> getCursorManager();
@@ -86,6 +92,7 @@ public:
     GumpMenu* openXmlGump(const UnicodeString& name);
     void closeGumpMenu(const UnicodeString& name);
     void closeGumpMenu(GumpMenu* menu);
+    void destroyAllGumpMenus(); // needed for final cleanup
 
     GumpMenu* getGumpMenu(const UnicodeString& name);
 
@@ -157,6 +164,8 @@ private:
     
     boost::shared_ptr<CommandManager> commandManager_;
     boost::shared_ptr<MacroManager> macroManager_;
+    
+    std::map<unsigned int, CL_TextureGroup> textureGroups_;
 };
 
 }

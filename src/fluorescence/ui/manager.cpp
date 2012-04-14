@@ -209,8 +209,19 @@ CL_InputContext& Manager::getInputContext() {
     return singleton_->mainWindow_->get_ic();
 }
 
-CL_Texture* Manager::provideTexture(unsigned int width, unsigned int height) {
-    return new CL_Texture(singleton_->getGraphicContext(), width, height, cl_rgb8);
+CL_Subtexture Manager::provideTexture(unsigned int usage, const CL_Size& size) {
+    if (textureGroups_[usage].is_null()) {
+        textureGroups_[usage] = CL_TextureGroup(CL_Size(TEXTURE_GROUP_WIDTH, TEXTURE_GROUP_HEIGHT));
+    }
+    return textureGroups_[usage].add(getGraphicContext(), size);
+}
+
+CL_Texture Manager::providerRenderBufferTexture(const CL_Size& size, CL_TextureFormat format) {
+    return CL_Texture(getGraphicContext(), size, format);
+}
+
+void Manager::freeTexture(unsigned int usage, CL_Subtexture& texture) {
+    textureGroups_[usage].remove(texture);
 }
 
 boost::shared_ptr<CL_GUIManager> Manager::getGuiManager() {
@@ -242,6 +253,17 @@ void Manager::closeGumpMenu(const UnicodeString& gumpName) {
     if (menu) {
         closeGumpMenu(menu);
     }
+}
+
+void Manager::destroyAllGumpMenus() {
+    std::list<GumpMenu*>::iterator iter = gumpList_.begin();
+    std::list<GumpMenu*>::iterator end = gumpList_.end();
+
+    for (; iter != end; ++iter) {
+        delete *iter;
+    }
+
+    gumpList_.clear();
 }
 
 GumpMenu* Manager::getGumpMenu(const UnicodeString& gumpName) {
@@ -305,6 +327,7 @@ void Manager::registerGumpMenu(GumpMenu* menu) {
 }
 
 void Manager::installMacros() {
+    // TODO: remove accelerator stuff
     CL_AcceleratorKey keyEnter(CL_KEY_B);
     keyEnter.set_shift(true);
     keyEnter.func_pressed().set(this, &Manager::enterTest);
@@ -316,6 +339,7 @@ void Manager::installMacros() {
 }
 
 void Manager::uninstallMacros() {
+    // TODO: remove accelerator stuff
     CL_AcceleratorTable empty;
     macros_ = empty;
 
@@ -325,21 +349,22 @@ void Manager::uninstallMacros() {
 }
 
 void Manager::enterTest(CL_GUIMessage msg, CL_AcceleratorKey key) {
-    LOG_DEBUG << "accel Shift+B pressed" << std::endl;
+    // TODO: make this a command
+    LOG_DEBUG << "accel Enter" << std::endl;
 
-    //GumpMenu* gameWindow = getGumpMenu("gamewindow");
-    //if (gameWindow) {
-        //gameWindow->activatePage(2);
+    GumpMenu* gameWindow = getGumpMenu("gamewindow");
+    if (gameWindow) {
+        gameWindow->activatePage(2);
 
-        //CL_GUIComponent* lineedit = gameWindow->get_named_item("speechtext");
-        //if (lineedit) {
-            //lineedit->set_focus();
-        //} else {
-            //LOG_ERROR << "Unable to find speech lineedit in gamewindow" << std::endl;
-        //}
-    //} else {
-        //LOG_ERROR << "Unable to find gamewindow gump to activate speech lineedit" << std::endl;
-    //}
+        CL_GUIComponent* lineedit = gameWindow->get_named_item("speechtext");
+        if (lineedit) {
+            lineedit->set_focus();
+        } else {
+            LOG_ERROR << "Unable to find speech lineedit in gamewindow" << std::endl;
+        }
+    } else {
+        LOG_ERROR << "Unable to find gamewindow gump to activate speech lineedit" << std::endl;
+    }
 }
 
 void Manager::queueSingleClick(boost::shared_ptr<world::IngameObject> obj) {
