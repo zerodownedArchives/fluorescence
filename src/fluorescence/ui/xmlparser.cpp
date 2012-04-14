@@ -688,6 +688,7 @@ bool XmlParser::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMe
     parseId(node, img);
     
     boost::shared_ptr<ui::Texture> texture = data::Manager::getTexture(imgSource, imgId);
+    texture->setUsage(ui::Texture::USAGE_GUMP);
     
     if (!texture) {
         LOG_ERROR << "Unable to parse gump image, source=" << imgSource << " imgid=" << imgId << std::endl;

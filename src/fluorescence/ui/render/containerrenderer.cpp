@@ -38,7 +38,7 @@
 namespace fluo {
 namespace ui {
 
-ContainerRenderer::ContainerRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::ContainerView* containerView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_WORLD),
+ContainerRenderer::ContainerRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::ContainerView* containerView) :
             containerView_(containerView), renderQueue_(renderQueue) {
 }
 
@@ -48,18 +48,16 @@ ContainerRenderer::~ContainerRenderer() {
 
 
 void ContainerRenderer::checkTextureSize(CL_GraphicContext& gc) {
-    if (!texture_ || texture_->getWidth() != containerView_->getWidth() || texture_->getHeight() != containerView_->getHeight()) {
-        texture_.reset(new ui::Texture(false));
-        texture_->initPixelBuffer(containerView_->getWidth(), containerView_->getHeight());
-        texture_->setReadComplete();
+    if (texture_.is_null() || texture_.get_size() != containerView_->get_size()) {
+        texture_ = ui::Manager::getSingleton()->providerRenderBufferTexture(containerView_->get_size());
         
         frameBuffer_ = CL_FrameBuffer(gc);
-        frameBuffer_.attach_color_buffer(0, *texture_->getTexture());
+        frameBuffer_.attach_color_buffer(0, texture_);
     }
 }
 
-boost::shared_ptr<Texture> ContainerRenderer::getTexture(CL_GraphicContext& gc) {
-    if (renderQueue_->requireWorldRepaint() || !texture_) {
+CL_Texture ContainerRenderer::getTexture(CL_GraphicContext& gc) {
+    if (renderQueue_->requireWorldRepaint() || texture_.is_null()) {
         checkTextureSize(gc);
         CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 
@@ -82,21 +80,10 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getGumpShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
 
-    CL_Rectf texture_unit1_coords(0.0f, 0.0f, 1.0f, 1.0f);
-
-    CL_Vec2f tex1_coords[6] = {
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom)
-    };
-
-    boost::shared_ptr<ui::Texture> huesTexture = data::Manager::getSingleton()->getHuesLoader()->getHuesTexture();
-    gc.set_texture(0, *(huesTexture->getTexture()));
+    CL_Texture huesTexture = data::Manager::getHuesLoader()->getHuesTexture();
+    gc.set_texture(0, huesTexture);
     // set texture unit 1 active to avoid overriding the hue texture with newly loaded object textures
-    gc.set_texture(1, *(huesTexture->getTexture())); 
+    gc.set_texture(1, huesTexture);
     
     shader->set_uniform1i("HueTexture", 0);
     shader->set_uniform1i("ObjectTexture", 1);
@@ -121,14 +108,27 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
         vertexCoords[3] = CL_Vec2f(rect.right, rect.top);
         vertexCoords[4] = CL_Vec2f(rect.left, rect.bottom);
         vertexCoords[5] = CL_Vec2f(rect.right, rect.bottom);
+        
+        CL_Rectf texCoordHelper = bgTex->getNormalizedTextureCoords();
+        
+        LOG_DEBUG << "Draw cont bg: " << texCoordHelper << std::endl;
+
+        CL_Vec2f texCoords[6] = {
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom)
+        };
 
         CL_PrimitivesArray primarray(gc);
         primarray.set_attributes(0, vertexCoords);
-        primarray.set_attributes(1, tex1_coords);
+        primarray.set_attributes(1, texCoords);
 
         primarray.set_attribute(2, hueInfo);
 
-        gc.set_texture(1, *bgTex->getTexture());
+        gc.set_texture(1, bgTex->getTexture());
         gc.draw_primitives(cl_triangles, 6, primarray);
     } else {
         renderingComplete = false;
@@ -162,14 +162,25 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
         vertexCoords[3] = CL_Vec2f(rect.right, rect.top);
         vertexCoords[4] = CL_Vec2f(rect.left, rect.bottom);
         vertexCoords[5] = CL_Vec2f(rect.right, rect.bottom);
+        
+        CL_Rectf texCoordHelper = tex->getNormalizedTextureCoords();
+
+        CL_Vec2f texCoords[6] = {
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom)
+        };
 
         CL_PrimitivesArray primarray(gc);
         primarray.set_attributes(0, vertexCoords);
-        primarray.set_attributes(1, tex1_coords);
+        primarray.set_attributes(1, texCoords);
 
         primarray.set_attribute(2, curObj->getHueInfo());
 
-        gc.set_texture(1, *tex->getTexture());
+        gc.set_texture(1, tex->getTexture());
         gc.draw_primitives(cl_triangles, 6, primarray);
     }
 
@@ -177,6 +188,10 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
     gc.reset_program_object();
 
     renderQueue_->postRender(renderingComplete);
+    
+    if (!renderingComplete) {
+        containerView_->request_repaint();
+    }
 }
 
 boost::shared_ptr<RenderQueue> ContainerRenderer::getRenderQueue() const {

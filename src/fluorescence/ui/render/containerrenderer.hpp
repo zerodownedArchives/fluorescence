@@ -21,11 +21,9 @@
 #define FLUO_UI_CONTAINERRENDERER_HPP
 
 #include <ClanLib/Display/Render/graphic_context.h>
+#include <ClanLib/Display/Render/texture.h>
 
 #include <boost/shared_ptr.hpp>
-
-#include <ui/render/ingameobjectrenderer.hpp>
-
 
 namespace fluo {
 namespace ui {
@@ -37,22 +35,22 @@ class ContainerView;
 class RenderQueue;
 class Texture;
 
-class ContainerRenderer : public IngameObjectRenderer {
+class ContainerRenderer {
 public:
     ContainerRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::ContainerView* containerView);
     ~ContainerRenderer();
 
-    virtual boost::shared_ptr<Texture> getTexture(CL_GraphicContext& gc);
+    CL_Texture getTexture(CL_GraphicContext& gc);
 
-    virtual void render(CL_GraphicContext& gc);
+    void render(CL_GraphicContext& gc);
 
-    virtual boost::shared_ptr<RenderQueue> getRenderQueue() const;
+    boost::shared_ptr<RenderQueue> getRenderQueue() const;
 
 private:
     components::ContainerView* containerView_;
     boost::shared_ptr<RenderQueue> renderQueue_;
 
-    boost::shared_ptr<Texture> texture_;
+    CL_Texture texture_;
     void checkTextureSize(CL_GraphicContext& gc);
     
     CL_FrameBuffer frameBuffer_;

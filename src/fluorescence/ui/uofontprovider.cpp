@@ -27,7 +27,7 @@
 
 #include "texture.hpp"
 
-
+#include <ClanLib/Display/Render/texture.h>
 #include <ClanLib/Display/2D/draw.h>
 #include <ClanLib/Core/Math/quad.h>
 
@@ -55,7 +55,7 @@ void UoFontProvider::draw_text(CL_GraphicContext& gc, float x, float y, const CL
     CL_Rectf rect(x, y - tex->getHeight(), CL_Sizef(tex->getWidth(), tex->getHeight()));    
     //LOG_DEBUG << "draw_text: at " << rect << ": " << text.c_str() << std::endl;
     
-    CL_Draw::texture(gc, *tex->getTexture(), CL_Quadf(rect));
+    CL_Draw::texture(gc, tex->getTexture(), CL_Quadf(rect), CL_Colorf::white, tex->getNormalizedTextureCoords());
 }
 
 CL_Size UoFontProvider::get_text_size(CL_GraphicContext& gc, const CL_StringRef& text) {
@@ -174,7 +174,7 @@ void UoFontProvider::initFontMetrics() {
 		false);		// fixed_pitch
 }
 
-void UoFontProvider::applyBorder(boost::shared_ptr<CL_PixelBuffer> pxBuf, const CL_Colorf& clcolor, unsigned int borderWidth, const CL_Colorf& clborderColor) {
+void UoFontProvider::applyBorder(CL_PixelBuffer pxBuf, const CL_Colorf& clcolor, unsigned int borderWidth, const CL_Colorf& clborderColor) {
     uint32_t color = clToUintColor(clcolor);
     uint32_t borderColor = clToUintColor(clborderColor);
     
@@ -183,10 +183,10 @@ void UoFontProvider::applyBorder(boost::shared_ptr<CL_PixelBuffer> pxBuf, const 
         borderColor = color - 1;
     }
     
-    unsigned int width = pxBuf->get_width();
-    unsigned int height = pxBuf->get_height();
+    unsigned int width = pxBuf.get_width();
+    unsigned int height = pxBuf.get_height();
 
-    uint32_t* pixBufPtr = (uint32_t*)pxBuf->get_data();
+    uint32_t* pixBufPtr = (uint32_t*)pxBuf.get_data();
     int iBorderWidth = borderWidth;
 
     for (unsigned int y = borderWidth; y < height - borderWidth; ++y) {
@@ -222,7 +222,7 @@ boost::shared_ptr<ui::Texture> UoFontProvider::getTexture(CL_GraphicContext& gc,
     unsigned int width = texSize.width;
     unsigned int height = texSize.height;
 
-    tex.reset(new ui::Texture());
+    tex.reset(new ui::Texture(ui::Texture::USAGE_FONT));
     tex->initPixelBuffer(width, height);
     uint32_t* pixBufPtr = tex->getPixelBufferData();
 

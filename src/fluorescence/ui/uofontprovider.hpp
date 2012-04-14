@@ -65,7 +65,7 @@ private:
     
     
     boost::shared_ptr<ui::Texture> getTexture(CL_GraphicContext& gc, const CL_StringRef& text, const CL_Colorf& clcolor, unsigned int borderWidth = 1, const CL_Colorf& clborderColor = CL_Colorf::black);
-    void applyBorder(boost::shared_ptr<CL_PixelBuffer> pxBuf, const CL_Colorf& clcolor, unsigned int borderWidth, const CL_Colorf& clborderColor);
+    void applyBorder(CL_PixelBuffer pxBuf, const CL_Colorf& clcolor, unsigned int borderWidth, const CL_Colorf& clborderColor);
     
     
     // keep the last HISTORY SIZE textures here in a ringbuffer to avoid rendering the fonts anew over and over again

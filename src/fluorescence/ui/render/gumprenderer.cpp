@@ -38,7 +38,7 @@
 namespace fluo {
 namespace ui {
 
-GumpRenderer::GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::GumpView* gumpView) : IngameObjectRenderer(IngameObjectRenderer::TYPE_GUMP),
+GumpRenderer::GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::GumpView* gumpView) : 
             gumpView_(gumpView), renderQueue_(renderQueue) {
 }
 
@@ -48,18 +48,16 @@ GumpRenderer::~GumpRenderer() {
 
 
 void GumpRenderer::checkTextureSize(CL_GraphicContext& gc) {
-    if (!texture_ || texture_->getWidth() != gumpView_->getWidth() || texture_->getHeight() != gumpView_->getHeight()) {
-        texture_.reset(new ui::Texture(false));
-        texture_->initPixelBuffer(gumpView_->getWidth(), gumpView_->getHeight());
-        texture_->setReadComplete();
+    if (texture_.is_null() || texture_.get_size() != gumpView_->get_size()) {
+        texture_ = ui::Manager::getSingleton()->providerRenderBufferTexture(gumpView_->get_size());
         
         frameBuffer_ = CL_FrameBuffer(gc);
-        frameBuffer_.attach_color_buffer(0, *texture_->getTexture());
+        frameBuffer_.attach_color_buffer(0, texture_);
     }
 }
 
-boost::shared_ptr<Texture> GumpRenderer::getTexture(CL_GraphicContext& gc) {
-    if (renderQueue_->requireGumpRepaint() || !texture_ ) {
+CL_Texture GumpRenderer::getTexture(CL_GraphicContext& gc) {
+    if (renderQueue_->requireGumpRepaint() || texture_.is_null()) {
         checkTextureSize(gc);
         CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
 
@@ -82,22 +80,10 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getGumpShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
 
-    CL_Rectf texture_unit1_coords(0.0f, 0.0f, 1.0f, 1.0f);
-
-    CL_Vec2f tex1_coords[6] = {
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-        CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-        CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom)
-    };
-
-
-    boost::shared_ptr<ui::Texture> huesTexture = data::Manager::getSingleton()->getHuesLoader()->getHuesTexture();
-    gc.set_texture(0, *(huesTexture->getTexture()));
+    CL_Texture huesTexture = data::Manager::getHuesLoader()->getHuesTexture();
+    gc.set_texture(0, huesTexture);
     // set texture unit 1 active to avoid overriding the hue texture with newly loaded object textures
-    gc.set_texture(1, *(huesTexture->getTexture())); 
+    gc.set_texture(1, huesTexture);
     
     shader->set_uniform1i("HueTexture", 0);
     shader->set_uniform1i("ObjectTexture", 1);
@@ -118,7 +104,7 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
         }
 
         // check if texture is ready to be drawn
-        boost::shared_ptr<ui::Texture> tex = curObj->getGumpTexture();
+        ui::Texture* tex = curObj->getGumpTexture().get();
 
         if (!tex) {
             continue;
@@ -128,6 +114,17 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
             renderingComplete = false;
             continue;
         }
+        
+        CL_Rectf texCoordHelper = tex->getNormalizedTextureCoords();
+
+        CL_Vec2f texCoords[6] = {
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
+            CL_Vec2f(texCoordHelper.left, texCoordHelper.bottom),
+            CL_Vec2f(texCoordHelper.right, texCoordHelper.bottom)
+        };
 
         CL_Rectf rect(0, 0, tex->getWidth(), tex->getHeight());
 
@@ -140,11 +137,11 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
 
         CL_PrimitivesArray primarray(gc);
         primarray.set_attributes(0, vertexCoords);
-        primarray.set_attributes(1, tex1_coords);
+        primarray.set_attributes(1, texCoords);
 
         primarray.set_attribute(2, curObj->getHueInfo());
 
-        gc.set_texture(1, *tex->getTexture());
+        gc.set_texture(1, tex->getTexture());
         gc.draw_primitives(cl_triangles, 6, primarray);
     }
 
@@ -152,6 +149,10 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
     gc.reset_program_object();
 
     renderQueue_->postRender(renderingComplete);
+    
+    if (!renderingComplete) {
+        gumpView_->request_repaint();
+    }
 }
 
 boost::shared_ptr<RenderQueue> GumpRenderer::getRenderQueue() const {
