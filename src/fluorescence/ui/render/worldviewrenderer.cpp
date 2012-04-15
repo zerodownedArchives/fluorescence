@@ -42,15 +42,13 @@
 #include <data/huesloader.hpp>
 
 
-
-#include <ui/particles/xmlloader.hpp>
-
 namespace fluo {
 namespace ui {
 namespace render {
 
 WorldViewRenderer::WorldViewRenderer(components::WorldView* worldView) : 
-        worldView_(worldView), textureWidth_(0), textureHeight_(0), frameBufferIndex_(0), movePixelX_(0), movePixelY_(0) {
+        worldView_(worldView), textureWidth_(0), textureHeight_(0), frameBufferIndex_(0), movePixelX_(0), movePixelY_(0), forceRepaint_(false) {
+    initBufferControls();
 }
 
 WorldViewRenderer::~WorldViewRenderer() {
@@ -91,7 +89,7 @@ CL_Texture WorldViewRenderer::getTexture(CL_GraphicContext& gc) {
     
     ui::ClipRectManager* clipRectMan = ui::Manager::getClipRectManager().get();
     boost::recursive_mutex::scoped_lock clipManLock(clipRectMan->mutex_);
-    clipRectMan->clamp(clippingTopLeftCorner, worldView_->get_size());
+    clipRectMan->clamp(clippingTopLeftCorner, worldView_->getDrawSize());
     
     if (clipRectMan->size() > 0 || !texturesInitialized_[frameBufferIndex_]) {
         CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
@@ -115,9 +113,15 @@ CL_Texture WorldViewRenderer::getTexture(CL_GraphicContext& gc) {
 }
 
 void WorldViewRenderer::renderPreviousTexture(CL_GraphicContext& gc, float pixelX, float pixelY) {
-    if (abs(pixelX) >= textureWidth_ || abs(pixelY) >= textureHeight_) {
+    unsigned int drawWidth = worldView_->getDrawWidth();
+    unsigned int drawHeight = worldView_->getDrawHeight();
+    
+    // ceilfs are to check if the pixel value is even. only then does the clipping stuff work correctly. 
+    // pixelX and pixelY can have fractional parts due to zoom
+    if (forceRepaint_ || ceilf(pixelX) != pixelX || ceilf(pixelY) != pixelY || abs(pixelX) >= textureWidth_ || abs(pixelY) >= textureHeight_) {
         // need to paint everything from scratch
-        ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(textureWidth_, textureHeight_)).translate(worldView_->getTopLeftPixel()));
+        ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(drawWidth, drawHeight)).translate(worldView_->getTopLeftPixel()));
+        forceRepaint_ = false;
     } else {
         unsigned int oldTexture = (frameBufferIndex_ + 1) % 2;
         
@@ -126,19 +130,19 @@ void WorldViewRenderer::renderPreviousTexture(CL_GraphicContext& gc, float pixel
             CL_Draw::texture(gc, colorBuffers_[oldTexture], CL_Rectf(-(pixelX + geom.left), -(pixelY + geom.top), CL_Sizef(textureWidth_, textureHeight_)));
             
             if (pixelX < 0) {
-                ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(-pixelX, textureHeight_)).translate(worldView_->getTopLeftPixel()));
-            } else if (pixelX > 0) {
-                ui::Manager::getClipRectManager()->add(CL_Rectf(textureWidth_ - pixelX, 0, CL_Sizef(pixelX, textureHeight_)).translate(worldView_->getTopLeftPixel()));
-            }
-            
-            if (pixelY < 0) {
-                ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(textureWidth_, -pixelY)).translate(worldView_->getTopLeftPixel()));
-            } else if (pixelY > 0) {
-                ui::Manager::getClipRectManager()->add(CL_Rectf(0, textureHeight_ - pixelY, CL_Sizef(textureWidth_, pixelY)).translate(worldView_->getTopLeftPixel()));
-            }
-        } else {
-            ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(worldView_->getWidth(), worldView_->getHeight())).translate(worldView_->getTopLeftPixel()));
-        }
+                 ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(-pixelX, drawHeight)).translate(worldView_->getTopLeftPixel()));
+             } else if (pixelX > 0) {
+                 ui::Manager::getClipRectManager()->add(CL_Rectf(drawWidth - pixelX, 0, CL_Sizef(pixelX, drawHeight)).translate(worldView_->getTopLeftPixel()));
+             }
+             
+             if (pixelY < 0) {
+                 ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(drawWidth, -pixelY)).translate(worldView_->getTopLeftPixel()));
+             } else if (pixelY > 0) {
+                  ui::Manager::getClipRectManager()->add(CL_Rectf(0, drawHeight - pixelY, CL_Sizef(drawWidth, pixelY)).translate(worldView_->getTopLeftPixel()));
+             }
+         } else {
+             ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(drawWidth, drawHeight)).translate(worldView_->getTopLeftPixel()));
+         }
     }
     
     //LOG_DEBUG << "center moved x=" << pixelX << " y=" << pixelY << std::endl;
@@ -147,7 +151,13 @@ void WorldViewRenderer::renderPreviousTexture(CL_GraphicContext& gc, float pixel
 void WorldViewRenderer::prepareStencil(CL_GraphicContext& gc) {
     gc.clear_stencil(0);
     
+    gc.set_buffer_control(bufferControlClips_);
+    
+    gc.push_modelview();
+    gc.set_modelview(CL_Mat4f::identity());
+    
     CL_Vec2f clippingTopLeftCorner = worldView_->getTopLeftPixel();
+    float zoom = worldView_->getZoom();
     
     ui::ClipRectManager* clipRectMan = ui::Manager::getClipRectManager().get();
     std::vector<CL_Rectf>::const_iterator clipRectIter;
@@ -155,35 +165,24 @@ void WorldViewRenderer::prepareStencil(CL_GraphicContext& gc) {
     
     for (clipRectIter = clipRectMan->begin(); clipRectIter != clipRectEnd; ++clipRectIter) {
         CL_Rectf clipRect(*clipRectIter);
+        
+        // need to apply the view matrix manually here, because there is some error with CL_Draw::fill
         clipRect.translate(-clippingTopLeftCorner);
-        gc.push_cliprect(clipRect);
-        gc.clear(CL_Colorf::black);
-        gc.clear_stencil(1);
-        gc.pop_cliprect();
+        if (zoom != 1) {
+            clipRect.left = floorf(clipRect.left * zoom);
+            clipRect.right = ceilf(clipRect.right * zoom);
+            clipRect.top = floorf(clipRect.top * zoom);
+            clipRect.bottom = ceilf(clipRect.bottom * zoom);
+        }
+        
+        CL_Draw::fill(gc, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom, CL_Colorf::black);
     }
+    
+    gc.pop_modelview();
 }
 
 void WorldViewRenderer::render(CL_GraphicContext& gc) {
-    CL_BufferControl bufferControl;
-    bufferControl.set_depth_compare_function(cl_comparefunc_equal);
-    bufferControl.enable_depth_write(false);
-    bufferControl.enable_depth_test(false);
-    bufferControl.enable_color_write(true);
-    
-    bufferControl.enable_stencil_test(true);
-    bufferControl.enable_logic_op(false);
-    bufferControl.set_stencil_compare_func(cl_comparefunc_equal, cl_comparefunc_equal);
-    gc.set_buffer_control(bufferControl);
-    bufferControl.set_stencil_compare_mask(1, 1);
-    bufferControl.set_stencil_compare_reference(1, 1);
-    bufferControl.set_stencil_fail(cl_stencil_keep, cl_stencil_keep);
-    bufferControl.set_stencil_pass_depth_fail(cl_stencil_keep, cl_stencil_keep);
-    bufferControl.set_stencil_pass_depth_pass(cl_stencil_keep, cl_stencil_keep);
-    
-    gc.set_buffer_control(bufferControl);
-    
-    
-    CL_Vec2f clippingTopLeftCorner = worldView_->getTopLeftPixel();
+    gc.set_buffer_control(bufferControlObjects_);
     
     ui::ClipRectManager* clipRectMan = ui::Manager::getClipRectManager().get();
     
@@ -191,7 +190,7 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
     
     gc.push_modelview();
-    gc.set_translate(-clippingTopLeftCorner.x, -clippingTopLeftCorner.y, 0);
+    gc.set_modelview(worldView_->getViewMatrix());
     
     CL_Texture huesTexture = data::Manager::getHuesLoader()->getHuesTexture();
     gc.set_texture(0, huesTexture);
@@ -230,17 +229,6 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
                 continue;
             }
         
-            // check if current object is in the area visible to the player
-            //for (clipRectIter = clipRectMan->begin(); clipRectIter != clipRectEnd; ++clipRectIter) {
-                //if (curObj->overlaps(*clipRectIter)) {
-                    //CL_Rectf clipRect(*clipRectIter);
-                    //clipRect.translate(-clippingTopLeftCorner);
-                    //gc.push_cliprect(clipRect);
-                    //renderObject(gc, curObj, tex);
-                    //gc.pop_cliprect();
-                //}
-            //}
-            
             if (clipRectMan->overlapsAny(curObj)) {
                 renderObject(gc, curObj, tex);
             }
@@ -260,23 +248,15 @@ void WorldViewRenderer::renderParticleEffects(CL_GraphicContext& gc) {
     pen.enable_point_sprite(true);
     gc.set_pen(pen);
     
-    CL_BufferControl bufferControl;
-    bufferControl.set_depth_compare_function(cl_comparefunc_lequal);
-    bufferControl.enable_depth_write(false);
-    bufferControl.enable_depth_test(false);
-    bufferControl.enable_stencil_test(false);
-    bufferControl.enable_color_write(true);
-    gc.set_buffer_control(bufferControl);
+    gc.set_buffer_control(bufferControlParticles_);
     
     glEnable(0x8861); // GL_POINT_SPRITE
-    
-    CL_Vec2f clippingTopLeftCorner = worldView_->getTopLeftPixel();
     
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getParticleShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
     
     gc.push_modelview();
-    gc.set_translate(-clippingTopLeftCorner.x, -clippingTopLeftCorner.y, 0);
+    gc.set_modelview(worldView_->getViewMatrix());
     
     std::list<boost::shared_ptr<world::Effect> >::iterator particleIter = world::Manager::getSingleton()->effectsBegin();
     std::list<boost::shared_ptr<world::Effect> >::iterator particleEnd = world::Manager::getSingleton()->effectsEnd();
@@ -354,6 +334,48 @@ void WorldViewRenderer::batchFlush(CL_GraphicContext& gc) {
 
         batchFill_ = 0;
     }
+}
+
+void WorldViewRenderer::forceRepaint() {
+    forceRepaint_ = true;
+    texturesInitialized_[0] = false;
+    texturesInitialized_[1] = false;
+}
+
+void WorldViewRenderer::initBufferControls() {
+    // first, we want to set the stencil buffer to 1 in the clipped areas. depth is ignored
+    bufferControlClips_.enable_depth_write(false);
+    bufferControlClips_.enable_depth_test(false);
+    bufferControlClips_.enable_color_write(true); // true because the background black is drawn at the same time
+    bufferControlClips_.enable_stencil_test(true);
+    bufferControlClips_.enable_logic_op(false);
+    bufferControlClips_.set_stencil_compare_func(cl_comparefunc_always, cl_comparefunc_always);
+    bufferControlClips_.set_stencil_compare_mask(1, 1);
+    bufferControlClips_.set_stencil_compare_reference(1, 1);
+    bufferControlClips_.set_stencil_write_mask(1, 1);
+    bufferControlClips_.set_stencil_fail(cl_stencil_keep, cl_stencil_keep);
+    bufferControlClips_.set_stencil_pass_depth_fail(cl_stencil_replace, cl_stencil_replace);
+    bufferControlClips_.set_stencil_pass_depth_pass(cl_stencil_replace, cl_stencil_replace);
+    
+    // ingame objects are only drawn over pixels that are == 1 in the stencil buffer. depth is ignored
+    bufferControlObjects_.enable_depth_write(false);
+    bufferControlObjects_.enable_depth_test(false);
+    bufferControlObjects_.enable_color_write(true);
+    bufferControlObjects_.enable_stencil_test(true);
+    bufferControlObjects_.enable_logic_op(false);
+    bufferControlObjects_.set_stencil_compare_func(cl_comparefunc_equal, cl_comparefunc_equal);
+    bufferControlObjects_.set_stencil_compare_mask(1, 1);
+    bufferControlObjects_.set_stencil_compare_reference(1, 1);
+    bufferControlObjects_.set_stencil_write_mask(1, 1);
+    bufferControlObjects_.set_stencil_fail(cl_stencil_keep, cl_stencil_keep);
+    bufferControlObjects_.set_stencil_pass_depth_fail(cl_stencil_keep, cl_stencil_keep);
+    bufferControlObjects_.set_stencil_pass_depth_pass(cl_stencil_keep, cl_stencil_keep);
+    
+    // particles are just drawn on top without any checks
+    bufferControlParticles_.enable_depth_write(false);
+    bufferControlParticles_.enable_depth_test(false);
+    bufferControlParticles_.enable_stencil_test(false);
+    bufferControlParticles_.enable_color_write(true);
 }
 
 }

@@ -50,7 +50,7 @@ namespace components {
 
 WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent),
         centerTileX_(0), centerTileY_(0), centerTileZ_(0),
-        lastCenterPixelX_(0), lastCenterPixelY_(0) {
+        lastCenterPixelX_(0), lastCenterPixelY_(0), zoom_(1) {
     this->set_geometry(bounds);
     renderer_.reset(new render::WorldViewRenderer(this));
 
@@ -108,7 +108,7 @@ float WorldView::getCenterPixelY() const {
 }
 
 CL_Vec2f WorldView::getTopLeftPixel() const {
-    return CL_Vec2f(getCenterPixelX() - getWidth()/2, getCenterPixelY() - getHeight()/2);
+    return CL_Vec2f(getCenterPixelX() - getDrawWidth()/2, getCenterPixelY() - getDrawHeight()/2);
 }
 
 unsigned int WorldView::getWidth() const {
@@ -119,12 +119,31 @@ unsigned int WorldView::getHeight() const {
     return get_height();
 }
 
+float WorldView::getZoom() const {
+    return zoom_;
+}
+
+unsigned int WorldView::getDrawWidth() const {
+    return getWidth() / zoom_ + 0.5;
+}
+
+unsigned int WorldView::getDrawHeight() const {
+    return getHeight() / zoom_ + 0.5;
+}
+
+CL_Size WorldView::getDrawSize() const {
+    return CL_Size(getDrawWidth(), getDrawHeight());
+}
+
 void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     float pixelMoveX = getCenterPixelX() - lastCenterPixelX_;
     float pixelMoveY = getCenterPixelY() - lastCenterPixelY_;
     
     lastCenterPixelX_ = getCenterPixelX();
     lastCenterPixelY_ = getCenterPixelY();
+    
+    pixelMoveX *= zoom_;
+    pixelMoveY *= zoom_;
     
     renderer_->moveCenter(pixelMoveX, pixelMoveY);
     
@@ -139,7 +158,7 @@ void WorldView::getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHe
     // at least, we need to load as much tiles as the diagonal of the view is long
     // we load this amount of tiles (plus a little cache) in each direction of the center tile
 
-    double viewDiagonalPixel = sqrt(pow((float)getWidth(), 2) + pow((float)getHeight(), 2));
+    double viewDiagonalPixel = sqrt(pow((float)getDrawWidth(), 2) + pow((float)getDrawHeight(), 2));
     double viewDiagonalTileCount = viewDiagonalPixel / 31;
 
     double viewDiagonalSectorCount = viewDiagonalTileCount / 8;
@@ -183,13 +202,8 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
 
     switch (e.id) {
     case CL_MOUSE_RIGHT: {
-        //CL_Vec2f yaxis(0, 1);
-        //CL_Vec2f mouseVec(e.mouse_pos.x, e.mouse_pos.y)
-        //angle = arccos
         unsigned int direction = getDirectionForMousePosition(e.mouse_pos);
         world::Manager::getPlayerWalkManager()->setWalkDirection(direction);
-        
-        //world::Manager::getPlayerWalkManager()->setWalkDirection(Direction::N);
         break;
     }
 
@@ -253,6 +267,16 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
         if (clickedObject && clickedObject->isDraggable()) {
             ui::Manager::getSingleton()->getCursorManager()->setDragCandidate(clickedObject, e.mouse_pos.x, e.mouse_pos.y);
         }
+        break;
+        
+    case CL_KEY_U:
+        zoom_ += 0.01;
+        renderer_->forceRepaint();
+        break;
+        
+    case CL_KEY_I:
+        zoom_ -= 0.01;
+        renderer_->forceRepaint();
         break;
 
     default:
@@ -318,11 +342,11 @@ bool WorldView::onDoubleClick(const CL_InputEvent& e) {
 
 boost::shared_ptr<world::IngameObject> WorldView::getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) {
     //LOG_INFO << "WorldView::getFirstObjectAt " << pixelX << " " << pixelY << std::endl;
-    float worldX = getCenterPixelX() - get_width()/2.0;
-    worldX += pixelX;
-
-    float worldY = getCenterPixelY() - get_height()/2.0;
-    worldY += pixelY;
+    float worldX = getCenterPixelX() - getDrawWidth()/2.0;
+    worldX += (pixelX / zoom_);
+ 
+    float worldY = getCenterPixelY() - getDrawHeight()/2.0;
+    worldY += (pixelY / zoom_);
 
     return world::Manager::getSectorManager()->getFirstObjectAt(worldX, worldY, true);
     boost::shared_ptr<world::IngameObject> ret;
@@ -369,6 +393,15 @@ unsigned int WorldView::getDirectionForMousePosition(const CL_Point& mouse) cons
     } else {
         return runDir | Direction::S;
     }
+}
+
+CL_Mat4f WorldView::getViewMatrix() const {
+    CL_Vec2f topLeft = getTopLeftPixel();
+    CL_Mat4f ret = CL_Mat4f::scale(zoom_, zoom_, zoom_);
+    
+    ret.translate_self(-topLeft.x, -topLeft.y, 0);
+    
+    return ret;
 }
 
 }

@@ -23,6 +23,7 @@
 #include <ClanLib/Display/Render/graphic_context.h>
 #include <ClanLib/Display/Render/texture.h>
 #include <ClanLib/Display/Render/render_buffer.h>
+#include <ClanLib/Display/Render/buffer_control.h>
 
 #include <boost/shared_ptr.hpp>
 
@@ -53,6 +54,8 @@ public:
     CL_Texture getTexture(CL_GraphicContext& gc);
     
     void renderParticleEffects(CL_GraphicContext& gc);
+    
+    void forceRepaint();
 
 private:
     components::WorldView* worldView_;
@@ -88,6 +91,13 @@ private:
     void batchFlush(CL_GraphicContext& gc);
     
     void prepareStencil(CL_GraphicContext& gc);
+    
+    bool forceRepaint_;
+    
+    void initBufferControls();
+    CL_BufferControl bufferControlClips_;
+    CL_BufferControl bufferControlObjects_;
+    CL_BufferControl bufferControlParticles_;
 };
 
 }
