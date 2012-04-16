@@ -603,8 +603,16 @@ bool IngameObject::hasParent() const {
     return !parentObject_.expired();
 }
 
+void IngameObject::setRenderEffect(unsigned int effect) {
+    worldRenderData_.renderEffect_ = effect;
+}
+
 float IngameObject::getRenderEffect() const {
     return worldRenderData_.renderEffect_;
+}
+
+bool IngameObject::hasRenderEffect() const {
+    return getRenderEffect() != RenderEffect::DEFAULT;
 }
 
 }

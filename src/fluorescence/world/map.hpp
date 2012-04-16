@@ -82,6 +82,7 @@ private:
     bool isFlat_;
     
     static bool isIdIgnored(unsigned int artid);
+    static bool isIdWater(unsigned int artid);
 };
 
 class MapBlock : public data::OnDemandReadable<MapBlock> {

@@ -54,6 +54,9 @@ void MapTile::set(int locX, int locY, int locZ, unsigned int artId) {
     // texture is not set here, but in updateTexture
 
     setIgnored(isIdIgnored(artId_));
+    if (isIdWater(artId_)) {
+        setRenderEffect(RenderEffect::WATER);
+    }
 
     calculateIsFlat();
 
@@ -106,8 +109,8 @@ void MapTile::updateTextureProvider() {
 }
 
 bool MapTile::updateAnimation(unsigned int elapsedMillis) {
-    // no animation on maptile
-    return false;
+    // water tile animation always changes, others are not animated
+    return getRenderEffect() == RenderEffect::WATER;
 }
 
 void MapTile::setSurroundingZ(int left, int right, int bottom) {
@@ -217,6 +220,21 @@ bool MapTile::isIdIgnored(unsigned int artId) {
     if (!initialized) {
         Config& cfg = Client::getSingleton()->getConfig();
         cfg["/fluo/specialids/ignore@mapart"].toIntList(ignoredIds);
+        
+        std::sort(ignoredIds.begin(), ignoredIds.end());
+        
+        initialized = true;
+    }
+    
+    return std::binary_search(ignoredIds.begin(), ignoredIds.end(), artId);
+}
+
+bool MapTile::isIdWater(unsigned int artId) {
+    static bool initialized = false;
+    static std::vector<int> ignoredIds;
+    if (!initialized) {
+        Config& cfg = Client::getSingleton()->getConfig();
+        cfg["/fluo/specialids/water@mapart"].toIntList(ignoredIds);
         
         std::sort(ignoredIds.begin(), ignoredIds.end());
         

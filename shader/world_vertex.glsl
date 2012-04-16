@@ -14,9 +14,9 @@ void main(void) {
 
     gl_TexCoord[0].xy = TexCoord0;
 
-    if (RenderEffect0 == 1 && false) {
+    if (RenderEffect0 == 1.0) {
         // tile is water, store vertex position in normal
-        Normal.xy = gl_Position.xy;
+        Normal.xy = gl_Vertex.xy;
     } else {
         Normal = gl_Normal;
     }

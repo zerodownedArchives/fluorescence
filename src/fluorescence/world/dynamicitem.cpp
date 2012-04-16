@@ -82,6 +82,9 @@ void DynamicItem::setArtId(unsigned int artId) {
         worldRenderData_.hueInfo_[2u] = tileDataInfo_->translucent() ? 0.8 : 1.0;
         
         setIgnored(StaticItem::isIdIgnored(artId_));
+        if (StaticItem::isIdWater(artId_)) {
+            setRenderEffect(RenderEffect::WATER);
+        }
 
         invalidateTextureProvider();
     }
@@ -251,7 +254,7 @@ bool DynamicItem::updateAnimation(unsigned int elapsedMillis) {
     if (equipped_) {
         return animTextureProvider_->update(elapsedMillis);
     } else {
-        return textureProvider_->update(elapsedMillis);
+        return textureProvider_->update(elapsedMillis) || getRenderEffect() == RenderEffect::WATER;
     }
 }
 

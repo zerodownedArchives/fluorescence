@@ -132,6 +132,11 @@ Config::Config() {
     variablesMap_["/fluo/specialids/ignore@mapart"].setString("0, 2, 431, 432, 433, 434, 435, 436, 437", true);
     variablesMap_["/fluo/specialids/ignore@staticart"].setString("0, 1, 1168, 5702, 5703, "
             "8600, 8601, 8602, 8603, 8604, 8605, 8606, 8607, 8608, 8609 8610, 8611, 8612, 8636, 22160", true);
+    variablesMap_["/fluo/specialids/water@mapart"].setString("168, 169, 170, 171", true);
+    variablesMap_["/fluo/specialids/water@staticart"].setString("6038, 6039, "
+            "6040, 6041, 6042, 6043, 6044, 6045, 6046, 6047, 6048, 6049, "
+            "6050, 6051, 6052, 6053, 6054, 6055, 6056, 6057, 6058, 6059, "
+            "6060, 6061, 6062, 6063, 6064, 6065, 6066", true);
 }
 
 bool Config::parseCommandLine(const std::vector<CL_String8>& args) {

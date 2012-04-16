@@ -205,6 +205,13 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     shader->set_uniform3f("GlobalLightIntensity", lightManager->getGlobalIntensity());
     shader->set_uniform3f("GlobalLightDirection", lightManager->getGlobalDirection());
     
+    static float effectTimer = 0;
+    shader->set_uniform1f("RenderEffectTime", effectTimer);
+    effectTimer += 0.005;
+    if (effectTimer >= 1) {
+        effectTimer = 0;
+    }
+    
     gc.set_texture(0, huesTexture);
 
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator secIter = world::Manager::getSectorManager()->begin();

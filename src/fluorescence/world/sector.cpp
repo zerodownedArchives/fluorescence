@@ -153,13 +153,23 @@ void Sector::update(unsigned int elapsedMillis) {
             
             //LOG_DEBUG << "full update not required anymore" << std::endl;
             quickRenderUpdateList_.clear();
+            
+            if (mapAddedToList_) {
+                for (unsigned int x = 0; x < 8; ++x) {
+                    for (unsigned int y = 0; y < 8; ++y) {
+                        if (mapBlock_->get(x, y)->hasRenderEffect()) {
+                            quickRenderUpdateList_.push_back(mapBlock_->get(x, y).get());
+                        }
+                    }
+                }
+            }
 
             if (staticsAddedToList_) {
                 std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticBlock_->getItemList().begin();
                 std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticBlock_->getItemList().end();
 
                 for (; it != end; ++it) {
-                    if ((*it)->periodicRenderUpdateRequired()) {
+                    if ((*it)->periodicRenderUpdateRequired() || (*it)->hasRenderEffect()) {
                         quickRenderUpdateList_.push_back(it->get());
                     }
                 }

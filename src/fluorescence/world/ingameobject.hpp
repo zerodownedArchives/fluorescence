@@ -158,7 +158,9 @@ public:
     
     void repaintRectangle(bool repaintPreviousCoordinates = false) const;
     
+    void setRenderEffect(unsigned int effect);
     float getRenderEffect() const;
+    bool hasRenderEffect() const;
 
 protected:
     ui::WorldRenderData worldRenderData_;

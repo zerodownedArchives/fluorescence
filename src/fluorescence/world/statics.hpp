@@ -60,7 +60,8 @@ public:
     // this is only the case if is animated
     bool periodicRenderUpdateRequired() const;
     
-    static bool isIdIgnored(unsigned int artid);
+    static bool isIdIgnored(unsigned int artId);
+    static bool isIdWater(unsigned int artId);
 
 private:
     unsigned int artId_;
