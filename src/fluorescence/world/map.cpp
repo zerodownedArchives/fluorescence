@@ -20,6 +20,9 @@
 
 #include "map.hpp"
 
+#include <client.hpp>
+#include <misc/config.hpp>
+
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
 #include <data/maptexloader.hpp>
@@ -32,6 +35,7 @@ namespace fluo {
 namespace world {
 
 MapTile::MapTile() : IngameObject(IngameObject::TYPE_MAP), artId_(0), isFlat_(false) {
+    setIgnored(true);
 }
 
 boost::shared_ptr<ui::Texture> MapTile::getIngameTexture() const {
@@ -47,16 +51,9 @@ void MapTile::set(int locX, int locY, int locZ, unsigned int artId) {
     zRight_ = locZ;
     zBottom_ = locZ;
 
-    if (artId_ <= 2) {
-        setVisible(false);
-    }
-
     // texture is not set here, but in updateTexture
 
-    // do not print nodraw tiles
-    if (artId_ <= 2) {
-        setVisible(false);
-    }
+    setIgnored(isIdIgnored(artId_));
 
     calculateIsFlat();
 
@@ -212,6 +209,21 @@ float MapTile::getAverageZ() const {
 
 int MapTile::getMaxZ() const {
     return (std::max)(getLocZGame(), (std::max)(zLeft_, (std::max)(zRight_, zBottom_)));
+}
+
+bool MapTile::isIdIgnored(unsigned int artId) {
+    static bool initialized = false;
+    static std::vector<int> ignoredIds;
+    if (!initialized) {
+        Config& cfg = Client::getSingleton()->getConfig();
+        cfg["/fluo/specialids/ignore@mapart"].toIntList(ignoredIds);
+        
+        std::sort(ignoredIds.begin(), ignoredIds.end());
+        
+        initialized = true;
+    }
+    
+    return std::binary_search(ignoredIds.begin(), ignoredIds.end(), artId);
 }
 
 

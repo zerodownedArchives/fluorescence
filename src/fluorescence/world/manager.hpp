@@ -24,6 +24,7 @@
 
 #include <list>
 #include <map>
+#include <vector>
 
 #include <typedefs.hpp>
 #include <misc/config.hpp>

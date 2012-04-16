@@ -308,8 +308,11 @@ void WorldViewRenderer::renderObject(CL_GraphicContext& gc, world::IngameObject*
     }
 
     CL_Vec3f hueInfo = obj->getHueInfo();
+    float effect = obj->getRenderEffect();
     for (unsigned int i = 0; i < 6; ++i) {
         batchHueInfos_[batchFill_ + i] = hueInfo;
+        // there were some weird issues with automatic conversion from float to CL_Vec1f
+        batchRenderEffects_[batchFill_ + i].x = effect; 
     }
     
     batchFill_ += 6;
@@ -327,6 +330,7 @@ void WorldViewRenderer::batchFlush(CL_GraphicContext& gc) {
         primarray.set_attributes(1, batchTexCoords_);
         primarray.set_attributes(2, batchNormals_);
         primarray.set_attributes(3, batchHueInfos_);
+        primarray.set_attributes(4, batchRenderEffects_);
 
         gc.set_texture(1, lastTexture_);
 

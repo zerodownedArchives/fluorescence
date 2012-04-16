@@ -162,27 +162,24 @@ unsigned int Variable::valueType() const {
     return valueType_;
 }
 
-std::vector<int> Variable::asIntList() const {
+void Variable::toIntList(std::vector<int>& vec) const {
     if (!isString()) {
         throw BadCastException();
     }
+    
+    vec.clear();
 
     std::string str = StringConverter::toUtf8String(valueString_);
-    std::vector<int> vect;
-
     std::stringstream ss(str);
-
+    
     int i;
-
     while (ss >> i) {
-        vect.push_back(i);
+        vec.push_back(i);
 
         while (ss.peek() == ',' || ss.peek() == ' ') {
             ss.ignore();
         }
     }
-
-    return vect;
 }
 
 }

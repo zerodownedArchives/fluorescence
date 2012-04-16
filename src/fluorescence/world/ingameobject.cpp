@@ -46,12 +46,19 @@ IngameObject::~IngameObject() {
 }
 
 bool IngameObject::isVisible() const {
-    return visible_;
+    return visible_ && !ignored_;
 }
 
 void IngameObject::setVisible(bool visible) {
     if (visible_ != visible) {
         visible_ = visible;
+        forceRepaint();
+    }
+}
+
+void IngameObject::setIgnored(bool ignored) {
+    if (ignored_ != ignored) {
+        ignored_ = ignored;
         forceRepaint();
     }
 }
@@ -594,6 +601,10 @@ void IngameObject::repaintRectangle(bool repaintPreviousCoordinates) const {
 
 bool IngameObject::hasParent() const {
     return !parentObject_.expired();
+}
+
+float IngameObject::getRenderEffect() const {
+    return worldRenderData_.renderEffect_;
 }
 
 }

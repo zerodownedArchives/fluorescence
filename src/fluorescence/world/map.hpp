@@ -80,6 +80,8 @@ private:
 
     void calculateIsFlat();
     bool isFlat_;
+    
+    static bool isIdIgnored(unsigned int artid);
 };
 
 class MapBlock : public data::OnDemandReadable<MapBlock> {

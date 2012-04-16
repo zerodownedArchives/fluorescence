@@ -80,6 +80,8 @@ void DynamicItem::setArtId(unsigned int artId) {
         tileDataInfo_ = data::Manager::getTileDataLoader()->getStaticTileInfo(artId_);
         worldRenderData_.hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
         worldRenderData_.hueInfo_[2u] = tileDataInfo_->translucent() ? 0.8 : 1.0;
+        
+        setIgnored(StaticItem::isIdIgnored(artId_));
 
         invalidateTextureProvider();
     }
@@ -167,14 +169,14 @@ void DynamicItem::updateRenderDepth() {
     static std::vector<int> layerPriorities[8];
     if (!initialized) {
         Config& cfg = Client::getSingleton()->getConfig();
-        layerPriorities[Direction::N] = cfg["/fluo/ui/layer-priorities@north"].asIntList();
-        layerPriorities[Direction::NE] = cfg["/fluo/ui/layer-priorities@northeast"].asIntList();
-        layerPriorities[Direction::E] = cfg["/fluo/ui/layer-priorities@east"].asIntList();
-        layerPriorities[Direction::SE] = cfg["/fluo/ui/layer-priorities@southeast"].asIntList();
-        layerPriorities[Direction::S] = cfg["/fluo/ui/layer-priorities@south"].asIntList();
-        layerPriorities[Direction::SW] = cfg["/fluo/ui/layer-priorities@southwest"].asIntList();
-        layerPriorities[Direction::W] = cfg["/fluo/ui/layer-priorities@west"].asIntList();
-        layerPriorities[Direction::NW] = cfg["/fluo/ui/layer-priorities@northwest"].asIntList();
+        cfg["/fluo/ui/layer-priorities@north"].toIntList(layerPriorities[Direction::N]);
+        cfg["/fluo/ui/layer-priorities@northeast"].toIntList(layerPriorities[Direction::NE]);
+        cfg["/fluo/ui/layer-priorities@east"].toIntList(layerPriorities[Direction::E]);
+        cfg["/fluo/ui/layer-priorities@southeast"].toIntList(layerPriorities[Direction::SE]);
+        cfg["/fluo/ui/layer-priorities@south"].toIntList(layerPriorities[Direction::S]);
+        cfg["/fluo/ui/layer-priorities@southwest"].toIntList(layerPriorities[Direction::SW]);
+        cfg["/fluo/ui/layer-priorities@west"].toIntList(layerPriorities[Direction::W]);
+        cfg["/fluo/ui/layer-priorities@northwest"].toIntList(layerPriorities[Direction::NW]);
 
         initialized = true;
     }

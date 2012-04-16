@@ -63,8 +63,10 @@ public:
     void setRenderDepth(uint16_t x, uint16_t y, int8_t z, uint8_t priority, uint8_t byte7, uint8_t byte8);
     const RenderDepth& getRenderDepth() const;
 
+    CL_Vec3f vertexCoordinates_[6];
     CL_Vec3f vertexNormals_[6];
     CL_Vec3f hueInfo_;
+    float renderEffect_;
     
     CL_Rectf previousVertexRect_;
     
@@ -86,8 +88,6 @@ private:
     
     bool renderDepthUpdated_;
     bool textureOrVerticesUpdated_;
-
-    CL_Vec3f vertexCoordinates_[6];
 
     RenderDepth renderDepth_;
     

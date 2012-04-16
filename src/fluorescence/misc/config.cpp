@@ -126,6 +126,12 @@ Config::Config() {
     variablesMap_["/fluo/audio/sound@off"].setBool(false, true);
     variablesMap_["/fluo/audio/music@volume"].setInt(66, true);
     variablesMap_["/fluo/audio/sound@volume"].setInt(100, true);
+    
+    
+    // ids that should be treated in some special way (ignored, water, chairs, ...)
+    variablesMap_["/fluo/specialids/ignore@mapart"].setString("0, 2, 431, 432, 433, 434, 435, 436, 437", true);
+    variablesMap_["/fluo/specialids/ignore@staticart"].setString("0, 1, 1168, 5702, 5703, "
+            "8600, 8601, 8602, 8603, 8604, 8605, 8606, 8607, 8608, 8609 8610, 8611, 8612, 8636, 22160", true);
 }
 
 bool Config::parseCommandLine(const std::vector<CL_String8>& args) {

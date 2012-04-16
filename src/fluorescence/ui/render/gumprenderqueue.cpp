@@ -73,7 +73,7 @@ bool GumpRenderQueue::renderDepthComparator(const boost::shared_ptr<world::Ingam
 }
 
 GumpRenderQueue::GumpRenderQueue() : RenderQueue(boost::bind(&GumpRenderQueue::renderDepthComparator, this, _1, _2)) {
-    layerPriorities_ = Client::getSingleton()->getConfig()["/fluo/ui/layer-priorities@paperdoll"].asIntList();
+    Client::getSingleton()->getConfig()["/fluo/ui/layer-priorities@paperdoll"].toIntList(layerPriorities_);
 }
 
 GumpRenderQueue::~GumpRenderQueue() {

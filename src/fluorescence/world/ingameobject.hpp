@@ -73,6 +73,7 @@ public:
 
     bool isVisible() const;
     void setVisible(bool visible);
+    void setIgnored(bool ignored);
 
     virtual boost::shared_ptr<ui::Texture> getIngameTexture() const = 0;
     virtual boost::shared_ptr<ui::Texture> getGumpTexture() const;
@@ -156,6 +157,8 @@ public:
     bool textureOrVerticesChanged() const;
     
     void repaintRectangle(bool repaintPreviousCoordinates = false) const;
+    
+    float getRenderEffect() const;
 
 protected:
     ui::WorldRenderData worldRenderData_;
@@ -191,6 +194,8 @@ private:
 
     void setParentObject();
     void setParentObject(boost::shared_ptr<IngameObject> parent);
+    
+    bool ignored_;
 };
 
 }

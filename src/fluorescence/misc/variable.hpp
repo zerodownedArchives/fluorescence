@@ -65,7 +65,7 @@ public:
 
     unsigned int valueType() const;
 
-    std::vector<int> asIntList() const;
+    void toIntList(std::vector<int>& vec) const;
 
 private:
     bool isDefault_;

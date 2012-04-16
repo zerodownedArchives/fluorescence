@@ -59,6 +59,8 @@ public:
     // returns wheter other not this static tile requires periodic updates to updateRenderData to be rendere correctly.
     // this is only the case if is animated
     bool periodicRenderUpdateRequired() const;
+    
+    static bool isIdIgnored(unsigned int artid);
 
 private:
     unsigned int artId_;

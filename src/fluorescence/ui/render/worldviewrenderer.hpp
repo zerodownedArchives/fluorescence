@@ -85,6 +85,7 @@ private:
     CL_Vec3f batchNormals_[BATCH_NUM_VERTICES];
     CL_Vec2f batchTexCoords_[BATCH_NUM_VERTICES];
     CL_Vec3f batchHueInfos_[BATCH_NUM_VERTICES];
+    CL_Vec1f batchRenderEffects_[BATCH_NUM_VERTICES];
 
     CL_Texture lastTexture_;
     unsigned int batchFill_;

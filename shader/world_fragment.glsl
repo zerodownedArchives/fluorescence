@@ -8,6 +8,7 @@ uniform vec3 GlobalLightDirection;
 
 varying vec3 Normal;
 varying vec3 HueInfo;
+varying float RenderEffect;
 
 void main(void) {
     // sample actual pixel color
@@ -33,5 +34,11 @@ void main(void) {
     }
     
     float globalAngle = clamp(dot(GlobalLightDirection, Normal), 0.0, 1.0);
-    gl_FragColor.rgb = (AmbientLightIntensity + GlobalLightIntensity * globalAngle) * rgba.rgb;  
+    if (RenderEffect == 1) {
+        // tile is water, gl_Position.xy is storend in Normal.xy
+    } else {
+        
+    }
+    
+    gl_FragColor.rgb = (AmbientLightIntensity + GlobalLightIntensity * globalAngle) * rgba.rgb;
 }

@@ -28,11 +28,12 @@ namespace fluo {
 namespace ui {
 
 WorldRenderData::WorldRenderData() :
-            textureProviderUpdateRequired_(true), vertexCoordinatesUpdateRequired_(true), renderDepthUpdateRequired_(true), vertexRectFast_(false) {
+            hueInfo_(0, 0, 1), renderEffect_(0), 
+            textureProviderUpdateRequired_(true), vertexCoordinatesUpdateRequired_(true), renderDepthUpdateRequired_(true), 
+            vertexRectFast_(false) {
     for (unsigned int i = 0; i < 6; ++i) {
         vertexNormals_[i] = CL_Vec3f(0, 0, 1);
     }
-    hueInfo_ = CL_Vec3f(0, 0, 1);
 }
 
 void WorldRenderData::invalidateTextureProvider() {

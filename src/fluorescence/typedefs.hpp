@@ -112,6 +112,13 @@ struct RenderDepth {
     uint64_t value_;
 };
 
+struct RenderEffect {
+enum {
+    DEFAULT = 0,
+    WATER = 1,
+};
+};
+
 }
 
 
