@@ -47,6 +47,10 @@ void main(void) {
             ((int(Normal.y) % 512) / 512.0)
         );
         
+        if (waveCoordsBase.x < 0.0) {
+            waveCoordsBase.x += 1.0;
+        }
+        
         // render effect texture is 2048x2048
         waveCoordsBase *= 0.25;
         
