@@ -1,6 +1,7 @@
 
 uniform sampler2D HueTexture;
 uniform sampler2D ObjectTexture;
+uniform sampler2D RenderEffectTexture;
 
 uniform vec3 AmbientLightIntensity;
 uniform vec3 GlobalLightIntensity;
@@ -35,16 +36,39 @@ void main(void) {
         }
     }
     
-    float globalAngle = clamp(dot(GlobalLightDirection, Normal), 0.0, 1.0);
+    vec3 normal = Normal;
     if (RenderEffect == 1.0) {
         // tile is water, gl_Vertex.xy is storend in Normal.xy
-        float xfrac = (int(Normal.x) % 128) / 128.0;
-        float yfrac = (int(Normal.y) % 128) / 128.0;
-        rgba.b = xfrac * abs(RenderEffectTime - 0.5) + 0.5;
-        rgba.g = yfrac * abs(RenderEffectTime - 0.5) + 0.5;
-    } else {
+        // wave textures are 512x512 pixels
         
+        // get texture coordinates inside texture
+        vec2 waveCoordsBase = vec2(
+            ((int(Normal.x) % 512) / 512.0),
+            ((int(Normal.y) % 512) / 512.0)
+        );
+        
+        // render effect texture is 2048x2048
+        waveCoordsBase *= 0.25;
+        
+        vec2 waveCoords1 = waveCoordsBase + RenderEffectTime / 4.0;
+        while (waveCoords1.x >= 0.25) { waveCoords1.x -= 0.25; }
+        while (waveCoords1.y >= 0.25) { waveCoords1.y -= 0.25; }
+        
+        vec4 waveNormals1 = texture2D(RenderEffectTexture, waveCoords1);
+        
+        vec2 waveCoords2 = waveCoordsBase - RenderEffectTime / 4.0;
+        while (waveCoords2.x < 0.0) { waveCoords2.x += 0.25; }
+        while (waveCoords2.y < 0.0) { waveCoords2.y += 0.25; }
+        waveCoords2.x += 0.25;
+        vec4 waveNormals2 = texture2D(RenderEffectTexture, waveCoords2);
+        
+        normal.x = waveNormals1.r - waveNormals2.r;
+        normal.y = waveNormals1.b - waveNormals2.b;
+        normal.z = 2.0; // make sure the vector is still pointing mostly upwards
+        
+        normal = normalize(normal);
     }
     
+    float globalAngle = clamp(dot(GlobalLightDirection, normal), 0.0, 1.0);
     gl_FragColor.rgb = (AmbientLightIntensity + GlobalLightIntensity * globalAngle) * rgba.rgb;
 }

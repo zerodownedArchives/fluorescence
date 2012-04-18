@@ -57,10 +57,7 @@ void IngameObject::setVisible(bool visible) {
 }
 
 void IngameObject::setIgnored(bool ignored) {
-    if (ignored_ != ignored) {
-        ignored_ = ignored;
-        forceRepaint();
-    }
+    ignored_ = ignored;
 }
 
 void IngameObject::setLocation(float locX, float locY, float locZ) {
@@ -607,7 +604,7 @@ void IngameObject::setRenderEffect(unsigned int effect) {
     worldRenderData_.renderEffect_ = effect;
 }
 
-float IngameObject::getRenderEffect() const {
+unsigned int IngameObject::getRenderEffect() const {
     return worldRenderData_.renderEffect_;
 }
 

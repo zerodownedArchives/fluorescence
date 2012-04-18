@@ -66,6 +66,8 @@ public:
     bool shutdown(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
     bool selectShard(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
     bool selectCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
+    
+    timeval getElapsedTime() const;
 
 private:
     static Client* singleton_;
@@ -89,6 +91,8 @@ private:
     void doStatePreLogin();
     void doStateLogin();
     void doStatePlaying(unsigned int elapsedMillis);
+    
+    timeval startTime_;
 };
 
 }

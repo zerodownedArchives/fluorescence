@@ -44,6 +44,7 @@
 namespace fluo {
 
 Client::Client() : state_(STATE_SHARD_SELECTION), requestedState_(STATE_SHARD_SELECTION) {
+    gettimeofday(&startTime_, NULL);
 }
 
 Client* Client::singleton_ = NULL;
@@ -52,9 +53,9 @@ Client* Client::getSingleton() {
 }
 
 int Client::sMain(const std::vector<CL_String8>& args) {
+    singleton_ = new Client();
     LOG_INIT(0);
 
-    singleton_ = new Client();
     int ret = singleton_->main(args);
     delete singleton_;
 
@@ -374,6 +375,23 @@ bool Client::selectCharacter(ui::GumpMenu* menu, const UnicodeString& action, un
 
 void Client::loginComplete() {
     setState(STATE_PLAYING);
+}
+
+timeval Client::getElapsedTime() const {
+    timeval cur;
+    gettimeofday(&cur, NULL);
+
+    timeval t;
+    t.tv_sec = cur.tv_sec - startTime_.tv_sec;
+
+    if (cur.tv_usec >= startTime_.tv_usec) {
+        t.tv_usec = cur.tv_usec - startTime_.tv_usec;
+    } else {
+        t.tv_sec -= 1;
+        t.tv_usec = (cur.tv_usec + 1000000) - startTime_.tv_usec;
+    }
+    
+    return t;
 }
 
 }

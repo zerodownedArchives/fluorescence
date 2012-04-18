@@ -22,6 +22,8 @@
 
 #include <ClanLib/Display/Render/program_object.h>
 
+#include <client.hpp>
+
 #include <ui/manager.hpp>
 #include <ui/render/shadermanager.hpp>
 #include <ui/texture.hpp>
@@ -47,8 +49,24 @@ namespace ui {
 namespace render {
 
 WorldViewRenderer::WorldViewRenderer(components::WorldView* worldView) : 
-        worldView_(worldView), textureWidth_(0), textureHeight_(0), frameBufferIndex_(0), movePixelX_(0), movePixelY_(0), forceRepaint_(false) {
+        worldView_(worldView), 
+        textureWidth_(0), textureHeight_(0), 
+        frameBufferIndex_(0), movePixelX_(0), movePixelY_(0), 
+        batchFill_(0), forceRepaint_(false) {
     initBufferControls();
+    
+    boost::shared_ptr<ui::Texture> effTex = data::Manager::getTexture(data::TextureSource::FILE, "effects/textures/rendereffects.png");
+    effTex->setUsage(Texture::USAGE_EFFECT);
+    if (!effTex) {
+        LOG_ERROR << "Error loading the render effect texture" << std::endl;
+        throw Exception("Error loading the render effect texture");
+    }
+    
+    // find something better than busy waiting here
+    while (!effTex->isReadComplete()) {
+        fluo::sleepMs(1);
+    }
+    renderEffectTexture_ = effTex->getTexture();
 }
 
 WorldViewRenderer::~WorldViewRenderer() {
@@ -85,29 +103,28 @@ void WorldViewRenderer::moveCenter(float moveX, float moveY) {
 CL_Texture WorldViewRenderer::getTexture(CL_GraphicContext& gc) {
     checkTextureSize();
     
+    CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
+    frameBufferIndex_ = (frameBufferIndex_ + 1) % 2;
+    gc.set_frame_buffer(frameBuffers_[frameBufferIndex_]);
+    renderPreviousTexture(gc, movePixelX_, movePixelY_);
+    
     CL_Vec2f clippingTopLeftCorner = worldView_->getTopLeftPixel();
     
     ui::ClipRectManager* clipRectMan = ui::Manager::getClipRectManager().get();
     boost::recursive_mutex::scoped_lock clipManLock(clipRectMan->mutex_);
     clipRectMan->clamp(clippingTopLeftCorner, worldView_->getDrawSize());
     
-    if (clipRectMan->size() > 0 || !texturesInitialized_[frameBufferIndex_]) {
-        CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
-    
-        frameBufferIndex_ = (frameBufferIndex_ + 1) % 2;
-        gc.set_frame_buffer(frameBuffers_[frameBufferIndex_]);
-        
-        renderPreviousTexture(gc, movePixelX_, movePixelY_);
+    if (clipRectMan->size() > 0) {
         prepareStencil(gc);
-        
         render(gc);
-        
-        gc.set_frame_buffer(origBuffer);
-
-        texturesInitialized_[frameBufferIndex_] = true;
     } else {
         fluo::sleepMs(1);
     }
+    
+    gc.set_frame_buffer(origBuffer);
+    texturesInitialized_[frameBufferIndex_] = true;
+    
+    ui::Manager::getClipRectManager()->clear();
     
     return colorBuffers_[frameBufferIndex_];
 }
@@ -194,25 +211,27 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     
     CL_Texture huesTexture = data::Manager::getHuesLoader()->getHuesTexture();
     gc.set_texture(0, huesTexture);
+    gc.set_texture(2, renderEffectTexture_);
+    
     // set texture unit 1 active to avoid overriding the hue texture with newly loaded object textures
     gc.set_texture(1, huesTexture);
     
     shader->set_uniform1i("HueTexture", 0);
     shader->set_uniform1i("ObjectTexture", 1);
+    shader->set_uniform1i("RenderEffectTexture", 2);
 
     boost::shared_ptr<world::LightManager> lightManager = world::Manager::getLightManager();
     shader->set_uniform3f("AmbientLightIntensity", lightManager->getAmbientIntensity());
     shader->set_uniform3f("GlobalLightIntensity", lightManager->getGlobalIntensity());
     shader->set_uniform3f("GlobalLightDirection", lightManager->getGlobalDirection());
     
-    static float effectTimer = 0;
-    shader->set_uniform1f("RenderEffectTime", effectTimer);
-    effectTimer += 0.005;
-    if (effectTimer >= 1) {
-        effectTimer = 0;
-    }
-    
-    gc.set_texture(0, huesTexture);
+    timeval t = Client::getSingleton()->getElapsedTime();
+    unsigned long long elapsedMillis = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+    // softcode shader duration?
+    unsigned int waterShaderDuration = 13000;
+    elapsedMillis %= waterShaderDuration;
+    float normalizedWaterTime = elapsedMillis / (float)waterShaderDuration;
+    shader->set_uniform1f("RenderEffectTime", normalizedWaterTime);
 
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator secIter = world::Manager::getSectorManager()->begin();
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator secEnd = world::Manager::getSectorManager()->end();
@@ -243,7 +262,6 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     }
     
     batchFlush(gc);
-    ui::Manager::getClipRectManager()->clear();
     
     gc.pop_modelview();
 }

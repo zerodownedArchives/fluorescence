@@ -66,7 +66,7 @@ public:
     CL_Vec3f vertexCoordinates_[6];
     CL_Vec3f vertexNormals_[6];
     CL_Vec3f hueInfo_;
-    float renderEffect_;
+    unsigned int renderEffect_;
     
     CL_Rectf previousVertexRect_;
     

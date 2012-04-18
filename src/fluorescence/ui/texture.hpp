@@ -36,6 +36,7 @@ public:
         USAGE_WORLD = 0,
         USAGE_GUMP = 1,
         USAGE_FONT = 2,
+        USAGE_EFFECT = 3,
     };
     
     Texture(bool useBitMask = true);

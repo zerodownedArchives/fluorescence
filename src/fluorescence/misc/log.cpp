@@ -21,6 +21,7 @@
 #include <iomanip>
 
 #include "exception.hpp"
+#include <client.hpp>
 
 namespace fluo {
 
@@ -38,8 +39,6 @@ Log::Log() :
 std::ostream(std::_Uninitialized()),
 #endif
 file_("fluorescence.log"), reportingLevel_(0) {
-    gettimeofday(&startTime_, NULL);
-
     levelStrings_[0] = " [DEBUG]: ";
     levelStrings_[1] = " [INFO ]: ";
     levelStrings_[2] = " [WARN ]: ";
@@ -80,18 +79,7 @@ const char* Log::getLevelString(unsigned int lvl) const {
 }
 
 const char* Log::getCurrentRelativeTime() const {
-    timeval cur;
-    gettimeofday(&cur, NULL);
-
-    timeval t;
-    t.tv_sec = cur.tv_sec - startTime_.tv_sec;
-
-    if (cur.tv_usec >= startTime_.tv_usec) {
-        t.tv_usec = cur.tv_usec - startTime_.tv_usec;
-    } else {
-        t.tv_sec -= 1;
-        t.tv_usec = (cur.tv_usec + 1000000) - startTime_.tv_usec;
-    }
+    timeval t = Client::getSingleton()->getElapsedTime();
 
     static char timeBuf[64];
     sprintf(timeBuf, "%li.%06li ", (long int)t.tv_sec, (long int)t.tv_usec);
@@ -141,7 +129,8 @@ Log& Log::operator<<(std::ios_base& ( *manip )(std::ios_base &)) {
 }
 
 Log& Log::operator<<(const CL_Rectf& rect) {
-    return *this << "[Rect: " << std::fixed << std::setprecision(7) << rect.left << "/" << rect.top << "/" << rect.right << "/" << rect.bottom << "]";
+    //return *this << "[Rect: " << std::fixed << std::setprecision(7) << rect.left << "/" << rect.top << "/" << rect.right << "/" << rect.bottom << "]";
+    return *this << "[Rect: " << (int)rect.left << "/" << (int)rect.top << "/" << (int)rect.get_width() << "/" << (int)rect.get_height() << "]";
 }
 
 Log& Log::operator<<(const CL_Vec3f& vec) {

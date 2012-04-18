@@ -112,7 +112,6 @@ private:
 
     const char* levelStrings_[5];
 
-    timeval startTime_;
     const char* getCurrentRelativeTime() const;
 
     /** \brief Returns a string representation of the level */

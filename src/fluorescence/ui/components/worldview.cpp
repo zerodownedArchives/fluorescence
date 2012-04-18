@@ -207,7 +207,7 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
         break;
     }
 
-    case CL_KEY_ADD:
+    case CL_KEY_Q:
         lm = world::Manager::getLightManager();
         intensity = lm->getAmbientIntensity();
         intensity.r += 0.1;
@@ -215,7 +215,7 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
         intensity.b += 0.1;
         lm->setAmbientIntensity(intensity);
         break;
-    case CL_KEY_SUBTRACT:
+    case CL_KEY_W:
         lm = world::Manager::getLightManager();
         intensity = lm->getAmbientIntensity();
         intensity.r = (std::max)(0.0, intensity.r - 0.1);
@@ -227,17 +227,17 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
     case CL_KEY_A:
         lm = world::Manager::getLightManager();
         intensity = lm->getGlobalIntensity();
-        intensity.r += 0.03;
-        intensity.g += 0.03;
-        intensity.b += 0.03;
+        intensity.r += 0.5;
+        intensity.g += 0.5;
+        intensity.b += 0.5;
         lm->setGlobalIntensity(intensity);
         break;
     case CL_KEY_S:
         lm = world::Manager::getLightManager();
         intensity = lm->getGlobalIntensity();
-        intensity.r = (std::max)(0.0, intensity.r - 0.03);
-        intensity.g = (std::max)(0.0, intensity.g - 0.03);
-        intensity.b = (std::max)(0.0, intensity.b - 0.03);
+        intensity.r = (std::max)(0.0, intensity.r - 0.2);
+        intensity.g = (std::max)(0.0, intensity.g - 0.2);
+        intensity.b = (std::max)(0.0, intensity.b - 0.2);
         lm->setGlobalIntensity(intensity);
         break;
 

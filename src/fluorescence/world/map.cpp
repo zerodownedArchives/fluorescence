@@ -35,7 +35,6 @@ namespace fluo {
 namespace world {
 
 MapTile::MapTile() : IngameObject(IngameObject::TYPE_MAP), artId_(0), isFlat_(false) {
-    setIgnored(true);
 }
 
 boost::shared_ptr<ui::Texture> MapTile::getIngameTexture() const {

@@ -80,7 +80,7 @@ private:
     float movePixelX_;
     float movePixelY_;
     
-    static const unsigned int BATCH_NUM_VERTICES = 6000; // render up to 1000 objects at the same time
+    static const unsigned int BATCH_NUM_VERTICES = 600; // render up to 100 objects at the same time
     CL_Vec3f batchPositions_[BATCH_NUM_VERTICES];
     CL_Vec3f batchNormals_[BATCH_NUM_VERTICES];
     CL_Vec2f batchTexCoords_[BATCH_NUM_VERTICES];
@@ -99,6 +99,8 @@ private:
     CL_BufferControl bufferControlClips_;
     CL_BufferControl bufferControlObjects_;
     CL_BufferControl bufferControlParticles_;
+    
+    CL_Texture renderEffectTexture_;
 };
 
 }

@@ -28,8 +28,6 @@ ClipRectManager::ClipRectManager() {
 }
     
 void ClipRectManager::add(const CL_Rectf& rect) {
-    boost::recursive_mutex::scoped_lock myLock(mutex_);
-    
     // happens when the location is set for the first time (invalid previous coordinates)
     if (rect.top == rect.bottom || rect.left == rect.right) {
         return;
@@ -37,24 +35,8 @@ void ClipRectManager::add(const CL_Rectf& rect) {
     
     CL_Rectf expanded(rect);
     expanded.expand(1, 1, 1, 1);
-
-    // check for overlaps to keep number of rectangles as small as possible
-    std::vector<CL_Rectf>::iterator iter = rectangles_.begin();
-    std::vector<CL_Rectf>::iterator end = rectangles_.end();
     
-    for (; iter != end; ++iter) {
-        if (iter->is_overlapped(expanded)) {
-            CL_Rectf bounding = CL_Rectf(*iter).bounding_rect(expanded);
-            CL_Rectf overlap = CL_Rectf(*iter).overlap(expanded);
-            
-            // area of the bounding rectangle should not be too big. keep the rects seperate if joining them does not give a significant advantage
-            if ((bounding.get_width() * bounding.get_height() / 2) <= (iter->get_width() * iter->get_height() + expanded.get_width() * expanded.get_height() - overlap.get_width() * overlap.get_height())) {
-                iter->bounding_rect(expanded);
-                return;
-            }
-        }
-    }
-    
+    boost::recursive_mutex::scoped_lock(mutex_);
     rectangles_.push_back(expanded);
 }
 
@@ -85,11 +67,42 @@ void ClipRectManager::clamp(const CL_Vec2f& topleftBase, const CL_Size& sizeBase
     
     std::vector<CL_Rectf>::iterator iter = rectangles_.begin();
     std::vector<CL_Rectf>::iterator end = rectangles_.end();
-    std::vector<CL_Rectf>::iterator helper;
     
     for (; iter != end; ++iter) {
         if (clampRect.is_overlapped(*iter)) {
-            clamped.push_back(iter->clip(clampRect));
+            
+            bool addedWithExpand = false;
+            CL_Rectf curClamped = iter->clip(clampRect);
+            
+            float curClampedArea = curClamped.get_width() * curClamped.get_height();
+            
+            // check for overlaps to keep number of rectangles as small as possible
+            std::vector<CL_Rectf>::iterator mergeIter = clamped.begin();
+            std::vector<CL_Rectf>::iterator mergeEnd = clamped.end();
+            
+            for (; mergeIter != mergeEnd; ++mergeIter) {
+                if (mergeIter->is_overlapped(curClamped)) {
+                    CL_Rectf bounding = CL_Rectf(*mergeIter).bounding_rect(curClamped);
+                    CL_Rectf overlap = CL_Rectf(*mergeIter).overlap(curClamped);
+                    
+                    // area of the bounding rectangle should not be too big. keep the rects seperate if joining them does not give a significant advantage
+                    float unnecessaryIncluded = 
+                            (bounding.get_width() * bounding.get_height())
+                            - (mergeIter->get_width() * mergeIter->get_height() + curClampedArea)
+                            + (overlap.get_width() * overlap.get_height());
+                            
+                    if (unnecessaryIncluded <= curClampedArea * 3) {
+                                
+                        mergeIter->bounding_rect(curClamped);
+                        addedWithExpand = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!addedWithExpand) {
+                clamped.push_back(curClamped);
+            }
         }
     }
     

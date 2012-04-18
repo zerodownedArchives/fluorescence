@@ -159,7 +159,7 @@ public:
     void repaintRectangle(bool repaintPreviousCoordinates = false) const;
     
     void setRenderEffect(unsigned int effect);
-    float getRenderEffect() const;
+    unsigned int getRenderEffect() const;
     bool hasRenderEffect() const;
 
 protected:
