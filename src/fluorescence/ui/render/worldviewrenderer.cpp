@@ -22,6 +22,8 @@
 
 #include <ClanLib/Display/Render/program_object.h>
 
+#include "material.hpp"
+
 #include <client.hpp>
 
 #include <ui/manager.hpp>
@@ -329,11 +331,11 @@ void WorldViewRenderer::renderObject(CL_GraphicContext& gc, world::IngameObject*
     }
 
     CL_Vec3f hueInfo = obj->getHueInfo();
-    float effect = obj->getRenderEffect();
+    float materialId = obj->getMaterial()->id_;
     for (unsigned int i = 0; i < 6; ++i) {
         batchHueInfos_[batchFill_ + i] = hueInfo;
         // there were some weird issues with automatic conversion from float to CL_Vec1f
-        batchRenderEffects_[batchFill_ + i].x = effect; 
+        batchMaterialIds_[batchFill_ + i].x = materialId; 
     }
     
     batchFill_ += 6;
@@ -351,7 +353,7 @@ void WorldViewRenderer::batchFlush(CL_GraphicContext& gc) {
         primarray.set_attributes(1, batchTexCoords_);
         primarray.set_attributes(2, batchNormals_);
         primarray.set_attributes(3, batchHueInfos_);
-        primarray.set_attributes(4, batchRenderEffects_);
+        primarray.set_attributes(4, batchMaterialIds_);
 
         gc.set_texture(1, lastTexture_);
 

@@ -30,6 +30,7 @@
 
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>
+#include <ui/render/material.hpp>
 
 #include "sector.hpp"
 
@@ -60,7 +61,7 @@ void StaticItem::set(int locX, int locY, int locZ, unsigned int artId, unsigned 
     
     setIgnored(isIdIgnored(artId_));
     if (isIdWater(artId_)) {
-        setRenderEffect(RenderEffect::WATER);
+        setMaterial(Material::WATER);
     }
 }
 
@@ -100,7 +101,7 @@ void StaticItem::updateTextureProvider() {
 }
 
 bool StaticItem::updateAnimation(unsigned int elapsedMillis) {
-    return textureProvider_->update(elapsedMillis) || getRenderEffect() == RenderEffect::WATER;
+    return textureProvider_->update(elapsedMillis) || materialInfo_->constantRepaint_;
 }
 
 const data::StaticTileInfo* StaticItem::getTileDataInfo() const {

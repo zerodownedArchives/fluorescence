@@ -44,6 +44,7 @@
 #include <ui/singletextureprovider.hpp>
 #include <ui/gumpmenu.hpp>
 #include <ui/components/containerview.hpp>
+#include <ui/render/material.hpp>
 
 #include <net/manager.hpp>
 #include <net/packets/singleclick.hpp>
@@ -83,7 +84,7 @@ void DynamicItem::setArtId(unsigned int artId) {
         
         setIgnored(StaticItem::isIdIgnored(artId_));
         if (StaticItem::isIdWater(artId_)) {
-            setRenderEffect(RenderEffect::WATER);
+            setMaterial(Material::WATER);
         }
 
         invalidateTextureProvider();
@@ -254,7 +255,7 @@ bool DynamicItem::updateAnimation(unsigned int elapsedMillis) {
     if (equipped_) {
         return animTextureProvider_->update(elapsedMillis);
     } else {
-        return textureProvider_->update(elapsedMillis) || getRenderEffect() == RenderEffect::WATER;
+        return textureProvider_->update(elapsedMillis) || materialInfo_->constantRepaint_;
     }
 }
 

@@ -15,8 +15,8 @@ varying vec3 Normal;
 varying vec3 HueInfo;
 varying float Material;
 
-void renderMaterialWater(inout vec4 rgba);
 void renderMaterialDefault(inout vec4 rgba);
+void renderMaterialWater(inout vec4 rgba);
 
 void main(void) {
     // sample actual pixel color

@@ -28,6 +28,7 @@
 
 #include <ui/manager.hpp>
 #include <ui/cliprectmanager.hpp>
+#include <ui/render/material.hpp>
 
 namespace fluo {
 namespace world {
@@ -157,7 +158,7 @@ void Sector::update(unsigned int elapsedMillis) {
             if (mapAddedToList_) {
                 for (unsigned int x = 0; x < 8; ++x) {
                     for (unsigned int y = 0; y < 8; ++y) {
-                        if (mapBlock_->get(x, y)->hasRenderEffect()) {
+                        if (mapBlock_->get(x, y)->getMaterial()->constantRepaint_) {
                             quickRenderUpdateList_.push_back(mapBlock_->get(x, y).get());
                         }
                     }
@@ -169,7 +170,7 @@ void Sector::update(unsigned int elapsedMillis) {
                 std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticBlock_->getItemList().end();
 
                 for (; it != end; ++it) {
-                    if ((*it)->periodicRenderUpdateRequired() || (*it)->hasRenderEffect()) {
+                    if ((*it)->periodicRenderUpdateRequired() || (*it)->getMaterial()->constantRepaint_) {
                         quickRenderUpdateList_.push_back(it->get());
                     }
                 }

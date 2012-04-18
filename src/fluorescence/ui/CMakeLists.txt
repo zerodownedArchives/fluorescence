@@ -102,6 +102,7 @@ set (RENDER_HPP
     ui/render/containerrenderer.hpp
     ui/render/containerrenderqueue.hpp
     ui/render/shadermanager.hpp
+    ui/render/material.hpp
     )
 
 set (RENDER_CPP
@@ -113,6 +114,7 @@ set (RENDER_CPP
     ui/render/containerrenderer.cpp
     ui/render/containerrenderqueue.cpp
     ui/render/shadermanager.cpp
+    ui/render/material.cpp
     )
 
 set (TARGETING_HPP

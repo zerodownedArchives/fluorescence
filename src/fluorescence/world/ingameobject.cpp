@@ -28,6 +28,7 @@
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
+#include <ui/render/material.hpp>
 #include <ui/cliprectmanager.hpp>
 
 #include "manager.hpp"
@@ -38,7 +39,10 @@
 namespace fluo {
 namespace world {
 
-IngameObject::IngameObject(unsigned int objectType) : draggable_(false), objectType_(objectType), visible_(true) {
+IngameObject::IngameObject(unsigned int objectType) : 
+    draggable_(false), 
+    materialInfo_(ui::render::MaterialInfo::get(Material::DEFAULT)),
+    objectType_(objectType), visible_(true) {
 
 }
 
@@ -600,16 +604,12 @@ bool IngameObject::hasParent() const {
     return !parentObject_.expired();
 }
 
-void IngameObject::setRenderEffect(unsigned int effect) {
-    worldRenderData_.renderEffect_ = effect;
+void IngameObject::setMaterial(unsigned int material) {
+    materialInfo_ = ui::render::MaterialInfo::get(material);
 }
 
-unsigned int IngameObject::getRenderEffect() const {
-    return worldRenderData_.renderEffect_;
-}
-
-bool IngameObject::hasRenderEffect() const {
-    return getRenderEffect() != RenderEffect::DEFAULT;
+const ui::render::MaterialInfo* IngameObject::getMaterial() const {
+    return materialInfo_;
 }
 
 }

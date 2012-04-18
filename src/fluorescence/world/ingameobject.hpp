@@ -37,6 +37,10 @@ namespace fluo {
 namespace ui {
     class Texture;
     class RenderQueue;
+    
+    namespace render {
+        class MaterialInfo;
+    }
 }
 
 namespace world {
@@ -158,9 +162,8 @@ public:
     
     void repaintRectangle(bool repaintPreviousCoordinates = false) const;
     
-    void setRenderEffect(unsigned int effect);
-    unsigned int getRenderEffect() const;
-    bool hasRenderEffect() const;
+    void setMaterial(unsigned int material);
+    const ui::render::MaterialInfo* getMaterial() const;
 
 protected:
     ui::WorldRenderData worldRenderData_;
@@ -181,6 +184,8 @@ protected:
     void forceRepaint();
     
     boost::shared_ptr<Sector> sector_;
+    
+    const ui::render::MaterialInfo* materialInfo_;
     
 private:
     unsigned int objectType_;

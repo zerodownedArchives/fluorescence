@@ -30,6 +30,7 @@
 
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>
+#include <ui/render/material.hpp>
 
 namespace fluo {
 namespace world {
@@ -54,7 +55,7 @@ void MapTile::set(int locX, int locY, int locZ, unsigned int artId) {
 
     setIgnored(isIdIgnored(artId_));
     if (isIdWater(artId_)) {
-        setRenderEffect(RenderEffect::WATER);
+        setMaterial(Material::WATER);
     }
 
     calculateIsFlat();
@@ -109,7 +110,7 @@ void MapTile::updateTextureProvider() {
 
 bool MapTile::updateAnimation(unsigned int elapsedMillis) {
     // water tile animation always changes, others are not animated
-    return getRenderEffect() == RenderEffect::WATER;
+    return materialInfo_->constantRepaint_;
 }
 
 void MapTile::setSurroundingZ(int left, int right, int bottom) {

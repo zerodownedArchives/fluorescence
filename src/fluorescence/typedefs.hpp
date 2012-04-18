@@ -112,7 +112,7 @@ struct RenderDepth {
     uint64_t value_;
 };
 
-struct RenderEffect {
+struct Material {
 enum {
     DEFAULT = 0,
     WATER = 1,
