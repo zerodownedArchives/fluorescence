@@ -34,7 +34,7 @@ ShaderManager::ShaderManager(CL_GraphicContext& gc) {
     worldShader_->bind_attribute_location(1, "TexCoord0");
     worldShader_->bind_attribute_location(2, "gl_Normal");
     worldShader_->bind_attribute_location(3, "HueInfo0");
-    worldShader_->bind_attribute_location(4, "RenderEffect0");
+    worldShader_->bind_attribute_location(4, "Material0");
 
     if (!worldShader_->link()) {
         LOG_EMERGENCY << "Error while linking world shader:\n" << worldShader_->get_info_log().c_str() << std::endl;

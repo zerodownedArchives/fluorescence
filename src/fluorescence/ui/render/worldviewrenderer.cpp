@@ -226,12 +226,8 @@ void WorldViewRenderer::render(CL_GraphicContext& gc) {
     shader->set_uniform3f("GlobalLightDirection", lightManager->getGlobalDirection());
     
     timeval t = Client::getSingleton()->getElapsedTime();
-    unsigned long long elapsedMillis = (t.tv_sec * 1000) + (t.tv_usec / 1000);
-    // softcode shader duration?
-    unsigned int waterShaderDuration = 13000;
-    elapsedMillis %= waterShaderDuration;
-    float normalizedWaterTime = elapsedMillis / (float)waterShaderDuration;
-    shader->set_uniform1f("RenderEffectTime", normalizedWaterTime);
+    float renderEffectTime = t.tv_sec + (t.tv_usec / 1000000.0);
+    shader->set_uniform1f("RenderEffectTime", renderEffectTime);
 
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator secIter = world::Manager::getSectorManager()->begin();
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator secEnd = world::Manager::getSectorManager()->end();
