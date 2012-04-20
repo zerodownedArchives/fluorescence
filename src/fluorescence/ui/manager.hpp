@@ -166,6 +166,8 @@ private:
     boost::shared_ptr<MacroManager> macroManager_;
     
     std::map<unsigned int, CL_TextureGroup> textureGroups_;
+    
+    void onInputOutsideWindows(const CL_InputEvent& event, const CL_InputState& state);
 };
 
 }

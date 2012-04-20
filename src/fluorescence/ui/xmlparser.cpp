@@ -181,6 +181,9 @@ GumpMenu* XmlParser::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
 
         CL_GUITopLevelDescription desc(bounds, false);
         desc.set_decorations(false);
+        if (doc.find_node(boost::bind(&XmlParser::gameViewFindHelper, this, _1))) {
+            desc.set_in_background(true);
+        }
 
         ret = new GumpMenu(desc);
         ret->setClosable(closable);
@@ -196,12 +199,6 @@ GumpMenu* XmlParser::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
 
         if (cancelAction.length() > 0) {
             ret->setCancelAction(cancelAction);
-        }
-
-        if (doc.find_node(boost::bind(&XmlParser::gameViewFindHelper, this, _1))) {
-            ret->set_stay_in_background(true);
-        } else {
-            ret->set_stay_in_background(false);
         }
     }
 

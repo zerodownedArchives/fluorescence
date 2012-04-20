@@ -48,7 +48,7 @@ GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
     func_input_pressed().set(this, &GumpMenu::onInputPressed);
     func_input_released().set(this, &GumpMenu::onInputReleased);
     func_input_pointer_moved().set(this, &GumpMenu::onPointerMoved);
-
+    
     ui::Manager::getSingleton()->registerGumpMenu(this);
 }
 
@@ -135,7 +135,7 @@ void GumpMenu::internalDeactivatePage(unsigned int pageId) {
 }
 
 bool GumpMenu::onInputPressed(const CL_InputEvent& msg) {
-    //LOGARG_INFO(LOGTYPE_INPUT, "input pressed gumpmenu: %u", msg.id);
+    //LOG_INFO << "input pressed gumpmenu: " << msg.id << std::endl;
     bool consumed = true;
 
     switch (msg.id) {
@@ -287,7 +287,7 @@ void GumpMenu::onClose() {
 }
 
 void GumpMenu::startDragging(const CL_Point& mousePos) {
-    if (!stay_in_background()) {
+    if (!get_stay_in_background()) {
         bring_to_front();
     }
     capture_mouse(true);

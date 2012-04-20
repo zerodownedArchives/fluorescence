@@ -133,7 +133,7 @@ private:
     bool onInputPressed(const CL_InputEvent& msg);
     bool onInputReleased(const CL_InputEvent& msg);
     bool onPointerMoved(const CL_InputEvent& msg);
-
+    
     UnicodeString name_;
 
     UnicodeString action_;

@@ -120,6 +120,8 @@ bool Manager::setShardConfig(Config& config) {
 
     guiManager_->exit_with_code(0);
     guiManager_.reset(new CL_GUIManager(*windowManager_, path.string()));
+    
+    guiManager_->func_input_received_nowindow().set(this, &Manager::onInputOutsideWindows);
 
     path = "fonts";
     loadFontDirectory(path);
@@ -446,6 +448,11 @@ bool Manager::onUnhandledInputEvent(const CL_InputEvent& event) {
     }
     
     return false;
+}
+
+void Manager::onInputOutsideWindows(const CL_InputEvent& event, const CL_InputState& state) {
+    // TODO
+    // LOG_DEBUG << "event outside: " << event.type << std::endl;
 }
 
 }

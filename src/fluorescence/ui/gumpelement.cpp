@@ -21,14 +21,30 @@
 #include "gumpelement.hpp"
 
 #include "gumpmenu.hpp"
-
 #include "manager.hpp"
+
+#include <misc/log.hpp>
 
 namespace fluo {
 namespace ui {
 
 GumpElement::GumpElement(CL_GUIComponent* parent) :
     CL_GUIComponent(parent) {
+        
+    func_pointer_enter().set(this, &GumpElement::onPointerEnter);
+    func_pointer_exit().set(this, &GumpElement::onPointerExit);
+}
+
+bool GumpElement::onPointerEnter() {
+    // LOG_DEBUG << "elem pointer enter" << std::endl;
+    // TODO change cursor properties
+    return false;
+}
+
+bool GumpElement::onPointerExit() {
+    //LOG_DEBUG << "elem pointer exit" << std::endl;
+    // TODO change cursor properties
+    return false;
 }
 
 }
