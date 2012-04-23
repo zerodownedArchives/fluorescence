@@ -45,7 +45,7 @@ public:
     unsigned int getArtId();
     const data::LandTileInfo* getTileDataInfo();
 
-    virtual bool hasPixel(int pixelX, int pixelY) const;
+    virtual bool hasWorldPixel(int pixelX, int pixelY) const;
     virtual bool overlaps(const CL_Rectf& rect) const;
 
     void setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const CL_Vec3f& bottom, const CL_Vec3f& left);

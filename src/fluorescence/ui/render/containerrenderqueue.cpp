@@ -82,8 +82,7 @@ boost::shared_ptr<world::IngameObject> ContainerRenderQueue::getFirstObjectAt(in
 
     for (; igIter != igEnd; ++igIter) {
         boost::shared_ptr<world::IngameObject> curObj = *igIter;
-        if (curObj->isDynamicItem() && curObj->isVisible() && curObj->hasPixel(pixelX, pixelY)) {
-
+        if (curObj->isDynamicItem() && curObj->isVisible() && curObj->hasContainerPixel(pixelX, pixelY)) {
             if (getTopParent) {
                 curObj = curObj->getTopParent();
             }

@@ -95,8 +95,9 @@ public:
     virtual bool overlaps(const CL_Rectf& rect) const;
 
     /// returns wheter or not the given pixel coordinate is covered by this object's texture
-    virtual bool hasPixel(int pixelX, int pixelY) const;
+    virtual bool hasWorldPixel(int pixelX, int pixelY) const;
     virtual bool hasGumpPixel(int pixelX, int pixelY) const;
+    virtual bool hasContainerPixel(int pixelX, int pixelY) const;
 
     virtual bool isMirrored() const;
 

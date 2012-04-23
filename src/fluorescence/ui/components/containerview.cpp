@@ -48,6 +48,8 @@ ContainerView::ContainerView(CL_GUIComponent* parent, const CL_Rect& bounds) : G
     func_input_pressed().set(this, &ContainerView::onInputPressed);
     func_input_released().set(this, &ContainerView::onInputReleased);
     func_input_doubleclick().set(this, &ContainerView::onDoubleClick);
+    func_pointer_enter().set(this, &ContainerView::onPointerEnter);
+    func_pointer_exit().set(this, &ContainerView::onPointerExit);
 }
 
 ContainerView::~ContainerView() {
@@ -171,6 +173,16 @@ boost::shared_ptr<ui::Texture> ContainerView::getBackgroundTexture() {
 
 void ContainerView::setContainerObject(boost::shared_ptr<world::DynamicItem> cont) {
     containerObject_ = cont;
+}
+
+bool ContainerView::onPointerEnter() {
+    ui::Manager::getCursorManager()->setCursorEnableFlags(CursorEnableFlags::TARGET);
+    return true;
+}
+
+bool ContainerView::onPointerExit() {
+    ui::Manager::getCursorManager()->setCursorEnableFlags(CursorEnableFlags::NONE);
+    return true;
 }
 
 }

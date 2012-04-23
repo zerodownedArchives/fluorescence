@@ -57,6 +57,9 @@ public:
     void setContainerObject(boost::shared_ptr<world::DynamicItem> cont);
 
     boost::shared_ptr<ui::Texture> getBackgroundTexture();
+    
+    bool onPointerEnter();
+    bool onPointerExit();
 
 private:
     boost::shared_ptr<ContainerRenderer> renderer_;

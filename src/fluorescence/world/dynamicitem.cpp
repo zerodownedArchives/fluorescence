@@ -17,7 +17,6 @@
  */
 
 
-
 #include "dynamicitem.hpp"
 
 #include "map.hpp"
@@ -266,12 +265,12 @@ const data::StaticTileInfo* DynamicItem::getTileDataInfo() const {
 void DynamicItem::onClick() {
     LOG_INFO << "Clicked dynamic, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocXGame() << "/" << getLocYGame() << "/" <<
             getLocZGame() << ") name=" << tileDataInfo_->name_ << " equipped=" << equipped_ << std::endl;
-    LOG_INFO << "impassable=" << tileDataInfo_->impassable() << " surface=" << tileDataInfo_->surface() << " bridge=" << tileDataInfo_->bridge() << " height=" << (unsigned int)tileDataInfo_->height_ << std::endl;
+    //LOG_INFO << "impassable=" << tileDataInfo_->impassable() << " surface=" << tileDataInfo_->surface() << " bridge=" << tileDataInfo_->bridge() << " height=" << (unsigned int)tileDataInfo_->height_ << std::endl;
 
-    printRenderDepth();
+    //printRenderDepth();
 
-    net::packets::SingleClick pkt(getSerial());
-    net::Manager::getSingleton()->send(pkt);
+    //net::packets::SingleClick pkt(getSerial());
+    //net::Manager::getSingleton()->send(pkt);
 }
 
 void DynamicItem::onDoubleClick() {
@@ -406,7 +405,7 @@ void DynamicItem::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
     }
 }
 
-void DynamicItem::onChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
+void DynamicItem::onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
     if (containerGump_) {
         ui::components::ContainerView* contView = dynamic_cast<ui::components::ContainerView*>(containerGump_->get_named_item("container"));
         if (contView) {

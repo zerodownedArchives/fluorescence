@@ -264,7 +264,7 @@ boost::shared_ptr<world::IngameObject> Sector::getFirstObjectAt(int worldX, int 
     
     for (; iter != end; ++iter) {
         IngameObject* curObj = *iter;
-        if (curObj->isVisible() && curObj->hasPixel(worldX, worldY)) {
+        if (curObj->isVisible() && curObj->hasWorldPixel(worldX, worldY)) {
             if (getTopObject) {
                 ret = curObj->getTopParent();
             } else {

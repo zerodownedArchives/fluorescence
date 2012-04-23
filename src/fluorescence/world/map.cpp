@@ -149,9 +149,9 @@ bool MapTile::overlaps(const CL_Rectf& rect) const {
     }
 }
 
-bool MapTile::hasPixel(int pixelX, int pixelY) const {
+bool MapTile::hasWorldPixel(int pixelX, int pixelY) const {
     if (isFlat_) {
-        return IngameObject::hasPixel(pixelX, pixelY);
+        return IngameObject::hasWorldPixel(pixelX, pixelY);
     } else {
         const CL_Vec3f* vc = worldRenderData_.getVertexCoordinates();
         return isPixelInside(pixelX, pixelY, vc[0], vc[2]) &&

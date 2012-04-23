@@ -212,7 +212,7 @@ bool IngameObject::overlaps(const CL_Rectf& rect) const {
             (worldRenderData_.vertexCoordinates_[5].y >= rect.top);
 }
 
-bool IngameObject::hasPixel(int pixelX, int pixelY) const {
+bool IngameObject::hasWorldPixel(int pixelX, int pixelY) const {
     // almost every texture is a rectangle, with vertexCoordinates_[0] being top left and vertexCoordinates_[5] bottom right
     // all non-rectangular cases are maptiles
     bool coordinateCheck = worldRenderData_.vertexCoordinates_[0].x <= pixelX &&
@@ -229,6 +229,24 @@ bool IngameObject::hasPixel(int pixelX, int pixelY) const {
     } else {
         return false;
     }
+}
+
+bool IngameObject::hasContainerPixel(int pixelX, int pixelY) const {
+    int gameX = getLocXGame();
+    int gameY = getLocYGame();
+    if (pixelX < gameX || pixelY < gameY) {
+        return false;
+    }
+    
+    boost::shared_ptr<ui::Texture> tex = getIngameTexture();
+    if (tex && tex->isReadComplete()) {
+        pixelX -= gameX;
+        pixelY -= gameY;
+        
+        return pixelX < tex->getWidth() && pixelY < tex->getHeight() && tex->hasPixel(pixelX, pixelY);
+    }
+    
+    return false;
 }
 
 bool IngameObject::hasGumpPixel(int pixelX, int pixelY) const {
