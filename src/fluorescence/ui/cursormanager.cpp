@@ -30,7 +30,8 @@ namespace fluo {
 namespace ui {
 
 CursorManager::CursorManager(Config& config, boost::shared_ptr<CL_DisplayWindow> window) :
-        warMode_(false), isDragging_(false) {
+        isDragging_(false), enableFlags_(CursorEnableFlags::NONE), warMode_(false), 
+        cursorDirection_(CursorType::GAME_WEST), cursorOverride_(0xFFFFFFFFu) {
 
     unsigned int artIdStart = config["/fluo/ui/cursor@normal-artid-start"].asInt();
     unsigned int artIdStartWarMode = config["/fluo/ui/cursor@warmode-artid-start"].asInt();
@@ -39,6 +40,16 @@ CursorManager::CursorManager(Config& config, boost::shared_ptr<CL_DisplayWindow>
         setCursorImage(i, artIdStart + i, false, window);
         setCursorImage(i, artIdStartWarMode + i, true, window);
     }
+    
+    updateCursor();
+}
+
+void CursorManager::setCursorDirection(unsigned int direction) {
+    // the direction enum is a bit different than the directions for the cursors
+    // in Direction, N=0x0. thank you, osi ...
+    cursorDirection_ = direction & 0x7;
+    cursorDirection_  = (cursorDirection_ + 1) % 8;
+    updateCursor();
 }
 
 void CursorManager::setWarMode(bool value) {
@@ -46,8 +57,13 @@ void CursorManager::setWarMode(bool value) {
     updateCursor();
 }
 
-void CursorManager::setCursor(unsigned int id) {
-    currentCursorId_ = id;
+void CursorManager::resetCursorOverride() {
+    cursorOverride_ = 0xFFFFFFFFu;
+    updateCursor();
+}
+
+void CursorManager::setCursorOverride(unsigned int id) {
+    cursorOverride_ = id;
     updateCursor();
 }
 
@@ -59,12 +75,27 @@ void CursorManager::setCursorImage(unsigned int id, unsigned int artId, bool war
 }
 
 void CursorManager::updateCursor() {
-    unsigned int cursorIndex = currentCursorId_;
+    unsigned int cursorId = CursorType::GAME_WEST;
+    if ((enableFlags_ & CursorEnableFlags::OVERRIDE) && cursorOverride_ != 0xFFFFFFFFu) {
+        cursorId = cursorOverride_;
+    } else if (hasTarget()) {
+        cursorId = CursorType::TARGET;
+    } else if (enableFlags_ & CursorEnableFlags::DIRECTION) {
+        cursorId = cursorDirection_;
+    }
+    
     if (warMode_) {
-        cursorIndex += CursorType::COUNT;
+        cursorId += CursorType::COUNT;
     }
 
-    cursorImages_[cursorIndex].activate();
+    //LOG_DEBUG << "NEW CURSOR ID: " << cursorId 
+            //<< " enable: " << std::hex << enableFlags_ << std::dec
+            //<< " dir: " << cursorDirection_
+            //<< " override: " << cursorOverride_
+            //<< " target?: " << hasTarget()
+            //<< " warmode?: " << warMode_
+            //<< std::endl;
+    cursorImages_[cursorId].activate();
 }
 
 void CursorManager::setDragCandidate(boost::shared_ptr<world::IngameObject> itm, int mouseX, int mouseY) {
@@ -112,7 +143,7 @@ void CursorManager::cancelTarget() {
         target_->onCancel();
         target_.reset();
 
-        setCursor(CursorType::GAME_WEST);
+        updateCursor();
     }
 }
 
@@ -122,11 +153,11 @@ void CursorManager::setTarget(boost::shared_ptr<targeting::Target> targ) {
     // cancelling of the old one wrong (= as cancelling the new one).
     // thus, do not cancel here - for now
     target_ = targ;
-    setCursor(CursorType::TARGET);
+    updateCursor();
 }
 
 bool CursorManager::hasTarget() const {
-    return (bool)target_;
+    return (bool)target_ && (enableFlags_ & CursorEnableFlags::TARGET);
 }
 
 bool CursorManager::onTarget(boost::shared_ptr<world::IngameObject> obj) {
@@ -137,12 +168,17 @@ bool CursorManager::onTarget(boost::shared_ptr<world::IngameObject> obj) {
     if (target_->acceptsTarget(obj)) {
         target_->onTarget(obj);
         target_.reset();
-        setCursor(CursorType::GAME_WEST);
+        updateCursor();
 
         return true;
     } else {
         return false;
     }
+}
+
+void CursorManager::setCursorEnableFlags(unsigned int flags) {
+    enableFlags_ = flags;
+    updateCursor();
 }
 
 }

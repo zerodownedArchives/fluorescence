@@ -65,9 +65,9 @@ public:
     void renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect);
 
     /// store all sectors this view needs (including some cache) in the list
-    void getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd);
+    void getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd) const;
 
-    boost::shared_ptr<world::IngameObject> getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY);
+    boost::shared_ptr<world::IngameObject> getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) const;
     
     CL_Mat4f getViewMatrix() const;
 
@@ -88,6 +88,8 @@ private:
     bool onInputReleased(const CL_InputEvent & e);
     bool onDoubleClick(const CL_InputEvent& e);
     bool onPointerMoved(const CL_InputEvent& e);
+    bool onPointerEnter();
+    bool onPointerExit();
     
     unsigned int getDirectionForMousePosition(const CL_Point& mouse) const;
     

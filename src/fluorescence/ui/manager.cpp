@@ -136,7 +136,6 @@ bool Manager::setShardConfig(Config& config) {
     fontEngine_.reset(new FontEngine(config, getGraphicContext()));
 
     cursorManager_.reset(new CursorManager(config, mainWindow_));
-    singleton_->getCursorManager()->setCursor(CursorType::GAME_WEST);
 
     shaderManager_.reset(new ShaderManager(getGraphicContext()));
     

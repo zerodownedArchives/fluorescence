@@ -37,6 +37,17 @@ namespace targeting {
     class Target;
 }
 
+struct CursorEnableFlags {
+    enum {
+        NONE = 0x0,
+        DIRECTION = 0x1,
+        TARGET = 0x2,
+        OVERRIDE = 0x4,
+        
+        ALL = 0xFFFFFFFFu,
+    };
+};
+
 struct CursorType {
     enum {
         GAME_NORTHWEST = 0,
@@ -64,8 +75,11 @@ class CursorManager {
 public:
     CursorManager(Config& config, boost::shared_ptr<CL_DisplayWindow> window);
 
+    void setCursorEnableFlags(unsigned int flags);
     void setWarMode(bool value);
-    void setCursor(unsigned int id);
+    void resetCursorOverride();
+    void setCursorOverride(unsigned int id);
+    void setCursorDirection(unsigned int direction);
 
     bool isDragging() const;
     void setDragCandidate(boost::shared_ptr<world::IngameObject> itm, int mouseX, int mouseY);
@@ -79,7 +93,6 @@ public:
     bool onTarget(boost::shared_ptr<world::IngameObject> obj);
 
 private:
-    bool warMode_;
     unsigned int warmodeArtOffset_;
     unsigned int currentCursorId_;
 
@@ -96,6 +109,11 @@ private:
     boost::shared_ptr<world::IngameObject> dragCandidate_;
 
     boost::shared_ptr<targeting::Target> target_;
+    
+    unsigned int enableFlags_;
+    bool warMode_;
+    unsigned int cursorDirection_;
+    unsigned int cursorOverride_;
 };
 
 }

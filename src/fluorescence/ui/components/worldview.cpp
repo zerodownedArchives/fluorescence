@@ -63,6 +63,8 @@ WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpEleme
     func_input_released().set(this, &WorldView::onInputReleased);
     func_input_doubleclick().set(this, &WorldView::onDoubleClick);
     func_input_pointer_moved().set(this, &WorldView::onPointerMoved);
+    func_pointer_exit().set(this, &WorldView::onPointerExit);
+    func_pointer_enter().set(this, &WorldView::onPointerEnter);
 }
 
 WorldView::~WorldView() {
@@ -153,7 +155,7 @@ void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     renderer_->renderParticleEffects(gc);
 }
 
-void WorldView::getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd) {
+void WorldView::getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd) const {
     // at least, we need to load as much tiles as the diagonal of the view is long
     // we load this amount of tiles (plus a little cache) in each direction of the center tile
 
@@ -263,7 +265,7 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
     case CL_MOUSE_LEFT:
         clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
         if (clickedObject && clickedObject->isDraggable()) {
-            ui::Manager::getSingleton()->getCursorManager()->setDragCandidate(clickedObject, e.mouse_pos.x, e.mouse_pos.y);
+            ui::Manager::getCursorManager()->setDragCandidate(clickedObject, e.mouse_pos.x, e.mouse_pos.y);
         }
         break;
         
@@ -298,7 +300,7 @@ bool WorldView::onInputReleased(const CL_InputEvent& e) {
         
     case CL_MOUSE_LEFT:
         clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
-        draggedObject = ui::Manager::getSingleton()->getCursorManager()->stopDragging();
+        draggedObject = ui::Manager::getCursorManager()->stopDragging();
 
         if (clickedObject) {
             if (draggedObject) {
@@ -338,7 +340,7 @@ bool WorldView::onDoubleClick(const CL_InputEvent& e) {
     return false;
 }
 
-boost::shared_ptr<world::IngameObject> WorldView::getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) {
+boost::shared_ptr<world::IngameObject> WorldView::getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) const {
     //LOG_INFO << "WorldView::getFirstObjectAt " << pixelX << " " << pixelY << std::endl;
     float worldX = getCenterPixelX() - getDrawWidth()/2.0;
     worldX += (pixelX / zoom_);
@@ -354,11 +356,24 @@ void WorldView::setCenterObject(boost::shared_ptr<world::IngameObject> obj) {
 }
 
 bool WorldView::onPointerMoved(const CL_InputEvent& e) {
+    unsigned int direction = getDirectionForMousePosition(e.mouse_pos);
+    ui::Manager::getCursorManager()->setCursorDirection(direction);
+    
     if (e.device.get_keycode(CL_MOUSE_RIGHT)) {
-        unsigned int direction = getDirectionForMousePosition(e.mouse_pos);
         world::Manager::getPlayerWalkManager()->setWalkDirection(direction);
+        return true;
     }
     
+    return false;
+}
+
+bool WorldView::onPointerExit() {
+    ui::Manager::getCursorManager()->setCursorEnableFlags(ui::CursorEnableFlags::NONE);
+    return true;
+}
+
+bool WorldView::onPointerEnter() {
+    ui::Manager::getCursorManager()->setCursorEnableFlags(ui::CursorEnableFlags::ALL);
     return true;
 }
 
