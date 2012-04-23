@@ -41,6 +41,8 @@
 #include <misc/exception.hpp>
 
 #include <world/ingameobject.hpp>
+#include <world/manager.hpp>
+#include <world/playerwalkmanager.hpp>
 
 #include <net/manager.hpp>
 #include <net/packets/speechrequest.hpp>
@@ -434,8 +436,11 @@ bool Manager::onUnhandledInputEvent(const CL_InputEvent& event) {
 }
 
 void Manager::onInputOutsideWindows(const CL_InputEvent& event, const CL_InputState& state) {
-    // TODO
     // LOG_DEBUG << "event outside: " << event.type << std::endl;
+    
+    if (event.type == CL_InputEvent::released && event.id == CL_MOUSE_RIGHT) {
+        world::Manager::getPlayerWalkManager()->stopAtNextTile();
+    }
 }
 
 }
