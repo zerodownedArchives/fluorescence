@@ -26,7 +26,6 @@
 #include <world/dynamicitem.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/doubleclickhandler.hpp>
 #include <ui/cursormanager.hpp>
 #include <ui/render/containerrenderer.hpp>
 #include <ui/render/containerrenderqueue.hpp>
@@ -114,14 +113,14 @@ bool ContainerView::onInputReleased(const CL_InputEvent& e) {
 
         if (clickedObject) {
             if (draggedObject) {
-                ui::Manager::getSingleton()->queueDrag(draggedObject, clickedObject);
+                ui::Manager::getSingleton()->onDragDrop(draggedObject, clickedObject);
             } else {
-                ui::Manager::getSingleton()->onClickEvent(clickedObject);
+                ui::Manager::getSingleton()->onSingleClick(clickedObject);
             }
         } else if (draggedObject) {
             // dragged to void
             boost::shared_ptr<world::IngameObject> nullPtr;
-            ui::Manager::getSingleton()->queueDrag(draggedObject, nullPtr);
+            ui::Manager::getSingleton()->onDragDrop(draggedObject, nullPtr);
         } else {
             consumed = false;
         }
@@ -141,7 +140,7 @@ bool ContainerView::onDoubleClick(const CL_InputEvent& e) {
         if (!clickedObject) {
             LOG_DEBUG << "doublelicked, but found no object" << std::endl;
         } else {
-            clickedObject->onDoubleClick();
+            ui::Manager::getSingleton()->onDoubleClick(clickedObject);
         }
 
         return true;

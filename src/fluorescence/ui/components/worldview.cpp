@@ -33,7 +33,6 @@
 
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
-#include <ui/doubleclickhandler.hpp>
 #include <ui/cursormanager.hpp>
 #include <ui/render/worldviewrenderer.hpp>
 #include <ui/cliprectmanager.hpp>
@@ -262,7 +261,6 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
 
 
     case CL_MOUSE_LEFT:
-        set_focus();
         clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
         if (clickedObject && clickedObject->isDraggable()) {
             ui::Manager::getSingleton()->getCursorManager()->setDragCandidate(clickedObject, e.mouse_pos.x, e.mouse_pos.y);
@@ -304,14 +302,14 @@ bool WorldView::onInputReleased(const CL_InputEvent& e) {
 
         if (clickedObject) {
             if (draggedObject) {
-                ui::Manager::getSingleton()->queueDrag(draggedObject, clickedObject);
+                ui::Manager::getSingleton()->onDragDrop(draggedObject, clickedObject);
             } else {
-                ui::Manager::getSingleton()->onClickEvent(clickedObject);
+                ui::Manager::getSingleton()->onSingleClick(clickedObject);
             }
         } else if (draggedObject) {
             // dragged to void
             boost::shared_ptr<world::IngameObject> nullPtr;
-            ui::Manager::getSingleton()->queueDrag(draggedObject, nullPtr);
+            ui::Manager::getSingleton()->onDragDrop(draggedObject, nullPtr);
         } else {
             consumed = false;
         }
@@ -331,7 +329,7 @@ bool WorldView::onDoubleClick(const CL_InputEvent& e) {
         if (!clickedObject) {
             LOG_DEBUG << "doublelicked, but found no object" << std::endl;
         } else {
-            clickedObject->onDoubleClick();
+            ui::Manager::getSingleton()->onDoubleClick(clickedObject);
         }
 
         return true;
@@ -349,8 +347,6 @@ boost::shared_ptr<world::IngameObject> WorldView::getFirstIngameObjectAt(unsigne
     worldY += (pixelY / zoom_);
 
     return world::Manager::getSectorManager()->getFirstObjectAt(worldX, worldY, true);
-    boost::shared_ptr<world::IngameObject> ret;
-    return ret;
 }
 
 void WorldView::setCenterObject(boost::shared_ptr<world::IngameObject> obj) {

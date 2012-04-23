@@ -23,7 +23,6 @@
 #include <boost/filesystem/operations.hpp>
 
 #include "cursormanager.hpp"
-#include "doubleclickhandler.hpp"
 #include "gumpmenu.hpp"
 #include "xmlparser.hpp"
 #include "gumpmenus.hpp"
@@ -137,9 +136,6 @@ bool Manager::setShardConfig(Config& config) {
     cursorManager_.reset(new CursorManager(config, mainWindow_));
     singleton_->getCursorManager()->setCursor(CursorType::GAME_WEST);
 
-    doubleClickHandler_.reset(new DoubleClickHandler(config));
-    doubleClickHandler_->start();
-
     shaderManager_.reset(new ShaderManager(getGraphicContext()));
     
     clipRectManager_.reset(new ClipRectManager());
@@ -149,6 +145,8 @@ bool Manager::setShardConfig(Config& config) {
     commandManager_.reset(new CommandManager(config));
     macroManager_.reset(new MacroManager(config));
     
+    doubleClickTimeout_ = config["/fluo/input/mouse@doubleclick-timeout-ms"].asInt();
+    
     return true;
 }
 
@@ -156,39 +154,20 @@ Manager::~Manager() {
     LOG_INFO << "ui::Manager shutdown" << std::endl;
 }
 
-void Manager::stepInput() {
+void Manager::stepInput(unsigned int elapsedMillis) {
     CL_KeepAlive::process();
     
-    while (!singleClickQueue_.empty()) {
-        boost::shared_ptr<world::IngameObject> obj = singleClickQueue_.front();
-        singleClickQueue_.pop();
-
-        if (cursorManager_->hasTarget()) {
-            cursorManager_->onTarget(obj);
+    // waiting for a doubleclick?
+    if (singleClickWait_.first) {
+        if (singleClickWait_.second <= elapsedMillis) {
+            singleClickWait_.first->onClick();
+            singleClickWait_.first = nullptr;
         } else {
-            obj->onClick();
-        }
-    }
-
-    while (!doubleClickQueue_.empty()) {
-        boost::shared_ptr<world::IngameObject> obj = doubleClickQueue_.front();
-        doubleClickQueue_.pop();
-        //obj->onDoubleClick();
-    }
-
-    while (!dragQueue_.empty()) {
-        std::pair<boost::shared_ptr<world::IngameObject>, boost::shared_ptr<world::IngameObject> > dragPair = dragQueue_.front();
-        dragQueue_.pop();
-
-        if (dragPair.second) {
-            dragPair.first->onDraggedOnto(dragPair.second);
-        } else {
-            dragPair.first->onDraggedToVoid();
+            singleClickWait_.second -= elapsedMillis;
         }
     }
     
     processGumpCloseList();
-    
     audioManager_->step();
 }
 
@@ -233,10 +212,6 @@ boost::shared_ptr<CL_GUIManager> Manager::getGuiManager() {
 
 boost::shared_ptr<CursorManager> Manager::getCursorManager() {
     return singleton_->cursorManager_;
-}
-
-boost::shared_ptr<DoubleClickHandler> Manager::getDoubleClickHandler() {
-    return singleton_->doubleClickHandler_;
 }
 
 boost::shared_ptr<FontEngine> Manager::getFontEngine() {
@@ -370,24 +345,35 @@ void Manager::enterTest(CL_GUIMessage msg, CL_AcceleratorKey key) {
     }
 }
 
-void Manager::queueSingleClick(boost::shared_ptr<world::IngameObject> obj) {
-    singleClickQueue_.push(obj);
-}
-
-void Manager::queueDoubleClick(boost::shared_ptr<world::IngameObject> obj) {
-    doubleClickQueue_.push(obj);
-}
-
-
-void Manager::queueDrag(boost::shared_ptr<world::IngameObject> dragObj, boost::shared_ptr<world::IngameObject> dragTarget) {
-    dragQueue_.push(std::make_pair(dragObj, dragTarget));
-}
-
-void Manager::onClickEvent(boost::shared_ptr<world::IngameObject> obj) {
+void Manager::onSingleClick(boost::shared_ptr<world::IngameObject> obj) {
     if (cursorManager_->hasTarget()) {
-        queueSingleClick(obj);
+        cursorManager_->onTarget(obj);
+    } else if (singleClickWait_.first) {
+        // we are already waiting for a doubleclick    
+        obj->onDoubleClick();
+        singleClickWait_.first = nullptr;
     } else {
-        doubleClickHandler_->notify(obj);
+        // emit single click event in doubleClickTimeout_ milliseconds
+        singleClickWait_.first = obj.get();
+        singleClickWait_.second = doubleClickTimeout_;
+    }
+}
+
+void Manager::onDoubleClick(boost::shared_ptr<world::IngameObject> obj) {
+    singleClickWait_.first = nullptr;
+    
+    if (cursorManager_->hasTarget()) {
+        cursorManager_->onTarget(obj);
+    } else {
+        obj->onDoubleClick();
+    }
+}
+
+void Manager::onDragDrop(boost::shared_ptr<world::IngameObject> dragObj, boost::shared_ptr<world::IngameObject> dragTarget) {
+    if (dragTarget) {
+        dragObj->onDraggedOnto(dragTarget);
+    } else {
+        dragObj->onDraggedToVoid();
     }
 }
 
@@ -440,11 +426,8 @@ boost::shared_ptr<MacroManager> Manager::getMacroManager() {
 }
 
 bool Manager::onUnhandledInputEvent(const CL_InputEvent& event) {
-    switch (event.type) {
-        case CL_InputEvent::pressed:
-            return macroManager_->execute(event);
-        default:
-            break;
+    if (event.type == CL_InputEvent::pressed) {
+        return macroManager_->execute(event);
     }
     
     return false;

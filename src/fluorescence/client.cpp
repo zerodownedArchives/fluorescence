@@ -332,7 +332,7 @@ void Client::doStatePlaying(unsigned int elapsedMillis) {
     static world::Manager* worldManager = world::Manager::getSingleton();
 
     netManager->step();
-    uiManager->stepInput();
+    uiManager->stepInput(elapsedMillis);
     worldManager->step(elapsedMillis);
     uiManager->stepDraw();
 }
@@ -340,7 +340,7 @@ void Client::doStatePlaying(unsigned int elapsedMillis) {
 void Client::doStateShardSelection() {
     static ui::Manager* uiManager = ui::Manager::getSingleton();
 
-    uiManager->stepInput();
+    uiManager->stepInput(0);
     uiManager->stepDraw();
 
     CL_System::sleep(10);
@@ -349,7 +349,7 @@ void Client::doStateShardSelection() {
 void Client::doStatePreLogin() {
     static ui::Manager* uiManager = ui::Manager::getSingleton();
 
-    uiManager->stepInput();
+    uiManager->stepInput(0);
     uiManager->stepDraw();
 
     CL_System::sleep(10);
@@ -360,7 +360,7 @@ void Client::doStateLogin() {
     static net::Manager* netManager = net::Manager::getSingleton();
 
     netManager->step();
-    uiManager->stepInput();
+    uiManager->stepInput(0);
     uiManager->stepDraw();
 
     CL_System::sleep(10);

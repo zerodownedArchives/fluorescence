@@ -10,7 +10,6 @@ set (UI_HPP
     ui/bitmask.hpp
     ui/cursormanager.hpp
     ui/cursorimage.hpp
-    ui/doubleclickhandler.hpp
     ui/gumpmenus.hpp
     ui/gumpactions.hpp
     ui/fontengine.hpp
@@ -32,7 +31,6 @@ set (UI_CPP
     ui/bitmask.cpp
     ui/cursormanager.cpp
     ui/cursorimage.cpp
-    ui/doubleclickhandler.cpp
     ui/gumpmenus.cpp
     ui/gumpactions.cpp
     ui/fontengine.cpp

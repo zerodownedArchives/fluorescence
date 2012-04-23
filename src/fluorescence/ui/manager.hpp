@@ -45,7 +45,6 @@ namespace ui {
 
 class IngameView;
 class CursorManager;
-class DoubleClickHandler;
 class GumpMenu;
 class FontEngine;
 class ShaderManager;
@@ -76,7 +75,6 @@ public:
 
     static boost::shared_ptr<CL_GUIManager> getGuiManager();
     static boost::shared_ptr<CursorManager> getCursorManager();
-    static boost::shared_ptr<DoubleClickHandler> getDoubleClickHandler();
     static boost::shared_ptr<FontEngine> getFontEngine();
     static boost::shared_ptr<ShaderManager> getShaderManager();
     static boost::shared_ptr<ClipRectManager> getClipRectManager();
@@ -86,7 +84,7 @@ public:
     
     static const UoFont& getUnifont(unsigned int index);
 
-    void stepInput();
+    void stepInput(unsigned int elapsedMillis);
     void stepDraw();
 
     GumpMenu* openXmlGump(const UnicodeString& name);
@@ -101,14 +99,10 @@ public:
     void installMacros();
     void uninstallMacros();
 
-    // called by the doubleclick handler, resp. the cursor manager
-    void queueSingleClick(boost::shared_ptr<world::IngameObject> obj);
-    void queueDoubleClick(boost::shared_ptr<world::IngameObject> obj);
-    void queueDrag(boost::shared_ptr<world::IngameObject> dragObj, boost::shared_ptr<world::IngameObject> dragTarget);
+    void onSingleClick(boost::shared_ptr<world::IngameObject> obj);
+    void onDoubleClick(boost::shared_ptr<world::IngameObject> obj);
+    void onDragDrop(boost::shared_ptr<world::IngameObject> dragObj, boost::shared_ptr<world::IngameObject> dragTarget);
 
-    // called by the various ui components
-    void onClickEvent(boost::shared_ptr<world::IngameObject> obj);
-    
     bool onUnhandledInputEvent(const CL_InputEvent& event);
     
 private:
@@ -132,8 +126,6 @@ private:
 
     boost::shared_ptr<CursorManager> cursorManager_;
 
-    boost::shared_ptr<DoubleClickHandler> doubleClickHandler_;
-
     std::list<GumpMenu*> gumpList_;
     std::list<GumpMenu*> gumpCloseList_;
     void processGumpCloseList();
@@ -147,10 +139,6 @@ private:
     CL_AcceleratorTable macros_;
 
     void enterTest(CL_GUIMessage msg, CL_AcceleratorKey key);
-
-    std::queue<boost::shared_ptr<world::IngameObject> > singleClickQueue_;
-    std::queue<boost::shared_ptr<world::IngameObject> > doubleClickQueue_;
-    std::queue<std::pair<boost::shared_ptr<world::IngameObject>, boost::shared_ptr<world::IngameObject> > > dragQueue_;
 
     boost::shared_ptr<FontEngine> fontEngine_;
 
@@ -168,6 +156,9 @@ private:
     std::map<unsigned int, CL_TextureGroup> textureGroups_;
     
     void onInputOutsideWindows(const CL_InputEvent& event, const CL_InputState& state);
+    
+    unsigned int doubleClickTimeout_;
+    std::pair<world::IngameObject*, unsigned int> singleClickWait_;
 };
 
 }
