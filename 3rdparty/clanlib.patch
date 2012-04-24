@@ -93,7 +93,27 @@ Index: Sources/GUI/gui_component.cpp
  	impl->gui_manager.lock()->add_component(this, owner, description);
  	impl->type_name = "component";
  	impl->geometry = impl->gui_manager.lock()->window_manager.get_geometry(impl->gui_manager.lock()->get_toplevel_window(this), true);
-@@ -602,6 +604,23 @@
+@@ -456,12 +458,17 @@
+ 						CL_GUIComponent *comp = child->get_component_at(P);
+ 						if (comp)
+ 							return comp;
+-						else
++						else if (child->has_pixel(P))
+ 							return child;
+ 					}
+ 				}
+ 			}
+-			return this;
++            
++            // no child component with visible pixels at this coordinate
++			if (has_pixel(point)) 
++				return this;
++			else
++				return 0;
+ 		}
+ 		else
+ 		{
+@@ -602,6 +609,28 @@
  	return impl->constant_repaint;
  }
  
@@ -114,10 +134,15 @@ Index: Sources/GUI/gui_component.cpp
 +	return impl->stay_in_background;
 +}
 +
++bool CL_GUIComponent::has_pixel(const CL_Point& p) const 
++{
++	return true;
++}
++
  /////////////////////////////////////////////////////////////////////////////
  // CL_GUIComponent Events:
  
-@@ -1262,9 +1281,9 @@
+@@ -1262,9 +1291,9 @@
  	// No parent, must be top-level component. Find last child.
  	CL_GUIComponent *last = impl->last_child;
  
@@ -130,7 +155,7 @@ Index: Sources/GUI/gui_component.cpp
  
  	while (last->has_child_components())
  	{
-@@ -1377,6 +1396,11 @@
+@@ -1377,6 +1406,11 @@
  	impl->css_layout.layout(gc, get_size());
  }
  
@@ -266,6 +291,19 @@ Index: Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
  	}
  
  	activated_window = handle;
+@@ -859,7 +878,11 @@
+ 
+ 			if (toplevel_window_texture->geometry.contains(point))
+ 			{
+-				return toplevel_window_texture->window;
++				CL_Point local_point = point;
++				local_point.x -= toplevel_window_texture->geometry.left;
++				local_point.y -= toplevel_window_texture->geometry.top;
++				if (toplevel_window_texture->window->component->get_component_at(local_point))
++					return toplevel_window_texture->window;
+ 			}
+ 		}
+ 	}
 Index: Sources/GUI/gui_component_impl.cpp
 ===================================================================
 --- Sources/GUI/gui_component_impl.cpp	(revision 7504)
@@ -377,7 +415,7 @@ Index: Sources/API/GUI/gui_component.h
  
  typedef CL_DisplayWindowDescription CL_GUITopLevelDescription;
  
-@@ -318,6 +319,12 @@
+@@ -318,6 +319,14 @@
  	/// \brief Gets the css element for this component
  	CL_CSSLayoutElement get_css_element();
  
@@ -387,10 +425,12 @@ Index: Sources/API/GUI/gui_component.h
 +
 +	bool get_stay_in_background() const;
 +
++	virtual bool has_pixel(const CL_Point& p) const;
++
  /// \}
  /// \name Events
  /// \{
-@@ -544,6 +551,8 @@
+@@ -544,6 +553,8 @@
  	/// \brief Loads a layout from file.
  	void load_css_layout(const CL_String &xml_filename, const CL_String &css_filename);
  
