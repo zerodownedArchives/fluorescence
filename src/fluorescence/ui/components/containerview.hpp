@@ -60,6 +60,8 @@ public:
     
     bool onPointerEnter();
     bool onPointerExit();
+    
+    virtual bool has_pixel(const CL_Point& p) const;
 
 private:
     boost::shared_ptr<ContainerRenderer> renderer_;

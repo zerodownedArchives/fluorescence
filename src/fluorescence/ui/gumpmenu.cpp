@@ -371,5 +371,9 @@ unsigned int GumpMenu::getCurrentRadioGroup() const {
     return currentRadioGroup_;
 }
 
+bool GumpMenu::has_pixel(const CL_Point& p) const {
+    return false;
+}
+
 }
 }

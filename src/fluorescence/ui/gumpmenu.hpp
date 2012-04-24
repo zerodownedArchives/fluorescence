@@ -113,6 +113,8 @@ public:
     
     void setCurrentRadioGroup(unsigned int groupId);
     unsigned int getCurrentRadioGroup() const;
+    
+    virtual bool has_pixel(const CL_Point& p) const;
 
 private:
     Serial serial_;
