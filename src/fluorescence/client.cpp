@@ -333,6 +333,7 @@ void Client::doStatePlaying(unsigned int elapsedMillis) {
 
     netManager->step();
     uiManager->stepInput(elapsedMillis);
+    uiManager->stepAudio();
     worldManager->step(elapsedMillis);
     uiManager->stepDraw();
 }
@@ -350,6 +351,7 @@ void Client::doStatePreLogin() {
     static ui::Manager* uiManager = ui::Manager::getSingleton();
 
     uiManager->stepInput(0);
+    uiManager->stepAudio();
     uiManager->stepDraw();
 
     CL_System::sleep(10);
@@ -361,6 +363,7 @@ void Client::doStateLogin() {
 
     netManager->step();
     uiManager->stepInput(0);
+    uiManager->stepAudio();
     uiManager->stepDraw();
 
     CL_System::sleep(10);

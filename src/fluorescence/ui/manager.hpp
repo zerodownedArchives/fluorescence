@@ -90,6 +90,7 @@ public:
     static bool isStaticIdWater(unsigned int id);
 
     void stepInput(unsigned int elapsedMillis);
+    void stepAudio();
     void stepDraw();
 
     GumpMenu* openXmlGump(const UnicodeString& name);

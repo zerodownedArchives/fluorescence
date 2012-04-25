@@ -178,6 +178,9 @@ void Manager::stepInput(unsigned int elapsedMillis) {
     }
     
     processGumpCloseList();
+}
+
+void Manager::stepAudio() {
     audioManager_->step();
 }
 
@@ -444,7 +447,7 @@ bool Manager::onUnhandledInputEvent(const CL_InputEvent& event) {
 }
 
 void Manager::onInputOutsideWindows(const CL_InputEvent& event, const CL_InputState& state) {
-     LOG_DEBUG << "event outside: " << event.type << std::endl;
+     //LOG_DEBUG << "event outside: " << event.type << std::endl;
     
     if (event.type == CL_InputEvent::released && event.id == CL_MOUSE_RIGHT) {
         world::Manager::getPlayerWalkManager()->stopAtNextTile();
