@@ -81,12 +81,10 @@ void DynamicItem::setArtId(unsigned int artId) {
         worldRenderData_.hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
         worldRenderData_.hueInfo_[2u] = tileDataInfo_->translucent() ? 0.8 : 1.0;
         
-        setIgnored(StaticItem::isIdIgnored(artId_));
-        if (StaticItem::isIdWater(artId_)) {
-            setMaterial(Material::WATER);
+        setIgnored(ui::Manager::isStaticIdIgnored(artId_));
+        if (ui::Manager::isStaticIdWater(artId_)) {
+            invalidateTextureProvider();
         }
-
-        invalidateTextureProvider();
     }
 }
 

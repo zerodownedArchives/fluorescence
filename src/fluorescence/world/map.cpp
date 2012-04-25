@@ -53,8 +53,8 @@ void MapTile::set(int locX, int locY, int locZ, unsigned int artId) {
 
     // texture is not set here, but in updateTexture
 
-    setIgnored(isIdIgnored(artId_));
-    if (isIdWater(artId_)) {
+    setIgnored(ui::Manager::isMapIdIgnored(artId_));
+    if (ui::Manager::isMapIdWater(artId_)) {
         setMaterial(Material::WATER);
     }
 
@@ -213,37 +213,6 @@ float MapTile::getAverageZ() const {
 int MapTile::getMaxZ() const {
     return (std::max)(getLocZGame(), (std::max)(zLeft_, (std::max)(zRight_, zBottom_)));
 }
-
-bool MapTile::isIdIgnored(unsigned int artId) {
-    static bool initialized = false;
-    static std::vector<int> ignoredIds;
-    if (!initialized) {
-        Config& cfg = Client::getSingleton()->getConfig();
-        cfg["/fluo/specialids/ignore@mapart"].toIntList(ignoredIds);
-        
-        std::sort(ignoredIds.begin(), ignoredIds.end());
-        
-        initialized = true;
-    }
-    
-    return std::binary_search(ignoredIds.begin(), ignoredIds.end(), artId);
-}
-
-bool MapTile::isIdWater(unsigned int artId) {
-    static bool initialized = false;
-    static std::vector<int> waterIds;
-    if (!initialized) {
-        Config& cfg = Client::getSingleton()->getConfig();
-        cfg["/fluo/specialids/water@mapart"].toIntList(waterIds);
-        
-        std::sort(waterIds.begin(), waterIds.end());
-        
-        initialized = true;
-    }
-    
-    return std::binary_search(waterIds.begin(), waterIds.end(), artId);
-}
-
 
 MapBlock::MapBlock() : repaintRequested_(false) {
     for (unsigned int i = 0; i < 64; ++i) {

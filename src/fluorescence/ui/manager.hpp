@@ -83,6 +83,11 @@ public:
     static boost::shared_ptr<MacroManager> getMacroManager();
     
     static const UoFont& getUnifont(unsigned int index);
+    
+    static bool isMapIdIgnored(unsigned int id);
+    static bool isStaticIdIgnored(unsigned int id);
+    static bool isMapIdWater(unsigned int id);
+    static bool isStaticIdWater(unsigned int id);
 
     void stepInput(unsigned int elapsedMillis);
     void stepDraw();
@@ -159,6 +164,11 @@ private:
     
     unsigned int doubleClickTimeout_;
     std::pair<world::IngameObject*, unsigned int> singleClickWait_;
+    
+    std::vector<int> mapIgnoreIds_;
+    std::vector<int> staticIgnoreIds_;
+    std::vector<int> mapWaterIds_;
+    std::vector<int> staticWaterIds_;
 };
 
 }

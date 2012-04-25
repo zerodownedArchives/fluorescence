@@ -148,6 +148,15 @@ bool Manager::setShardConfig(Config& config) {
     
     doubleClickTimeout_ = config["/fluo/input/mouse@doubleclick-timeout-ms"].asInt();
     
+    config["/fluo/specialids/ignore@mapart"].toIntList(mapIgnoreIds_);
+    config["/fluo/specialids/ignore@staticart"].toIntList(staticIgnoreIds_);
+    config["/fluo/specialids/water@mapart"].toIntList(mapWaterIds_);
+    config["/fluo/specialids/water@staticart"].toIntList(staticWaterIds_);
+    std::sort(mapIgnoreIds_.begin(), mapIgnoreIds_.end());
+    std::sort(staticIgnoreIds_.begin(), staticIgnoreIds_.end());
+    std::sort(mapWaterIds_.begin(), mapWaterIds_.end());
+    std::sort(staticWaterIds_.begin(), staticWaterIds_.end());
+    
     return true;
 }
 
@@ -440,6 +449,22 @@ void Manager::onInputOutsideWindows(const CL_InputEvent& event, const CL_InputSt
     if (event.type == CL_InputEvent::released && event.id == CL_MOUSE_RIGHT) {
         world::Manager::getPlayerWalkManager()->stopAtNextTile();
     }
+}
+
+bool Manager::isMapIdIgnored(unsigned int id) {
+    return std::binary_search(singleton_->mapIgnoreIds_.begin(), singleton_->mapIgnoreIds_.end(), id);
+}
+
+bool Manager::isStaticIdIgnored(unsigned int id) {
+    return std::binary_search(singleton_->staticIgnoreIds_.begin(), singleton_->staticIgnoreIds_.end(), id);
+}
+
+bool Manager::isMapIdWater(unsigned int id) {
+    return std::binary_search(singleton_->mapWaterIds_.begin(), singleton_->mapWaterIds_.end(), id);
+}
+
+bool Manager::isStaticIdWater(unsigned int id) {
+    return std::binary_search(singleton_->staticWaterIds_.begin(), singleton_->staticWaterIds_.end(), id);
 }
 
 }

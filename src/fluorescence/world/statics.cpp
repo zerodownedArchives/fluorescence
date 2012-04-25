@@ -59,8 +59,8 @@ void StaticItem::set(int locX, int locY, int locZ, unsigned int artId, unsigned 
     worldRenderData_.hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
     worldRenderData_.hueInfo_[2u] = tileDataInfo_->translucent() ? 0.8 : 1.0;
     
-    setIgnored(isIdIgnored(artId_));
-    if (isIdWater(artId_)) {
+    setIgnored(ui::Manager::isStaticIdIgnored(artId_));
+    if (ui::Manager::isStaticIdWater(artId_)) {
         setMaterial(Material::WATER);
     }
 }
@@ -126,36 +126,6 @@ void StaticItem::onClick() {
 
 bool StaticItem::periodicRenderUpdateRequired() const {
     return tileDataInfo_->animation();
-}
-
-bool StaticItem::isIdIgnored(unsigned int artId) {
-    static bool initialized = false;
-    static std::vector<int> ignoredIds;
-    if (!initialized) {
-        Config& cfg = Client::getSingleton()->getConfig();
-        cfg["/fluo/specialids/ignore@staticart"].toIntList(ignoredIds);
-        
-        std::sort(ignoredIds.begin(), ignoredIds.end());
-        
-        initialized = true;
-    }
-    
-    return std::binary_search(ignoredIds.begin(), ignoredIds.end(), artId);
-}
-
-bool StaticItem::isIdWater(unsigned int artId) {
-    static bool initialized = false;
-    static std::vector<int> waterIds;
-    if (!initialized) {
-        Config& cfg = Client::getSingleton()->getConfig();
-        cfg["/fluo/specialids/water@staticart"].toIntList(waterIds);
-        
-        std::sort(waterIds.begin(), waterIds.end());
-        
-        initialized = true;
-    }
-    
-    return std::binary_search(waterIds.begin(), waterIds.end(), artId);
 }
 
 
