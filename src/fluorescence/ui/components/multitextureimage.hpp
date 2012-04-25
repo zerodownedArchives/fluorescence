@@ -74,8 +74,9 @@ public:
             idx = 0;
         }
         
-        setColorRGBA(allColors_[idx]);
-        setHueInfo(allHueInfos_[idx]);
+        this->Image::setColorRGBA(allColors_[idx]);
+        this->Image::setHueInfo(allHueInfos_[idx]);
+        this->Image::setTiled(allTiled_[idx]);
         this->Image::setTexture(allTextures_[idx]);
     }
     
@@ -102,7 +103,7 @@ private:
     boost::shared_ptr<ui::Texture> allTextures_[NUM_TEXTURES];
     CL_Colorf allColors_[NUM_TEXTURES];
     CL_Vec3f allHueInfos_[NUM_TEXTURES];
-    bool allTiled_[NUM_TEXTURES];
+    unsigned int allTiled_[NUM_TEXTURES];
 };
 
 }

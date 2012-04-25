@@ -35,15 +35,14 @@ namespace ui {
 namespace components {
 
 Image::Image(CL_GUIComponent* parent) : CL_GUIComponent(parent), 
-        autoResize_(false), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white), stretchTexture_(true), tiled_(false) {
+        autoResize_(false), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white), tiled_(false) {
     func_render().set(this, &Image::render);
 }
 
 void Image::setTexture(boost::shared_ptr<ui::Texture> tex) {
     texture_ = tex;
+    tileableTexture_ = CL_Texture();
     request_repaint();
-    calculateTextureCoordinates();
-    stretchableTexture_ = CL_Texture();
 }
 
 void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
@@ -54,47 +53,36 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
         geom.set_width(texture_->getWidth());
         geom.set_height(texture_->getHeight());
         set_geometry(geom);
-        calculateTextureCoordinates();
         request_repaint();
-    } else if (!tiled_ && stretchTexture_) {
+    } else if (!tiled_) {
         if (hueInfo_[1u] == 0) {
             CL_Draw::texture(gc, texture_->getTexture(), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_, texture_->getNormalizedTextureCoords());
+            LOG_DEBUG << "print with rgb" << std::endl;
         } else {
             renderShader(gc, clipRect);
         }
     } else {
-        if (stretchableTexture_.is_null()) {
+        if (tileableTexture_.is_null()) {
             // create CL_Texture from ui::Texture. can be very expensive, unfortunately.
             // maybe find a better solution (tile and crop textures manually here instead of relying on tex coords?)
-            stretchableTexture_ = texture_->extractSingleTexture();
-            
-            if (tiled_) {
-                stretchableTexture_.set_wrap_mode(cl_wrap_repeat , cl_wrap_repeat );
-            } else {
-                stretchableTexture_.set_wrap_mode(cl_wrap_clamp_to_edge , cl_wrap_clamp_to_edge);
-            }
+            tileableTexture_ = texture_->extractSingleTexture();
+            tileableTexture_.set_wrap_mode(cl_wrap_repeat , cl_wrap_repeat );
         }
         
         if (hueInfo_[1u] == 0) {
-            CL_Draw::texture(gc, stretchableTexture_, CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_, textureRect_);
+            CL_Draw::texture(gc, tileableTexture_, 
+                    CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), 
+                    colorRgba_, 
+                    CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight()));
         } else {
             renderShader(gc, clipRect);
         }
-    }
-}
-
-void Image::calculateTextureCoordinates() {
-    if (tiled_) {
-        textureRect_ = CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight());
-    } else if (stretchTexture_) {
-        textureRect_ = CL_Rectf(0, 0, 1, 1);
-    } else {
-        textureRect_ = CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight());
     }
 }
 
 void Image::setColorRGBA(const CL_Colorf& color) {
     colorRgba_ = color;
+    LOG_DEBUG << "setRgba " << colorRgba_.r << "/" << colorRgba_.b << "/" << colorRgba_.b << std::endl;
 }
 
 void Image::setHue(unsigned int hue) {
@@ -103,15 +91,10 @@ void Image::setHue(unsigned int hue) {
 
 void Image::setAlpha(float alpha) {
     hueInfo_[2u] = alpha;
-    colorRgba_.a = alpha;
 }
 
-void Image::setTiled(bool tiled) {
-    tiled_ = tiled;
-}
-
-void Image::setStretchTexture(bool stretch) {
-    stretchTexture_ = stretch;
+void Image::setTiled(bool value) {
+    tiled_ = value;
 }
 
 void Image::setHueInfo(const CL_Vec3f& info) {
@@ -120,33 +103,40 @@ void Image::setHueInfo(const CL_Vec3f& info) {
 
 void Image::setAutoResize(bool value) {
     autoResize_ = value;
+    if (autoResize_) {
+        tiled_ = false;
+    }
 }
 
 void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
-    //gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
-
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getGumpShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
 
-
-    gc.set_texture(0, data::Manager::getHuesLoader()->getHuesTexture());
+    CL_Texture huesTexture = data::Manager::getHuesLoader()->getHuesTexture();
+    gc.set_texture(0, huesTexture);
+    // set texture unit 1 active to avoid overriding the hue texture with newly loaded object textures
+    gc.set_texture(1, huesTexture);
+    
     shader->set_uniform1i("HueTexture", 0);
     shader->set_uniform1i("ObjectTexture", 1);
     
-    if (!tiled_ && stretchTexture_) {
-        gc.set_texture(1, texture_->getTexture());
-        textureRect_ = texture_->getNormalizedTextureCoords();
+    CL_Rectf textureRect;
+    
+    if (tiled_) {
+        gc.set_texture(1, tileableTexture_);
+        textureRect = CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight());
     } else {
-        gc.set_texture(1, stretchableTexture_);
+        gc.set_texture(1, texture_->getTexture());
+        textureRect = texture_->getNormalizedTextureCoords();
     }
     
 	CL_Vec2f tex1_coords[6] = {
-        CL_Vec2f(textureRect_.left, textureRect_.top),
-        CL_Vec2f(textureRect_.right, textureRect_.top),
-        CL_Vec2f(textureRect_.left, textureRect_.bottom),
-        CL_Vec2f(textureRect_.right, textureRect_.top),
-        CL_Vec2f(textureRect_.left, textureRect_.bottom),
-        CL_Vec2f(textureRect_.right, textureRect_.bottom)
+        CL_Vec2f(textureRect.left, textureRect.top),
+        CL_Vec2f(textureRect.right, textureRect.top),
+        CL_Vec2f(textureRect.left, textureRect.bottom),
+        CL_Vec2f(textureRect.right, textureRect.top),
+        CL_Vec2f(textureRect.left, textureRect.bottom),
+        CL_Vec2f(textureRect.right, textureRect.bottom)
 	};
 
     CL_Vec2f vertexCoords[6];
@@ -170,6 +160,27 @@ void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
 
     gc.reset_textures();
     gc.reset_program_object();
+}
+
+bool Image::has_pixel(const CL_Point& p) const {
+    if (!texture_) {
+        return false;
+    }
+    
+    int px = p.x;
+    int py = p.y;
+    
+    if (tiled_) {
+        px %= tileableTexture_.get_width();
+        py %= tileableTexture_.get_height();
+    } else {
+        float stretchHori = get_width() / texture_->getWidth();
+        float stretchVert = get_height() / texture_->getHeight();
+        px *= stretchHori;
+        py *= stretchVert;
+    }
+    
+    return texture_->hasPixel(px, py);;
 }
 
 }

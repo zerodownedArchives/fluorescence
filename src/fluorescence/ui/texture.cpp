@@ -167,6 +167,10 @@ CL_Texture Texture::extractSingleTexture() {
         if (!pixelBuffer_.is_null()) {
             ret.set_image(pixelBuffer_);
         }
+        
+        if (useBitMask_) {
+            bitMask_.init(pixelBuffer_);
+        }
     } else {
         CL_PixelBuffer pxBuf = getTexture().get_pixeldata();
         // create CL_Texture from ui::Texture. very expensive, unfortunately.

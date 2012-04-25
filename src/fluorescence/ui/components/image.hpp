@@ -37,7 +37,7 @@ class Image : public CL_GUIComponent {
 
 friend class ui::XmlParser;
 
-public:
+public: 
     Image(CL_GUIComponent* parent);
 
     void setTexture(boost::shared_ptr<ui::Texture> tex);
@@ -47,9 +47,10 @@ public:
     virtual void setHue(unsigned int hue);
     virtual void setAlpha(float alpha);
     
-    void setTiled(bool tiled);
-    void setStretchTexture(bool stretch);
+    void setTiled(bool value);
     void setAutoResize(bool value);
+    
+    bool has_pixel(const CL_Point& p) const;
     
 protected:
     void setHueInfo(const CL_Vec3f& hueInfo);
@@ -64,13 +65,9 @@ private:
     
     void renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect);
     
-    bool stretchTexture_;
     bool tiled_;
-    CL_Rectf textureRect_;
     
-    void calculateTextureCoordinates();
-    
-    CL_Texture stretchableTexture_;
+    CL_Texture tileableTexture_;
 };
 
 }

@@ -220,8 +220,7 @@ bool StringParser::parseCroppedText(const UnicodeString& params, const std::vect
         components::Image* img = new components::Image(menu);
         CL_Rectf bounds(x, y, CL_Sizef(width, height));
         img->set_geometry(bounds);
-        img->setTiled(false);
-        img->setStretchTexture(false);
+        img->setTiled(true);
         img->setTexture(tex);
         menu->addToCurrentPage(img);
         
@@ -247,8 +246,7 @@ bool StringParser::parseText(const UnicodeString& params, const std::vector<Unic
         components::Image* img = new components::Image(menu);
         CL_Rectf bounds(x, y, CL_Sizef(tex->getWidth(), tex->getHeight()));
         img->set_geometry(bounds);
-        img->setTiled(false);
-        img->setStretchTexture(false);
+        img->setTiled(true);
         img->setTexture(tex);
         menu->addToCurrentPage(img);
         

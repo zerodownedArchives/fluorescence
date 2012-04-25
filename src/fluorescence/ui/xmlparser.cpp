@@ -701,6 +701,8 @@ bool XmlParser::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMe
             bounds.set_width(1);
             bounds.set_height(1);
         }
+    } else if (tiled) {
+        img->setTiled(true);
     }
     
     img->setTexture(texture);
@@ -714,8 +716,6 @@ bool XmlParser::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMe
     if (alpha) {
         img->setAlpha(alpha);
     }
-    
-    img->setTiled(tiled);
 
     top->addToCurrentPage(img);
     return true;

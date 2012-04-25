@@ -57,20 +57,22 @@ void BitMask::setPixel(unsigned int pixelX, unsigned int pixelY) {
 }
 
 void BitMask::init(const CL_PixelBuffer& pixBuf) {
-    width_ = pixBuf.get_width();
-    height_ = pixBuf.get_height();
-    bitStoreSize_ = ((width_ * height_) / 8) + 1;
-    bitStore_ = reinterpret_cast<uint8_t*>(malloc(bitStoreSize_));
-    memset(bitStore_, 0, bitStoreSize_);
+    if (!bitStore_) {
+        width_ = pixBuf.get_width();
+        height_ = pixBuf.get_height();
+        bitStoreSize_ = ((width_ * height_) / 8) + 1;
+        bitStore_ = reinterpret_cast<uint8_t*>(malloc(bitStoreSize_));
+        memset(bitStore_, 0, bitStoreSize_);
 
-    const uint32_t* bufPtr = reinterpret_cast<const uint32_t*>(pixBuf.get_data());
+        const uint32_t* bufPtr = reinterpret_cast<const uint32_t*>(pixBuf.get_data());
 
-    for (unsigned int y = 0; y < height_; ++y) {
-        for (unsigned int x = 0; x < width_; ++x) {
-            if (*bufPtr & 0x000000FFu) { // alpha != 0
-                setPixel(x, y);
+        for (unsigned int y = 0; y < height_; ++y) {
+            for (unsigned int x = 0; x < width_; ++x) {
+                if (*bufPtr & 0x000000FFu) { // alpha != 0
+                    setPixel(x, y);
+                }
+                ++bufPtr;
             }
-            ++bufPtr;
         }
     }
 }

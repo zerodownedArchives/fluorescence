@@ -231,17 +231,17 @@ bool MapTile::isIdIgnored(unsigned int artId) {
 
 bool MapTile::isIdWater(unsigned int artId) {
     static bool initialized = false;
-    static std::vector<int> ignoredIds;
+    static std::vector<int> waterIds;
     if (!initialized) {
         Config& cfg = Client::getSingleton()->getConfig();
-        cfg["/fluo/specialids/water@mapart"].toIntList(ignoredIds);
+        cfg["/fluo/specialids/water@mapart"].toIntList(waterIds);
         
-        std::sort(ignoredIds.begin(), ignoredIds.end());
+        std::sort(waterIds.begin(), waterIds.end());
         
         initialized = true;
     }
     
-    return std::binary_search(ignoredIds.begin(), ignoredIds.end(), artId);
+    return std::binary_search(waterIds.begin(), waterIds.end(), artId);
 }
 
 

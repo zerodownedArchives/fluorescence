@@ -231,7 +231,11 @@ void Background::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getGumpShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
 
-    gc.set_texture(0, data::Manager::getHuesLoader()->getHuesTexture());
+    CL_Texture huesTexture = data::Manager::getHuesLoader()->getHuesTexture();
+    gc.set_texture(0, huesTexture);
+    // set texture unit 1 active to avoid overriding the hue texture with newly loaded object textures
+    gc.set_texture(1, huesTexture);
+    
     shader->set_uniform1i("HueTexture", 0);
     shader->set_uniform1i("ObjectTexture", 1);
 
