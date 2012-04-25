@@ -190,14 +190,14 @@ void MapTile::onClick() {
 
     LOG_INFO << "z value: self=" << getLocZGame() << " right=" << zRight_ << " bottom=" << zBottom_ << " left=" << zLeft_ << std::endl;
     
-    LOG_INFO << "Tex coords: " << getIngameTexture()->getTextureCoords() << std::endl;
-    LOG_INFO << "Normalized:" << getIngameTexture()->getNormalizedTextureCoords() << std::endl;
+    //LOG_INFO << "Tex coords: " << getIngameTexture()->getTextureCoords() << std::endl;
+    //LOG_INFO << "Normalized:" << getIngameTexture()->getNormalizedTextureCoords() << std::endl;
 
-    const CL_Vec3f* vc = worldRenderData_.getVertexCoordinates();
-    LOG_INFO << vc[0].x << " " << (unsigned int)vc[0].y << " " << vc[0].z << std::endl;
-    LOG_INFO << vc[1].x << " " << (unsigned int)vc[1].y << " " << vc[1].z << std::endl;
-    LOG_INFO << vc[2].x << " " << (unsigned int)vc[2].y << " " << vc[2].z << std::endl;
-    LOG_INFO << vc[5].x << " " << (unsigned int)vc[5].y << " " << vc[5].z << std::endl;
+    //const CL_Vec3f* vc = worldRenderData_.getVertexCoordinates();
+    //LOG_INFO << vc[0].x << " " << (unsigned int)vc[0].y << " " << vc[0].z << std::endl;
+    //LOG_INFO << vc[1].x << " " << (unsigned int)vc[1].y << " " << vc[1].z << std::endl;
+    //LOG_INFO << vc[2].x << " " << (unsigned int)vc[2].y << " " << vc[2].z << std::endl;
+    //LOG_INFO << vc[5].x << " " << (unsigned int)vc[5].y << " " << vc[5].z << std::endl;
 
     printRenderDepth();
 }

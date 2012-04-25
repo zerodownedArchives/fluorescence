@@ -57,7 +57,6 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     } else if (!tiled_) {
         if (hueInfo_[1u] == 0) {
             CL_Draw::texture(gc, texture_->getTexture(), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_, texture_->getNormalizedTextureCoords());
-            LOG_DEBUG << "print with rgb" << std::endl;
         } else {
             renderShader(gc, clipRect);
         }
@@ -82,7 +81,6 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
 
 void Image::setColorRGBA(const CL_Colorf& color) {
     colorRgba_ = color;
-    LOG_DEBUG << "setRgba " << colorRgba_.r << "/" << colorRgba_.b << "/" << colorRgba_.b << std::endl;
 }
 
 void Image::setHue(unsigned int hue) {

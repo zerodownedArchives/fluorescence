@@ -828,6 +828,7 @@ bool XmlParser::parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent, 
     parseChildren(node, area->getClientArea(), top);
 
     area->updateScrollbars(vVisibility, hVisibility, vPageStep, hPageStep, vLineStep, hLineStep, marginLeft, marginBottom);
+    area->setupResizeHandler();
 
     return true;
 }

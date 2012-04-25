@@ -43,10 +43,17 @@ public:
      * \param verticalPageStep 0 for auto, value to control vertical page step size directly
      * \param horizontalPageStep 0 for auto, value to control horizontal page step size directly
      */
-    void updateScrollbars(unsigned int verticalVisibility = VISIBLE_ON_DEMAND, unsigned int horizontalVisibility = VISIBLE_ON_DEMAND,
-            unsigned int verticalPageStep = 0, unsigned int horizontalPageStep = 0,
-            unsigned int verticalLineStep = 0, unsigned int horizontalLineStep = 0,
-            unsigned int marginLeft = 0, unsigned int marginBottom = 0);
+    void updateScrollbars(unsigned int verticalVisibility, unsigned int horizontalVisibility,
+            unsigned int verticalPageStep, unsigned int horizontalPageStep,
+            unsigned int verticalLineStep, unsigned int horizontalLineStep,
+            unsigned int marginLeft, unsigned int marginBottom);
+            
+    // update scrollbars again, using the same parameters as the last call
+    void updateScrollbars();
+    
+    // whenever a child component is resized, the scroll area has to be notified (and possibly change scrollbars)
+    void setupResizeHandler();
+    void onChildComponentResized();
 
 private:
     CL_ScrollBar* verticalScrollBar_;
@@ -54,7 +61,18 @@ private:
 
     CL_Frame* clientArea_;
 
+    int lastScrollVertical_;
+    int lastScrollHorizontal_;
     void onScroll();
+    
+    unsigned int verticalVisibility_;
+    unsigned int horizontalVisibility_;
+    unsigned int verticalPageStep_;
+    unsigned int horizontalPageStep_;
+    unsigned int verticalLineStep_;
+    unsigned int horizontalLineStep_;
+    unsigned int marginLeft_;
+    unsigned int marginBottom_;
 };
 
 }

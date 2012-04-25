@@ -63,6 +63,11 @@
                 hvisible="ondemand" vvisible="always"
                 marginleft="20" marginbottom="5">
             <image x="30" y="30" source="gumpart" imgid="10" />
+            <button x="200" y="500" page="1">
+                <normal source="gumpart" imgid="16" hue="13" />
+                <mouseover source="gumpart" imgid="18" hue="13" alpha="0.5" />
+                <mousedown source="gumpart" imgid="17" rgba="#ff5555" />
+            </button>
         </tscrollarea>
         <background x="10" y="280" width="300" height="200" gumpid="1010" rgba="#88ff88ff" />
         <image x="30" y="290" source="http" imgid="http://wiseheartdesign.com/page_attachments/0000/0062/default-avatar.png" hue="13" />

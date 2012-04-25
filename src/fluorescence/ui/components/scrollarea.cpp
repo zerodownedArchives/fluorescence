@@ -26,7 +26,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-ScrollArea::ScrollArea(CL_GUIComponent* parent) : CL_GUIComponent(parent) {
+ScrollArea::ScrollArea(CL_GUIComponent* parent) : CL_GUIComponent(parent), lastScrollVertical_(0), lastScrollHorizontal_(0) {
     horizontalScrollBar_ = new CL_ScrollBar(this);
     horizontalScrollBar_->set_horizontal();
     horizontalScrollBar_->set_position(0);
@@ -52,6 +52,15 @@ CL_Frame* ScrollArea::getClientArea() {
     return clientArea_;
 }
 
+void ScrollArea::updateScrollbars() {
+    updateScrollbars(
+            verticalVisibility_, horizontalVisibility_,
+            verticalPageStep_, horizontalPageStep_,
+            verticalLineStep_, horizontalLineStep_,
+            marginLeft_, marginBottom_
+    );
+}
+
 void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int horizontalVisibility,
         unsigned int verticalPageStep, unsigned int horizontalPageStep,
         unsigned int verticalLineStep, unsigned int horizontalLineStep,
@@ -72,6 +81,8 @@ void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int 
     std::vector<CL_GUIComponent*>::const_iterator end = children.end();
     for (; iter != end; ++iter) {
         CL_Pointx<int> cur = (*iter)->get_geometry().get_bottom_right();
+        cur.x += lastScrollHorizontal_;
+        cur.y += lastScrollVertical_;
         if (cur.x > childWidth) {
             childWidth = cur.x;
         }
@@ -178,26 +189,48 @@ void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int 
     horizontalScrollBar_->set_visible(hVisible);
 
     // if scrollbar is visible but not needed, disable
-    if (hVisible && childWidth <= viewSizeWidth) {
-        horizontalScrollBar_->set_enabled(false);
+    if (hVisible) {
+        if (childWidth <= viewSizeWidth) {
+            horizontalScrollBar_->set_enabled(false);
+        } else {
+            horizontalScrollBar_->set_enabled(true);
+        }
     }
 
-    if (vVisible && childHeight <= viewSizeHeight) {
-        verticalScrollBar_->set_enabled(false);
+    if (vVisible) {
+        if (childHeight <= viewSizeHeight) {
+            verticalScrollBar_->set_enabled(false);
+        } else {
+            verticalScrollBar_->set_enabled(true);
+        }
     }
+    
+    
+    LOG_DEBUG << "update scroll area: "
+            << "child height=" << childHeight
+            << " child width=" << childWidth
+            << std::endl;
+    
+    
+    // save parameters for next call
+    verticalVisibility_ = verticalVisibility;
+    horizontalVisibility_ = horizontalVisibility;
+    verticalPageStep_ = verticalPageStep;
+    horizontalPageStep_ = horizontalPageStep;
+    verticalLineStep_ = verticalLineStep;
+    horizontalLineStep_ = horizontalLineStep;
+    marginLeft_ = marginLeft;
+    marginBottom_ = marginBottom;
 }
 
 void ScrollArea::onScroll() {
-    static int lastScrollVert = 0;
-    static int lastScrollHori = 0;
-
     //LOGARG_DEBUG(LOGTYPE_UI, "onScroll vertical=%i horizontal=%i", verticalScrollBar_->get_position(), horizontalScrollBar_->get_position());
 
     int curScrollVert = verticalScrollBar_->get_position();
     int curScrollHori = horizontalScrollBar_->get_position();
 
-    int diffVert = curScrollVert - lastScrollVert;
-    int diffHori = curScrollHori - lastScrollHori;
+    int diffVert = curScrollVert - lastScrollVertical_;
+    int diffHori = curScrollHori - lastScrollHorizontal_;
 
     std::vector<CL_GUIComponent*> children = clientArea_->get_child_components();
     std::vector<CL_GUIComponent*>::const_iterator iter = children.begin();
@@ -208,8 +241,21 @@ void ScrollArea::onScroll() {
         (*iter)->set_geometry(newGeom);
     }
 
-    lastScrollVert = curScrollVert;
-    lastScrollHori = curScrollHori;
+    lastScrollVertical_ = curScrollVert;
+    lastScrollHorizontal_ = curScrollHori;
+}
+
+void ScrollArea::setupResizeHandler() {
+    std::vector<CL_GUIComponent*> children = clientArea_->get_child_components();
+    std::vector<CL_GUIComponent*>::const_iterator iter = children.begin();
+    std::vector<CL_GUIComponent*>::const_iterator end = children.end();
+    for (; iter != end; ++iter) {
+        (*iter)->func_resized().set(this, &ScrollArea::onChildComponentResized);
+    }
+}
+
+void ScrollArea::onChildComponentResized() {
+    updateScrollbars();
 }
 
 }
