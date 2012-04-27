@@ -79,7 +79,6 @@ bool Client::shutdown(ui::GumpMenu* menu, const UnicodeString& action, unsigned 
 bool Client::selectShard(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     config_["/fluo/shard@name"].setString(parameters[0]);
     setState(STATE_PRE_LOGIN);
-    //setState(STATE_PLAYING);
     return true;
 }
 
@@ -118,7 +117,7 @@ bool Client::handleStateChange() {
 
     case STATE_PLAYING:
         uiManager->uninstallMacros();
-        uiManager->destroyAllGumpMenus();
+        uiManager->closeAllNonMessageGumps();
         uiManager->releaseIngameObjects();
         world::Manager::getSingleton()->clear();
         

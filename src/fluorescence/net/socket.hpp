@@ -60,6 +60,8 @@ public:
     void setUseDecompress(bool value);
 
     boost::shared_ptr<Packet> getNextPacket();
+    
+    bool hasCriticalError() const;
 
 private:
     int socketFd_;

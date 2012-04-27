@@ -488,5 +488,22 @@ void Manager::releaseIngameObjects() {
     cursorManager_->releaseIngameObjects();
 }
 
+void Manager::closeAllNonMessageGumps() {
+    std::list<GumpMenu*>::iterator iter = gumpList_.begin();
+    std::list<GumpMenu*>::iterator end = gumpList_.end();
+    std::list<GumpMenu*> newList;
+
+    for (; iter != end; ++iter) {
+        if ((*iter)->getName() != "messagebox") {
+            delete *iter;
+        } else {
+            newList.push_back(*iter);
+        }
+    }
+
+    gumpList_.clear();
+    gumpList_ = newList;
+}
+
 }
 }

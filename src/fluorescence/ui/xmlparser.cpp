@@ -182,12 +182,11 @@ GumpMenu* XmlParser::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
         bool draggable = rootNode.attribute("draggable").as_bool();
         UnicodeString action = StringConverter::fromUtf8(rootNode.attribute("action").value());
         UnicodeString cancelAction = StringConverter::fromUtf8(rootNode.attribute("cancelaction").value());
+        bool inbackground = rootNode.attribute("inbackground").as_bool();
 
         CL_GUITopLevelDescription desc(bounds, false);
         desc.set_decorations(false);
-        if (doc.find_node(boost::bind(&XmlParser::gameViewFindHelper, this, _1))) {
-            desc.set_in_background(true);
-        }
+        desc.set_in_background(inbackground);
 
         ret = new GumpMenu(desc);
         ret->setClosable(closable);
@@ -936,10 +935,6 @@ bool XmlParser::parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     top->addToCurrentPage(contView);
 
     return true;
-}
-
-bool XmlParser::gameViewFindHelper(pugi::xml_node& node) const {
-    return strcmp(node.name(), "worldview") == 0;
 }
 
 bool XmlParser::parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {

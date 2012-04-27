@@ -205,13 +205,6 @@ void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int 
         }
     }
     
-    
-    LOG_DEBUG << "update scroll area: "
-            << "child height=" << childHeight
-            << " child width=" << childWidth
-            << std::endl;
-    
-    
     // save parameters for next call
     verticalVisibility_ = verticalVisibility;
     horizontalVisibility_ = horizontalVisibility;

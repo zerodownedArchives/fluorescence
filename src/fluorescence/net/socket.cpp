@@ -219,7 +219,7 @@ void Socket::receiveRun() {
             parsePackets();
         } else if (recvLen == 0) { // peer has shut down
             LOG_INFO << "Peer has shut down socket" << std::endl;
-            // set error indicator ?
+            criticalError_ = true;
             break;
         } else if (recvLen < 0 && running_) { // error
 #ifdef WIN32
@@ -261,10 +261,10 @@ bool Socket::sendAll() {
     //dumpBuffer(sendBuffer_, sendSize_);
 
     socketMutex_.lock();
-    unsigned int sendLen = ::send(socketFd_, reinterpret_cast<char*>(sendBuffer_), sendSize_, 0);
+    unsigned int sendLen = ::send(socketFd_, reinterpret_cast<char*>(sendBuffer_), sendSize_, MSG_NOSIGNAL);
     socketMutex_.unlock();
 
-    if (sendLen < 0) {
+    if (sendLen != sendSize_) {
         #ifdef WIN32
             LOG_ERROR << "Socket error in sendAll(): " << strerror(WSAGetLastError()) << std::endl;
         #else
@@ -273,11 +273,6 @@ bool Socket::sendAll() {
 
         criticalError_ = true;
 
-        return false;
-    }
-
-    if (sendLen != sendSize_) {
-        LOG_ERROR << "Socket error in sendAll(): Unable to send all bytes" << std::endl;
         return false;
     }
 
@@ -384,6 +379,10 @@ boost::shared_ptr<Packet> Socket::getNextPacket() {
     packetQueueMutex_.unlock();
 
     return ret;
+}
+
+bool Socket::hasCriticalError() const {
+    return criticalError_;
 }
 
 }

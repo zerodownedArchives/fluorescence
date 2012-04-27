@@ -101,6 +101,11 @@ void Manager::step() {
 
         // send packets to server
         socket_.sendAll();
+        
+        if (socket_.hasCriticalError()) {
+            ui::GumpMenus::openMessageBox("Lost connection to server");
+            Client::getSingleton()->disconnect();
+        }
     }
 }
 

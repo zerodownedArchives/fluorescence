@@ -97,6 +97,7 @@ public:
     void closeGumpMenu(const UnicodeString& name);
     void closeGumpMenu(GumpMenu* menu);
     void destroyAllGumpMenus(); // needed for final cleanup
+    void closeAllNonMessageGumps(); // called on disconnect
 
     GumpMenu* getGumpMenu(const UnicodeString& name);
 
