@@ -16,34 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef FLUO_UI_COMMANDS_DISCONNECT_HPP
+#define FLUO_UI_COMMANDS_DISCONNECT_HPP
 
-#ifndef FLUO_WORLD_SMOOTHMOVEMENTMANAGER_HPP
-#define FLUO_WORLD_SMOOTHMOVEMENTMANAGER_HPP
-
-#include <map>
-#include <list>
-
-#include <typedefs.hpp>
-
-#include "smoothmovement.hpp"
+#include "clientcommand.hpp"
 
 namespace fluo {
-namespace world {
-
-class SmoothMovementManager {
-public:
-    void update(unsigned int elapsedMillis);
-
-    void add(Serial serial, SmoothMovement& movement);
-    void clear(Serial serial);
+namespace ui {
+namespace commands {
     
-    void clear();
-
-private:
-    std::map<Serial, std::list<SmoothMovement> > movementQueues_;
+class Disconnect : public ClientCommand {
+public:
+    virtual void execute(const UnicodeString& args);
 };
 
 }
 }
+}
 
 #endif
+

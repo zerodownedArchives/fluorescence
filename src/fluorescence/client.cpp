@@ -84,9 +84,13 @@ bool Client::selectShard(ui::GumpMenu* menu, const UnicodeString& action, unsign
 }
 
 bool Client::disconnect(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    disconnect();
+    return true;
+}
+
+void Client::disconnect() {
     net::Manager::getSingleton()->disconnect();
     setState(STATE_PRE_LOGIN);
-    return true;
 }
 
 void Client::setState(unsigned int value) {
@@ -114,6 +118,10 @@ bool Client::handleStateChange() {
 
     case STATE_PLAYING:
         uiManager->uninstallMacros();
+        uiManager->destroyAllGumpMenus();
+        uiManager->releaseIngameObjects();
+        world::Manager::getSingleton()->clear();
+        
         break;
     }
 
@@ -123,15 +131,12 @@ bool Client::handleStateChange() {
     case STATE_PRE_LOGIN:
         ui::GumpMenus::openLoginGump();
 
-        //ui::Manager::getSingleton()->openXmlGump("simpletest");
-
         break;
 
     case STATE_PLAYING:
         uiManager->openXmlGump("gamewindow");
         uiManager->installMacros();
 
-        //ui::Manager::getSingleton()->openXmlGump("simpletest");
         break;
     }
 
@@ -140,6 +145,7 @@ bool Client::handleStateChange() {
 
 void Client::cleanUp() {
     ui::Manager::getSingleton()->destroyAllGumpMenus();
+    ui::Manager::getSingleton()->releaseIngameObjects();
     net::Manager::destroy();
     world::Manager::destroy();
     data::Manager::destroy();

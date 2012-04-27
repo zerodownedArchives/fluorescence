@@ -154,6 +154,7 @@ bool Socket::connect(unsigned int ip, unsigned short port) {
     running_ = true;
     criticalError_ = false;
     useDecompress_ = false;
+    decompressedSize_ = 0;
 
     receiveThread_ = boost::thread(&Socket::receiveRun, this);
 
@@ -175,6 +176,11 @@ void Socket::close() {
     }
 
     receiveThread_.join();
+    
+    boost::mutex::scoped_lock myLock(packetQueueMutex_);
+    while (!packetQueue_.empty()) {
+        packetQueue_.pop();
+    }
 }
 
 void Socket::receiveRun() {

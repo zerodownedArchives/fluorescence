@@ -25,9 +25,6 @@ namespace fluo {
 namespace ui {
 namespace commands {
     
-OpenGump::OpenGump(Config& config) {
-}
-
 void OpenGump::execute(const UnicodeString& args) {
     // TODO: make this also available for gumps needing a mobile link
     ui::Manager::getSingleton()->openXmlGump(args);

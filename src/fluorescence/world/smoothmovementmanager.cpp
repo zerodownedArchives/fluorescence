@@ -70,5 +70,9 @@ void SmoothMovementManager::clear(Serial serial) {
     }
 }
 
+void SmoothMovementManager::clear() {
+    movementQueues_.clear();
+}
+
 }
 }

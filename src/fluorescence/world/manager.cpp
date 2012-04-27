@@ -312,5 +312,15 @@ std::list<boost::shared_ptr<world::Effect> >::iterator Manager::effectsEnd() {
     return effects_.end();
 }
 
+void Manager::clear() {
+    player_.reset();
+    mobiles_.clear();
+    dynamicItems_.clear();
+    smoothMovementManager_->clear();
+    overheadMessages_.clear();
+    effects_.clear();
+    sectorManager_->clear();
+}
+
 }
 }

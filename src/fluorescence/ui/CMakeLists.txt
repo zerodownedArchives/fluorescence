@@ -157,6 +157,7 @@ set (CLIENTCOMMANDS_HPP
     ui/commands/whisper.hpp
     ui/commands/command.hpp
     ui/commands/opengump.hpp
+    ui/commands/disconnect.hpp
     )
 
 set (CLIENTCOMMANDS_CPP
@@ -166,6 +167,7 @@ set (CLIENTCOMMANDS_CPP
     ui/commands/whisper.cpp
     ui/commands/command.cpp
     ui/commands/opengump.cpp
+    ui/commands/disconnect.cpp
     )
 
 

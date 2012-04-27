@@ -181,5 +181,11 @@ void CursorManager::setCursorEnableFlags(unsigned int flags) {
     updateCursor();
 }
 
+void CursorManager::releaseIngameObjects() {
+    cancelTarget();
+    dragCandidate_.reset();
+    updateCursor();
+}
+
 }
 }

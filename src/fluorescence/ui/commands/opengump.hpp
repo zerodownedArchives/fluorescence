@@ -20,7 +20,6 @@
 #define FLUO_UI_COMMANDS_OPENGUMP_HPP
 
 #include "clientcommand.hpp"
-#include <misc/config.hpp>
 
 namespace fluo {
 namespace ui {
@@ -28,8 +27,6 @@ namespace commands {
     
 class OpenGump : public ClientCommand {
 public:
-    OpenGump(Config& config);
-    
     virtual void execute(const UnicodeString& args);
 };
 

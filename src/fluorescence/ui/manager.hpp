@@ -113,6 +113,8 @@ public:
     
     void queueComponentResize(CL_GUIComponent* elem, const CL_Rectf& geom);
     
+    void releaseIngameObjects();
+    
 private:
     static Manager* singleton_;
 

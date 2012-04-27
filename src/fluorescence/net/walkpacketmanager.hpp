@@ -47,8 +47,6 @@ public:
     bool sendMovementRequest(uint8_t direction);
 
 private:
-    boost::shared_ptr<world::Mobile> player_;
-
     uint32_t fastWalkStack_[6];
     unsigned int fastWalkStackIdx_;
     uint8_t curSequence_;

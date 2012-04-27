@@ -91,6 +91,8 @@ public:
     void cancelTarget();
     bool hasTarget() const;
     bool onTarget(boost::shared_ptr<world::IngameObject> obj);
+    
+    void releaseIngameObjects();
 
 private:
     unsigned int warmodeArtOffset_;

@@ -60,6 +60,7 @@ public:
     void setState(unsigned int state);
     unsigned int getState();
     void loginComplete(); /// < called when the game window should be displayed => setState(playing)
+    void disconnect();
 
     // gump callbacks
     bool disconnect(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);

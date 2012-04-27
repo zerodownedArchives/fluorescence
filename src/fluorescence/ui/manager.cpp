@@ -483,5 +483,10 @@ void Manager::queueComponentResize(CL_GUIComponent* elem, const CL_Rectf& geom) 
     componentResizeQueue_.push_back(std::make_pair(elem, geom));
 }
 
+void Manager::releaseIngameObjects() {
+    singleClickWait_.first =  nullptr;
+    cursorManager_->releaseIngameObjects();
+}
+
 }
 }

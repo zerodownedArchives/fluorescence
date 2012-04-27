@@ -51,10 +51,6 @@ void WalkPacketManager::updateFastWalkStack(uint32_t value) {
 
 void WalkPacketManager::onMovementAccept(uint8_t sequence) {
     //LOG_DEBUG << "movement accept: " << (unsigned int)sequence << std::endl;
-    if (!player_) {
-        player_ = world::Manager::getSingleton()->getPlayer();
-    }
-
     unsigned int i = 0;
     for (; i < unacceptedSequenceCount_; ++i) {
         if (unacceptedSequences_[i] == sequence) {
@@ -75,27 +71,21 @@ void WalkPacketManager::onMovementAccept(uint8_t sequence) {
 }
 
 void WalkPacketManager::onMovementDeny(const net::packets::MovementDeny* pkt) {
-    LOG_DEBUG << "movement deny" << std::endl;
-    if (!player_) {
-        player_ = world::Manager::getSingleton()->getPlayer();
-    }
+    //LOG_DEBUG << "movement deny" << std::endl;
+    boost::shared_ptr<world::Mobile> player = world::Manager::getSingleton()->getPlayer();
 
-    player_->setLocation(pkt->locX_, pkt->locY_, pkt->locZ_);
-    player_->setDirection(pkt->direction_);
+    player->setLocation(pkt->locX_, pkt->locY_, pkt->locZ_);
+    player->setDirection(pkt->direction_);
 
     curSequence_ = 0;
     fastWalkStackIdx_ = 0;
 
-    world::Manager::getSmoothMovementManager()->clear(player_->getSerial());
+    world::Manager::getSmoothMovementManager()->clear(player->getSerial());
 
     unacceptedSequenceCount_ = 0;
 }
 
 bool WalkPacketManager::sendMovementRequest(uint8_t direction) {
-    if (!player_) {
-        player_ = world::Manager::getSingleton()->getPlayer();
-    }
-
     // to many not acknowledged yet
     if (unacceptedSequenceCount_ >= MAX_UNACCEPTED_SEQUENCE_COUNT) {
         return false;
