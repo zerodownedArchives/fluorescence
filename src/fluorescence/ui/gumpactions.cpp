@@ -32,6 +32,7 @@
 #include <net/manager.hpp>
 #include <net/packets/speechrequest.hpp>
 #include <net/packets/createcharacter.hpp>
+#include <net/packets/helprequest.hpp>
 #include <net/packets/bf.hpp>
 #include <net/packets/bf/contextmenureply.hpp>
 
@@ -72,6 +73,7 @@ void GumpActions::buildFullActionTable() {
     actionTable_["createdummychar"] = GumpAction(true, boost::bind(&GumpActions::createDummyCharacter, _1, _2, _3, _4));
     
     actionTable_["openstatus"] = GumpAction(false, boost::bind(&GumpActions::openStatus, _1, _2, _3, _4));
+    actionTable_["helprequest"] = GumpAction(false, boost::bind(&GumpActions::helpRequest, _1, _2, _3, _4));
 }
 
 
@@ -177,6 +179,14 @@ bool GumpActions::openStatus(GumpMenu* menu, const UnicodeString& action, unsign
     } else {
         LOG_WARN << "openstatus gump action in unlinked gump" << std::endl;
     }
+    return true;
+}
+
+bool GumpActions::helpRequest(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    LOG_DEBUG << "send help request" << std::endl;
+    net::packets::HelpRequest pkt;
+    net::Manager::getSingleton()->send(pkt);
+
     return true;
 }
 

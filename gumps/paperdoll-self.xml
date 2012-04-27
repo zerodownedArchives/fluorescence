@@ -3,7 +3,13 @@
     <paperdoll id="paperdoll" x="3" y="9" width="240" height="300" />
     <propertylabel x="20" y="270" width="180" height="20" link="paperdoll-name" />
     
-    <button x="185" y="93" action="disconnect">
+    <button x="185" y="44" action="helprequest">
+        <normal source="gumpart" imgid="2031" />
+        <mouseover source="gumpart" imgid="2033" />
+        <mousedown source="gumpart" imgid="2032" />
+    </button>
+    
+    <button x="185" y="98" action="disconnect">
         <normal source="gumpart" imgid="2009" />
         <mouseover source="gumpart" imgid="2011" />
         <mousedown source="gumpart" imgid="2010" />
