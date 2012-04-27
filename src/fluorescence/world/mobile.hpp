@@ -98,6 +98,8 @@ public:
     virtual void onRemovedFromSector(world::Sector* sector);
     
     bool hasItemOnLayer(unsigned int layer) const;
+    
+    void openStatWindow(const CL_Point& mousePos);
 
 private:
     unsigned int baseBodyId_; // as sent by the server

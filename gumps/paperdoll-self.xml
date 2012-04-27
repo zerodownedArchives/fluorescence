@@ -8,4 +8,10 @@
         <mouseover source="gumpart" imgid="2011" />
         <mousedown source="gumpart" imgid="2010" />
     </button>
+    
+    <button x="185" y="233" action="openstatus">
+        <normal source="gumpart" imgid="2027" />
+        <mouseover source="gumpart" imgid="2029" />
+        <mousedown source="gumpart" imgid="2028" />
+    </button>
 </gump>

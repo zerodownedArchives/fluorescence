@@ -505,5 +505,10 @@ void Manager::closeAllNonMessageGumps() {
     gumpList_ = newList;
 }
 
+CL_Point Manager::getMousePosition() const {
+    CL_InputDevice& mouse = getInputContext().get_mouse();
+    return CL_Point(mouse.get_x(), mouse.get_y());
+}
+
 }
 }

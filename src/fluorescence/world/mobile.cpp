@@ -257,6 +257,10 @@ void Mobile::removeLinkedGump(ui::GumpMenu* menu) {
 void Mobile::onStartDrag(const CL_Point& mousePos) {
     ui::Manager::getSingleton()->getCursorManager()->stopDragging();
 
+    openStatWindow(mousePos);
+}
+
+void Mobile::openStatWindow(const CL_Point& mousePos) {
     ui::GumpMenu* statsMenu;
     if (isPlayer()) {
         statsMenu = findOrCreateLinkedGump("status-self");

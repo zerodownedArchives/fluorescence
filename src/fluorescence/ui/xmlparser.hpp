@@ -127,8 +127,6 @@ private:
     std::map<UnicodeString, XmlParseFunction> functionTable_;
     std::map<UnicodeString, RepeatContext> repeatContexts_;
 
-    bool gameViewFindHelper(pugi::xml_node& node) const;
-    
     template<int N>
     bool parseMultiTextureImage(pugi::xml_node& node, components::MultiTextureImage<N>* button, unsigned int index) {
         UnicodeString imgSource = StringConverter::fromUtf8(node.attribute("source").value());

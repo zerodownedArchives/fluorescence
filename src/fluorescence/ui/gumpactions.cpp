@@ -37,6 +37,8 @@
 
 #include <misc/log.hpp>
 
+#include <world/mobile.hpp>
+
 
 namespace fluo {
 namespace ui {
@@ -68,6 +70,8 @@ void GumpActions::buildFullActionTable() {
     actionTable_["contextmenureply"] = GumpAction(true, boost::bind(&GumpActions::contextMenuReply, _1, _2, _3, _4));
     
     actionTable_["createdummychar"] = GumpAction(true, boost::bind(&GumpActions::createDummyCharacter, _1, _2, _3, _4));
+    
+    actionTable_["openstatus"] = GumpAction(false, boost::bind(&GumpActions::openStatus, _1, _2, _3, _4));
 }
 
 
@@ -163,6 +167,16 @@ bool GumpActions::createDummyCharacter(GumpMenu* menu, const UnicodeString& acti
     
     net::Manager::getSingleton()->send(pkt);
 
+    return true;
+}
+
+bool GumpActions::openStatus(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    world::Mobile* mob = menu->getLinkedMobile();
+    if (mob) {
+        mob->openStatWindow(ui::Manager::getSingleton()->getMousePosition());
+    } else {
+        LOG_WARN << "openstatus gump action in unlinked gump" << std::endl;
+    }
     return true;
 }
 

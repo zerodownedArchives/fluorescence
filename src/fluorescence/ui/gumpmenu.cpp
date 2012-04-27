@@ -280,6 +280,10 @@ void GumpMenu::setLinkedMobile(world::Mobile* mob) {
     }
 }
 
+world::Mobile* GumpMenu::getLinkedMobile() const {
+    return linkedMobile_;
+}
+
 void GumpMenu::onClose() {
     if (linkedMobile_) {
         linkedMobile_->removeLinkedGump(this);

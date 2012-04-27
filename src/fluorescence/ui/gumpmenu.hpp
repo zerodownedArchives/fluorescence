@@ -98,6 +98,7 @@ public:
 
     void updateMobileProperties();
     void setLinkedMobile(world::Mobile* mob);
+    world::Mobile* getLinkedMobile() const;
 
     void onClose();
 

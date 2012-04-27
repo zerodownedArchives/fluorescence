@@ -116,6 +116,8 @@ public:
     
     void releaseIngameObjects();
     
+    CL_Point getMousePosition() const;
+    
 private:
     static Manager* singleton_;
 
