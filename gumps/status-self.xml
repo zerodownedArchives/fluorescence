@@ -1,4 +1,5 @@
-<gump width="250" height="73" draggable="1" closable="1" background="1">
+<gump draggable="1" closable="1">
+    <tbackground x="0" y="0" width="250" height="73"  />
     <propertylabel x="5" y="5" width="240" height="20" link="name" />
     <propertylabel x="5" y="22" width="20" height="20" link="hitpoints" />
     <tlabel text="/" x="27" y="22" width="4" height="20" />

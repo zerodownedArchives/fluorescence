@@ -44,6 +44,7 @@
 #include "components/background.hpp"
 #include "components/uocheckbox.hpp"
 #include "components/sysloglabel.hpp"
+#include "components/tbackground.hpp"
 
 namespace fluo {
 namespace ui {
@@ -94,6 +95,7 @@ XmlParser::XmlParser() {
     functionTable_["tscrollarea"] = boost::bind(&XmlParser::parseTScrollArea, this, _1, _2, _3);
     functionTable_["repeat"] = boost::bind(&XmlParser::parseRepeat, this, _1, _2, _3);
     functionTable_["propertylabel"] = boost::bind(&XmlParser::parsePropertyLabel, this, _1, _2, _3);
+    functionTable_["tbackground"] = boost::bind(&XmlParser::parseTBackground, this, _1, _2, _3);
 
     functionTable_["page"] = boost::bind(&XmlParser::parsePage, this, _1, _2, _3);
     functionTable_["background"] = boost::bind(&XmlParser::parseBackground, this, _1, _2, _3);
@@ -172,12 +174,14 @@ GumpMenu* XmlParser::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
     GumpMenu* ret = menu;
 
     if (!ret) {
-        CL_Rect bounds = getBoundsFromNode(rootNode, ui::Manager::getSingleton()->getMainWindow()->get_viewport());
+        CL_Rect bounds = getBoundsFromNode(rootNode);
+        bounds.set_width(1);
+        bounds.set_height(1);
+        
         bool closable = rootNode.attribute("closable").as_bool();
         bool draggable = rootNode.attribute("draggable").as_bool();
         UnicodeString action = StringConverter::fromUtf8(rootNode.attribute("action").value());
         UnicodeString cancelAction = StringConverter::fromUtf8(rootNode.attribute("cancelaction").value());
-        bool background = rootNode.attribute("background").as_bool();
 
         CL_GUITopLevelDescription desc(bounds, false);
         desc.set_decorations(false);
@@ -188,10 +192,6 @@ GumpMenu* XmlParser::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
         ret = new GumpMenu(desc);
         ret->setClosable(closable);
         ret->setDraggable(draggable);
-
-        if (!background) {
-            ret->set_id_name("nobackground");
-        }
 
         if (action.length() > 0) {
             ret->setAction(action);
@@ -204,6 +204,8 @@ GumpMenu* XmlParser::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
 
     parseChildren(rootNode, ret, ret);
 
+    ret->fitSizeToChildren();
+    ret->setupResizeHandler();
     ret->activateFirstPage();
 
     return ret;
@@ -228,32 +230,13 @@ bool XmlParser::parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent,
     return ret;
 }
 
-CL_Rect XmlParser::getBoundsFromNode(pugi::xml_node& node, const CL_GUIComponent* parent) {
-    return getBoundsFromNode(node, parent->get_geometry());
-}
-
-CL_Rect XmlParser::getBoundsFromNode(pugi::xml_node& node, const CL_Rect& parentGeometry) {
+CL_Rect XmlParser::getBoundsFromNode(pugi::xml_node& node) {
     unsigned int width = node.attribute("width").as_uint();
     unsigned int height = node.attribute("height").as_uint();
-
-    int locX;
-    int locY;
-    static std::string centerStr("center");
-
-    if (centerStr == node.attribute("x").value()) {
-        locX = (parentGeometry.get_width() - width) / 2;
-    } else {
-        locX = node.attribute("x").as_int();
-    }
-
-    if (centerStr == node.attribute("y").value()) {
-        locY = (parentGeometry.get_height() - height) / 2;
-    } else {
-        locY = node.attribute("y").as_int();
-    }
+    int locX = node.attribute("x").as_int();
+    int locY = node.attribute("y").as_int();
 
     CL_Rect bounds(locX, locY, CL_Size(width, height));
-
     return bounds;
 }
 
@@ -267,7 +250,7 @@ bool XmlParser::parseId(pugi::xml_node& node, CL_GUIComponent* component) {
 }
 
 bool XmlParser::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     UnicodeString text = StringConverter::fromUtf8(node.attribute("text").value());
     unsigned int buttonId = node.attribute("buttonid").as_uint();
     unsigned int pageId = node.attribute("page").as_uint();
@@ -298,13 +281,13 @@ bool XmlParser::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     parseId(node, button);
     button->set_geometry(bounds);
     button->setText(text);
-
+    
     top->addToCurrentPage(button);
     return true;
 }
 
 bool XmlParser::parseButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     unsigned int buttonId = node.attribute("buttonid").as_uint();
     unsigned int pageId = node.attribute("page").as_uint();
     UnicodeString action = StringConverter::fromUtf8(node.attribute("action").value());
@@ -366,7 +349,7 @@ bool XmlParser::parseButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpM
 }
 
 bool XmlParser::parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     std::string text = node.attribute("text").value();
     int checked = node.attribute("checked").as_int();
 
@@ -384,7 +367,7 @@ bool XmlParser::parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent, Gu
 }
 
 bool XmlParser::parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     std::string text = node.attribute("text").value();
     std::string group = node.attribute("group").value();
     int selected = node.attribute("selected").as_int();
@@ -409,7 +392,7 @@ bool XmlParser::parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* parent,
 }
 
 bool XmlParser::parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     UnicodeString text = StringConverter::fromUtf8(node.attribute("text").value());
     int numeric = node.attribute("numeric").as_int();
     int password = node.attribute("password").as_int();
@@ -443,7 +426,7 @@ bool XmlParser::parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent, Gu
 }
 
 bool XmlParser::parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
 
     CL_ComboBox* box = new CL_ComboBox(parent);
     parseId(node, box);
@@ -479,7 +462,7 @@ bool XmlParser::parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent, Gu
 }
 
 bool XmlParser::parseTGroupBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
 
     CL_GroupBox* box = new CL_GroupBox(parent);
     parseId(node, box);
@@ -492,7 +475,7 @@ bool XmlParser::parseTGroupBox(pugi::xml_node& node, CL_GUIComponent* parent, Gu
 }
 
 bool XmlParser::parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     std::string type = node.attribute("type").value();
 
     CL_Spin* spin = new CL_Spin(parent);
@@ -530,7 +513,7 @@ bool XmlParser::parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent, GumpMe
 }
 
 bool XmlParser::parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
 
     CL_Tab* tabs = new CL_Tab(parent);
     parseId(node, tabs);
@@ -557,7 +540,7 @@ bool XmlParser::parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent, GumpMe
 }
 
 bool XmlParser::parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     std::string type = node.attribute("type").value();
     int min = node.attribute("min").as_int();
     int max = node.attribute("max").as_int();
@@ -589,7 +572,7 @@ bool XmlParser::parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent, Gump
 }
 
 bool XmlParser::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     std::string align = node.attribute("align").value();
     std::string text = node.attribute("text").value();
 
@@ -617,7 +600,7 @@ bool XmlParser::parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpM
 }
 
 bool XmlParser::parsePropertyLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     std::string align = node.attribute("align").value();
     UnicodeString link = StringConverter::fromUtf8(node.attribute("link").value());
 
@@ -673,7 +656,7 @@ bool XmlParser::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMe
     UnicodeString imgSource = StringConverter::fromUtf8(node.attribute("source").value());
     UnicodeString imgId = StringConverter::fromUtf8(node.attribute("imgid").value());
 
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     
     unsigned int hue = node.attribute("hue").as_uint();
     std::string rgba = node.attribute("rgba").value();
@@ -722,7 +705,7 @@ bool XmlParser::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMe
 }
 
 bool XmlParser::parseBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     
     unsigned int hue = node.attribute("hue").as_uint();
     std::string rgba = node.attribute("rgba").value();
@@ -775,7 +758,7 @@ bool XmlParser::parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMen
 }
 
 bool XmlParser::parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     std::string hVisibilityStr = node.attribute("hvisible").value();
     std::string vVisibilityStr = node.attribute("vvisible").value();
 
@@ -920,7 +903,7 @@ bool XmlParser::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpM
 }
 
 bool XmlParser::parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
 
     ui::components::WorldView* worldView = new ui::components::WorldView(parent, bounds);
 
@@ -932,7 +915,7 @@ bool XmlParser::parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, Gu
 }
 
 bool XmlParser::parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
 
     ui::components::GumpView* gumpView = new ui::components::GumpView(parent, bounds);
 
@@ -944,7 +927,7 @@ bool XmlParser::parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, Gu
 }
 
 bool XmlParser::parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
 
     ui::components::ContainerView* contView = new ui::components::ContainerView(parent, bounds);
 
@@ -960,7 +943,7 @@ bool XmlParser::gameViewFindHelper(pugi::xml_node& node) const {
 }
 
 bool XmlParser::parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     unsigned int switchId = node.attribute("switchid").as_uint();
     bool isChecked = node.attribute("checked").as_bool();
 
@@ -1004,12 +987,23 @@ bool XmlParser::parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, Gum
 }
 
 bool XmlParser::parseSysLogLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, parent);
+    CL_Rect bounds = getBoundsFromNode(node);
     components::SysLogLabel* sysLogLabel = new components::SysLogLabel(top);
     sysLogLabel->setMaxGeometry(bounds);
     parseId(node, sysLogLabel);
     top->addToCurrentPage(sysLogLabel);
     
+    return true;
+}
+
+bool XmlParser::parseTBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node);
+
+    components::TBackground* bg = new components::TBackground(parent);
+    parseId(node, bg);
+    bg->set_geometry(bounds);
+
+    top->addToCurrentPage(bg);
     return true;
 }
 

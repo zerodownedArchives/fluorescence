@@ -65,6 +65,7 @@ set (GUMPMENU_HPP
     ui/components/textentry.hpp
     ui/components/uoradiobutton.hpp
     ui/components/sysloglabel.hpp
+    ui/components/tbackground.hpp
     )
 
 set (GUMPMENU_CPP
@@ -89,6 +90,7 @@ set (GUMPMENU_CPP
     ui/components/textentry.cpp
     ui/components/uoradiobutton.cpp
     ui/components/sysloglabel.cpp
+    ui/components/tbackground.cpp
     )
 
 set (RENDER_HPP

@@ -50,7 +50,7 @@ public:
     void setTiled(bool value);
     void setAutoResize(bool value);
     
-    bool has_pixel(const CL_Point& p) const;
+    virtual bool has_pixel(const CL_Point& p) const;
     
 protected:
     void setHueInfo(const CL_Vec3f& hueInfo);

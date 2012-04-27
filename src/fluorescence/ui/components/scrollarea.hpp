@@ -34,7 +34,7 @@ public:
 
     ScrollArea(CL_GUIComponent* parent);
 
-    CL_Frame* getClientArea();
+    CL_GUIComponent* getClientArea();
     CL_ScrollBar* getVerticalScrollBar();
     CL_ScrollBar* getHorizontalScrollBar();
 
@@ -59,7 +59,7 @@ private:
     CL_ScrollBar* verticalScrollBar_;
     CL_ScrollBar* horizontalScrollBar_;
 
-    CL_Frame* clientArea_;
+    CL_GUIComponent* clientArea_;
 
     int lastScrollVertical_;
     int lastScrollHorizontal_;

@@ -17,48 +17,24 @@
  */
 
 
-#ifndef FLUO_UI_GUMPVIEW_HPP
-#define FLUO_UI_GUMPVIEW_HPP
+#ifndef FLUO_UI_COMPONENTS_TBACKGROUND_HPP
+#define FLUO_UI_COMPONENTS_TBACKGROUND_HPP
 
-#include <boost/shared_ptr.hpp>
-
-#include <list>
-
-#include <ui/gumpelement.hpp>
+#include <ClanLib/GUI/gui_component.h>
+#include <ClanLib/GUI/gui_theme_part.h>
 
 namespace fluo {
-
-namespace world {
-class IngameObject;
-}
-
 namespace ui {
-
-class GumpRenderer;
-
 namespace components {
 
-class GumpView : public GumpElement {
+class TBackground : public CL_GUIComponent {
 public:
-    GumpView(CL_GUIComponent* parent, const CL_Rect& bounds);
-    ~GumpView();
-
-    unsigned int getWidth();
-    unsigned int getHeight();
-
-    void renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect);
-
-    void addObject(boost::shared_ptr<world::IngameObject> obj);
-    void removeObject(boost::shared_ptr<world::IngameObject> obj);
+    TBackground(CL_GUIComponent* parent);
     
-    virtual bool has_pixel(const CL_Point& p) const;
+    void render(CL_GraphicContext &gc, const CL_Rect &updateRect);
 
 private:
-    boost::shared_ptr<GumpRenderer> renderer_;
-
-    bool onInputPressed(const CL_InputEvent& e);
-    bool onInputReleased(const CL_InputEvent & e);
-    bool onDoubleClick(const CL_InputEvent& e);
+    CL_GUIThemePart themePart_;
 };
 
 }
@@ -66,3 +42,4 @@ private:
 }
 
 #endif
+

@@ -190,6 +190,15 @@ void Manager::stepDraw() {
     getGraphicContext().clear();
     windowManager_->draw_windows(getGraphicContext());
     mainWindow_->flip(); // use parameter 1 here for vsync
+    
+    if (!componentResizeQueue_.empty()) {
+        std::vector<std::pair<CL_GUIComponent*, CL_Rectf> >::iterator iter = componentResizeQueue_.begin();
+        std::vector<std::pair<CL_GUIComponent*, CL_Rectf> >::iterator end = componentResizeQueue_.end();
+        for (; iter != end; ++iter) {
+            iter->first->set_geometry(iter->second);
+        }
+        componentResizeQueue_.clear();
+    }
 }
 
 boost::shared_ptr<CL_DisplayWindow> Manager::getMainWindow() {
@@ -468,6 +477,10 @@ bool Manager::isMapIdWater(unsigned int id) {
 
 bool Manager::isStaticIdWater(unsigned int id) {
     return std::binary_search(singleton_->staticWaterIds_.begin(), singleton_->staticWaterIds_.end(), id);
+}
+
+void Manager::queueComponentResize(CL_GUIComponent* elem, const CL_Rectf& geom) {
+    componentResizeQueue_.push_back(std::make_pair(elem, geom));
 }
 
 }

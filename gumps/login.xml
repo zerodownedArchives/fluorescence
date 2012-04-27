@@ -1,4 +1,5 @@
-<gump x="center" y="center" width="350" height="190" closable="0" draggable="0" action="connect" cancelaction="shutdown" background="1">
+<gump x="337" y="289" closable="0" draggable="0" action="connect" cancelaction="shutdown">
+    <tbackground x="0" y="0" width="350" height="190"  />
     <tlabel x="15" y="18" width="95" height="20" text="IP/Hostname:" />
     <tlineedit id="loginhost" x="120" y="15" width="215" height="25" />
 

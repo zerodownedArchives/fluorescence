@@ -37,7 +37,7 @@ ScrollArea::ScrollArea(CL_GUIComponent* parent) : CL_GUIComponent(parent), lastS
     verticalScrollBar_->set_position(0);
     verticalScrollBar_->func_scroll().set(this, &ScrollArea::onScroll);
 
-    clientArea_ = new CL_Frame(this);
+    clientArea_ = new CL_GUIComponent(this);
 }
 
 CL_ScrollBar* ScrollArea::getVerticalScrollBar() {
@@ -48,7 +48,7 @@ CL_ScrollBar* ScrollArea::getHorizontalScrollBar() {
     return horizontalScrollBar_;
 }
 
-CL_Frame* ScrollArea::getClientArea() {
+CL_GUIComponent* ScrollArea::getClientArea() {
     return clientArea_;
 }
 

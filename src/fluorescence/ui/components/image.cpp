@@ -52,8 +52,9 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     } else if (autoResize_ && (geom.get_width() != texture_->getWidth() || geom.get_height() != texture_->getHeight())) {
         geom.set_width(texture_->getWidth());
         geom.set_height(texture_->getHeight());
-        set_geometry(geom);
         request_repaint();
+        
+        ui::Manager::getSingleton()->queueComponentResize(this, geom);
     } else if (!tiled_) {
         if (hueInfo_[1u] == 0) {
             CL_Draw::texture(gc, texture_->getTexture(), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_, texture_->getNormalizedTextureCoords());
@@ -172,13 +173,13 @@ bool Image::has_pixel(const CL_Point& p) const {
         px %= tileableTexture_.get_width();
         py %= tileableTexture_.get_height();
     } else {
-        float stretchHori = get_width() / texture_->getWidth();
-        float stretchVert = get_height() / texture_->getHeight();
+        float stretchHori = (float)get_width() / texture_->getWidth();
+        float stretchVert = (float)get_height() / texture_->getHeight();
         px *= stretchHori;
         py *= stretchVert;
     }
     
-    return texture_->hasPixel(px, py);;
+    return texture_->hasPixel(px, py);
 }
 
 }

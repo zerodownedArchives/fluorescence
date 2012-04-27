@@ -287,9 +287,6 @@ void GumpMenu::onClose() {
 }
 
 void GumpMenu::startDragging(const CL_Point& mousePos) {
-    if (!get_stay_in_background()) {
-        bring_to_front();
-    }
     capture_mouse(true);
     lastMousePos_ = mousePos;
     isDragged_ = true;
@@ -317,9 +314,11 @@ void GumpMenu::fitSizeToChildren() {
     childHeight = (std::max)(1, childHeight);
     
     CL_Rectf geom = get_geometry();
-    geom.set_width(childWidth);
-    geom.set_height(childHeight);
-    set_geometry(geom);
+    if (geom.get_width() != childWidth || geom.get_height() != childHeight) {
+        geom.set_width(childWidth); 
+        geom.set_height(childHeight);
+        set_geometry(geom);
+    }
 }
 
 void GumpMenu::setSerial(Serial serial) {
@@ -373,6 +372,15 @@ unsigned int GumpMenu::getCurrentRadioGroup() const {
 
 bool GumpMenu::has_pixel(const CL_Point& p) const {
     return false;
+}
+
+void GumpMenu::setupResizeHandler() {
+    std::vector<CL_GUIComponent *> children = get_child_components();
+    std::vector<CL_GUIComponent*>::const_iterator iter = children.begin();
+    std::vector<CL_GUIComponent*>::const_iterator end = children.end();
+    for (; iter != end; ++iter) {
+        (*iter)->func_resized().set(this, &GumpMenu::fitSizeToChildren);
+    }
 }
 
 }

@@ -186,9 +186,7 @@ bool ContainerView::onPointerExit() {
 }
 
 bool ContainerView::has_pixel(const CL_Point& p) const {
-    bool ret = backgroundTexture_ && backgroundTexture_->isReadComplete() && backgroundTexture_->hasPixel(p.x, p.y);
-    LOG_DEBUG << "cv haspixel " << p.x << "/" << p.y << ": " << ret << std::endl;
-    return ret;
+    return backgroundTexture_ && backgroundTexture_->isReadComplete() && backgroundTexture_->hasPixel(p.x, p.y);
 }
 
 }

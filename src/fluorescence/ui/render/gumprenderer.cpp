@@ -60,6 +60,10 @@ CL_Texture GumpRenderer::getTexture(CL_GraphicContext& gc) {
     if (renderQueue_->requireGumpRepaint() || texture_.is_null()) {
         checkTextureSize(gc);
         CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
+        
+        if (origBuffer.is_null()) {
+            LOG_DEBUG << "oimg" << std::endl;
+        }
 
         gc.set_frame_buffer(frameBuffer_);
 

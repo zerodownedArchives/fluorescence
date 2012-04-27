@@ -122,6 +122,7 @@ GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std
     }
     
     ret->fitSizeToChildren();
+    ret->setupResizeHandler();
     ret->activateFirstPage();
     
     LOG_INFO << "Gump data: " << std::endl;

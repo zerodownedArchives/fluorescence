@@ -199,7 +199,7 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
     CL_Vec3f direction;
     boost::shared_ptr<world::IngameObject> clickedObject;
 
-    //LOGARG_INFO(LOGTYPE_INPUT, "input pressed WorldView: %u", e.id);
+    //LOG_INFO << "input pressed WorldView: " << e.id << std::endl;
 
     switch (e.id) {
     case CL_MOUSE_RIGHT: {

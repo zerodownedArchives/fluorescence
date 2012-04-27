@@ -111,6 +111,8 @@ public:
 
     bool onUnhandledInputEvent(const CL_InputEvent& event);
     
+    void queueComponentResize(CL_GUIComponent* elem, const CL_Rectf& geom);
+    
 private:
     static Manager* singleton_;
 
@@ -170,6 +172,8 @@ private:
     std::vector<int> staticIgnoreIds_;
     std::vector<int> mapWaterIds_;
     std::vector<int> staticWaterIds_;
+    
+    std::vector<std::pair<CL_GUIComponent*, CL_Rectf> > componentResizeQueue_;
 };
 
 }

@@ -1654,10 +1654,8 @@ tooltip
 
 window
 {
-    bg-color: #d0d0d0;
-    bg-image:WindowBackdrop;
-    bg-image-sizing:repeat;
- }
+    bg-color: transparent;
+}
 
 window caption
 {
@@ -1736,8 +1734,9 @@ label#label-bigfont
     font-size:18pt;
 }
 
-window#nobackground
+tbackground
 {
-    bg-color:transparent;
-    bg-image:ToolBarButtonNormal;
+    bg-color: #d0d0d0;
+    bg-image:WindowBackdrop;
+    bg-image-sizing:repeat;
 }

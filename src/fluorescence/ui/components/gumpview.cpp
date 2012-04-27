@@ -156,6 +156,10 @@ void GumpView::removeObject(boost::shared_ptr<world::IngameObject> obj) {
     request_repaint();
 }
 
+bool GumpView::has_pixel(const CL_Point& p) const {
+    return (bool)renderer_->getRenderQueue()->getFirstObjectAt(p.x, p.y, false);
+}
+
 }
 }
 }

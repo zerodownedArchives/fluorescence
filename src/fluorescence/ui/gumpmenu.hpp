@@ -20,8 +20,7 @@
 #ifndef FLUO_UI_GUMPMENU_HPP
 #define FLUO_UI_GUMPMENU_HPP
 
-#include <ClanLib/gui.h>
-#include <boost/enable_shared_from_this.hpp>
+#include <ClanLib/GUI/Components/window.h>
 #include <map>
 
 #include <typedefs.hpp>
@@ -37,7 +36,7 @@ namespace world {
 
 namespace ui {
 
-class GumpMenu : public CL_Window, public boost::enable_shared_from_this<GumpMenu> {
+class GumpMenu : public CL_Window {
 public:
     GumpMenu(const CL_GUITopLevelDescription& desc);
 
@@ -104,6 +103,7 @@ public:
 
     void startDragging(const CL_Point& mousePos);
     
+    void setupResizeHandler();
     void fitSizeToChildren();
     
     void setSerial(Serial serial);
@@ -115,7 +115,7 @@ public:
     unsigned int getCurrentRadioGroup() const;
     
     virtual bool has_pixel(const CL_Point& p) const;
-
+    
 private:
     Serial serial_;
     unsigned int typeId_;
