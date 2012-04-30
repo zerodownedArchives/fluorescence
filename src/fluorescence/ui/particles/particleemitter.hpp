@@ -40,7 +40,7 @@ class ParticleEmitter : public Emitter {
 friend class XmlLoader;
 
 public:
-    ParticleEmitter(unsigned int maxSize);
+    ParticleEmitter(unsigned int capacity);
     ~ParticleEmitter();
 
     virtual void step(float elapsedSeconds);

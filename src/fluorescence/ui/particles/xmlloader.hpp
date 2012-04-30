@@ -53,17 +53,7 @@ private:
     
     bool parse(pugi::xml_document& doc, world::ParticleEffect* effect) const;
     
-    boost::shared_ptr<ParticleEmitter> parseEmitter(pugi::xml_node& node) const;
-    
-    CL_Vec4f parseColor(pugi::xml_node node) const;
-    CL_Vec3f parseVelocity(pugi::xml_node node) const;
-    void parseEmitterTxNode(pugi::xml_node& node, float& lifetimeMin, float& lifetimeMax, 
-        CL_Vec4f& colorStartMin, CL_Vec4f& colorStartMax, CL_Vec4f& colorEndMin, CL_Vec4f& colorEndMax, float& frequency,
-        bool shapeHasSize, int& shapeWidth, int& shapeHeight,
-        CL_Vec3f& velocityStartMin, CL_Vec3f& velocityStartMax, CL_Vec3f& velocityEndMin, CL_Vec3f& velocityEndMax,
-        float& accelerationStartMin, float& accelerationStartMax, float& accelerationEndMin, float& accelerationEndMax) const;
-        
-    
+    boost::shared_ptr<ParticleEmitter> parseEmitter(pugi::xml_node& node, std::map<UnicodeString, ParticleEmitterState>& stateMap) const;
     ParticleEmitterState parseState(pugi::xml_node& node, const ParticleEmitterState& defaultState) const;
     
     // throws if the attribute is not found

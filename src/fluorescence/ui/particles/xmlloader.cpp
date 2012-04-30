@@ -30,6 +30,7 @@
 #include "startlocationprovider.hpp"
 #include "motionmodel.hpp"
 #include "xmlloadexception.hpp"
+#include "timelinestatic.hpp"
 
 namespace fluo {
 namespace ui {
@@ -129,11 +130,13 @@ bool XmlLoader::parse(pugi::xml_document& doc, world::ParticleEffect* effect) co
             stateIter = stateIter.next_sibling();
         }
         
-        //pugi::xml_node iter = doc.document_element().first_child();
-        //while (iter) {
-            //effect->addEmitter(parseEmitter(iter));
-            //iter = iter.next_sibling();
-        //}
+        
+        pugi::xml_node emittersIter = doc.document_element().child("emitters").first_child();
+        while (emittersIter) {
+            boost::shared_ptr<ParticleEmitter> newEmitter = parseEmitter(emittersIter, stateMap);
+            effect->addEmitter(newEmitter);
+            emittersIter = emittersIter.next_sibling();
+        }
     } catch (const XmlLoadException& ex) {
         LOG_ERROR << "Unable to load xml particle effect: " << ex.what() << std::endl;
         return false;
@@ -142,206 +145,56 @@ bool XmlLoader::parse(pugi::xml_document& doc, world::ParticleEffect* effect) co
     return true;
 }
 
-boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node) const {
-    //int sizeMax = node.child("size").attribute("max").as_int();
-    boost::shared_ptr<ParticleEmitter> ret(new ParticleEmitter(0));
+boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node, std::map<UnicodeString, ParticleEmitterState>& stateMap) const {
+    checkAttribute(node, "capacity");
+    int capacity = node.attribute("capacity").as_int();
+    boost::shared_ptr<ParticleEmitter> emitter(new ParticleEmitter(capacity));
     
-    //int sizeInit = node.child("size").attribute("init").as_int();    
-    //ret->emittedStartCount_ = sizeInit;
+    emitter->emittedMoveWithEmitter_ = node.attribute("particlesmovewithemitter").as_bool();
     
-    //ret->lifetimes_[1u] = node.child("lifetime").attribute("duration").as_float();
+    if (!node.child("texture")) {
+        throw XmlLoadException("Emitter definition without texture");
+    }
+    pugi::xml_node textureNode = node.child("texture");
+    checkAttribute(textureNode, "source");
+    checkAttribute(textureNode, "id");
+    UnicodeString textureResource(textureNode.attribute("source").value());
+    UnicodeString textureId(textureNode.attribute("id").value());
+    emitter->emittedTexture_ = data::Manager::getTexture(textureResource, textureId);
     
-    //pugi::xml_node particlesCommon = node.child("particles");
-    //bool moveWithEmitter = particlesCommon.child("movewithemitter").attribute("value").as_bool();
-    //ret->emittedMoveWithEmitter_ = moveWithEmitter;
-    
-    //UnicodeString textureResource(particlesCommon.child("texture").attribute("source").value());
-    //UnicodeString textureId(particlesCommon.child("texture").attribute("id").value());
-    //ret->emittedTexture_ = data::Manager::getTexture(textureResource, textureId);
-    
-    //std::string motionModel = particlesCommon.child("motion").attribute("model").value();
-    //bool motionModelVelocities = false;
-    //bool motionModelExplosion = false;
-    //if (motionModel == "static") {
-        //ret->emittedMotionModel_.reset((MotionModel*)new MotionModelStatic());
-    //} else if (motionModel == "explosion") {
-        //ret->emittedMotionModel_.reset((MotionModel*)new MotionModelAwayFromEmitter());
-        //motionModelExplosion = true;
-    //} else if (motionModel == "velocities") {
-        //ret->emittedMotionModel_.reset((MotionModel*)new MotionModelStartEndVelocity());
-        //motionModelVelocities = true;
-    //} else {
-        //LOG_WARN << "Unknown motion model for particles \"" << motionModel << "\", assuming static" << std::endl;
-        //ret->emittedMotionModel_.reset((MotionModel*)new MotionModelStatic());
-    //}
-    
-    
-    //std::string shapeType = node.child("shape").attribute("type").value();
-    //bool shapeHasSize = true;
-    //if (shapeType == "oval") {
-        //ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderOval());
-    //} else if (shapeType == "oval-outline") {
-        //ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderOvalOutline());
-    //} else if (shapeType == "box") {
-        //ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderBox());
-    //} else if (shapeType == "box-outline") {
-        //ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderBoxOutline());
-    //} else if (shapeType == "point") {
-        //ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderEmitter());
-        //shapeHasSize = false;
-    //} else {
-        //LOG_WARN << "Unknown particle emitter shape \"" << shapeType << "\", assuming point" << std::endl;
-        //ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderEmitter());
-        //shapeHasSize = false;
-    //}
-    
-    
-    //// find t0 values, copy also to t1
-    //pugi::xml_node emitterT0 = node.child("t0");
-    //if (emitterT0) {
-        //float lifetimeMin, lifetimeMax, frequency;
-        //CL_Vec4f colorStartMin, colorStartMax, colorEndMin, colorEndMax;
-        //int shapeWidth, shapeHeight;
-        //CL_Vec3f velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax;
-        //float accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax;
-        
-        //parseEmitterTxNode(emitterT0, lifetimeMin, lifetimeMax, colorStartMin, colorStartMax, colorEndMin, colorEndMax, frequency, 
-                //shapeHasSize, shapeWidth, shapeHeight,
-                //velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax, 
-                //accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
-        
-        //ret->emittedLifetimeMin_.set(lifetimeMin, lifetimeMin);
-        //ret->emittedLifetimeMax_.set(lifetimeMax, lifetimeMax);
-        
-        //ret->emittedColorStartMin_.set(colorStartMin, colorStartMin);
-        //ret->emittedColorStartMax_.set(colorStartMax, colorStartMax);
-        //ret->emittedColorEndMin_.set(colorEndMin, colorEndMin);
-        //ret->emittedColorEndMax_.set(colorEndMax, colorEndMax);
-        
-        //ret->emitPerSecond_.set(frequency, frequency);
-        
-        //if (motionModelExplosion) {
-            //boost::shared_ptr<MotionModelAwayFromEmitter> motionMod = boost::static_pointer_cast<MotionModelAwayFromEmitter>(ret->emittedMotionModel_);
-            //motionMod->setAccelerationT0(accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
-        //} else if (motionModelVelocities) {
-            //boost::shared_ptr<MotionModelStartEndVelocity> motionMod = boost::static_pointer_cast<MotionModelStartEndVelocity>(ret->emittedMotionModel_);
-            //motionMod->setVelocitiesT0(velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax);
-        //}
-        
-        //if (shapeHasSize) {
-            //boost::shared_ptr<StartLocationProviderWithSize> startPosProv = 
-                    //boost::dynamic_pointer_cast<StartLocationProviderWithSize>(ret->emittedStartLocationProvider_);
-            //if (startPosProv) {
-                //startPosProv->setSize(shapeWidth, shapeWidth, shapeHeight, shapeHeight);
-            //}
-        //}
-    //}
-    
-    //// find T1 values, overwrite
-    //pugi::xml_node emitterT1 = node.child("t1");
-    //if (emitterT1) {
-        //float lifetimeMin, lifetimeMax, frequency;
-        //CL_Vec4f colorStartMin, colorStartMax, colorEndMin, colorEndMax;
-        //int shapeWidth, shapeHeight;
-        //CL_Vec3f velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax;
-        //float accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax;
-        
-        //parseEmitterTxNode(emitterT1, lifetimeMin, lifetimeMax, colorStartMin, colorStartMax, colorEndMin, colorEndMax, frequency, 
-                //shapeHasSize, shapeWidth, shapeHeight,
-                //velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax, 
-                //accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
-        
-        //ret->emittedLifetimeMin_.setT1(lifetimeMin);
-        //ret->emittedLifetimeMax_.setT1(lifetimeMax);
-        
-        //ret->emittedColorStartMin_.setT1(colorStartMin);
-        //ret->emittedColorStartMax_.setT1(colorStartMax);
-        //ret->emittedColorEndMin_.setT1(colorEndMin);
-        //ret->emittedColorEndMax_.setT1(colorEndMax);
-        
-        //ret->emitPerSecond_.setT1(frequency);
-        
-        //if (motionModelExplosion) {
-            //boost::shared_ptr<MotionModelAwayFromEmitter> motionMod = boost::static_pointer_cast<MotionModelAwayFromEmitter>(ret->emittedMotionModel_);
-            //motionMod->setAccelerationT1(accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
-        //} else if (motionModelVelocities) {
-            //boost::shared_ptr<MotionModelStartEndVelocity> motionMod = boost::static_pointer_cast<MotionModelStartEndVelocity>(ret->emittedMotionModel_);
-            //motionMod->setVelocitiesT1(velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax);
-        //}
-        
-        //if (shapeHasSize) {
-            //boost::shared_ptr<StartLocationProviderWithSize> startPosProv = 
-                    //boost::dynamic_pointer_cast<StartLocationProviderWithSize>(ret->emittedStartLocationProvider_);
-            //if (startPosProv) {
-                //startPosProv->setSizeT1(shapeWidth, shapeHeight);
-            //}
-        //}
-    //}
-    
-    return ret;
-}
-
-CL_Vec4f XmlLoader::parseColor(pugi::xml_node node) const {
-    if (!node) {
-        return CL_Vec4f(0, 0, 0, 1);
+    if (!node.child("timeline")) {
+        throw XmlLoadException("Emitter definition without timeline");
     }
     
-    CL_Vec4f ret;
-    
-    ret.r = node.attribute("r").as_float();
-    ret.g = node.attribute("g").as_float();
-    ret.b = node.attribute("b").as_float();
-    ret.a = node.attribute("a").as_float();
-    
-    return ret;
-}
-
-CL_Vec3f XmlLoader::parseVelocity(pugi::xml_node node) const {
-    if (!node) {
-        return CL_Vec3f(0, 0, 0);
-    }
-    
-    CL_Vec3f ret;
-    
-    ret.x = node.attribute("x").as_float();
-    ret.y = node.attribute("y").as_float();
-    ret.z = node.attribute("z").as_float();
-    
-    return ret;
-}
-
-void XmlLoader::parseEmitterTxNode(pugi::xml_node& node, float& lifetimeMin, float& lifetimeMax, 
-        CL_Vec4f& colorStartMin, CL_Vec4f& colorStartMax, CL_Vec4f& colorEndMin, CL_Vec4f& colorEndMax, float& frequency, 
-        bool shapeHasSize, int& shapeWidth, int& shapeHeight,
-        CL_Vec3f& velocityStartMin, CL_Vec3f& velocityStartMax, CL_Vec3f& velocityEndMin, CL_Vec3f& velocityEndMax,
-        float& accelerationStartMin, float& accelerationStartMax, float& accelerationEndMin, float& accelerationEndMax) const {
+    pugi::xml_node timelineNode = node.child("timeline");
+    pugi::xml_node timelineIter = timelineNode.first_child();
+    while (timelineIter) {
+        std::string tlElemName = timelineIter.name();
+        if (tlElemName == "static") {
+            checkAttribute(timelineIter, "state");
+            checkAttribute(timelineIter, "duration");
             
-    pugi::xml_node particlesNode = node.child("particles");
-    lifetimeMin = particlesNode.child("lifetime").attribute("min").as_float();
-    lifetimeMax = particlesNode.child("lifetime").attribute("max").as_float();
-    
-    pugi::xml_node particlesT0 = particlesNode.child("t0");
-    colorStartMin = parseColor(particlesT0.child("colormin"));
-    colorStartMax = parseColor(particlesT0.child("colormax"));
-    velocityStartMin = parseVelocity(particlesT0.child("velocitymin"));
-    velocityStartMax = parseVelocity(particlesT0.child("velocitymax"));
-    accelerationStartMin = particlesT0.child("acceleration").attribute("min").as_float();
-    accelerationStartMax = particlesT0.child("acceleration").attribute("max").as_float();
-    
-    pugi::xml_node particlesT1 = particlesNode.child("t1");
-    colorEndMin = parseColor(particlesT1.child("colormin"));
-    colorEndMax = parseColor(particlesT1.child("colormax"));
-    velocityEndMin = parseVelocity(particlesT1.child("velocitymin"));
-    velocityEndMax = parseVelocity(particlesT1.child("velocitymax"));
-    accelerationEndMin = particlesT1.child("acceleration").attribute("min").as_float();
-    accelerationEndMax = particlesT1.child("acceleration").attribute("max").as_float();
-    
-    frequency = node.child("frequency").attribute("value").as_int();
-    
-    if (shapeHasSize) {
-        shapeWidth = node.child("shape").attribute("width").as_int();
-        shapeHeight = node.child("shape").attribute("height").as_int();
+            UnicodeString stateName = StringConverter::fromUtf8(timelineIter.attribute("state").value());
+            std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter = stateMap.find(stateName);
+            if (stateMapIter == stateMap.end()) {
+                std::string msg("Unknown state in timeline::static: ");
+                msg += StringConverter::toUtf8String(stateName);
+                throw XmlLoadException(msg);
+            }
+            
+            float duration = timelineIter.attribute("duration").as_float();
+            boost::shared_ptr<TimelineStatic> newElem(new TimelineStatic(stateMapIter->second, duration));
+            emitter->timeline_.addElement(newElem);
+        } else {
+            std::string msg("Unknown timeline element: ");
+            msg += tlElemName;
+            throw XmlLoadException(msg);
+        }
+        
+        timelineIter = timelineIter.next_sibling();
     }
+    
+    return emitter;
 }
 
 ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleEmitterState& defaultState) const {
@@ -350,7 +203,7 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
     checkAttribute(node, "name");
     state.name_ = StringConverter::fromUtf8(node.attribute("name").value());
     
-    pugi::xml_node curProp = node.child("position-offset");
+    pugi::xml_node curProp = node.child("location-offset");
     if (curProp) {
         state.emitterLocationOffset_ = CL_Vec3f(
                 curProp.attribute("x").as_float(),
@@ -584,30 +437,6 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
             }
         }
     }
-    /*
-    <state name="state1" default="true">
-        <position-offset x="30" y="30" />
-        <texture source="file" id="effects/textures/small.png" />
-        <frequency value="3000" />
-        <shape type="oval-outline" width="20" height="70" />
-        <motion model="explosion" />
-        
-        <particles>
-            <lifetime min="0.3" max="0.7" />
-            <t0>
-                <color min="#ee44ffcc" max="111111ff" />
-                <acceleration min="15" max="25" />
-                <size min="3" max="5" />
-            </t0>
-            
-            <t1>
-                <color min="#ee44ffcc" max="111111ff" />
-                <acceleration min="15" max="25" />
-                <size min="2" max="4" />
-            </t1>
-        </particles>
-    </state>
-    */
     
     return state;
 }

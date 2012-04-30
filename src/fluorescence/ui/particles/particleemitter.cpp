@@ -35,10 +35,10 @@ namespace fluo {
 namespace ui {
 namespace particles {
 
-ParticleEmitter::ParticleEmitter(unsigned int maxSize) :
-        particleCount_(0), timeline_(this) {
+ParticleEmitter::ParticleEmitter(unsigned int capacity) :
+        capacity_(capacity), particleCount_(0), timeline_(this) {
 
-    particles_ = new Particle[maxSize];
+    particles_ = new Particle[capacity_];
 }
 
 ParticleEmitter::~ParticleEmitter() {
@@ -74,11 +74,11 @@ void ParticleEmitter::emitParticles(float count) {
     
     // increase particle count if necessary
     int remainingNew = (std::min)(newCount, capacity_ - particleCount_);
+    particleCount_ += remainingNew;
     for (; remainingNew > 0; --remainingNew) {
         timeline_.initParticle(particles_[newEmitIndex_], paramLocation, age_);
         ++newEmitIndex_;
     }
-    particleCount_ += remainingNew;
 }
 
 void ParticleEmitter::updateRemainingSet() {
@@ -100,6 +100,8 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
     if (!emittedTexture_ || !emittedTexture_->isReadComplete()) {
         return;
     }
+    
+    LOG_DEBUG << "render, particlecount=" << particleCount_ << std::endl;
     
     if (extractedTexture_.is_null()) {
         // create CL_Texture from ui::Texture. can be very expensive, if the CL_Subtexture was already initialized.

@@ -58,11 +58,11 @@ void Timeline::step(float elapsedSeconds) {
 }
 
 bool Timeline::isExpired() const {
-    return currentIndex_ > elements_.size(); // todo: include particle lifetime here
+    return currentIndex_ >= elements_.size(); // todo: include particle lifetime here
 }
 
 bool Timeline::isEmitting() const {
-    return currentIndex_ > elements_.size();
+    return currentIndex_ >= elements_.size();
 }
 
 void Timeline::initParticle(Particle& particle, const CL_Vec3f& emitterLocation, float emitterAge) const {

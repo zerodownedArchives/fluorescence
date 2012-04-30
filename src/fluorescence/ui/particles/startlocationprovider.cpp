@@ -53,11 +53,11 @@ CL_Vec3f StartLocationProviderBoxOutline::get(const CL_Vec3f& emitterLocation) c
     CL_Vec3f ret(emitterLocation);
 
     if (Random::randomBool()) {
-        ret.x += Random::randomBool() ? -heightHalf_ : heightHalf_;
-        ret.y += Random::randomMinMax(-widthHalf_, widthHalf_);
+        ret.x += Random::randomMinMax(-widthHalf_, widthHalf_);
+        ret.y += Random::randomBool() ? -heightHalf_ : heightHalf_;
     } else {
-        ret.x += Random::randomMinMax(-heightHalf_, heightHalf_);
-        ret.y += Random::randomBool() ? -widthHalf_ : widthHalf_;
+        ret.x += Random::randomBool() ? -widthHalf_ : widthHalf_;
+        ret.y += Random::randomMinMax(-heightHalf_, heightHalf_);
     }
 
     return ret;

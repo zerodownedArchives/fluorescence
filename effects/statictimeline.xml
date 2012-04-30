@@ -1,19 +1,24 @@
 <particleeffect>
     <emitters>
         <emitter capacity="3000" particlesmovewithemitter="false">
+            <texture source="file" id="effects/textures/small.png" />
             <timeline loop="false">
                 <static state="state1" duration="2.0" />
                 <static state="state2" duration="2.0" />
                 <static state="state1" duration="2.0" />
             </timeline>
         </emitter>
-        <!-- more emitters here -->
+        <emitter capacity="3000" particlesmovewithemitter="false">
+            <texture source="file" id="effects/textures/small.png" />
+            <timeline loop="false">
+                <static state="state3" duration="3.0" />
+            </timeline>
+        </emitter>
     </emitters>
         
     <states>
         <state name="state1" default="true">
             <position-offset x="30" y="30" />
-            <texture source="file" id="effects/textures/small.png" />
             <frequency value="3000" />
             <shape type="oval-outline" width="20" height="70" />
             <motion model="explosion" />
@@ -36,6 +41,8 @@
         
         <!-- properties not given here are the same as in the default state -->
         <state name="state2">
+            <shape type="box-outline" width="20" height="70" />
+            <location-offset x="-50" y="-50" />
             <particles>
                 <t0>
                     <color min="#006600" max="008800" />
@@ -45,6 +52,10 @@
                     <color min="#00dd00" max="00ff00" />
                 </t1>
             </particles>
+        </state>
+        
+        <state name="state3">
+            <location-offset x="100" y="100" />
         </state>
     </states>
 </particleeffect>

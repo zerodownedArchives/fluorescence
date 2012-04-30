@@ -18,6 +18,8 @@
  
 #include "timelinestatic.hpp"
 
+#include <misc/log.hpp>
+
 namespace fluo {
 namespace ui {
 namespace particles {
@@ -26,6 +28,7 @@ TimelineStatic::TimelineStatic(const ParticleEmitterState& state, float duration
 }
     
 void TimelineStatic::activate() {
+    LOG_DEBUG << "timeline static activated, state=" << state_.name_ << std::endl;
     timeExpired_ = 0;
 }
 
@@ -41,7 +44,8 @@ bool TimelineStatic::isExpired() const {
 
 float TimelineStatic::numberOfNewParticles(float elapsedSeconds) const {
     float realStep = (std::min)(duration_ - timeExpired_, elapsedSeconds);
-    return state_.emitFrequency_ / realStep;
+    float numNew = state_.emitFrequency_ * realStep;
+    return numNew;
 }
 
 void TimelineStatic::initParticle(Particle& particle, const CL_Vec3f& emitterLocation, float emitterAge) const {

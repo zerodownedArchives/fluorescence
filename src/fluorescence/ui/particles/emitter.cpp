@@ -30,9 +30,8 @@ namespace ui {
 namespace particles {
     
 Emitter::Emitter() : 
-        age_(0),
-        emittedFractionStore_(0.99999f) // to emit at least one child at the start
-        {
+        age_(0), emittedFractionStore_(0.99999f), emittedMoveWithEmitter_(false) {
+    // emittedFractionStore is set to emit at least one child at the start
 }
 
 void Emitter::setLocation(const CL_Vec3f& location) {
