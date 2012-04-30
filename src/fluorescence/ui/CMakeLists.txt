@@ -135,10 +135,11 @@ set (PARTICLES_HPP
     ui/particles/motionmodel.hpp
     ui/particles/xmlloader.hpp
     ui/particles/particleemitterstate.hpp
+    ui/particles/xmlloadexception.hpp
     ui/particles/timeline.hpp
     ui/particles/timelineelement.hpp
     ui/particles/timelinestatic.hpp
-    ui/particles/xmlloadexception.hpp
+    ui/particles/timelinepause.hpp
     )
 
 set (PARTICLES_CPP
@@ -150,6 +151,7 @@ set (PARTICLES_CPP
     ui/particles/particleemitterstate.cpp
     ui/particles/timeline.cpp
     ui/particles/timelinestatic.cpp
+    ui/particles/timelinepause.cpp
     )
     
 set (CLIENTCOMMANDS_HPP

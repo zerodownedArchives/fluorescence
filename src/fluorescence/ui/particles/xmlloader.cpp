@@ -31,6 +31,7 @@
 #include "motionmodel.hpp"
 #include "xmlloadexception.hpp"
 #include "timelinestatic.hpp"
+#include "timelinepause.hpp"
 
 namespace fluo {
 namespace ui {
@@ -184,6 +185,11 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
             
             float duration = timelineIter.attribute("duration").as_float();
             boost::shared_ptr<TimelineStatic> newElem(new TimelineStatic(stateMapIter->second, duration));
+            emitter->timeline_.addElement(newElem);
+        } else if (tlElemName == "pause") {
+            checkAttribute(timelineIter, "duration");
+            float duration = timelineIter.attribute("duration").as_float();
+            boost::shared_ptr<TimelinePause> newElem(new TimelinePause(duration));
             emitter->timeline_.addElement(newElem);
         } else {
             std::string msg("Unknown timeline element: ");
