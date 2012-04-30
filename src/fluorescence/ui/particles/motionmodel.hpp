@@ -42,8 +42,12 @@ public:
 
 class MotionModelStartEndVelocity : public MotionModel {
 public:
-    void setVelocities(const CL_Vec3f& startMin, const CL_Vec3f& startMax, const CL_Vec3f& endMin, const CL_Vec3f& endMax);
-    void setVelocityAndAcceleration(const CL_Vec3f& startMin, const CL_Vec3f& startMax, float accelMin, float accelMax);
+    void setVelocitiesStart(const CL_Vec3f& min, const CL_Vec3f& max);
+    void setVelocitiesEnd(const CL_Vec3f& min, const CL_Vec3f& max);
+    
+    
+    void setVelocityAndAccelerationStart(const CL_Vec3f& min, const CL_Vec3f& max);
+    void setVelocityAndAccelerationEnd(float accelMin, float accelMax);
 
     virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& outParam1, CL_Vec3f& outParam2) const;
 
@@ -55,7 +59,8 @@ private:
 
 class MotionModelAwayFromEmitter : public MotionModel {
 public:
-    void setAcceleration(float startMin, float startMax, float endMin, float endMax);
+    void setAccelerationStart(float min, float max);
+    void setAccelerationEnd(float min, float max);
 
     virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& outParam1, CL_Vec3f& outParam2) const;
 

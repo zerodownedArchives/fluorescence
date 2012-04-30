@@ -29,6 +29,7 @@
 #include "commands/command.hpp"
 #include "commands/opengump.hpp"
 #include "commands/disconnect.hpp"
+#include "commands/effect.hpp"
 
 namespace fluo {
 namespace ui {
@@ -42,6 +43,7 @@ CommandManager::CommandManager(Config& config) {
     commandMap_["yell"].reset(new commands::Yell(config));
     commandMap_["opengump"].reset(new commands::OpenGump());
     commandMap_["disconnect"].reset(new commands::Disconnect());
+    commandMap_["effect"].reset(new commands::Effect());
     
     // TODO: fill prefixes with values from config
     

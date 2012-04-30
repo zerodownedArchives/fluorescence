@@ -39,7 +39,7 @@ class ParticleEmitterState {
 public:
     UnicodeString name_;
     
-    unsigned int emitFrequency_;
+    float emitFrequency_;
     
     boost::shared_ptr<StartLocationProvider> emittedStartLocationProvider_;
     boost::shared_ptr<MotionModel> emittedMotionModel_;

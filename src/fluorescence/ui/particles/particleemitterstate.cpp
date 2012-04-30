@@ -38,10 +38,12 @@ void ParticleEmitterState::initParticle(Particle& particle, const CL_Vec3f& emit
     particle.velocityEnd_ = velocity2;
     particle.lifetimes_ = emitterAge; // creation time
     particle.lifetimes_[1u] = particle.lifetimes_[0u] + emittedLifetime_.get(); // expire time
-    particle.colorStart_ = emittedColorStart_.get();
-    particle.colorEnd_ = emittedColorEnd_.get();
-    particle.sizeStart_ = emittedSizeStart_.get();
-    particle.sizeEnd_ = emittedSizeEnd_.get();
+    CL_Colorf col = emittedColorStart_.get();
+    particle.colorStart_ = CL_Vec4f(col.r, col.g, col.b, col.a);
+    col = emittedColorEnd_.get();
+    particle.colorEnd_ = CL_Vec4f(col.r, col.g, col.b, col.a);
+    particle.sizes_[0u] = emittedSizeStart_.get();
+    particle.sizes_[1u] = emittedSizeEnd_.get();
 }
 
 }

@@ -29,6 +29,7 @@
 #include "particleemitter.hpp"
 #include "startlocationprovider.hpp"
 #include "motionmodel.hpp"
+#include "xmlloadexception.hpp"
 
 namespace fluo {
 namespace ui {
@@ -85,10 +86,57 @@ bool XmlLoader::fromString(const UnicodeString& str, world::ParticleEffect* effe
 }
 
 bool XmlLoader::parse(pugi::xml_document& doc, world::ParticleEffect* effect) const {
-    pugi::xml_node iter = doc.document_element().first_child();
-    while (iter) {
-        effect->addEmitter(parseEmitter(iter));
-        iter = iter.next_sibling();
+    pugi::xml_node statesNode = doc.document_element().child("states");
+    if (!statesNode) {
+        LOG_ERROR << "ParticleEffect definition requires states node" << std::endl;
+        return false;
+    }
+    
+    std::map<UnicodeString, ParticleEmitterState> stateMap;
+    
+    // find default state
+    pugi::xml_node defaultStateNode = statesNode.find_child_by_attribute("state", "default", "true");
+    if (!defaultStateNode) {
+        LOG_ERROR << "ParticleEffect definition requires a default state" << std::endl;
+        return false;
+    }
+    
+    try {
+        ParticleEmitterState pseudoDefault;
+        ParticleEmitterState defaultState = parseState(defaultStateNode, pseudoDefault);
+        
+        // check state validity
+        if (!defaultState.emittedMotionModel_) {
+            LOG_ERROR << "Default state has no motion model" << std::endl;
+            return false;
+        }
+        if (!defaultState.emittedStartLocationProvider_) {
+            LOG_ERROR << "Default state has no shape" << std::endl;
+            return false;
+        }
+        stateMap[defaultState.name_] = defaultState;
+        
+        // parse other states
+        pugi::xml_node stateIter = statesNode.first_child();
+        while (stateIter) {
+            if (stateIter.attribute("default").as_bool()) {
+                // default state was already parsed
+                stateIter = stateIter.next_sibling();
+                continue;
+            }
+            ParticleEmitterState curState = parseState(stateIter, defaultState);
+            stateMap[curState.name_] = curState;
+            stateIter = stateIter.next_sibling();
+        }
+        
+        //pugi::xml_node iter = doc.document_element().first_child();
+        //while (iter) {
+            //effect->addEmitter(parseEmitter(iter));
+            //iter = iter.next_sibling();
+        //}
+    } catch (const XmlLoadException& ex) {
+        LOG_ERROR << "Unable to load xml particle effect: " << ex.what() << std::endl;
+        return false;
     }
     
     return true;
@@ -293,6 +341,284 @@ void XmlLoader::parseEmitterTxNode(pugi::xml_node& node, float& lifetimeMin, flo
     if (shapeHasSize) {
         shapeWidth = node.child("shape").attribute("width").as_int();
         shapeHeight = node.child("shape").attribute("height").as_int();
+    }
+}
+
+ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleEmitterState& defaultState) const {
+    ParticleEmitterState state = defaultState;
+    
+    checkAttribute(node, "name");
+    state.name_ = StringConverter::fromUtf8(node.attribute("name").value());
+    
+    pugi::xml_node curProp = node.child("position-offset");
+    if (curProp) {
+        state.emitterLocationOffset_ = CL_Vec3f(
+                curProp.attribute("x").as_float(),
+                curProp.attribute("y").as_float(),
+                curProp.attribute("z").as_float()
+        );
+    }
+    
+    curProp = node.child("frequency");
+    if (curProp) {
+        checkAttribute(curProp, "value");
+        state.emitFrequency_ = curProp.attribute("value").as_float();
+    }
+    
+    curProp = node.child("shape");
+    if (curProp) {
+        checkAttribute(curProp, "type");
+        std::string shapeType = curProp.attribute("type").value();
+        
+        bool shapeHasSize = true;
+        if (shapeType == "oval") {
+            state.emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderOval());
+        } else if (shapeType == "oval-outline") {
+            state.emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderOvalOutline());
+        } else if (shapeType == "box") {
+            state.emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderBox());
+        } else if (shapeType == "box-outline") {
+            state.emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderBoxOutline());
+        } else if (shapeType == "point") {
+            state.emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderEmitter());
+            shapeHasSize = false;
+        } else {
+            std::string msg("Unknown shape type: ");
+            msg += shapeType;
+            throw XmlLoadException(msg);
+        }
+        
+        if (shapeHasSize) {
+            checkAttribute(curProp, "width");
+            checkAttribute(curProp, "height");
+            
+            boost::shared_ptr<StartLocationProviderWithSize> startPosProv = 
+                    boost::dynamic_pointer_cast<StartLocationProviderWithSize>(state.emittedStartLocationProvider_);
+            if (startPosProv) {
+                startPosProv->setSize(
+                    curProp.attribute("width").as_float(),
+                    curProp.attribute("height").as_float()
+                );
+            }
+        }
+    }
+    
+    curProp = node.child("motion");
+    if (curProp) {
+        checkAttribute(curProp, "model");
+        std::string model = curProp.attribute("model").value();
+        if (model == "explosion") {
+            state.emittedMotionModel_.reset(new MotionModelAwayFromEmitter());
+        } else if (model == "velocities") {
+            state.emittedMotionModel_.reset(new MotionModelStartEndVelocity());
+        } else if (model == "static") {
+            state.emittedMotionModel_.reset(new MotionModelStatic());
+        } else {
+            std::string msg("Unknown motion model: ");
+            msg += model;
+            throw XmlLoadException(msg);
+        }
+    }
+    
+    pugi::xml_node particlesNode = node.child("particles");
+    if (particlesNode) {
+        curProp = particlesNode.child("lifetime");
+        if (curProp) {
+            checkAttribute(curProp, "min");
+            checkAttribute(curProp, "max");
+            
+            state.emittedLifetime_.set(
+                curProp.attribute("min").as_float(),
+                curProp.attribute("max").as_float()
+            );
+        }
+        
+        pugi::xml_node t0 = particlesNode.child("t0");
+        if (t0) {
+            curProp = t0.child("color");
+            if (curProp) {
+                checkAttribute(curProp, "min");
+                checkAttribute(curProp, "max");
+                
+                CL_Colorf colMin(curProp.attribute("min").value());
+                CL_Colorf colMax(curProp.attribute("max").value());
+                state.emittedColorStart_.set(colMin, colMax);
+            }
+            
+            curProp = t0.child("size");
+            if (curProp) {
+                checkAttribute(curProp, "min");
+                checkAttribute(curProp, "max");
+                
+                state.emittedSizeStart_.set(
+                    curProp.attribute("min").as_float(),
+                    curProp.attribute("max").as_float()
+                );
+            }
+            
+            curProp = t0.child("acceleration");
+            if (curProp) {
+                if (!node.child("motion")) {
+                    throw XmlLoadException("Definition of acceleration property requires definition of motion model");
+                }
+                checkAttribute(curProp, "min");
+                checkAttribute(curProp, "max");
+                
+                boost::shared_ptr<MotionModelAwayFromEmitter> momo = boost::dynamic_pointer_cast<MotionModelAwayFromEmitter>(state.emittedMotionModel_);
+                if (momo) {
+                    momo->setAccelerationStart(
+                        curProp.attribute("min").as_float(),
+                        curProp.attribute("max").as_float()
+                    );
+                } else {
+                    throw XmlLoadException("MotionModel mismatch: accelerator property given, but model != explosion");
+                }
+            }
+            
+            curProp = t0.child("velocity-min");
+            if (curProp) {
+                if (!node.child("motion")) {
+                    throw XmlLoadException("Definition of velocity properties requires definition of motion model");
+                }
+                CL_Vec3f velMin(
+                    curProp.attribute("x").as_float(),
+                    curProp.attribute("y").as_float(),
+                    curProp.attribute("z").as_float()
+                );
+                
+                curProp = t0.child("velocity-max");
+                if (!curProp) {
+                    throw XmlLoadException("MotionModel error: velocity-min given, but no velocity-max");
+                }
+                
+                CL_Vec3f velMax(
+                    curProp.attribute("x").as_float(),
+                    curProp.attribute("y").as_float(),
+                    curProp.attribute("z").as_float()
+                );
+                    
+                boost::shared_ptr<MotionModelStartEndVelocity> momo = boost::dynamic_pointer_cast<MotionModelStartEndVelocity>(state.emittedMotionModel_);
+                if (momo) {
+                    momo->setVelocitiesStart(velMin, velMax);
+                } else {
+                    throw XmlLoadException("MotionModel mismatch: velocity-min property given, but model != velocities");
+                }
+            } else if (t0.child("velocity-max")) {
+                throw XmlLoadException("MotionModel error: velocity-max given, but no velocity-min");
+            }
+        }
+        
+        
+        pugi::xml_node t1 = particlesNode.child("t0");
+        if (t1) {
+            curProp = t1.child("color");
+            if (curProp) {
+                checkAttribute(curProp, "min");
+                checkAttribute(curProp, "max");
+                
+                CL_Colorf colMin(curProp.attribute("min").value());
+                CL_Colorf colMax(curProp.attribute("max").value());
+                state.emittedColorEnd_.set(colMin, colMax);
+            }
+            
+            curProp = t1.child("size");
+            if (curProp) {
+                checkAttribute(curProp, "min");
+                checkAttribute(curProp, "max");
+                
+                state.emittedSizeEnd_.set(
+                    curProp.attribute("min").as_float(),
+                    curProp.attribute("max").as_float()
+                );
+            }
+            
+            curProp = t1.child("acceleration");
+            if (curProp) {
+                if (!node.child("motion")) {
+                    throw XmlLoadException("Definition of acceleration propertiy requires definition of motion model");
+                }
+                checkAttribute(curProp, "min");
+                checkAttribute(curProp, "max");
+                
+                boost::shared_ptr<MotionModelAwayFromEmitter> momo = boost::dynamic_pointer_cast<MotionModelAwayFromEmitter>(state.emittedMotionModel_);
+                if (momo) {
+                    momo->setAccelerationEnd(
+                        curProp.attribute("min").as_float(),
+                        curProp.attribute("max").as_float()
+                    );
+                } else {
+                    throw XmlLoadException("MotionModel mismatch: accelerator property given, but model != explosion");
+                }
+            }
+            
+            curProp = t1.child("velocity-min");
+            if (curProp) {
+                if (!node.child("motion")) {
+                    throw XmlLoadException("Definition of velocity properties requires definition of motion model");
+                }
+                CL_Vec3f velMin(
+                    curProp.attribute("x").as_float(),
+                    curProp.attribute("y").as_float(),
+                    curProp.attribute("z").as_float()
+                );
+                
+                curProp = t1.child("velocity-max");
+                if (!curProp) {
+                    throw XmlLoadException("MotionModel error: velocity-min given, but no velocity-max");
+                }
+                
+                CL_Vec3f velMax(
+                    curProp.attribute("x").as_float(),
+                    curProp.attribute("y").as_float(),
+                    curProp.attribute("z").as_float()
+                );
+                    
+                boost::shared_ptr<MotionModelStartEndVelocity> momo = boost::dynamic_pointer_cast<MotionModelStartEndVelocity>(state.emittedMotionModel_);
+                if (momo) {
+                    momo->setVelocitiesEnd(velMin, velMax);
+                } else {
+                    throw XmlLoadException("MotionModel mismatch: velocity-min property given, but model != velocities");
+                }
+            } else if (t1.child("velocity-max")) {
+                throw XmlLoadException("MotionModel error: velocity-max given, but no velocity-min");
+            }
+        }
+    }
+    /*
+    <state name="state1" default="true">
+        <position-offset x="30" y="30" />
+        <texture source="file" id="effects/textures/small.png" />
+        <frequency value="3000" />
+        <shape type="oval-outline" width="20" height="70" />
+        <motion model="explosion" />
+        
+        <particles>
+            <lifetime min="0.3" max="0.7" />
+            <t0>
+                <color min="#ee44ffcc" max="111111ff" />
+                <acceleration min="15" max="25" />
+                <size min="3" max="5" />
+            </t0>
+            
+            <t1>
+                <color min="#ee44ffcc" max="111111ff" />
+                <acceleration min="15" max="25" />
+                <size min="2" max="4" />
+            </t1>
+        </particles>
+    </state>
+    */
+    
+    return state;
+}
+
+void XmlLoader::checkAttribute(pugi::xml_node& node, const char* name) const {
+    if (!node.attribute(name)) {
+        std::string str("Missing attribute ");
+        str += name;
+        str += " in node ";
+        str += node.name();
+        throw XmlLoadException(str);
     }
 }
 

@@ -58,6 +58,14 @@ public:
     void setT1(const T& t1) {
         valueT1_ = t1;
     }
+    
+    T getT0() const {
+        return valueT0_;
+    }
+    
+    T getT1() const {
+        return valueT1_;
+    }
 
     T get() const {
         return Random::randomMinMax(valueT0_, valueT1_);

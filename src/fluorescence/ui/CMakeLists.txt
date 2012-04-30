@@ -138,6 +138,7 @@ set (PARTICLES_HPP
     ui/particles/timeline.hpp
     ui/particles/timelineelement.hpp
     ui/particles/timelinestatic.hpp
+    ui/particles/xmlloadexception.hpp
     )
 
 set (PARTICLES_CPP
@@ -160,6 +161,7 @@ set (CLIENTCOMMANDS_HPP
     ui/commands/command.hpp
     ui/commands/opengump.hpp
     ui/commands/disconnect.hpp
+    ui/commands/effect.hpp
     )
 
 set (CLIENTCOMMANDS_CPP
@@ -170,6 +172,7 @@ set (CLIENTCOMMANDS_CPP
     ui/commands/command.cpp
     ui/commands/opengump.cpp
     ui/commands/disconnect.cpp
+    ui/commands/effect.cpp
     )
 
 

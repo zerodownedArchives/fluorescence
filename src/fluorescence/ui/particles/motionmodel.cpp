@@ -30,13 +30,20 @@ void MotionModelStatic::get(const CL_Vec3f& emitterLocation, const CL_Vec3f& par
 }
 
 
-void MotionModelStartEndVelocity::setVelocities(const CL_Vec3f& startMin, const CL_Vec3f& startMax, const CL_Vec3f& endMin, const CL_Vec3f& endMax) {
-    startVelocity_.set(startMin, startMax);
-    endVelocity_.set(endMin, endMax);
+void MotionModelStartEndVelocity::setVelocitiesStart(const CL_Vec3f& min, const CL_Vec3f& max) {
+    startVelocity_.set(max, min);
 }
 
-void MotionModelStartEndVelocity::setVelocityAndAcceleration(const CL_Vec3f& startMin, const CL_Vec3f& startMax, float accelMin, float accelMax) {
-    setVelocities(startMin, startMax, startMin * accelMin, startMax * accelMax);
+void MotionModelStartEndVelocity::setVelocitiesEnd(const CL_Vec3f& min, const CL_Vec3f& max) {
+    endVelocity_.set(max, min);
+}
+
+void MotionModelStartEndVelocity::setVelocityAndAccelerationStart(const CL_Vec3f& min, const CL_Vec3f& max) {
+    startVelocity_.set(max, min);
+}
+
+void MotionModelStartEndVelocity::setVelocityAndAccelerationEnd(float min, float max) {
+    endVelocity_.set(startVelocity_.getT0() * min, startVelocity_.getT0() * max);
 }
 
 void MotionModelStartEndVelocity::get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& outParam1, CL_Vec3f& outParam2) const {
@@ -45,9 +52,12 @@ void MotionModelStartEndVelocity::get(const CL_Vec3f& emitterLocation, const CL_
 }
 
 
-void MotionModelAwayFromEmitter::setAcceleration(float startMin, float startMax, float endMin, float endMax) {
-    startAcceleration_.set(startMin, startMax);
-    endAcceleration_.set(endMin, endMax);
+void MotionModelAwayFromEmitter::setAccelerationStart(float min, float max) {
+    startAcceleration_.set(min, max);
+}
+
+void MotionModelAwayFromEmitter::setAccelerationEnd(float min, float max) {
+    endAcceleration_.set(min, max);
 }
 
 void MotionModelAwayFromEmitter::get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& outParam1, CL_Vec3f& outParam2) const {

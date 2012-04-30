@@ -26,6 +26,8 @@
 
 #include <misc/string.hpp>
 
+#include "particleemitterstate.hpp"
+
 namespace fluo {
 
 namespace world {
@@ -60,6 +62,12 @@ private:
         bool shapeHasSize, int& shapeWidth, int& shapeHeight,
         CL_Vec3f& velocityStartMin, CL_Vec3f& velocityStartMax, CL_Vec3f& velocityEndMin, CL_Vec3f& velocityEndMax,
         float& accelerationStartMin, float& accelerationStartMax, float& accelerationEndMin, float& accelerationEndMax) const;
+        
+    
+    ParticleEmitterState parseState(pugi::xml_node& node, const ParticleEmitterState& defaultState) const;
+    
+    // throws if the attribute is not found
+    void checkAttribute(pugi::xml_node& node, const char* name) const;
 };
 
 }
