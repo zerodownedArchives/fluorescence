@@ -32,6 +32,7 @@
 #include "xmlloadexception.hpp"
 #include "timelinestatic.hpp"
 #include "timelinepause.hpp"
+#include "timelineimmediate.hpp"
 
 namespace fluo {
 namespace ui {
@@ -190,6 +191,21 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
             checkAttribute(timelineIter, "duration");
             float duration = timelineIter.attribute("duration").as_float();
             boost::shared_ptr<TimelinePause> newElem(new TimelinePause(duration));
+            emitter->timeline_.addElement(newElem);
+        } else if (tlElemName == "immediate") {
+            checkAttribute(timelineIter, "state");
+            checkAttribute(timelineIter, "count");
+            
+            UnicodeString stateName = StringConverter::fromUtf8(timelineIter.attribute("state").value());
+            std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter = stateMap.find(stateName);
+            if (stateMapIter == stateMap.end()) {
+                std::string msg("Unknown state in timeline::immediate: ");
+                msg += StringConverter::toUtf8String(stateName);
+                throw XmlLoadException(msg);
+            }
+            
+            unsigned int count = timelineIter.attribute("count").as_uint();
+            boost::shared_ptr<TimelineImmediate> newElem(new TimelineImmediate(stateMapIter->second, count));
             emitter->timeline_.addElement(newElem);
         } else {
             std::string msg("Unknown timeline element: ");
