@@ -52,6 +52,8 @@ XmlLoader::XmlLoader() {
 }
 
 boost::shared_ptr<world::ParticleEffect> XmlLoader::fromFile(const UnicodeString& name) {
+    boost::shared_ptr<world::ParticleEffect> effect;
+    
     boost::filesystem::path path = "effects";
     std::string utf8FileName = StringConverter::toUtf8String(name) + ".xml";
     path = path / utf8FileName;
@@ -59,9 +61,8 @@ boost::shared_ptr<world::ParticleEffect> XmlLoader::fromFile(const UnicodeString
     path = data::Manager::getShardFilePath(path);
     
     if (!boost::filesystem::exists(path)) {
-        std::string msg("Unable to open particle effect xml, file not found: ");
-        msg += utf8FileName;
-        throw XmlLoadException(msg);
+        LOG_ERROR << "Unable to open particle effect xml, file not found: " << utf8FileName << std::endl;
+        return effect;
     }
 
     LOG_DEBUG << "Parsing xml particle effect file: " << path << std::endl;
@@ -69,7 +70,6 @@ boost::shared_ptr<world::ParticleEffect> XmlLoader::fromFile(const UnicodeString
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(path.string().c_str());
 
-    boost::shared_ptr<world::ParticleEffect> effect;
     if (result) {
         try {
             effect = getSingleton()->parse(doc);

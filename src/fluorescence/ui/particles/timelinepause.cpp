@@ -38,10 +38,6 @@ float TimelinePause::step(float elapsedSeconds) {
     return elapsedSeconds - realStep;
 }
 
-bool TimelinePause::isExpired() const {
-    return timeExpired_ >= duration_;
-}
-
 float TimelinePause::numberOfNewParticles(float elapsedSeconds) const {
     return 0;
 }
@@ -54,7 +50,10 @@ void TimelinePause::initParticle(Particle& particle, const CL_Vec3f& emitterLoca
 CL_Vec3f TimelinePause::getEmitterLocationOffset() const {
     return CL_Vec3f(0, 0, 0);
 }
-    
+
+float TimelinePause::getMaxParticleLifetime() const {
+    return 0;
+}
 
 }
 }

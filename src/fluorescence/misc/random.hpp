@@ -43,37 +43,37 @@ public:
     RandomizedValue() {
     }
 
-    RandomizedValue(const T& t0, const T& t1) : valueT0_(t0),valueT1_(t1) {
+    RandomizedValue(const T& min, const T& max) : valueMin_(min), valueMax_(max) {
     }
 
-    void set(const T& t0, const T& t1) {
-        valueT0_ = t0;
-        valueT1_ = t1;
+    void set(const T& min, const T& max) {
+        valueMin_ = min;
+        valueMax_ = max;
     }
 
-    void setT0(const T& t0) {
-        valueT0_ = t0;
+    void setMin(const T& min) {
+        valueMin_ = min;
     }
 
-    void setT1(const T& t1) {
-        valueT1_ = t1;
+    void setMax(const T& max) {
+        valueMax_ = max;
     }
     
-    T getT0() const {
-        return valueT0_;
+    T getMin() const {
+        return valueMin_;
     }
     
-    T getT1() const {
-        return valueT1_;
+    T getMax() const {
+        return valueMax_;
     }
 
     T get() const {
-        return Random::randomMinMax(valueT0_, valueT1_);
+        return Random::randomMinMax(valueMin_, valueMax_);
     }
     
 private:
-    T valueT0_;
-    T valueT1_;
+    T valueMin_;
+    T valueMax_;
 };
 
 }

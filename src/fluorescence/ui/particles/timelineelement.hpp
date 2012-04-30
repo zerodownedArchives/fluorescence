@@ -33,7 +33,8 @@ public:
     virtual void activate() = 0;
     // returns the number of unused seconds, if it expires within this step
     virtual float step(float elapsedSeconds) = 0;
-    virtual bool isExpired() const = 0;
+    
+    virtual float getMaxParticleLifetime() const = 0;
     
     virtual float numberOfNewParticles(float elapsedSeconds) const = 0;
     virtual void initParticle(Particle& particle, const CL_Vec3f& emitterLocation, float emitterAge) const = 0;

@@ -33,7 +33,8 @@ public:
     
     virtual void activate();
     virtual float step(float elapsedSeconds);
-    virtual bool isExpired() const;
+    
+    virtual float getMaxParticleLifetime() const;
     
     virtual float numberOfNewParticles(float elapsedSeconds) const;
     virtual void initParticle(Particle& particle, const CL_Vec3f& emitterLocation, float emitterAge) const;

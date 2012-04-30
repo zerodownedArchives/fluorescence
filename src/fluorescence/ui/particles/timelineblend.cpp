@@ -40,10 +40,6 @@ float TimelineBlend::step(float elapsedSeconds) {
     return elapsedSeconds - realStep;
 }
 
-bool TimelineBlend::isExpired() const {
-    return timeExpired_ >= duration_;
-}
-
 float TimelineBlend::numberOfNewParticles(float elapsedSeconds) const {
     float realStep = (std::min)(duration_ - timeExpired_, elapsedSeconds);
     // interpolate emit frequency between the two states
@@ -64,7 +60,10 @@ CL_Vec3f TimelineBlend::getEmitterLocationOffset() const {
     // interpolate position between the two states
     return (state1_.emitterLocationOffset_ * (1 - normalizedAge_)) + (state2_.emitterLocationOffset_ * normalizedAge_);
 }
-    
+
+float TimelineBlend::getMaxParticleLifetime() const {
+    return (std::max)(state1_.emittedLifetime_.getMax(), state2_.emittedLifetime_.getMax());
+}
 
 }
 }

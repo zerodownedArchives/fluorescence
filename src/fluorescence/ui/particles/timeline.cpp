@@ -26,11 +26,14 @@ namespace ui {
 namespace particles {
 
 Timeline::Timeline(ParticleEmitter* emitter) : 
-        emitter_(emitter), currentIndex_(0xFFFFFFFFu), currentElement_(nullptr) {
+        emitter_(emitter), currentIndex_(0xFFFFFFFFu), currentElement_(nullptr), maxParticleLifetime_(0) {
 }
 
 void Timeline::step(float elapsedSeconds) {
     if (isExpired()) {
+        return;
+    } else if (!isEmitting()) {
+        waitAfterLastEmit_ -= elapsedSeconds;
         return;
     }
     
@@ -47,7 +50,9 @@ void Timeline::step(float elapsedSeconds) {
 
         if (secondsLeft > 0) {
             ++currentIndex_;
-            if (isExpired()) {
+            if (!isEmitting()) {
+                // set timer to wait for all particles to disperse
+                waitAfterLastEmit_ = maxParticleLifetime_;
                 break;
             } else {
                 currentElement_ = elements_[currentIndex_].get();
@@ -58,11 +63,11 @@ void Timeline::step(float elapsedSeconds) {
 }
 
 bool Timeline::isExpired() const {
-    return currentIndex_ >= elements_.size(); // todo: include particle lifetime here
+    return !isEmitting() && waitAfterLastEmit_ <= 0;
 }
 
 bool Timeline::isEmitting() const {
-    return currentIndex_ >= elements_.size();
+    return currentIndex_ < elements_.size();
 }
 
 void Timeline::initParticle(Particle& particle, const CL_Vec3f& emitterLocation, float emitterAge) const {
@@ -78,6 +83,8 @@ void Timeline::addElement(boost::shared_ptr<TimelineElement> elem) {
         currentElement_ = elements_[currentIndex_].get();
         currentElement_->activate();
     }
+    
+    maxParticleLifetime_ = (std::max)(maxParticleLifetime_, elem->getMaxParticleLifetime());
 }
 
 CL_Vec2f Timeline::getEmitterLocationOffset() const {

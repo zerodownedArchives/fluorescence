@@ -36,10 +36,6 @@ float TimelineImmediate::step(float elapsedSeconds) {
     return elapsedSeconds;
 }
 
-bool TimelineImmediate::isExpired() const {
-    return true;
-}
-
 float TimelineImmediate::numberOfNewParticles(float elapsedSeconds) const {
     return count_;
 }
@@ -51,7 +47,10 @@ void TimelineImmediate::initParticle(Particle& particle, const CL_Vec3f& emitter
 CL_Vec3f TimelineImmediate::getEmitterLocationOffset() const {
     return state_.emitterLocationOffset_;
 }
-    
+ 
+float TimelineImmediate::getMaxParticleLifetime() const {
+    return state_.emittedLifetime_.getMax();
+}
 
 }
 }

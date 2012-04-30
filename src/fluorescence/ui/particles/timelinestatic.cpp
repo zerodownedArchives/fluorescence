@@ -38,10 +38,6 @@ float TimelineStatic::step(float elapsedSeconds) {
     return elapsedSeconds - realStep;
 }
 
-bool TimelineStatic::isExpired() const {
-    return timeExpired_ >= duration_;
-}
-
 float TimelineStatic::numberOfNewParticles(float elapsedSeconds) const {
     float realStep = (std::min)(duration_ - timeExpired_, elapsedSeconds);
     float numNew = state_.emitFrequency_ * realStep;
@@ -55,7 +51,10 @@ void TimelineStatic::initParticle(Particle& particle, const CL_Vec3f& emitterLoc
 CL_Vec3f TimelineStatic::getEmitterLocationOffset() const {
     return state_.emitterLocationOffset_;
 }
-    
+ 
+float TimelineStatic::getMaxParticleLifetime() const {
+    return state_.emittedLifetime_.getMax();
+}
 
 }
 }

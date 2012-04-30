@@ -43,7 +43,7 @@ void MotionModelStartEndVelocity::setVelocityAndAccelerationStart(const CL_Vec3f
 }
 
 void MotionModelStartEndVelocity::setVelocityAndAccelerationEnd(float min, float max) {
-    endVelocity_.set(startVelocity_.getT0() * min, startVelocity_.getT0() * max);
+    endVelocity_.set(startVelocity_.getMin() * min, startVelocity_.getMax() * max);
 }
 
 void MotionModelStartEndVelocity::get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& outParam1, CL_Vec3f& outParam2) const {

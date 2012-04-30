@@ -52,6 +52,9 @@ private:
     std::vector<boost::shared_ptr<TimelineElement> > elements_;
     unsigned int currentIndex_;
     TimelineElement* currentElement_;
+    
+    float maxParticleLifetime_;
+    float waitAfterLastEmit_;
 };
 
 }
