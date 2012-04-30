@@ -34,15 +34,10 @@ void Effect::execute(const UnicodeString& args) {
     
     boost::shared_ptr<world::IngameObject> sourceObj = boost::static_pointer_cast<world::IngameObject>(worldMan->getPlayer());
     
-    boost::shared_ptr<world::Effect> effect;
-    world::ParticleEffect* peff = new world::ParticleEffect();
-    if (ui::particles::XmlLoader::fromFile(args, peff)) {
-        effect.reset(peff);
-        
+    boost::shared_ptr<world::Effect> effect = ui::particles::XmlLoader::fromFile(args);
+    if (effect) {
         effect->setAtSource(sourceObj);
-        
         effect->setShouldExplode(false);
-        
         worldMan->addEffect(effect);
     }
 }

@@ -33,6 +33,7 @@
 #include "timelinestatic.hpp"
 #include "timelinepause.hpp"
 #include "timelineimmediate.hpp"
+#include "timelineblend.hpp"
 
 namespace fluo {
 namespace ui {
@@ -50,7 +51,7 @@ XmlLoader* XmlLoader::getSingleton() {
 XmlLoader::XmlLoader() {
 }
 
-bool XmlLoader::fromFile(const UnicodeString& name, world::ParticleEffect* effect) {
+boost::shared_ptr<world::ParticleEffect> XmlLoader::fromFile(const UnicodeString& name) {
     boost::filesystem::path path = "effects";
     std::string utf8FileName = StringConverter::toUtf8String(name) + ".xml";
     path = path / utf8FileName;
@@ -58,8 +59,9 @@ bool XmlLoader::fromFile(const UnicodeString& name, world::ParticleEffect* effec
     path = data::Manager::getShardFilePath(path);
     
     if (!boost::filesystem::exists(path)) {
-        LOG_ERROR << "Unable to particle effect xml, file not found: " << utf8FileName << std::endl;
-        return false;
+        std::string msg("Unable to open particle effect xml, file not found: ");
+        msg += utf8FileName;
+        throw XmlLoadException(msg);
     }
 
     LOG_DEBUG << "Parsing xml particle effect file: " << path << std::endl;
@@ -67,32 +69,41 @@ bool XmlLoader::fromFile(const UnicodeString& name, world::ParticleEffect* effec
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(path.string().c_str());
 
+    boost::shared_ptr<world::ParticleEffect> effect;
     if (result) {
-        return getSingleton()->parse(doc, effect);
+        try {
+            effect = getSingleton()->parse(doc);
+        } catch (const XmlLoadException& ex) {
+            LOG_ERROR << "Unable to load xml particle effect: " << ex.what() << std::endl;
+        }
     } else {
         LOG_ERROR << "Error parsing particle effect xml file at offset " << result.offset << ": " << result.description() << std::endl;
-        return false;
     }
+    return effect;
 }
 
-bool XmlLoader::fromString(const UnicodeString& str, world::ParticleEffect* effect) {
+boost::shared_ptr<world::ParticleEffect> XmlLoader::fromString(const UnicodeString& str) {
     pugi::xml_document doc;
     std::string utf8String = StringConverter::toUtf8String(str);
     pugi::xml_parse_result result = doc.load_buffer(utf8String.c_str(), utf8String.length());
 
+    boost::shared_ptr<world::ParticleEffect> effect;
     if (result) {
-        return getSingleton()->parse(doc, effect);
+        try {
+            effect = getSingleton()->parse(doc);
+        } catch (const XmlLoadException& ex) {
+            LOG_ERROR << "Unable to load xml particle effect: " << ex.what() << std::endl;
+        }
     } else {
         LOG_ERROR << "Error parsing particle effect xml string at offset " << result.offset << ": " << result.description() << std::endl;
-        return false;
     }
+    return effect;
 }
 
-bool XmlLoader::parse(pugi::xml_document& doc, world::ParticleEffect* effect) const {
+boost::shared_ptr<world::ParticleEffect> XmlLoader::parse(pugi::xml_document& doc) const {
     pugi::xml_node statesNode = doc.document_element().child("states");
     if (!statesNode) {
-        LOG_ERROR << "ParticleEffect definition requires states node" << std::endl;
-        return false;
+        throw XmlLoadException("ParticleEffect definition requires states node");
     }
     
     std::map<UnicodeString, ParticleEmitterState> stateMap;
@@ -100,51 +111,44 @@ bool XmlLoader::parse(pugi::xml_document& doc, world::ParticleEffect* effect) co
     // find default state
     pugi::xml_node defaultStateNode = statesNode.find_child_by_attribute("state", "default", "true");
     if (!defaultStateNode) {
-        LOG_ERROR << "ParticleEffect definition requires a default state" << std::endl;
-        return false;
+        throw XmlLoadException("ParticleEffect definition requires a default state");
     }
     
-    try {
-        ParticleEmitterState pseudoDefault;
-        ParticleEmitterState defaultState = parseState(defaultStateNode, pseudoDefault);
-        
-        // check state validity
-        if (!defaultState.emittedMotionModel_) {
-            LOG_ERROR << "Default state has no motion model" << std::endl;
-            return false;
-        }
-        if (!defaultState.emittedStartLocationProvider_) {
-            LOG_ERROR << "Default state has no shape" << std::endl;
-            return false;
-        }
-        stateMap[defaultState.name_] = defaultState;
-        
-        // parse other states
-        pugi::xml_node stateIter = statesNode.first_child();
-        while (stateIter) {
-            if (stateIter.attribute("default").as_bool()) {
-                // default state was already parsed
-                stateIter = stateIter.next_sibling();
-                continue;
-            }
-            ParticleEmitterState curState = parseState(stateIter, defaultState);
-            stateMap[curState.name_] = curState;
+    ParticleEmitterState pseudoDefault;
+    ParticleEmitterState defaultState = parseState(defaultStateNode, pseudoDefault);
+    
+    // check state validity
+    if (!defaultState.emittedMotionModel_) {
+        throw XmlLoadException("Default state has no motion model");
+    }
+    if (!defaultState.emittedStartLocationProvider_) {
+        throw XmlLoadException("Default state has no shape");
+    }
+    stateMap[defaultState.name_] = defaultState;
+    
+    // parse other states
+    pugi::xml_node stateIter = statesNode.first_child();
+    while (stateIter) {
+        if (stateIter.attribute("default").as_bool()) {
+            // default state was already parsed
             stateIter = stateIter.next_sibling();
+            continue;
         }
-        
-        
-        pugi::xml_node emittersIter = doc.document_element().child("emitters").first_child();
-        while (emittersIter) {
-            boost::shared_ptr<ParticleEmitter> newEmitter = parseEmitter(emittersIter, stateMap);
-            effect->addEmitter(newEmitter);
-            emittersIter = emittersIter.next_sibling();
-        }
-    } catch (const XmlLoadException& ex) {
-        LOG_ERROR << "Unable to load xml particle effect: " << ex.what() << std::endl;
-        return false;
+        ParticleEmitterState curState = parseState(stateIter, defaultState);
+        stateMap[curState.name_] = curState;
+        stateIter = stateIter.next_sibling();
     }
     
-    return true;
+    boost::shared_ptr<world::ParticleEffect> effect(new world::ParticleEffect());
+    
+    pugi::xml_node emittersIter = doc.document_element().child("emitters").first_child();
+    while (emittersIter) {
+        boost::shared_ptr<ParticleEmitter> newEmitter = parseEmitter(emittersIter, stateMap);
+        effect->addEmitter(newEmitter);
+        emittersIter = emittersIter.next_sibling();
+    }
+    
+    return effect;
 }
 
 boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node, std::map<UnicodeString, ParticleEmitterState>& stateMap) const {
@@ -206,6 +210,30 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
             
             unsigned int count = timelineIter.attribute("count").as_uint();
             boost::shared_ptr<TimelineImmediate> newElem(new TimelineImmediate(stateMapIter->second, count));
+            emitter->timeline_.addElement(newElem);
+        } else if (tlElemName == "blend") {
+            checkAttribute(timelineIter, "from");
+            checkAttribute(timelineIter, "to");
+            checkAttribute(timelineIter, "duration");
+            
+            UnicodeString stateName1 = StringConverter::fromUtf8(timelineIter.attribute("from").value());
+            std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter1 = stateMap.find(stateName1);
+            if (stateMapIter1 == stateMap.end()) {
+                std::string msg("Unknown from state in timeline::blend: ");
+                msg += StringConverter::toUtf8String(stateName1);
+                throw XmlLoadException(msg);
+            }
+            
+            UnicodeString stateName2 = StringConverter::fromUtf8(timelineIter.attribute("to").value());
+            std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter2 = stateMap.find(stateName2);
+            if (stateMapIter2 == stateMap.end()) {
+                std::string msg("Unknown to state in timeline::blend: ");
+                msg += StringConverter::toUtf8String(stateName1);
+                throw XmlLoadException(msg);
+            }
+            
+            float duration = timelineIter.attribute("duration").as_float();
+            boost::shared_ptr<TimelineBlend> newElem(new TimelineBlend(stateMapIter1->second, stateMapIter2->second, duration));
             emitter->timeline_.addElement(newElem);
         } else {
             std::string msg("Unknown timeline element: ");

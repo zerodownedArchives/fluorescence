@@ -101,8 +101,6 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
         return;
     }
     
-    LOG_DEBUG << "render, particlecount=" << particleCount_ << std::endl;
-    
     if (extractedTexture_.is_null()) {
         // create CL_Texture from ui::Texture. can be very expensive, if the CL_Subtexture was already initialized.
         extractedTexture_ = emittedTexture_->extractSingleTexture();

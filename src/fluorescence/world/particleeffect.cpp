@@ -112,7 +112,8 @@ void ParticleEffect::updateRenderDepth() {
 }
 
 unsigned int ParticleEffect::startExplosion() {
-    ui::particles::XmlLoader::fromFile("explosion", this);
+    // TODO: timeline event element?
+    // ui::particles::XmlLoader::fromFile("explosion", this);
     return 0;
 }
 
