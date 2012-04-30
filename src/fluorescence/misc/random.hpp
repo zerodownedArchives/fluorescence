@@ -22,6 +22,7 @@
 
 #include <ClanLib/Core/Math/vec3.h>
 #include <ClanLib/Core/Math/vec4.h>
+#include <ClanLib/Display/2D/color.h>
 
 namespace fluo {
 
@@ -33,6 +34,38 @@ public:
     static unsigned int randomMinMax(unsigned int min, unsigned int max);
     static CL_Vec3f randomMinMax(const CL_Vec3f& min, const CL_Vec3f& max);
     static CL_Vec4f randomMinMax(const CL_Vec4f& min, const CL_Vec4f& max);
+    static CL_Colorf randomMinMax(const CL_Colorf& min, const CL_Colorf& max);
+};
+
+template<typename T>
+class RandomizedValue {
+public:
+    RandomizedValue() {
+    }
+
+    RandomizedValue(const T& t0, const T& t1) : valueT0_(t0),valueT1_(t1) {
+    }
+
+    void set(const T& t0, const T& t1) {
+        valueT0_ = t0;
+        valueT1_ = t1;
+    }
+
+    void setT0(const T& t0) {
+        valueT0_ = t0;
+    }
+
+    void setT1(const T& t1) {
+        valueT1_ = t1;
+    }
+
+    T get() const {
+        return Random::randomMinMax(valueT0_, valueT1_);
+    }
+    
+private:
+    T valueT0_;
+    T valueT1_;
 };
 
 }

@@ -22,7 +22,7 @@
 
 #include <ClanLib/Core/Math/vec3.h>
 
-#include <misc/interpolation.hpp>
+#include <misc/random.hpp>
 
 namespace fluo {
 namespace ui {
@@ -30,54 +30,38 @@ namespace particles {
 
 class MotionModel {
 public:
-    virtual void setNormalizedAge(float age) = 0;
-    virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& param1, CL_Vec3f& param2) const = 0;
+    virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& outParam1, CL_Vec3f& outParam2) const = 0;
 };
 
 
 class MotionModelStatic : public MotionModel {
 public:
-    virtual void setNormalizedAge(float age);
-    virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& param1, CL_Vec3f& param2) const;
+    virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& outParam1, CL_Vec3f& outParam2) const;
 };
 
 
 class MotionModelStartEndVelocity : public MotionModel {
 public:
-    MotionModelStartEndVelocity();
+    void setVelocities(const CL_Vec3f& startMin, const CL_Vec3f& startMax, const CL_Vec3f& endMin, const CL_Vec3f& endMax);
+    void setVelocityAndAcceleration(const CL_Vec3f& startMin, const CL_Vec3f& startMax, float accelMin, float accelMax);
 
-    void setVelocitiesT0(const CL_Vec3f& startMin, const CL_Vec3f& startMax, const CL_Vec3f& endMin, const CL_Vec3f& endMax);
-    void setVelocitiesT1(const CL_Vec3f& startMin, const CL_Vec3f& startMax, const CL_Vec3f& endMin, const CL_Vec3f& endMax);
-
-    void setVelocityAndAccelerationT0(const CL_Vec3f& startMin, const CL_Vec3f& startMax, float accelMin, float accelMax);
-    void setVelocityAndAccelerationT1(const CL_Vec3f& startMin, const CL_Vec3f& startMax, float accelMin, float accelMax);
-
-    virtual void setNormalizedAge(float age);
-    virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& param1, CL_Vec3f& param2) const;
+    virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& outParam1, CL_Vec3f& outParam2) const;
 
 private:
-    InterpolatedValue<CL_Vec3f> startVelocityMin_;
-    InterpolatedValue<CL_Vec3f> startVelocityMax_;
-    InterpolatedValue<CL_Vec3f> endVelocityMin_;
-    InterpolatedValue<CL_Vec3f> endVelocityMax_;
+    RandomizedValue<CL_Vec3f> startVelocity_;
+    RandomizedValue<CL_Vec3f> endVelocity_;
 };
 
 
 class MotionModelAwayFromEmitter : public MotionModel {
 public:
-    MotionModelAwayFromEmitter();
+    void setAcceleration(float startMin, float startMax, float endMin, float endMax);
 
-    void setAccelerationT0(float startMin, float startMax, float endMin, float endMax);
-    void setAccelerationT1(float startMin, float startMax, float endMin, float endMax);
-
-    virtual void setNormalizedAge(float age);
-    virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& param1, CL_Vec3f& param2) const;
+    virtual void get(const CL_Vec3f& emitterLocation, const CL_Vec3f& particleLocation, CL_Vec3f& outParam1, CL_Vec3f& outParam2) const;
 
 private:
-    InterpolatedValue<float> startAccelerationMin_;
-    InterpolatedValue<float> startAccelerationMax_;
-    InterpolatedValue<float> endAccelerationMin_;
-    InterpolatedValue<float> endAccelerationMax_;
+    RandomizedValue<float> startAcceleration_;
+    RandomizedValue<float> endAcceleration_;
 };
 
 

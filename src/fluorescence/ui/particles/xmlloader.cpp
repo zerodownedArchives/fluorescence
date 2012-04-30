@@ -95,140 +95,140 @@ bool XmlLoader::parse(pugi::xml_document& doc, world::ParticleEffect* effect) co
 }
 
 boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node) const {
-    int sizeMax = node.child("size").attribute("max").as_int();
-    boost::shared_ptr<ParticleEmitter> ret(new ParticleEmitter(sizeMax));
+    //int sizeMax = node.child("size").attribute("max").as_int();
+    boost::shared_ptr<ParticleEmitter> ret(new ParticleEmitter(0));
     
-    int sizeInit = node.child("size").attribute("init").as_int();    
-    ret->emittedStartCount_ = sizeInit;
+    //int sizeInit = node.child("size").attribute("init").as_int();    
+    //ret->emittedStartCount_ = sizeInit;
     
-    ret->lifetimes_[1u] = node.child("lifetime").attribute("duration").as_float();
+    //ret->lifetimes_[1u] = node.child("lifetime").attribute("duration").as_float();
     
-    pugi::xml_node particlesCommon = node.child("particles");
-    bool moveWithEmitter = particlesCommon.child("movewithemitter").attribute("value").as_bool();
-    ret->emittedMoveWithEmitter_ = moveWithEmitter;
+    //pugi::xml_node particlesCommon = node.child("particles");
+    //bool moveWithEmitter = particlesCommon.child("movewithemitter").attribute("value").as_bool();
+    //ret->emittedMoveWithEmitter_ = moveWithEmitter;
     
-    UnicodeString textureResource(particlesCommon.child("texture").attribute("source").value());
-    UnicodeString textureId(particlesCommon.child("texture").attribute("id").value());
-    ret->emittedTexture_ = data::Manager::getTexture(textureResource, textureId);
+    //UnicodeString textureResource(particlesCommon.child("texture").attribute("source").value());
+    //UnicodeString textureId(particlesCommon.child("texture").attribute("id").value());
+    //ret->emittedTexture_ = data::Manager::getTexture(textureResource, textureId);
     
-    std::string motionModel = particlesCommon.child("motion").attribute("model").value();
-    bool motionModelVelocities = false;
-    bool motionModelExplosion = false;
-    if (motionModel == "static") {
-        ret->emittedMotionModel_.reset((MotionModel*)new MotionModelStatic());
-    } else if (motionModel == "explosion") {
-        ret->emittedMotionModel_.reset((MotionModel*)new MotionModelAwayFromEmitter());
-        motionModelExplosion = true;
-    } else if (motionModel == "velocities") {
-        ret->emittedMotionModel_.reset((MotionModel*)new MotionModelStartEndVelocity());
-        motionModelVelocities = true;
-    } else {
-        LOG_WARN << "Unknown motion model for particles \"" << motionModel << "\", assuming static" << std::endl;
-        ret->emittedMotionModel_.reset((MotionModel*)new MotionModelStatic());
-    }
-    
-    
-    std::string shapeType = node.child("shape").attribute("type").value();
-    bool shapeHasSize = true;
-    if (shapeType == "oval") {
-        ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderOval());
-    } else if (shapeType == "oval-outline") {
-        ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderOvalOutline());
-    } else if (shapeType == "box") {
-        ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderBox());
-    } else if (shapeType == "box-outline") {
-        ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderBoxOutline());
-    } else if (shapeType == "point") {
-        ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderEmitter());
-        shapeHasSize = false;
-    } else {
-        LOG_WARN << "Unknown particle emitter shape \"" << shapeType << "\", assuming point" << std::endl;
-        ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderEmitter());
-        shapeHasSize = false;
-    }
+    //std::string motionModel = particlesCommon.child("motion").attribute("model").value();
+    //bool motionModelVelocities = false;
+    //bool motionModelExplosion = false;
+    //if (motionModel == "static") {
+        //ret->emittedMotionModel_.reset((MotionModel*)new MotionModelStatic());
+    //} else if (motionModel == "explosion") {
+        //ret->emittedMotionModel_.reset((MotionModel*)new MotionModelAwayFromEmitter());
+        //motionModelExplosion = true;
+    //} else if (motionModel == "velocities") {
+        //ret->emittedMotionModel_.reset((MotionModel*)new MotionModelStartEndVelocity());
+        //motionModelVelocities = true;
+    //} else {
+        //LOG_WARN << "Unknown motion model for particles \"" << motionModel << "\", assuming static" << std::endl;
+        //ret->emittedMotionModel_.reset((MotionModel*)new MotionModelStatic());
+    //}
     
     
-    // find t0 values, copy also to t1
-    pugi::xml_node emitterT0 = node.child("t0");
-    if (emitterT0) {
-        float lifetimeMin, lifetimeMax, frequency;
-        CL_Vec4f colorStartMin, colorStartMax, colorEndMin, colorEndMax;
-        int shapeWidth, shapeHeight;
-        CL_Vec3f velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax;
-        float accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax;
-        
-        parseEmitterTxNode(emitterT0, lifetimeMin, lifetimeMax, colorStartMin, colorStartMax, colorEndMin, colorEndMax, frequency, 
-                shapeHasSize, shapeWidth, shapeHeight,
-                velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax, 
-                accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
-        
-        ret->emittedLifetimeMin_.set(lifetimeMin, lifetimeMin);
-        ret->emittedLifetimeMax_.set(lifetimeMax, lifetimeMax);
-        
-        ret->emittedColorStartMin_.set(colorStartMin, colorStartMin);
-        ret->emittedColorStartMax_.set(colorStartMax, colorStartMax);
-        ret->emittedColorEndMin_.set(colorEndMin, colorEndMin);
-        ret->emittedColorEndMax_.set(colorEndMax, colorEndMax);
-        
-        ret->emitPerSecond_.set(frequency, frequency);
-        
-        if (motionModelExplosion) {
-            boost::shared_ptr<MotionModelAwayFromEmitter> motionMod = boost::static_pointer_cast<MotionModelAwayFromEmitter>(ret->emittedMotionModel_);
-            motionMod->setAccelerationT0(accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
-        } else if (motionModelVelocities) {
-            boost::shared_ptr<MotionModelStartEndVelocity> motionMod = boost::static_pointer_cast<MotionModelStartEndVelocity>(ret->emittedMotionModel_);
-            motionMod->setVelocitiesT0(velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax);
-        }
-        
-        if (shapeHasSize) {
-            boost::shared_ptr<StartLocationProviderWithSize> startPosProv = 
-                    boost::dynamic_pointer_cast<StartLocationProviderWithSize>(ret->emittedStartLocationProvider_);
-            if (startPosProv) {
-                startPosProv->setSize(shapeWidth, shapeWidth, shapeHeight, shapeHeight);
-            }
-        }
-    }
+    //std::string shapeType = node.child("shape").attribute("type").value();
+    //bool shapeHasSize = true;
+    //if (shapeType == "oval") {
+        //ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderOval());
+    //} else if (shapeType == "oval-outline") {
+        //ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderOvalOutline());
+    //} else if (shapeType == "box") {
+        //ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderBox());
+    //} else if (shapeType == "box-outline") {
+        //ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderBoxOutline());
+    //} else if (shapeType == "point") {
+        //ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderEmitter());
+        //shapeHasSize = false;
+    //} else {
+        //LOG_WARN << "Unknown particle emitter shape \"" << shapeType << "\", assuming point" << std::endl;
+        //ret->emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderEmitter());
+        //shapeHasSize = false;
+    //}
     
-    // find T1 values, overwrite
-    pugi::xml_node emitterT1 = node.child("t1");
-    if (emitterT1) {
-        float lifetimeMin, lifetimeMax, frequency;
-        CL_Vec4f colorStartMin, colorStartMax, colorEndMin, colorEndMax;
-        int shapeWidth, shapeHeight;
-        CL_Vec3f velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax;
-        float accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax;
+    
+    //// find t0 values, copy also to t1
+    //pugi::xml_node emitterT0 = node.child("t0");
+    //if (emitterT0) {
+        //float lifetimeMin, lifetimeMax, frequency;
+        //CL_Vec4f colorStartMin, colorStartMax, colorEndMin, colorEndMax;
+        //int shapeWidth, shapeHeight;
+        //CL_Vec3f velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax;
+        //float accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax;
         
-        parseEmitterTxNode(emitterT1, lifetimeMin, lifetimeMax, colorStartMin, colorStartMax, colorEndMin, colorEndMax, frequency, 
-                shapeHasSize, shapeWidth, shapeHeight,
-                velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax, 
-                accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
+        //parseEmitterTxNode(emitterT0, lifetimeMin, lifetimeMax, colorStartMin, colorStartMax, colorEndMin, colorEndMax, frequency, 
+                //shapeHasSize, shapeWidth, shapeHeight,
+                //velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax, 
+                //accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
         
-        ret->emittedLifetimeMin_.setT1(lifetimeMin);
-        ret->emittedLifetimeMax_.setT1(lifetimeMax);
+        //ret->emittedLifetimeMin_.set(lifetimeMin, lifetimeMin);
+        //ret->emittedLifetimeMax_.set(lifetimeMax, lifetimeMax);
         
-        ret->emittedColorStartMin_.setT1(colorStartMin);
-        ret->emittedColorStartMax_.setT1(colorStartMax);
-        ret->emittedColorEndMin_.setT1(colorEndMin);
-        ret->emittedColorEndMax_.setT1(colorEndMax);
+        //ret->emittedColorStartMin_.set(colorStartMin, colorStartMin);
+        //ret->emittedColorStartMax_.set(colorStartMax, colorStartMax);
+        //ret->emittedColorEndMin_.set(colorEndMin, colorEndMin);
+        //ret->emittedColorEndMax_.set(colorEndMax, colorEndMax);
         
-        ret->emitPerSecond_.setT1(frequency);
+        //ret->emitPerSecond_.set(frequency, frequency);
         
-        if (motionModelExplosion) {
-            boost::shared_ptr<MotionModelAwayFromEmitter> motionMod = boost::static_pointer_cast<MotionModelAwayFromEmitter>(ret->emittedMotionModel_);
-            motionMod->setAccelerationT1(accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
-        } else if (motionModelVelocities) {
-            boost::shared_ptr<MotionModelStartEndVelocity> motionMod = boost::static_pointer_cast<MotionModelStartEndVelocity>(ret->emittedMotionModel_);
-            motionMod->setVelocitiesT1(velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax);
-        }
+        //if (motionModelExplosion) {
+            //boost::shared_ptr<MotionModelAwayFromEmitter> motionMod = boost::static_pointer_cast<MotionModelAwayFromEmitter>(ret->emittedMotionModel_);
+            //motionMod->setAccelerationT0(accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
+        //} else if (motionModelVelocities) {
+            //boost::shared_ptr<MotionModelStartEndVelocity> motionMod = boost::static_pointer_cast<MotionModelStartEndVelocity>(ret->emittedMotionModel_);
+            //motionMod->setVelocitiesT0(velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax);
+        //}
         
-        if (shapeHasSize) {
-            boost::shared_ptr<StartLocationProviderWithSize> startPosProv = 
-                    boost::dynamic_pointer_cast<StartLocationProviderWithSize>(ret->emittedStartLocationProvider_);
-            if (startPosProv) {
-                startPosProv->setSizeT1(shapeWidth, shapeHeight);
-            }
-        }
-    }
+        //if (shapeHasSize) {
+            //boost::shared_ptr<StartLocationProviderWithSize> startPosProv = 
+                    //boost::dynamic_pointer_cast<StartLocationProviderWithSize>(ret->emittedStartLocationProvider_);
+            //if (startPosProv) {
+                //startPosProv->setSize(shapeWidth, shapeWidth, shapeHeight, shapeHeight);
+            //}
+        //}
+    //}
+    
+    //// find T1 values, overwrite
+    //pugi::xml_node emitterT1 = node.child("t1");
+    //if (emitterT1) {
+        //float lifetimeMin, lifetimeMax, frequency;
+        //CL_Vec4f colorStartMin, colorStartMax, colorEndMin, colorEndMax;
+        //int shapeWidth, shapeHeight;
+        //CL_Vec3f velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax;
+        //float accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax;
+        
+        //parseEmitterTxNode(emitterT1, lifetimeMin, lifetimeMax, colorStartMin, colorStartMax, colorEndMin, colorEndMax, frequency, 
+                //shapeHasSize, shapeWidth, shapeHeight,
+                //velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax, 
+                //accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
+        
+        //ret->emittedLifetimeMin_.setT1(lifetimeMin);
+        //ret->emittedLifetimeMax_.setT1(lifetimeMax);
+        
+        //ret->emittedColorStartMin_.setT1(colorStartMin);
+        //ret->emittedColorStartMax_.setT1(colorStartMax);
+        //ret->emittedColorEndMin_.setT1(colorEndMin);
+        //ret->emittedColorEndMax_.setT1(colorEndMax);
+        
+        //ret->emitPerSecond_.setT1(frequency);
+        
+        //if (motionModelExplosion) {
+            //boost::shared_ptr<MotionModelAwayFromEmitter> motionMod = boost::static_pointer_cast<MotionModelAwayFromEmitter>(ret->emittedMotionModel_);
+            //motionMod->setAccelerationT1(accelerationStartMin, accelerationStartMax, accelerationEndMin, accelerationEndMax);
+        //} else if (motionModelVelocities) {
+            //boost::shared_ptr<MotionModelStartEndVelocity> motionMod = boost::static_pointer_cast<MotionModelStartEndVelocity>(ret->emittedMotionModel_);
+            //motionMod->setVelocitiesT1(velocityStartMin, velocityStartMax, velocityEndMin, velocityEndMax);
+        //}
+        
+        //if (shapeHasSize) {
+            //boost::shared_ptr<StartLocationProviderWithSize> startPosProv = 
+                    //boost::dynamic_pointer_cast<StartLocationProviderWithSize>(ret->emittedStartLocationProvider_);
+            //if (startPosProv) {
+                //startPosProv->setSizeT1(shapeWidth, shapeHeight);
+            //}
+        //}
+    //}
     
     return ret;
 }

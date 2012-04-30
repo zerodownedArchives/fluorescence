@@ -32,32 +32,18 @@ CL_Vec3f StartLocationProviderEmitter::get(const CL_Vec3f& emitterLocation) cons
     return emitterLocation;
 }
 
-void StartLocationProviderEmitter::setNormalizedAge(float age) {
-    // do nothing
-}
 
-
-void StartLocationProviderWithSize::setSize(float widthStart, float widthEnd, float heightStart, float heightEnd) {
-    widthHalf_ = InterpolatedValue<float>(widthStart / 2, widthEnd / 2);
-    heightHalf_ =  InterpolatedValue<float>(heightStart / 2, heightEnd / 2);
-}
-
-void StartLocationProviderWithSize::setSizeT1(float width, float height) {
-    widthHalf_.setT1(width / 2);
-    heightHalf_.setT1(height / 2);
-}
-
-void StartLocationProviderWithSize::setNormalizedAge(float age) {
-    widthHalf_.setNormalizedAge(age);
-    heightHalf_.setNormalizedAge(age);
+void StartLocationProviderWithSize::setSize(float width, float height) {
+    widthHalf_ = width / 2;;
+    heightHalf_ =  height / 2;
 }
 
 
 CL_Vec3f StartLocationProviderBox::get(const CL_Vec3f& emitterLocation) const {
     CL_Vec3f ret(emitterLocation);
 
-    ret.x += Random::randomMinMax(-widthHalf_.get(), widthHalf_.get());
-    ret.y += Random::randomMinMax(-heightHalf_.get(), heightHalf_.get());
+    ret.x += Random::randomMinMax(-widthHalf_, widthHalf_);
+    ret.y += Random::randomMinMax(-heightHalf_, heightHalf_);
 
     return ret;
 }
@@ -67,11 +53,11 @@ CL_Vec3f StartLocationProviderBoxOutline::get(const CL_Vec3f& emitterLocation) c
     CL_Vec3f ret(emitterLocation);
 
     if (Random::randomBool()) {
-        ret.x += Random::randomBool() ? -heightHalf_.get() : heightHalf_.get();
-        ret.y += Random::randomMinMax(-widthHalf_.get(), widthHalf_.get());
+        ret.x += Random::randomBool() ? -heightHalf_ : heightHalf_;
+        ret.y += Random::randomMinMax(-widthHalf_, widthHalf_);
     } else {
-        ret.x += Random::randomMinMax(-heightHalf_.get(), heightHalf_.get());
-        ret.y += Random::randomBool() ? -widthHalf_.get() : widthHalf_.get();
+        ret.x += Random::randomMinMax(-heightHalf_, heightHalf_);
+        ret.y += Random::randomBool() ? -widthHalf_ : widthHalf_;
     }
 
     return ret;
@@ -84,8 +70,8 @@ CL_Vec3f StartLocationProviderOval::get(const CL_Vec3f& emitterLocation) const {
     float theta = Random::random01() * 6.283185;
     float length = Random::random01();
 
-    ret.x += cos(theta) * widthHalf_.get() * length;
-    ret.y += sin(theta) * heightHalf_.get() * length;
+    ret.x += cos(theta) * widthHalf_ * length;
+    ret.y += sin(theta) * heightHalf_ * length;
 
     return ret;
 }
@@ -96,8 +82,8 @@ CL_Vec3f StartLocationProviderOvalOutline::get(const CL_Vec3f& emitterLocation) 
 
     float theta = Random::random01() * 6.283185;
 
-    ret.x += cos(theta) * widthHalf_.get();
-    ret.y += sin(theta) * heightHalf_.get();
+    ret.x += cos(theta) * widthHalf_;
+    ret.y += sin(theta) * heightHalf_;
 
     return ret;
 }

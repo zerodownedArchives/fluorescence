@@ -48,7 +48,7 @@ void ParticleEffect::update(unsigned int elapsedMillis) {
     
     for (; iter != end; ++iter) {
         (*iter)->setLocation(locationPixels);
-        (*iter)->update(elapsedSeconds);
+        (*iter)->step(elapsedSeconds);
         
         if ((*iter)->isExpired()) {
             expired.push_back(*iter);

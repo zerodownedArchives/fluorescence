@@ -368,6 +368,7 @@ void Manager::enterTest(CL_GUIMessage msg, CL_AcceleratorKey key) {
 }
 
 void Manager::onSingleClick(boost::shared_ptr<world::IngameObject> obj) {
+    LOG_DEBUG << "single click" << std::endl;
     if (cursorManager_->hasTarget()) {
         cursorManager_->onTarget(obj);
     } else if (singleClickWait_.first) {
@@ -382,6 +383,7 @@ void Manager::onSingleClick(boost::shared_ptr<world::IngameObject> obj) {
 }
 
 void Manager::onDoubleClick(boost::shared_ptr<world::IngameObject> obj) {
+    LOG_DEBUG << "double click" << std::endl;
     singleClickWait_.first = nullptr;
     
     if (cursorManager_->hasTarget()) {

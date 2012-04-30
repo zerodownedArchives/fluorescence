@@ -17,47 +17,44 @@
  */
 
 
-#ifndef FLUO_UI_PARTICLES_EMITTER_HPP
-#define FLUO_UI_PARTICLES_EMITTER_HPP
+#ifndef FLUO_UI_PARTICLES_PARTICLEEMITTERSTATE_HPP
+#define FLUO_UI_PARTICLES_PARTICLEEMITTERSTATE_HPP
 
 #include <boost/shared_ptr.hpp>
-#include <ClanLib/Display/Render/graphic_context.h>
-class CL_ProgramObject;
+#include <ClanLib/Display/2D/color.h>
+#include <ClanLib/Core/Math/vec2.h>
 
-#include <misc/interpolation.hpp>
+#include <misc/string.hpp>
+#include <misc/random.hpp>
 
 namespace fluo {
 namespace ui {
 namespace particles {
-
+    
 class StartLocationProvider;
 class MotionModel;
+class Particle;
 
-class Emitter {
+class ParticleEmitterState {
 public:
-    Emitter();
-
-    virtual void step(float elapsedSeconds) = 0;
-    virtual void render(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader) = 0;
+    UnicodeString name_;
     
-    virtual bool isExpired() const = 0;
-    virtual bool isEmitting() const = 0;
+    unsigned int emitFrequency_;
     
-    void setLocation(const CL_Vec3f& location);
-    void setLocationOffset(const CL_Vec3f& offset);
+    boost::shared_ptr<StartLocationProvider> emittedStartLocationProvider_;
+    boost::shared_ptr<MotionModel> emittedMotionModel_;
     
-    CL_Vec3f getLocation() const;
-    CL_Vec3f getStartLocation() const;
-
-protected:
-    CL_Vec3f startLocation_;
-    CL_Vec3f location_;
-    CL_Vec3f locationOffset_;
-
-    float age_;
-    float emittedFractionStore_;
-
-    bool emittedMoveWithEmitter_;
+    RandomizedValue<CL_Colorf> emittedColorStart_;
+    RandomizedValue<CL_Colorf> emittedColorEnd_;
+    
+    RandomizedValue<float> emittedLifetime_;
+    
+    RandomizedValue<float> emittedSizeStart_;
+    RandomizedValue<float> emittedSizeEnd_;
+    
+    CL_Vec3f emitterLocationOffset_;
+    
+    void initParticle(Particle& particle, const CL_Vec3f& emitterLocation, float emitterAge) const;
 };
 
 }
@@ -65,3 +62,4 @@ protected:
 }
 
 #endif
+

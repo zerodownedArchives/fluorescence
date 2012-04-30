@@ -17,29 +17,28 @@
  */
 
 
-#ifndef FLUO_UI_PARTICLES_EMITTEREMITTER_HPP
-#define FLUO_UI_PARTICLES_EMITTEREMITTER_HPP
+#ifndef FLUO_UI_PARTICLES_TIMELINEELEMENT_HPP
+#define FLUO_UI_PARTICLES_TIMELINEELEMENT_HPP
 
-#include "emitter.hpp"
-
-#include <list>
-#include <boost/shared_ptr.hpp>
+#include <ClanLib/Core/Math/vec3.h>
 
 namespace fluo {
 namespace ui {
 namespace particles {
-
-// does not work yet.
-class EmitterEmitter : public Emitter {
-public:
-    virtual unsigned int emittedCount() const;
-    virtual void updateSet(unsigned int newCount, float elapsedSeconds);
-    virtual void render(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader);
     
-    virtual bool isExpired() const;
-
-private:
-    std::list<boost::shared_ptr<Emitter> > emitters_;
+class Particle;
+    
+class TimelineElement {
+public:
+    virtual void activate() = 0;
+    // returns the number of unused seconds, if it expires within this step
+    virtual float step(float elapsedSeconds) = 0;
+    virtual bool isExpired() const = 0;
+    
+    virtual float numberOfNewParticles(float elapsedSeconds) const = 0;
+    virtual void initParticle(Particle& particle, const CL_Vec3f& emitterLocation, float emitterAge) const = 0;
+    
+    virtual CL_Vec3f getEmitterLocationOffset() const = 0;
 };
 
 }
@@ -47,3 +46,4 @@ private:
 }
 
 #endif
+

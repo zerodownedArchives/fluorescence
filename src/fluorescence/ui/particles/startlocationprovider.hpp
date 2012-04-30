@@ -22,8 +22,6 @@
 
 #include <ClanLib/Core/Math/vec3.h>
 
-#include <misc/interpolation.hpp>
-
 namespace fluo {
 namespace ui {
 namespace particles {
@@ -31,26 +29,22 @@ namespace particles {
 class StartLocationProvider {
 public:
     virtual CL_Vec3f get(const CL_Vec3f& emitterLocation) const = 0;
-    virtual void setNormalizedAge(float age) = 0;
 };
 
 
 class StartLocationProviderEmitter {
 public:
     virtual CL_Vec3f get(const CL_Vec3f& emitterLocation) const;
-    virtual void setNormalizedAge(float age);
 };
 
 
 class StartLocationProviderWithSize : public StartLocationProvider {
 public:
-    void setSize(float widthStart, float widthEnd, float heightStart, float heightEnd);
-    void setSizeT1(float width, float height);
-    virtual void setNormalizedAge(float age);
+    void setSize(float width, float height);
 
 protected:
-    InterpolatedValue<float> widthHalf_;
-    InterpolatedValue<float> heightHalf_;
+    float widthHalf_;
+    float heightHalf_;
 };
 
 class StartLocationProviderBox : public StartLocationProviderWithSize {

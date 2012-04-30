@@ -57,4 +57,13 @@ CL_Vec4f Random::randomMinMax(const CL_Vec4f& min, const CL_Vec4f& max) {
     return ret;
 }
 
+CL_Colorf Random::randomMinMax(const CL_Colorf& min, const CL_Colorf& max) {
+    CL_Colorf ret;
+    ret.r = randomMinMax(min.r, max.r);
+    ret.g = randomMinMax(min.g, max.g);
+    ret.b = randomMinMax(min.b, max.b);
+    ret.a = randomMinMax(min.a, max.a);
+    return ret;
+}
+
 }

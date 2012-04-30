@@ -36,7 +36,7 @@ namespace ui {
 namespace particles {
 
 ParticleEmitter::ParticleEmitter(unsigned int maxSize) :
-        particleCount_(0) {
+        particleCount_(0), timeline_(this) {
 
     particles_ = new Particle[maxSize];
 }
@@ -46,52 +46,54 @@ ParticleEmitter::~ParticleEmitter() {
     particleCount_ = 0;
 }
 
-unsigned int ParticleEmitter::emittedCount() const {
-    return particleCount_;
+void ParticleEmitter::step(float elapsedSeconds) {
+    age_ += elapsedSeconds;
+    newEmitIndex_ = 0;
+    timeline_.step(elapsedSeconds);
+    updateRemainingSet();
 }
 
-void ParticleEmitter::updateSet(unsigned int newCount, float elapsedSeconds) {
-    emittedColorStartMin_.setNormalizedAge(normalizedAge_);
-    emittedColorStartMax_.setNormalizedAge(normalizedAge_);
-    emittedColorEndMin_.setNormalizedAge(normalizedAge_);
-    emittedColorEndMax_.setNormalizedAge(normalizedAge_);
-
-    if (emittedStartCount_ > 0) {
-        for (unsigned int i = 0; i < emittedStartCount_; ++i) {
-            initParticle(i);
-            ++particleCount_;
-        }
-        emittedStartCount_ = 0;
+void ParticleEmitter::emitParticles(float count) {
+    float newCountF = count + emittedFractionStore_;
+    unsigned int newCount = newCountF;
+    emittedFractionStore_ = newCountF - newCount;
+    
+    if (newCount == 0) {
+        return;
     }
-
-    bool shouldEmitNew = isEmitting();
-
-    for (unsigned int i = 0; i < particleCount_; ++i) {
-        if (particles_[i].isExpired(age_)) {
-            if (shouldEmitNew) {
-                // if still emitting, reset particle
-                initParticle(i);
-
-                if (newCount > 0) {
-                    --newCount;
-                }
-            } else if (!particles_[i].isRemoved()) {
-                // remove particle
-                particles_[i].remove();
-            }
-        }
-
-        // no need to update particle attributes, that is all done on the gpu
-    }
-
-    // create new particles, if necessary
-    if (shouldEmitNew) {
-        int remainingNew = (std::min)(newCount, emittedMaxCount_ - emittedCount());
-        for (; remainingNew > 0; --remainingNew) {
-            initParticle(particleCount_);
-            ++particleCount_;
+    
+    CL_Vec3f paramLocation = emittedMoveWithEmitter_ ? getStartLocation() : getLocation();
+    
+    // reuse already existing particles
+    for(; newEmitIndex_ < particleCount_ && newCount > 0; ++newEmitIndex_) {
+        if (particles_[newEmitIndex_].isExpired(age_)) {
+            timeline_.initParticle(particles_[newEmitIndex_], paramLocation, age_);
+            --newCount;
         }
     }
+    
+    // increase particle count if necessary
+    int remainingNew = (std::min)(newCount, capacity_ - particleCount_);
+    for (; remainingNew > 0; --remainingNew) {
+        timeline_.initParticle(particles_[newEmitIndex_], paramLocation, age_);
+        ++newEmitIndex_;
+    }
+    particleCount_ += remainingNew;
+}
+
+void ParticleEmitter::updateRemainingSet() {
+    for (; newEmitIndex_ < particleCount_; ++newEmitIndex_) {
+        if (particles_[newEmitIndex_].isExpired(age_)) {
+            removeParticle(newEmitIndex_);
+        }
+    }
+    
+    // to increase performance all unused particles at the end of the
+    // set could be cut off
+}
+
+void ParticleEmitter::removeParticle(unsigned int index) {
+    particles_[index].startLocation_.z = 10.0; // particle does not pass depth test then
 }
 
 void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader) {
@@ -106,7 +108,7 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
     
     // set shader uniform variables
     shader->set_uniform1i("Texture0", 0);
-    CL_Vec3f emitterMovement = emittedMoveWithEmitter_ ? (location_ - startLocation_) : CL_Vec3f(0, 0, 0);
+    CL_Vec3f emitterMovement = emittedMoveWithEmitter_ ? (getLocation() - getStartLocation()) : CL_Vec3f(0, 0, 0);
     shader->set_uniform3f("EmitterMovement", emitterMovement);
     shader->set_uniform1f("CurrentTime", age_);
     
@@ -123,29 +125,15 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
     primarray.set_attributes(5, &particles_[0].colorEnd_, sizeof(Particle));
 
     // call to draw
-    gc.draw_primitives(cl_points, emittedCount(), primarray);
-}
-
-void ParticleEmitter::initParticle(unsigned int index) {
-    CL_Vec3f particleLocation = emittedStartLocationProvider_->get(location_);
-
-    CL_Vec3f velocity1, velocity2;
-    emittedMotionModel_->get(location_, particleLocation, velocity1, velocity2);
-
-    particles_[index].reset(
-        particleLocation,
-        velocity1,
-        velocity2,
-        age_, // creation time
-        age_ + Random::randomMinMax(emittedLifetimeMin_, emittedLifetimeMax_),
-        Random::randomMinMax(emittedColorStartMin_, emittedColorStartMax_),
-        Random::randomMinMax(emittedColorEndMin_, emittedColorEndMax_)
-    );
+    gc.draw_primitives(cl_points, particleCount_, primarray);
 }
 
 bool ParticleEmitter::isExpired() const {
-    //LOG_DEBUG << "ParticleEmitter::isExpired: " << lifetimes_[0u] << " + " << age_ << " >= " << lifetimes_[1u] << " + " << emittedLifetimeMax_.get() << std::endl;
-    return lifetimes_[0u] + age_ >= lifetimes_[1u] + emittedLifetimeMax_.get();
+    return timeline_.isExpired();
+}
+
+bool ParticleEmitter::isEmitting() const {
+    return timeline_.isEmitting();
 }
 
 }

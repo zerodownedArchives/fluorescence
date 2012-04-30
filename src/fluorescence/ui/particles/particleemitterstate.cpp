@@ -17,11 +17,9 @@
  */
 
 
+#include "particleemitterstate.hpp"
 
-#include "emitter.hpp"
-
-#include <algorithm>
-
+#include "particle.hpp"
 #include "startlocationprovider.hpp"
 #include "motionmodel.hpp"
 
@@ -29,26 +27,21 @@ namespace fluo {
 namespace ui {
 namespace particles {
     
-Emitter::Emitter() : 
-        age_(0),
-        emittedFractionStore_(0.99999f) // to emit at least one child at the start
-        {
-}
+void ParticleEmitterState::initParticle(Particle& particle, const CL_Vec3f& emitterLocation, float emitterAge) const {
+    CL_Vec3f particleLocation = emittedStartLocationProvider_->get(emitterLocation);
 
-void Emitter::setLocation(const CL_Vec3f& location) {
-    location_ = location;
-}
+    CL_Vec3f velocity1, velocity2;
+    emittedMotionModel_->get(emitterLocation, particleLocation, velocity1, velocity2);
 
-void Emitter::setLocationOffset(const CL_Vec3f& offset) {
-    locationOffset_ = offset;
-}
-
-CL_Vec3f Emitter::getLocation() const {
-    return location_ + locationOffset_;
-}
-
-CL_Vec3f Emitter::getStartLocation() const {
-    return startLocation_ + locationOffset_;
+    particle.startLocation_ = particleLocation;
+    particle.velocityStart_ = velocity1;
+    particle.velocityEnd_ = velocity2;
+    particle.lifetimes_ = emitterAge; // creation time
+    particle.lifetimes_[1u] = particle.lifetimes_[0u] + emittedLifetime_.get(); // expire time
+    particle.colorStart_ = emittedColorStart_.get();
+    particle.colorEnd_ = emittedColorEnd_.get();
+    particle.sizeStart_ = emittedSizeStart_.get();
+    particle.sizeEnd_ = emittedSizeEnd_.get();
 }
 
 }

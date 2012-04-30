@@ -24,6 +24,7 @@
 
 #include "emitter.hpp"
 #include "particle.hpp"
+#include "timeline.hpp"
 
 namespace fluo {
 namespace ui {
@@ -40,29 +41,29 @@ friend class XmlLoader;
 
 public:
     ParticleEmitter(unsigned int maxSize);
-
     ~ParticleEmitter();
 
-    virtual unsigned int emittedCount() const;
-    virtual void updateSet(unsigned int newCount, float elapsedSeconds);
+    virtual void step(float elapsedSeconds);
     virtual void render(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader);
     
     virtual bool isExpired() const;
+    virtual bool isEmitting() const;
+    
+    void emitParticles(float count);
 
 private:
+    unsigned int capacity_;
     unsigned int particleCount_;
     Particle* particles_;
+    unsigned int newEmitIndex_;
 
-    void initParticle(unsigned int index);
-
-    // parameters for the emitted particles
-    InterpolatedValue<CL_Vec4f> emittedColorStartMin_;
-    InterpolatedValue<CL_Vec4f> emittedColorStartMax_;
-    InterpolatedValue<CL_Vec4f> emittedColorEndMin_;
-    InterpolatedValue<CL_Vec4f> emittedColorEndMax_;
-    
     boost::shared_ptr<ui::Texture> emittedTexture_;
     CL_Texture extractedTexture_;
+    
+    Timeline timeline_;
+    
+    void updateRemainingSet();
+    void removeParticle(unsigned int index);
 };
 
 }

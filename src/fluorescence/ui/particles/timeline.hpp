@@ -17,34 +17,46 @@
  */
 
 
+#ifndef FLUO_UI_PARTICLES_TIMELINE_HPP
+#define FLUO_UI_PARTICLES_TIMELINE_HPP
 
-#include "emittable.hpp"
-
-#include <stdlib.h>
+#include <vector>
+#include <boost/shared_ptr.hpp>
+#include <ClanLib/Core/Math/vec3.h>
 
 namespace fluo {
 namespace ui {
 namespace particles {
+    
+class ParticleEmitter;
+class TimelineElement;
+class Particle;
 
-Emittable::Emittable() :
-    startLocation_(0, 0, 0), velocityStart_(0, 0, 0), velocityEnd_(0, 0, 0), lifetimes_(0, 0) {
+class Timeline {
+public:
+    Timeline(ParticleEmitter* parent);
+    
+    void step(float elapsedSeconds);
+    
+    bool isExpired() const;
+    bool isEmitting() const;
+    
+    void initParticle(Particle& particle, const CL_Vec3f& emitterLocation, float emitterAge) const;
+    CL_Vec2f getEmitterLocationOffset() const;
+    
+    void addElement(boost::shared_ptr<TimelineElement> elem);
+
+private:
+    ParticleEmitter* emitter_;
+    
+    std::vector<boost::shared_ptr<TimelineElement> > elements_;
+    unsigned int currentIndex_;
+    TimelineElement* currentElement_;
+};
+
+}
+}
 }
 
-Emittable::Emittable(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime) :
-    startLocation_(startPos), velocityStart_(velStart), velocityEnd_(velEnd), lifetimes_(creationTime, expireTime) {
-}
+#endif
 
-void Emittable::reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime) {
-    startLocation_ = startPos;
-    velocityStart_ = velStart;
-    velocityEnd_ = velEnd;
-    lifetimes_ = CL_Vec2f(creationTime, expireTime);
-}
-
-bool Emittable::isExpired(float emitterAge) const {
-    return emitterAge > lifetimes_[1u];
-}
-
-}
-}
-}

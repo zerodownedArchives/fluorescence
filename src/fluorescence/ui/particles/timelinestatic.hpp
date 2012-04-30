@@ -17,36 +17,34 @@
  */
 
 
-#ifndef FLUO_UI_PARTICLES_EMITTABLE_HPP
-#define FLUO_UI_PARTICLES_EMITTABLE_HPP
+#ifndef FLUO_UI_PARTICLES_TIMELINESTATIC_HPP
+#define FLUO_UI_PARTICLES_TIMELINESTATIC_HPP
 
-#include <ClanLib/Core/Math/vec3.h>
+#include "timelineelement.hpp"
+#include "particleemitterstate.hpp"
 
 namespace fluo {
 namespace ui {
 namespace particles {
-
-class Emitter;
-
-class Emittable {
-
-friend class Emitter;
-
+    
+class TimelineStatic : public TimelineElement {
 public:
-    Emittable();
-
-    Emittable(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime);
-    void reset(const CL_Vec3f& startPos, const CL_Vec3f& velStart, const CL_Vec3f& velEnd, float creationTime, float expireTime);
-
-    bool isExpired(float emitterAge) const;
-
-protected:
-    CL_Vec3f startLocation_;
-
-    CL_Vec3f velocityStart_;
-    CL_Vec3f velocityEnd_;
-
-    CL_Vec2f lifetimes_; // 0 - creation, 1 - expiration
+    TimelineStatic(const ParticleEmitterState& state, float duration);
+    
+    virtual void activate();
+    virtual float step(float elapsedSeconds);
+    virtual bool isExpired() const;
+    
+    virtual float numberOfNewParticles(float elapsedSeconds) const;
+    virtual void initParticle(Particle& particle, const CL_Vec3f& emitterLocation, float emitterAge) const;
+    
+    virtual CL_Vec3f getEmitterLocationOffset() const;
+    
+private:
+    ParticleEmitterState state_;
+    
+    float duration_;
+    float timeExpired_;
 };
 
 }
@@ -54,3 +52,4 @@ protected:
 }
 
 #endif
+
