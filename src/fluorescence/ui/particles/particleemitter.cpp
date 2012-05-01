@@ -136,6 +136,10 @@ bool ParticleEmitter::isEmitting() const {
     return timeline_.isEmitting();
 }
 
+void ParticleEmitter::onEvent(const UnicodeString& event) {
+    timeline_.onEvent(event);
+}
+
 }
 }
 }

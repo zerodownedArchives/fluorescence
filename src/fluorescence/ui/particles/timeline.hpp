@@ -24,6 +24,8 @@
 #include <boost/shared_ptr.hpp>
 #include <ClanLib/Core/Math/vec3.h>
 
+#include <misc/string.hpp>
+
 namespace fluo {
 namespace ui {
 namespace particles {
@@ -45,6 +47,8 @@ public:
     CL_Vec2f getEmitterLocationOffset() const;
     
     void addElement(boost::shared_ptr<TimelineElement> elem);
+    
+    void onEvent(const UnicodeString& event);
 
 private:
     ParticleEmitter* emitter_;

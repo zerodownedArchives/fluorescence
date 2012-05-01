@@ -24,6 +24,7 @@
 #include <ClanLib/Display/Render/graphic_context.h>
 class CL_ProgramObject;
 
+#include <misc/string.hpp>
 #include <misc/interpolation.hpp>
 
 namespace fluo {
@@ -42,6 +43,8 @@ public:
     
     virtual bool isExpired() const = 0;
     virtual bool isEmitting() const = 0;
+    
+    virtual void onEvent(const UnicodeString& event) = 0;
     
     void setLocation(const CL_Vec3f& location);
     void setLocationOffset(const CL_Vec3f& offset);

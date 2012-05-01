@@ -50,6 +50,8 @@ public:
     virtual bool isEmitting() const;
     
     void emitParticles(float count);
+    
+    virtual void onEvent(const UnicodeString& event);
 
 private:
     unsigned int capacity_;

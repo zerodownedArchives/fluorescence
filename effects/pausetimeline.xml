@@ -20,13 +20,13 @@
             <particles>
                 <lifetime min="0.3" max="0.7" />
                 <t0>
-                    <color min="#660000" max="ff0000" />
+                    <color min="#660000" max="#ff0000" />
                     <acceleration min="15" max="25" />
                     <size min="3" max="5" />
                 </t0>
                 
                 <t1>
-                    <color min="#dd0000" max="ff0000" />
+                    <color min="#dd0000" max="#ff0000" />
                     <acceleration min="5" max="15" />
                     <size min="2" max="4" />
                 </t1>
@@ -39,11 +39,11 @@
             <location-offset x="-50" y="-50" />
             <particles>
                 <t0>
-                    <color min="#006600" max="008800" />
+                    <color min="#006600" max="#008800" />
                 </t0>
                 
                 <t1>
-                    <color min="#00dd00" max="00ff00" />
+                    <color min="#00dd00" max="#00ff00" />
                 </t1>
             </particles>
         </state>

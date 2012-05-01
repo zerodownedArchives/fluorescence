@@ -1,0 +1,56 @@
+<particleeffect>
+    <emitters>
+        <emitter capacity="10000" particlesmovewithemitter="false">
+            <texture source="file" id="effects/textures/small.png" />
+            <timeline loop="false">
+                <forever state="fireball" />
+                <event name="targetreached" />
+                <static state="explosion" duration="0.2" />
+            </timeline>
+        </emitter>
+    </emitters>
+        
+    <states>
+        <state name="fireball" default="true">
+            <frequency value="1500" />
+            <shape type="oval" width="20" height="20" />
+            <motion model="explosion" />
+            
+            <particles>
+                <lifetime min="0.2" max="0.3" />
+                <t0>
+                    <color min="#aa550099" max="#ff9900cc" />
+                    <acceleration min="5" max="20" />
+                    <size min="3" max="5" />
+                </t0>
+                
+                <t1>
+                    <color min="#bb330033" max="#ff550088" />
+                    <acceleration min="2" max="10" />
+                    <size min="2" max="4" />
+                </t1>
+            </particles>
+        </state>
+        
+        <state name="explosion">
+            <frequency value="10000" />
+            <shape type="oval" width="40" height="40" />
+            <motion model="explosion" />
+            
+            <particles>
+                <lifetime min="0.2" max="0.3" />
+                <t0>
+                    <color min="#99000099" max="#ff8800cc" />
+                    <acceleration min="0" max="200" />
+                    <size min="3" max="5" />
+                </t0>
+                
+                <t1>
+                    <color min="#bb000033" max="#ff330088" />
+                    <acceleration min="0" max="20" />
+                    <size min="2" max="4" />
+                </t1>
+            </particles>
+        </state>
+    </states>
+</particleeffect>

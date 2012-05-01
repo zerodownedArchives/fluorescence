@@ -18,8 +18,11 @@
 
 #include "timeline.hpp"
 
+#include <misc/log.hpp>
+
 #include "timelineelement.hpp"
 #include "particleemitter.hpp"
+#include "timelineevent.hpp"
 
 namespace fluo {
 namespace ui {
@@ -89,6 +92,23 @@ void Timeline::addElement(boost::shared_ptr<TimelineElement> elem) {
 
 CL_Vec2f Timeline::getEmitterLocationOffset() const {
     return currentElement_->getEmitterLocationOffset();
+}
+
+void Timeline::onEvent(const UnicodeString& event) {
+    unsigned int eventElemIndex = currentIndex_ + 1;
+    
+    LOG_DEBUG << "Timeline::onEvent: " << event << std::endl;
+    
+    for (; eventElemIndex < elements_.size(); ++eventElemIndex) {
+        boost::shared_ptr<TimelineEvent> eventElem = boost::dynamic_pointer_cast<TimelineEvent>(elements_[eventElemIndex]);
+        LOG_DEBUG << "index: " << eventElemIndex << " isEvent: " << (bool)eventElem << std::endl;
+        if (eventElem && eventElem->consumesEvent(event)) {
+            currentIndex_ = eventElemIndex;
+            currentElement_ = eventElem.get();
+            currentElement_->activate();
+            break;
+        }
+    }
 }
 
 }

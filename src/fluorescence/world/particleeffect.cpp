@@ -112,8 +112,12 @@ void ParticleEffect::updateRenderDepth() {
 }
 
 unsigned int ParticleEffect::startExplosion() {
-    // TODO: timeline event element?
-    // ui::particles::XmlLoader::fromFile("explosion", this);
+    std::list<boost::shared_ptr<ui::particles::Emitter> >::const_iterator iter = emitters_.begin();
+    std::list<boost::shared_ptr<ui::particles::Emitter> >::const_iterator end = emitters_.end();
+
+    for (; iter != end; ++iter) {
+        (*iter)->onEvent("targetreached");
+    }
     return 0;
 }
 

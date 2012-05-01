@@ -18,13 +18,13 @@
             <particles>
                 <lifetime min="0.1" max="2.0" />
                 <t0>
-                    <color min="#660000" max="ff0000" />
+                    <color min="#660000" max="#ff0000" />
                     <acceleration min="15" max="25" />
                     <size min="3" max="5" />
                 </t0>
                 
                 <t1>
-                    <color min="#dd0000" max="ff0000" />
+                    <color min="#dd0000" max="#ff0000" />
                     <acceleration min="5" max="15" />
                     <size min="2" max="4" />
                 </t1>

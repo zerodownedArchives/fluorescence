@@ -142,12 +142,14 @@ void Effect::update(unsigned int elapsedMillis) {
     
     // check expire time
     lifetimeMillisLeft_ -= elapsedMillis;
-    if (shouldExpireMoving_ && shouldExpireTimeout()) {
+    
+    if (shouldExpireMoving_) {
         if (shouldExplode_) {
-            shouldExplode_ = false;
             exploding_ = true;
+            shouldExplode_ = false;
             lifetimeMillisLeft_ = startExplosion();
-        } else {
+        }
+        if (shouldExpireTimeout()) {
             expired_ = true;
         }
     }

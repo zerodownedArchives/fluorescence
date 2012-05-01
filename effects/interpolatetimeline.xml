@@ -22,13 +22,13 @@
             <particles>
                 <lifetime min="0.3" max="0.7" />
                 <t0>
-                    <color min="#ff0000" max="ff0000" />
+                    <color min="#ff0000" max="#ff0000" />
                     <acceleration min="15" max="25" />
                     <size min="3" max="5" />
                 </t0>
                 
                 <t1>
-                    <color min="#ff0000" max="ff0000" />
+                    <color min="#ff0000" max="#ff0000" />
                     <acceleration min="5" max="15" />
                     <size min="2" max="4" />
                 </t1>
@@ -39,11 +39,11 @@
             <shape type="box" width="100" height="100" />
             <particles>
                 <t0>
-                    <color min="#0000ff" max="0000ff" />
+                    <color min="#0000ff" max="#0000ff" />
                 </t0>
                 
                 <t1>
-                    <color min="#0000ff" max="0000ff" />
+                    <color min="#0000ff" max="#0000ff" />
                 </t1>
             </particles>
         </state>
