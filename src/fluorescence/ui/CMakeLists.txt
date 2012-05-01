@@ -142,6 +142,7 @@ set (PARTICLES_HPP
     ui/particles/timelinepause.hpp
     ui/particles/timelineimmediate.hpp
     ui/particles/timelineblend.hpp
+    ui/particles/timelineinterpolate.hpp
     )
 
 set (PARTICLES_CPP
@@ -156,6 +157,7 @@ set (PARTICLES_CPP
     ui/particles/timelinepause.cpp
     ui/particles/timelineimmediate.cpp
     ui/particles/timelineblend.cpp
+    ui/particles/timelineinterpolate.cpp
     )
     
 set (CLIENTCOMMANDS_HPP

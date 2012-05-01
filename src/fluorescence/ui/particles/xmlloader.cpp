@@ -34,6 +34,7 @@
 #include "timelinepause.hpp"
 #include "timelineimmediate.hpp"
 #include "timelineblend.hpp"
+#include "timelineinterpolate.hpp"
 
 namespace fluo {
 namespace ui {
@@ -234,6 +235,30 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
             
             float duration = timelineIter.attribute("duration").as_float();
             boost::shared_ptr<TimelineBlend> newElem(new TimelineBlend(stateMapIter1->second, stateMapIter2->second, duration));
+            emitter->timeline_.addElement(newElem);
+        } else if (tlElemName == "interpolate") {
+            checkAttribute(timelineIter, "from");
+            checkAttribute(timelineIter, "to");
+            checkAttribute(timelineIter, "duration");
+            
+            UnicodeString stateName1 = StringConverter::fromUtf8(timelineIter.attribute("from").value());
+            std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter1 = stateMap.find(stateName1);
+            if (stateMapIter1 == stateMap.end()) {
+                std::string msg("Unknown from state in timeline::interpolate: ");
+                msg += StringConverter::toUtf8String(stateName1);
+                throw XmlLoadException(msg);
+            }
+            
+            UnicodeString stateName2 = StringConverter::fromUtf8(timelineIter.attribute("to").value());
+            std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter2 = stateMap.find(stateName2);
+            if (stateMapIter2 == stateMap.end()) {
+                std::string msg("Unknown to state in timeline::interpolate: ");
+                msg += StringConverter::toUtf8String(stateName1);
+                throw XmlLoadException(msg);
+            }
+            
+            float duration = timelineIter.attribute("duration").as_float();
+            boost::shared_ptr<TimelineInterpolate> newElem(new TimelineInterpolate(stateMapIter1->second, stateMapIter2->second, duration));
             emitter->timeline_.addElement(newElem);
         } else {
             std::string msg("Unknown timeline element: ");

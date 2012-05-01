@@ -19,6 +19,7 @@
 #include "timelineblend.hpp"
 
 #include <misc/log.hpp>
+#include <misc/interpolation.hpp>
 
 namespace fluo {
 namespace ui {
@@ -43,7 +44,7 @@ float TimelineBlend::step(float elapsedSeconds) {
 float TimelineBlend::numberOfNewParticles(float elapsedSeconds) const {
     float realStep = (std::min)(duration_ - timeExpired_, elapsedSeconds);
     // interpolate emit frequency between the two states
-    float freq = (state1_.emitFrequency_ * (1 - normalizedAge_)) + (state2_.emitFrequency_ * normalizedAge_);
+    float freq = Interpolation::linear(state1_.emitFrequency_, state2_.emitFrequency_, normalizedAge_);
     float numNew = freq * realStep;
     return numNew;
 }
@@ -58,7 +59,7 @@ void TimelineBlend::initParticle(Particle& particle, const CL_Vec3f& emitterLoca
 
 CL_Vec3f TimelineBlend::getEmitterLocationOffset() const {
     // interpolate position between the two states
-    return (state1_.emitterLocationOffset_ * (1 - normalizedAge_)) + (state2_.emitterLocationOffset_ * normalizedAge_);
+    return Interpolation::linear(state1_.emitterLocationOffset_, state2_.emitterLocationOffset_, normalizedAge_);
 }
 
 float TimelineBlend::getMaxParticleLifetime() const {
