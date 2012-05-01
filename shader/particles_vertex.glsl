@@ -14,6 +14,8 @@ attribute vec2 Lifetime; // 0 - creation, 1 - expiration
 attribute vec4 ColorStart;
 attribute vec4 ColorEnd;
 
+attribute vec2 Sizes; // 0 - start, 1 - end
+
 varying vec4 Color;
 
 
@@ -36,7 +38,7 @@ void main(void) {
     
     gl_Position = cl_ModelViewProjectionMatrix * gl_Position;
     
-    gl_PointSize = 5.0;
+    gl_PointSize = mix(Sizes.x, Sizes.y, normalizedAge);
     
     // interpolate color
     Color = mix(ColorStart, ColorEnd, normalizedAge);

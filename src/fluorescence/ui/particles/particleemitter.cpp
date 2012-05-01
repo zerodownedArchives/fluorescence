@@ -123,6 +123,7 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
     primarray.set_attributes(3, &particles_[0].lifetimes_, sizeof(Particle));
     primarray.set_attributes(4, &particles_[0].colorStart_, sizeof(Particle));
     primarray.set_attributes(5, &particles_[0].colorEnd_, sizeof(Particle));
+    primarray.set_attributes(6, &particles_[0].sizes_, sizeof(Particle));
 
     // call to draw
     gc.draw_primitives(cl_points, particleCount_, primarray);

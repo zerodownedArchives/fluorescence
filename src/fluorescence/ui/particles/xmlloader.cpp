@@ -457,7 +457,7 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
         }
         
         
-        pugi::xml_node t1 = particlesNode.child("t0");
+        pugi::xml_node t1 = particlesNode.child("t1");
         if (t1) {
             curProp = t1.child("color");
             if (curProp) {

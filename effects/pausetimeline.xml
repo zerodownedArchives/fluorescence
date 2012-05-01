@@ -13,7 +13,7 @@
     <states>
         <state name="state1" default="true">
             <position-offset x="30" y="30" />
-            <frequency value="3000" />
+            <frequency value="20" />
             <shape type="oval-outline" width="20" height="70" />
             <motion model="explosion" />
             
@@ -22,13 +22,13 @@
                 <t0>
                     <color min="#660000" max="#ff0000" />
                     <acceleration min="15" max="25" />
-                    <size min="3" max="5" />
+                    <size min="1" max="1" />
                 </t0>
                 
                 <t1>
                     <color min="#dd0000" max="#ff0000" />
                     <acceleration min="5" max="15" />
-                    <size min="2" max="4" />
+                    <size min="20" max="20" />
                 </t1>
             </particles>
         </state>
