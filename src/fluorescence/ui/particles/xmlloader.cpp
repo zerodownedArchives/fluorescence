@@ -35,6 +35,7 @@
 #include "timelineimmediate.hpp"
 #include "timelineblend.hpp"
 #include "timelineinterpolate.hpp"
+#include "timelineforever.hpp"
 
 namespace fluo {
 namespace ui {
@@ -259,6 +260,19 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
             
             float duration = timelineIter.attribute("duration").as_float();
             boost::shared_ptr<TimelineInterpolate> newElem(new TimelineInterpolate(stateMapIter1->second, stateMapIter2->second, duration));
+            emitter->timeline_.addElement(newElem);
+        } else if (tlElemName == "forever") {
+            checkAttribute(timelineIter, "state");
+            
+            UnicodeString stateName = StringConverter::fromUtf8(timelineIter.attribute("state").value());
+            std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter = stateMap.find(stateName);
+            if (stateMapIter == stateMap.end()) {
+                std::string msg("Unknown state in timeline::static: ");
+                msg += StringConverter::toUtf8String(stateName);
+                throw XmlLoadException(msg);
+            }
+            
+            boost::shared_ptr<TimelineForever> newElem(new TimelineForever(stateMapIter->second));
             emitter->timeline_.addElement(newElem);
         } else {
             std::string msg("Unknown timeline element: ");
