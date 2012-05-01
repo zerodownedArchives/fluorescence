@@ -2,7 +2,7 @@
     <emitters>
         <emitter capacity="3000" particlesmovewithemitter="false">
             <texture source="file" id="effects/textures/small.png" />
-            <timeline loop="false">
+            <timeline>
                 <forever state="state1" />
             </timeline>
         </emitter>

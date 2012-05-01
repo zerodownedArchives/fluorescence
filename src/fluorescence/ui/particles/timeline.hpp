@@ -49,6 +49,8 @@ public:
     void addElement(boost::shared_ptr<TimelineElement> elem);
     
     void onEvent(const UnicodeString& event);
+    
+    void setRepeat(int repeat);
 
 private:
     ParticleEmitter* emitter_;
@@ -59,6 +61,8 @@ private:
     
     float maxParticleLifetime_;
     float waitAfterLastEmit_;
+    
+    int repeatCount_;
 };
 
 }

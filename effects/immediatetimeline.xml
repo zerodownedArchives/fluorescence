@@ -2,13 +2,9 @@
     <emitters>
         <emitter capacity="3000" particlesmovewithemitter="false">
             <texture source="file" id="effects/textures/small.png" />
-            <timeline loop="false">
+            <timeline repeat="10">
                 <immediate state="state1" count="200" />
                 <pause duration="0.5" />
-                <immediate state="state1" count="200" />
-                <pause duration="0.5" />
-                <immediate state="state1" count="200" />
-                <pause duration="2.5" />
             </timeline>
         </emitter>
     </emitters>

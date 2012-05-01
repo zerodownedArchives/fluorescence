@@ -29,7 +29,7 @@ namespace ui {
 namespace particles {
 
 Timeline::Timeline(ParticleEmitter* emitter) : 
-        emitter_(emitter), currentIndex_(0xFFFFFFFFu), currentElement_(nullptr), maxParticleLifetime_(0) {
+        emitter_(emitter), currentIndex_(0xFFFFFFFFu), currentElement_(nullptr), maxParticleLifetime_(0), repeatCount_(0) {
 }
 
 void Timeline::step(float elapsedSeconds) {
@@ -54,13 +54,20 @@ void Timeline::step(float elapsedSeconds) {
         if (secondsLeft > 0) {
             ++currentIndex_;
             if (!isEmitting()) {
-                // set timer to wait for all particles to disperse
-                waitAfterLastEmit_ = maxParticleLifetime_;
-                break;
-            } else {
-                currentElement_ = elements_[currentIndex_].get();
-                currentElement_->activate();
+                // timeline end reached, check if the whole timeline should be repeated
+                if (repeatCount_ != 0) {
+                    currentIndex_ = 0;
+                    if (repeatCount_ > 0) { // can also be -1 for endless repeat
+                        --repeatCount_;
+                    }
+                } else {
+                    // set timer to wait for all particles to disperse
+                    waitAfterLastEmit_ = maxParticleLifetime_;
+                    break;
+                }
             }
+            currentElement_ = elements_[currentIndex_].get();
+            currentElement_->activate();
         }
     }
 }
@@ -109,6 +116,13 @@ void Timeline::onEvent(const UnicodeString& event) {
             break;
         }
     }
+}
+
+void Timeline::setRepeat(int repeat) {
+    if (repeat > 0) {
+        --repeat;
+    }
+    repeatCount_ = repeat;
 }
 
 }

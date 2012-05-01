@@ -176,6 +176,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
     }
     
     pugi::xml_node timelineNode = node.child("timeline");
+    emitter->timeline_.setRepeat(timelineNode.attribute("repeat").as_int());
     pugi::xml_node timelineIter = timelineNode.first_child();
     while (timelineIter) {
         std::string tlElemName = timelineIter.name();

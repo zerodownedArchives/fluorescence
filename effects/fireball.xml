@@ -2,7 +2,7 @@
     <emitters>
         <emitter capacity="10000" particlesmovewithemitter="false">
             <texture source="file" id="effects/textures/small.png" />
-            <timeline loop="false">
+            <timeline>
                 <forever state="fireball" />
                 <event name="targetreached" />
                 <static state="explosion" duration="0.2" />
