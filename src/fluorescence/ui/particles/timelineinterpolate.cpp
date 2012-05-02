@@ -62,8 +62,10 @@ void TimelineInterpolate::initParticle(Particle& particle, const CL_Vec3f& emitt
     particle.lifetimes_[1u] = Interpolation::linear(helper.lifetimes_[1u], particle.lifetimes_[1u], normalizedAge_);
     particle.colorStart_ = Interpolation::linear(helper.colorStart_, particle.colorStart_, normalizedAge_);
     particle.colorEnd_ = Interpolation::linear(helper.colorEnd_, particle.colorEnd_, normalizedAge_);
-    particle.sizes_[0u] = Interpolation::linear(helper.sizes_[0u], particle.sizes_[0u], normalizedAge_);
-    particle.sizes_[1u] = Interpolation::linear(helper.sizes_[1u], particle.sizes_[1u], normalizedAge_);
+    particle.sizes_ = Interpolation::linear(helper.sizes_, particle.sizes_, normalizedAge_);
+    particle.frameIndices_ = Interpolation::linear(helper.frameIndices_, particle.frameIndices_, normalizedAge_);
+    
+    
 }
 
 CL_Vec3f TimelineInterpolate::getEmitterLocationOffset() const {

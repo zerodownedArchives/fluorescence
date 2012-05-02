@@ -61,6 +61,7 @@ ShaderManager::ShaderManager(CL_GraphicContext& gc) {
     particleShader_->bind_attribute_location(4, "ColorStart");
     particleShader_->bind_attribute_location(5, "ColorEnd");
     particleShader_->bind_attribute_location(6, "Sizes");
+    particleShader_->bind_attribute_location(7, "FrameIndices");
 
     if (!particleShader_->link()) {
         LOG_EMERGENCY << "Error while linking particle shader:\n" << particleShader_->get_info_log().c_str() << std::endl;

@@ -52,6 +52,8 @@ public:
     void emitParticles(float count);
     
     virtual void onEvent(const UnicodeString& event);
+    
+    void setFramesInTexture(unsigned int frames);
 
 private:
     unsigned int capacity_;
@@ -65,6 +67,8 @@ private:
     
     void updateRemainingSet();
     void removeParticle(unsigned int index);
+    
+    unsigned int framesInTexture_;
 };
 
 }

@@ -44,6 +44,8 @@ void ParticleEmitterState::initParticle(Particle& particle, const CL_Vec3f& emit
     particle.colorEnd_ = CL_Vec4f(col.r, col.g, col.b, col.a);
     particle.sizes_[0u] = emittedSizeStart_.get();
     particle.sizes_[1u] = emittedSizeEnd_.get();
+    particle.frameIndices_[0u] = emittedFrameIndexStart_;
+    particle.frameIndices_[1u] = emittedFrameIndexEnd_;
 }
 
 }

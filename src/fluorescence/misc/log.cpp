@@ -137,4 +137,8 @@ Log& Log::operator<<(const CL_Vec3f& vec) {
     return *this << "[Vec3: " << std::fixed << vec.x << "/" << vec.y << "/" << vec.z << "]";
 }
 
+Log& Log::operator<<(const CL_Vec4f& vec) {
+    return *this << "[Vec4: " << std::fixed << vec.x << "/" << vec.y << "/" << vec.z << "/" << vec.w << "]";
+}
+
 }

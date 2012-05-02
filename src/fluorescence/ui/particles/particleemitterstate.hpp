@@ -54,6 +54,9 @@ public:
     
     CL_Vec3f emitterLocationOffset_;
     
+    float emittedFrameIndexStart_;
+    float emittedFrameIndexEnd_;
+    
     void initParticle(Particle& particle, const CL_Vec3f& emitterLocation, float emitterAge) const;
 };
 

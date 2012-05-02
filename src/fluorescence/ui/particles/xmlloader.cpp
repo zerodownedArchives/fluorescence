@@ -171,6 +171,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
     UnicodeString textureId(textureNode.attribute("id").value());
     emitter->emittedTexture_ = data::Manager::getTexture(textureResource, textureId);
     emitter->emittedTexture_->setUsage(Texture::USAGE_EFFECT);
+    emitter->setFramesInTexture(textureNode.attribute("frames").as_uint());
     
     if (!node.child("timeline")) {
         throw XmlLoadException("Emitter definition without timeline");
@@ -456,6 +457,12 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
             } else if (t0.child("velocity-max")) {
                 throw XmlLoadException("MotionModel error: velocity-max given, but no velocity-min");
             }
+            
+            curProp = t0.child("frame");
+            if (curProp) {
+                checkAttribute(curProp, "index");
+                state.emittedFrameIndexStart_ = curProp.attribute("index").as_uint();
+            }
         }
         
         
@@ -531,6 +538,12 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
                 }
             } else if (t1.child("velocity-max")) {
                 throw XmlLoadException("MotionModel error: velocity-max given, but no velocity-min");
+            }
+            
+            curProp = t1.child("frame");
+            if (curProp) {
+                checkAttribute(curProp, "index");
+                state.emittedFrameIndexEnd_ = curProp.attribute("index").as_uint() + 1;
             }
         }
     }

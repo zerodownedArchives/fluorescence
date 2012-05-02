@@ -28,6 +28,7 @@ namespace fluo {
 class Interpolation {
 public:
     static float linear(float a, float b, float factor);
+    static CL_Vec2f linear(const CL_Vec2f& a, const CL_Vec2f& b, float factor);
     static CL_Vec3f linear(const CL_Vec3f& a, const CL_Vec3f& b, float factor);
     static CL_Vec4f linear(const CL_Vec4f& a, const CL_Vec4f& b, float factor);
 };

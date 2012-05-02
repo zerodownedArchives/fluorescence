@@ -1,0 +1,36 @@
+<particleeffect>
+    <emitters>
+        <emitter capacity="3000" particlesmovewithemitter="false">
+            <texture source="file" id="effects/textures/animcross.png" frames="4" />
+            <timeline repeat="1">
+                <immediate state="state1" count="3" />
+                <pause duration="0.5" />
+            </timeline>
+        </emitter>
+    </emitters>
+        
+    <states>
+        <state name="state1" default="true">
+            <position-offset x="300" y="300" />
+            <shape type="oval-outline" width="20" height="70" />
+            <motion model="explosion" />
+            
+            <particles>
+                <lifetime min="4.1" max="6.0" />
+                <t0>
+                    <frame index="0" />
+                    <color min="#ff0000" max="#ff0000" />
+                    <acceleration min="15" max="25" />
+                    <size min="55" max="55" />
+                </t0>
+                
+                <t1>
+                    <frame index="3" />
+                    <color min="#ff0000" max="#ff0000" />
+                    <acceleration min="5" max="15" />
+                    <size min="55" max="55" />
+                </t1>
+            </particles>
+        </state>
+    </states>
+</particleeffect>

@@ -42,6 +42,8 @@ public:
     CL_Vec4f colorStart_;
     CL_Vec4f colorEnd_;
     CL_Vec2f sizes_; // 0 - start, 1 - end
+    
+    CL_Vec2f frameIndices_; // 0 - start, 1 - end
 
     bool isRemoved_;
 };

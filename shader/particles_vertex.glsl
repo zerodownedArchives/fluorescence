@@ -15,19 +15,16 @@ attribute vec4 ColorStart;
 attribute vec4 ColorEnd;
 
 attribute vec2 Sizes; // 0 - start, 1 - end
+attribute vec2 FrameIndices; // 0 - start, 1 - end
 
 varying vec4 Color;
+varying float FrameIndex;
 
 
 void main(void) {
     float age = CurrentTime - Lifetime[0];
     float expireAge = (Lifetime[1] - Lifetime[0]);
     float normalizedAge = age / expireAge;
-    
-    if (normalizedAge > 1.0) {
-        Color = vec4(0);
-        return;
-    }
     
     // interpolate position
     vec3 positionDelta = VelocityStart * normalizedAge + 
@@ -39,6 +36,8 @@ void main(void) {
     gl_Position = cl_ModelViewProjectionMatrix * gl_Position;
     
     gl_PointSize = mix(Sizes.x, Sizes.y, normalizedAge);
+    
+    FrameIndex = floor(mix(FrameIndices.x, FrameIndices.y, normalizedAge));
     
     // interpolate color
     Color = mix(ColorStart, ColorEnd, normalizedAge);

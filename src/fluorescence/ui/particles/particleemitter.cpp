@@ -108,8 +108,10 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
     shader->set_uniform1f("CurrentTime", age_);
     
     CL_Rectf texRect = emittedTexture_->getNormalizedTextureCoords();
-    CL_Vec4f texInfo(texRect.left, texRect.top, texRect.get_width(), texRect.get_height());
+    CL_Vec4f texInfo(texRect.left, texRect.top, texRect.get_width() / framesInTexture_, texRect.get_height());
     shader->set_uniform4f("TextureInfo", texInfo);
+    
+    LOG_DEBUG << "TextureInfo: " << texInfo << std::endl;
     
     gc.set_texture(0, emittedTexture_->getTexture());
 
@@ -123,6 +125,7 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
     primarray.set_attributes(4, &particles_[0].colorStart_, sizeof(Particle));
     primarray.set_attributes(5, &particles_[0].colorEnd_, sizeof(Particle));
     primarray.set_attributes(6, &particles_[0].sizes_, sizeof(Particle));
+    primarray.set_attributes(7, &particles_[0].frameIndices_, sizeof(Particle));
 
     // call to draw
     gc.draw_primitives(cl_points, particleCount_, primarray);
@@ -138,6 +141,10 @@ bool ParticleEmitter::isEmitting() const {
 
 void ParticleEmitter::onEvent(const UnicodeString& event) {
     timeline_.onEvent(event);
+}
+
+void ParticleEmitter::setFramesInTexture(unsigned int frames) {
+    framesInTexture_ = (std::max)(1u, frames);
 }
 
 }

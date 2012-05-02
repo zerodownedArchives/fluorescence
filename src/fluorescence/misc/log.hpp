@@ -94,6 +94,7 @@ public:
     
     Log& operator<<(const CL_Rectf& rect);
     Log& operator<<(const CL_Vec3f& vec);
+    Log& operator<<(const CL_Vec4f& vec);
 
 private:
     Log();
