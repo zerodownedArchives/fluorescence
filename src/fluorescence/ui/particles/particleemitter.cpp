@@ -111,8 +111,6 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
     CL_Vec4f texInfo(texRect.left, texRect.top, texRect.get_width() / framesInTexture_, texRect.get_height());
     shader->set_uniform4f("TextureInfo", texInfo);
     
-    LOG_DEBUG << "TextureInfo: " << texInfo << std::endl;
-    
     gc.set_texture(0, emittedTexture_->getTexture());
 
     // collect particle data in primarray
