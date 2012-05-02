@@ -101,18 +101,17 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
         return;
     }
     
-    if (extractedTexture_.is_null()) {
-        // create CL_Texture from ui::Texture. can be very expensive, if the CL_Subtexture was already initialized.
-        extractedTexture_ = emittedTexture_->extractSingleTexture();
-    }
-    
     // set shader uniform variables
     shader->set_uniform1i("Texture0", 0);
     CL_Vec3f emitterMovement = emittedMoveWithEmitter_ ? (getLocation() - getStartLocation()) : CL_Vec3f(0, 0, 0);
     shader->set_uniform3f("EmitterMovement", emitterMovement);
     shader->set_uniform1f("CurrentTime", age_);
     
-    gc.set_texture(0, extractedTexture_);
+    CL_Rectf texRect = emittedTexture_->getNormalizedTextureCoords();
+    CL_Vec4f texInfo(texRect.left, texRect.top, texRect.get_width(), texRect.get_height());
+    shader->set_uniform4f("TextureInfo", texInfo);
+    
+    gc.set_texture(0, emittedTexture_->getTexture());
 
     // collect particle data in primarray
     CL_PrimitivesArray primarray(gc);

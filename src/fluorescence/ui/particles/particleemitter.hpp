@@ -60,7 +60,6 @@ private:
     unsigned int newEmitIndex_;
 
     boost::shared_ptr<ui::Texture> emittedTexture_;
-    CL_Texture extractedTexture_;
     
     Timeline timeline_;
     

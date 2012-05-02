@@ -170,6 +170,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
     UnicodeString textureResource(textureNode.attribute("source").value());
     UnicodeString textureId(textureNode.attribute("id").value());
     emitter->emittedTexture_ = data::Manager::getTexture(textureResource, textureId);
+    emitter->emittedTexture_->setUsage(Texture::USAGE_EFFECT);
     
     if (!node.child("timeline")) {
         throw XmlLoadException("Emitter definition without timeline");
