@@ -1,0 +1,111 @@
+<particleeffect>
+    <emitters>
+        <emitter capacity="3000" particlesmovewithemitter="false">
+            <texture source="file" id="effects/textures/small.png" />
+            <timeline>
+                <immediate state="green1" count="400" />
+                <pause duration="1.0" />
+                <immediate state="green2" count="400" />
+                <pause duration="0.9" />
+                <immediate state="green3" count="400" />
+                <pause duration="0.8" />
+                <immediate state="yellow1" count="400" />
+                <pause duration="0.7" />
+                <immediate state="orange1" count="400" />
+                <pause duration="0.6" />
+                <immediate state="red1" count="400" />
+                <pause duration="0.5" />
+                <immediate state="red2" count="400" />
+            </timeline>
+        </emitter>
+    </emitters>
+        
+    <states>
+        <state name="green1" default="true">
+            <location-offset x="5" y="-20" />
+            <shape type="box-outline" width="20" height="70" />
+            <motion model="explosion" />
+            
+            <particles>
+                <lifetime min="1.0" max="2.0" />
+                <t0>
+                    <color min="#006400" max="#006400" />
+                    <acceleration min="25" max="35" />
+                    <size min="3" max="5" />
+                </t0>
+                
+                <t1>
+                    <color min="#00640066" max="#00640088" />
+                    <acceleration min="5" max="15" />
+                    <size min="2" max="4" />
+                </t1>
+            </particles>
+        </state>
+        
+        <state name="green2">
+            <particles>
+                <t0>
+                    <color min="#00aa00" max="#00aa00" />
+                </t0>
+                <t1>
+                    <color min="#00aa0066" max="#00aa0088" />
+                </t1>
+            </particles>
+        </state>
+        
+        <state name="green3">
+            <particles>
+                <t0>
+                    <color min="#7cfc00" max="#7cfc00" />
+                </t0>
+                <t1>
+                    <color min="#7cfc0066" max="#7cfc0088" />
+                </t1>
+            </particles>
+        </state>
+        
+        <state name="yellow1">
+            <particles>
+                <t0>
+                    <color min="#cccc00" max="#cccc00" />
+                </t0>
+                <t1>
+                    <color min="#cccc0066" max="#cccc0088" />
+                </t1>
+            </particles>
+        </state>
+        
+        <state name="orange1">
+            <particles>
+                <t0>
+                    <color min="#cc6400" max="#cc6400" />
+                </t0>
+                <t1>
+                    <color min="#cc6400" max="#cc6400" />
+                </t1>
+            </particles>
+        </state>
+        
+        <state name="red1">
+            <particles>
+                <t0>
+                    <color min="#640000" max="#640000" />
+                </t0>
+                <t1>
+                    <color min="#64000066" max="#64000088" />
+                </t1>
+            </particles>
+        </state>
+        
+        <state name="red2">
+            <particles>
+                <t0>
+                    <color min="#ff0000" max="#ff0000" />
+                </t0>
+                <t1>
+                    <color min="#ff000066" max="#ff000088" />
+                </t1>
+            </particles>
+        </state>
+    </states>
+</particleeffect>

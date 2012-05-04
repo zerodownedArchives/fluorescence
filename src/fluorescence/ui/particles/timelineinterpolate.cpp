@@ -56,9 +56,14 @@ void TimelineInterpolate::initParticle(Particle& particle, const CL_Vec3f& emitt
     state1_.initParticle(helper, emitterLocation, emitterAge);
     state2_.initParticle(particle, emitterLocation, emitterAge);
     
-    particle.startLocation_ = Interpolation::linear(helper.startLocation_, particle.startLocation_, normalizedAge_);
-    particle.velocityStart_ = Interpolation::linear(helper.velocityStart_, particle.velocityStart_, normalizedAge_);
-    particle.velocityEnd_ = Interpolation::linear(helper.velocityEnd_, particle.velocityEnd_, normalizedAge_);
+    if (state1_.emittedStartLocationProvider_ != state2_.emittedStartLocationProvider_) {
+        particle.startLocation_ = Interpolation::linear(helper.startLocation_, particle.startLocation_, normalizedAge_);
+    }
+    
+    if (state1_.emittedMotionModel_ != state2_.emittedMotionModel_) {
+        particle.velocityStart_ = Interpolation::linear(helper.velocityStart_, particle.velocityStart_, normalizedAge_);
+        particle.velocityEnd_ = Interpolation::linear(helper.velocityEnd_, particle.velocityEnd_, normalizedAge_);
+    }
     particle.lifetimes_[1u] = Interpolation::linear(helper.lifetimes_[1u], particle.lifetimes_[1u], normalizedAge_);
     particle.colorStart_ = Interpolation::linear(helper.colorStart_, particle.colorStart_, normalizedAge_);
     particle.colorEnd_ = Interpolation::linear(helper.colorEnd_, particle.colorEnd_, normalizedAge_);

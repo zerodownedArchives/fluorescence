@@ -234,7 +234,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
             std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter2 = stateMap.find(stateName2);
             if (stateMapIter2 == stateMap.end()) {
                 std::string msg("Unknown to state in timeline::blend: ");
-                msg += StringConverter::toUtf8String(stateName1);
+                msg += StringConverter::toUtf8String(stateName2);
                 throw XmlLoadException(msg);
             }
             

@@ -1,56 +1,34 @@
 <particleeffect>
-    <emitter>
-        <lifetime duration="0.5" />
-        <size init="500" max="10000" />
-        <shape type="oval" />
+    <emitters>
+        <emitter capacity="20000" particlesmovewithemitter="false">
+            <texture source="file" id="effects/textures/explosion.png" />
+            <timeline>
+                <immediate state="state1" count="500" />
+                <static state="state1" duration="0.3" />
+            </timeline>
+        </emitter>
+    </emitters>
         
-        <particles>
-            <movewithemitter value="false" />
+    <states>
+        <state name="state1" default="true">
+            <location-offset x="0" y="0" />
+            <frequency value="20000" />
+            <shape type="oval" width="50" height="50" />
             <motion model="explosion" />
-            <texture source="file" id="effects/textures/small.png" />
-        </particles>
-
-        <t0>
-            <frequency value="5000" />
-            <shape width="20" height="20" />
             
             <particles>
                 <lifetime min="0.2" max="0.5" />
                 <t0>
-                    <colormin r="0.7" g="0" b="0" a="0.8" />
-                    <colormax r="1" g="0" b="0" a="1.0" />
-                    <acceleration min="5" max="100" />
+                    <color min="#bb9999cc" max="#ffbbbbff" />
+                    <acceleration min="0" max="350" />
+                    <size min="32" max="64" />
                 </t0>
                 
                 <t1>
-                    <colormin r="0.7" g="0" b="0" a="0.1" />
-                    <colormax r="1" g="0" b="0" a="0.4" />
-                    <acceleration min="5" max="50" />
+                    <color min="#cc999900" max="#ffffff33" />
+                    <size min="16" max="32" />
                 </t1>
             </particles>
-        </t0>
-        
-        <t1>
-            <frequency value="1000" />
-            <shape width="20" height="20" />
-            
-            <particles>
-                <lifetime min="0.3" max="0.7" />
-                
-                <t0>
-                    <colormin r="0.7" g="0" b="0" a="0.8" />
-                    <colormax r="1" g="0" b="0" a="1.0" />
-                    <acceleration min="5" max="80" />
-                </t0>
-                
-                <t1>
-                    <colormin r="0.7" g="0" b="0" a="0.1" />
-                    <colormax r="1" g="0" b="0" a="0.4" />
-                    <acceleration min="5" max="40" />
-                </t1>
-                
-            </particles>
-        </t1>
-    </emitter>
-    
+        </state>
+    </states>
 </particleeffect>

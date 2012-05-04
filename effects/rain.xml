@@ -1,0 +1,42 @@
+<particleeffect>
+    <emitters>
+        <emitter capacity="3000" particlesmovewithemitter="true">
+            <texture source="file" id="effects/textures/rain.png" />
+            <timeline>
+                <static state="state1" duration="5.0" />
+                <interpolate from="state1" to="state2" duration="10.0" />
+            </timeline>
+        </emitter>
+    </emitters>
+        
+    <states>
+        <state name="state1" default="true">
+            <location-offset x="30" y="-320" />
+            <frequency value="3000" />
+            <shape type="box" width="900" height="10" />
+            <motion model="velocities" />
+            
+            <particles>
+                <lifetime min="1.0" max="1.2" />
+                <t0>
+                    <color min="#00557777" max="#0099cc99" />
+                    <velocity-min x="-10" y="800" />
+                    <velocity-max x="-30" y="1000" />
+                    <size min="7" max="12" />
+                </t0>
+                
+                <t1>
+                    <color min="#00557777" max="#0099cc99" />
+                    <velocity-min x="-10" y="400" />
+                    <velocity-max x="10" y="600" />
+                    <size min="5" max="10" />
+                </t1>
+            </particles>
+        </state>
+        
+        <!-- properties not given here are the same as in the default state -->
+        <state name="state2">
+            <frequency value="0" />
+        </state>
+    </states>
+</particleeffect>

@@ -11,7 +11,7 @@
         
     <states>
         <state name="state1" default="true">
-            <position-offset x="30" y="30" />
+            <location-offset x="30" y="30" />
             <frequency value="3000" />
             <shape type="oval-outline" width="20" height="70" />
             <motion model="explosion" />

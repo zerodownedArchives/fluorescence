@@ -1,0 +1,60 @@
+<particleeffect>
+    <emitters>
+        <emitter capacity="7000" particlesmovewithemitter="false">
+            <texture source="file" id="effects/textures/firesmoke.png" />
+            <timeline>
+                <immediate state="fog" count="500" />
+                <static state="fog" duration="10.0" />
+            </timeline>
+        </emitter>
+        
+        <emitter capacity="200" particlesmovewithemitter="false">
+            <texture source="file" id="effects/textures/foglightning.png" />
+            <timeline>
+                <pause duration="2.0" />
+                <static state="lightning" duration="10.0" />
+            </timeline>
+        </emitter>
+    </emitters>
+        
+    <states>
+        <state name="fog" default="true">
+            <frequency value="1500" />
+            <shape type="oval" width="400" height="400" />
+            <motion model="velocities" />
+            
+            <particles>
+                <lifetime min="3" max="4" />
+                <t0>
+                    <color min="#99000033" max="#ff000044" />
+                    <velocity-min x="-20" y="-20" />
+                    <velocity-max x="20" y="20" />
+                    <size min="0" max="0" />
+                </t0>
+                
+                <t1>
+                    <color min="#99000000" max="#ff000000" />
+                    <velocity-min x="-20" y="-20" />
+                    <velocity-max x="20" y="20" />
+                    <size min="30" max="70" />
+                </t1>
+            </particles>
+        </state>
+        
+        <state name="lightning">
+            <frequency value="15" />
+            <shape type="oval" width="350" height="350" />
+            <motion model="velocities" />
+            
+            <particles>
+                <lifetime min="0.1" max="0.2" />
+                <t0>
+                    <color min="#77000077" max="#ffff00bb" />
+                    <velocity-min x="0" y="0" />
+                    <velocity-max x="0" y="0" />
+                    <size min="0" max="100" />
+                </t0>
+            </particles>
+        </state>
+    </states>
+</particleeffect>

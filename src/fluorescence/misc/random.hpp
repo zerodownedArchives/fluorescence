@@ -53,6 +53,9 @@ public:
 
     void setMin(const T& min) {
         valueMin_ = min;
+        if (valueMax_ == T()) {
+            valueMax_ = min;
+        }
     }
 
     void setMax(const T& max) {

@@ -68,7 +68,7 @@ CL_Vec3f StartLocationProviderOval::get(const CL_Vec3f& emitterLocation) const {
     CL_Vec3f ret(emitterLocation);
 
     float theta = Random::random01() * 6.283185;
-    float length = Random::random01();
+    float length = sqrt(Random::random01());
 
     ret.x += cos(theta) * widthHalf_ * length;
     ret.y += sin(theta) * heightHalf_ * length;
