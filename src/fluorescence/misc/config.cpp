@@ -109,7 +109,7 @@ Config::Config() {
 
 
     // input stuff
-    variablesMap_["/fluo/input/mouse@doubleclick-timeout-ms"].setInt(250, true);
+    variablesMap_["/fluo/input/mouse@doubleclick-timeout-ms"].setInt(300, true);
     variablesMap_["/fluo/input/mouse@drag-start-distance"].setInt(40, true); // pixel difference to start dragging
 
 

@@ -84,6 +84,7 @@ set (PACKETS_HPP
     net/packets/playsound.hpp
     net/packets/warmode.hpp
     net/packets/helprequest.hpp
+    net/packets/profile.hpp
 
     net/packets/bf.hpp
     net/packets/bf/changemap.hpp
@@ -149,6 +150,7 @@ set (PACKETS_CPP
     net/packets/playsound.cpp
     net/packets/warmode.cpp
     net/packets/helprequest.cpp
+    net/packets/profile.cpp
 
     net/packets/bf.cpp
     net/packets/bf/changemap.cpp

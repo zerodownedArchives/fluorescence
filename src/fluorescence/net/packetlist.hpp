@@ -64,6 +64,7 @@
 #include "packets/unicodetext.hpp" // 0xae
 #include "packets/gumpmenu.hpp" // 0xb0
 #include "packets/gumpreply.hpp" // 0xb1
+#include "packets/profile.hpp" // 0xb8
 #include "packets/helprequest.hpp" // 0xb9
 #include "packets/clientversion.hpp" // 0xbd
 #include "packets/bf.hpp" // 0xbf

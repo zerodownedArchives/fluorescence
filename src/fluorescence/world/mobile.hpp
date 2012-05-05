@@ -100,6 +100,7 @@ public:
     bool hasItemOnLayer(unsigned int layer) const;
     
     void openStatWindow(const CL_Point& mousePos);
+    void openProfile();
 
 private:
     unsigned int baseBodyId_; // as sent by the server

@@ -279,6 +279,14 @@ void Mobile::openStatWindow(const CL_Point& mousePos) {
     net::Manager::getSingleton()->send(queryPacket);
 }
 
+void Mobile::openProfile() {
+    if (isPlayer()) {
+        findOrCreateLinkedGump("profile-self");
+    } else {
+        findOrCreateLinkedGump("profile-other");
+    }
+}
+
 ui::GumpMenu* Mobile::findOrCreateLinkedGump(const UnicodeString& gumpName) {
     std::list<ui::GumpMenu*>::iterator iter = linkedGumps_.begin();
     std::list<ui::GumpMenu*>::iterator end = linkedGumps_.end();

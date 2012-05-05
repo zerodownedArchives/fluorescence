@@ -35,6 +35,7 @@
 #include <net/packets/helprequest.hpp>
 #include <net/packets/bf.hpp>
 #include <net/packets/bf/contextmenureply.hpp>
+#include <net/packets/profile.hpp>
 
 #include <misc/log.hpp>
 
@@ -74,6 +75,7 @@ void GumpActions::buildFullActionTable() {
     
     actionTable_["openstatus"] = GumpAction(false, boost::bind(&GumpActions::openStatus, _1, _2, _3, _4));
     actionTable_["helprequest"] = GumpAction(false, boost::bind(&GumpActions::helpRequest, _1, _2, _3, _4));
+    actionTable_["openprofile"] = GumpAction(false, boost::bind(&GumpActions::openProfile, _1, _2, _3, _4));
 }
 
 
@@ -187,6 +189,17 @@ bool GumpActions::helpRequest(GumpMenu* menu, const UnicodeString& action, unsig
     net::packets::HelpRequest pkt;
     net::Manager::getSingleton()->send(pkt);
 
+    return true;
+}
+
+bool GumpActions::openProfile(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    world::Mobile* mob = menu->getLinkedMobile();
+    if (mob) {
+        net::packets::ProfileRequest pkt(mob->getSerial());
+        net::Manager::getSingleton()->send(pkt);
+    } else {
+        LOG_WARN << "openprofile gump action in unlinked gump" << std::endl;
+    }
     return true;
 }
 
