@@ -176,6 +176,7 @@ set (CLIENTCOMMANDS_HPP
     ui/commands/opengump.hpp
     ui/commands/disconnect.hpp
     ui/commands/effect.hpp
+    ui/commands/togglewarmode.hpp
     )
 
 set (CLIENTCOMMANDS_CPP
@@ -187,6 +188,7 @@ set (CLIENTCOMMANDS_CPP
     ui/commands/opengump.cpp
     ui/commands/disconnect.cpp
     ui/commands/effect.cpp
+    ui/commands/togglewarmode.cpp
     )
 
 

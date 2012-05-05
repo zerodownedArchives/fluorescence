@@ -30,6 +30,7 @@
 #include "commands/opengump.hpp"
 #include "commands/disconnect.hpp"
 #include "commands/effect.hpp"
+#include "commands/togglewarmode.hpp"
 
 namespace fluo {
 namespace ui {
@@ -44,6 +45,7 @@ CommandManager::CommandManager(Config& config) {
     commandMap_["opengump"].reset(new commands::OpenGump());
     commandMap_["disconnect"].reset(new commands::Disconnect());
     commandMap_["effect"].reset(new commands::Effect());
+    commandMap_["togglewarmode"].reset(new commands::ToggleWarMode());
     
     // TODO: fill prefixes with values from config
     
@@ -54,7 +56,9 @@ CommandManager::CommandManager(Config& config) {
 }
 
 void CommandManager::execute(const UnicodeString& command, const UnicodeString& args) {
-    std::map<UnicodeString, boost::shared_ptr<commands::ClientCommand> >::iterator iter = commandMap_.find(command);
+    UnicodeString cmdLower(command);
+    cmdLower.toLower();
+    std::map<UnicodeString, boost::shared_ptr<commands::ClientCommand> >::iterator iter = commandMap_.find(cmdLower);
     
     if (iter != commandMap_.end()) {
         iter->second->execute(args);
