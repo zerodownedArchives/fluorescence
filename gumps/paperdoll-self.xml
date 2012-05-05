@@ -21,6 +21,16 @@
         <mousedown source="gumpart" imgid="2010" />
     </button>
     
+    <warmodebutton x="185" y="205">
+        <normal source="gumpart" imgid="2021" />
+        <mouseover source="gumpart" imgid="2023" />
+        <mousedown source="gumpart" imgid="2022" />
+        
+        <warmode-normal source="gumpart" imgid="2024" />
+        <warmode-mouseover source="gumpart" imgid="2026" />
+        <warmode-mousedown source="gumpart" imgid="2025" />
+    </warmodebutton>
+    
     <button x="185" y="233" action="openstatus">
         <normal source="gumpart" imgid="2027" />
         <mouseover source="gumpart" imgid="2029" />

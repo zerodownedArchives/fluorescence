@@ -51,7 +51,7 @@ void OpenPaperdoll::onReceive() {
 
         mob->openPaperdoll();
 
-        // TODO: handle status
+        mob->setStatusFlags(status_);
     } else {
         LOG_WARN << "Received open paperdoll packet for unknown mobile serial=" << serial_ << std::endl;
     }

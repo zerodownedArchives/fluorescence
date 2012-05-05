@@ -58,7 +58,7 @@ void Teleport::onReceive() {
         player->setDirection(direction_);
         player->setHue(hue_);
 
-        // TODO: handle status
+        player->setStatusFlags(status_);
         
         //ui::Manager::getAudioManager()->stopMusic();
     }

@@ -45,6 +45,7 @@
 #include "components/uocheckbox.hpp"
 #include "components/sysloglabel.hpp"
 #include "components/tbackground.hpp"
+#include "components/warmodebutton.hpp"
 
 namespace fluo {
 namespace ui {
@@ -107,6 +108,7 @@ XmlParser::XmlParser() {
     functionTable_["paperdoll"] = boost::bind(&XmlParser::parsePaperdoll, this, _1, _2, _3);
     functionTable_["container"] = boost::bind(&XmlParser::parseContainer, this, _1, _2, _3);
     functionTable_["sysloglabel"] = boost::bind(&XmlParser::parseSysLogLabel, this, _1, _2, _3);
+    functionTable_["warmodebutton"] = boost::bind(&XmlParser::parseWarModeButton, this, _1, _2, _3);
 }
 
 void XmlParser::addRepeatContext(const UnicodeString& name, const RepeatContext& context) {
@@ -999,6 +1001,59 @@ bool XmlParser::parseTBackground(pugi::xml_node& node, CL_GUIComponent* parent, 
     bg->set_geometry(bounds);
 
     top->addToCurrentPage(bg);
+    return true;
+}
+
+bool XmlParser::parseWarModeButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node);
+
+    components::WarModeButton* button = new components::WarModeButton(parent);
+    parseId(node, button);
+    
+    pugi::xml_node normalNode = node.child("normal");
+    pugi::xml_node mouseOverNode = node.child("mouseover");
+    pugi::xml_node mouseDownNode = node.child("mousedown");
+    
+    if (normalNode) {
+        parseMultiTextureImage(normalNode, button, components::WarModeButton::TEX_INDEX_UP);
+    } else {
+        LOG_ERROR << "Normal image for warmode button not defined" << std::endl;
+        return false;
+    }
+    
+    if (mouseOverNode) {
+        parseMultiTextureImage(mouseOverNode, button, components::WarModeButton::TEX_INDEX_MOUSEOVER);
+    }
+    if (mouseDownNode) {
+        parseMultiTextureImage(mouseDownNode, button, components::WarModeButton::TEX_INDEX_DOWN);
+    }
+    
+    
+    pugi::xml_node warmodeNormalNode = node.child("warmode-normal");
+    pugi::xml_node warmodeMouseOverNode = node.child("warmode-mouseover");
+    pugi::xml_node warmodeMouseDownNode = node.child("warmode-mousedown");
+    
+    if (warmodeNormalNode) {
+        parseMultiTextureImage(warmodeNormalNode, button, components::WarModeButton::WARMODE_TEX_INDEX_UP);
+    }
+    if (warmodeMouseOverNode) {
+        parseMultiTextureImage(warmodeMouseOverNode, button, components::WarModeButton::WARMODE_TEX_INDEX_MOUSEOVER);
+    }
+    if (warmodeMouseDownNode) {
+        parseMultiTextureImage(warmodeMouseDownNode, button, components::WarModeButton::WARMODE_TEX_INDEX_DOWN);
+    }
+    
+    if (bounds.get_width() == 0 || bounds.get_height() == 0) {
+        button->setAutoResize(true);
+        bounds.set_width(1);
+        bounds.set_height(1);
+    }
+    
+    button->updateTexture();
+    
+    button->set_geometry(bounds);
+
+    top->addToCurrentPage(button);
     return true;
 }
 

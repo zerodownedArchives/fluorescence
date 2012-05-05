@@ -58,7 +58,7 @@ void NakedMobile::onReceive() {
     mob->setDirection(direction_);
     mob->setHue(hue_);
 
-    // TODO: handle status
+    mob->setStatusFlags(status_);
 }
 
 }

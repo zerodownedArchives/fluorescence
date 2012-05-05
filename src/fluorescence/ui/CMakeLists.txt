@@ -66,6 +66,7 @@ set (GUMPMENU_HPP
     ui/components/uoradiobutton.hpp
     ui/components/sysloglabel.hpp
     ui/components/tbackground.hpp
+    ui/components/warmodebutton.hpp
     )
 
 set (GUMPMENU_CPP
@@ -91,6 +92,7 @@ set (GUMPMENU_CPP
     ui/components/uoradiobutton.cpp
     ui/components/sysloglabel.cpp
     ui/components/tbackground.cpp
+    ui/components/warmodebutton.cpp
     )
 
 set (RENDER_HPP

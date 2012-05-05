@@ -26,6 +26,7 @@
 #include "components/propertylabel.hpp"
 #include "components/uocheckbox.hpp"
 #include "components/textentry.hpp"
+#include "components/warmodebutton.hpp"
 
 #include <client.hpp>
 #include <misc/log.hpp>
@@ -264,11 +265,15 @@ void GumpMenu::updateMobileProperties() {
     std::vector<CL_GUIComponent*>::iterator iter = children.begin();
     std::vector<CL_GUIComponent*>::iterator end = children.end();
 
-    components::PropertyLabel* lbl;
     for (; iter != end; ++iter) {
-        lbl = dynamic_cast<components::PropertyLabel*>(*iter);
+        components::PropertyLabel* lbl = dynamic_cast<components::PropertyLabel*>(*iter);
         if (lbl) {
             lbl->update(linkedMobile_);
+        } else {
+            components::WarModeButton* wmbut = dynamic_cast<components::WarModeButton*>(*iter);
+            if (wmbut) {
+                wmbut->setWarMode(linkedMobile_->isWarMode());
+            }
         }
     }
 }

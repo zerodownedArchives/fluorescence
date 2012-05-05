@@ -22,6 +22,8 @@
 
 #include <net/manager.hpp>
 #include <net/walkpacketmanager.hpp>
+#include <world/manager.hpp>
+#include <world/mobile.hpp>
 
 namespace fluo {
 namespace net {
@@ -52,7 +54,8 @@ bool MovementAccept::read(const int8_t* buf, unsigned int len, unsigned int& ind
 void MovementAccept::onReceive() {
     net::Manager::getWalkPacketManager()->onMovementAccept(sequence_);
 
-    // TODO: handle status
+    // TODO: this seems to be some other kind of status
+    //world::Manager::getSingleton()->getPlayer()->setStatusFlags(status_);
 }
 
 }

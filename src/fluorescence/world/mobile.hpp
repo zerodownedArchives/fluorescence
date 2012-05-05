@@ -101,6 +101,8 @@ public:
     
     void openStatWindow(const CL_Point& mousePos);
     void openProfile();
+    
+    void setStatusFlags(uint8_t flags);
 
 private:
     unsigned int baseBodyId_; // as sent by the server

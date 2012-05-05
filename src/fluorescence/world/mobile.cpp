@@ -27,6 +27,7 @@
 #include <net/packets/bf/contextmenurequest.hpp>
 #include <net/packets/doubleclick.hpp>
 #include <net/packets/statskillquery.hpp>
+#include <net/packets/warmode.hpp>
 
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
@@ -92,8 +93,12 @@ void Mobile::onDoubleClick() {
     LOG_INFO << "Double clicked mobile, id=" << std::hex << getBodyId() << std::dec << " loc=(" << getLocXGame() << "/" << getLocYGame() << "/" <<
             getLocZGame() << ")" << std::endl;
 
-    net::packets::DoubleClick pkt(getSerial());
-    net::Manager::getSingleton()->send(pkt);
+    if (world::Manager::getSingleton()->getPlayer()->isWarMode()) {
+        
+    } else {
+        net::packets::DoubleClick pkt(getSerial());
+        net::Manager::getSingleton()->send(pkt);
+    }
 }
 
 void Mobile::setBodyId(unsigned int value) {
@@ -438,7 +443,13 @@ unsigned int Mobile::getMoveAnim() const {
             if (isMounted()) {
                 return isRunning_ ? 24 : 23;
             } else if (isWarMode_) {
-                return 15;
+                if (!isRunning_) {
+                    return 15;
+                } else if (hasItemOnLayer(Layer::ONEHANDED) || hasItemOnLayer(Layer::TWOHANDED)) {
+                    return 3;
+                } else {
+                    return 2;
+                }
             } else if (hasItemOnLayer(Layer::ONEHANDED) || hasItemOnLayer(Layer::TWOHANDED)) {
                 return isRunning_ ? 3 : 1;
             } else {
@@ -457,10 +468,12 @@ unsigned int Mobile::getIdleAnim() const {
         case AnimType::PEOPLE:
             if (isMounted()) {
                 return 25;
-            } else if (hasItemOnLayer(Layer::TWOHANDED)) {
-                return 8;
-            } else if (hasItemOnLayer(Layer::ONEHANDED)) {
-                return 7;
+            } else if (isWarMode_) {
+                if (hasItemOnLayer(Layer::TWOHANDED)) {
+                    return 8;
+                } else {
+                    return 7;
+                }
             } else {
                 return 4;
             }
@@ -499,10 +512,25 @@ bool Mobile::hasItemOnLayer(unsigned int layer) const {
 }
 
 void Mobile::setWarMode(bool warMode) {
-    if (isWarMode_ != isWarMode_) {
+    if (warMode != isWarMode_) {
         isWarMode_ = warMode;
         invalidateTextureProvider();
+        
+        if (isPlayer()) {
+            net::packets::WarMode pkt(isWarMode_);
+            net::Manager::getSingleton()->send(pkt);
+            
+            ui::Manager::getCursorManager()->setWarMode(isWarMode_);
+        }
+        
+        onPropertyUpdate();
     }
+}
+
+void Mobile::setStatusFlags(uint8_t flags) {
+    setWarMode(flags & MobileStatusFlags::WARMODE);
+    
+    // TODO: handle other flags
 }
 
 }

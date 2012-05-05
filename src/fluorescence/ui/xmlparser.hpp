@@ -121,6 +121,7 @@ private:
     bool parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseSysLogLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseWarModeButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     
     
     typedef boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> XmlParseFunction;

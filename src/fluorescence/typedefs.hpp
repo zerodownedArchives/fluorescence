@@ -119,6 +119,20 @@ enum {
 };
 };
 
+struct MobileStatusFlags {
+enum {
+    NORMAL = 0x00,
+    FROZEN = 0x01,
+    FEMALE = 0x02,
+    FLYING = 0x04,
+    YELLOW_HEALTH = 0x08,
+    IGNORE_MOBILES = 0x10,
+    Unknown3 = 0x20,
+    WARMODE = 0x40,
+    HIDDEN = 0x80,
+};
+};
+
 }
 
 
