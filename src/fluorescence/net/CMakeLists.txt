@@ -85,6 +85,7 @@ set (PACKETS_HPP
     net/packets/warmode.hpp
     net/packets/helprequest.hpp
     net/packets/profile.hpp
+    net/packets/attackrequest.hpp
 
     net/packets/bf.hpp
     net/packets/bf/changemap.hpp
@@ -151,6 +152,7 @@ set (PACKETS_CPP
     net/packets/warmode.cpp
     net/packets/helprequest.cpp
     net/packets/profile.cpp
+    net/packets/attackrequest.cpp
 
     net/packets/bf.cpp
     net/packets/bf/changemap.cpp

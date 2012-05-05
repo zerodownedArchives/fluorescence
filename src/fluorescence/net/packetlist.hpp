@@ -22,6 +22,7 @@
 
 #include "packets/createcharacter.hpp" // 0x00
 #include "packets/movementrequest.hpp" // 0x02
+#include "packets/attackrequest.hpp" // 0x05
 #include "packets/doubleclick.hpp" // 0x06
 #include "packets/pickupitem.hpp" // 0x07
 #include "packets/dropitem.hpp" // 0x08

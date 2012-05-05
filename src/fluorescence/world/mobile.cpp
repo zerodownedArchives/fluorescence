@@ -28,6 +28,7 @@
 #include <net/packets/doubleclick.hpp>
 #include <net/packets/statskillquery.hpp>
 #include <net/packets/warmode.hpp>
+#include <net/packets/attackrequest.hpp>
 
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
@@ -94,7 +95,8 @@ void Mobile::onDoubleClick() {
             getLocZGame() << ")" << std::endl;
 
     if (world::Manager::getSingleton()->getPlayer()->isWarMode()) {
-        
+        net::packets::AttackRequest pkt(getSerial());
+        net::Manager::getSingleton()->send(pkt);
     } else {
         net::packets::DoubleClick pkt(getSerial());
         net::Manager::getSingleton()->send(pkt);
