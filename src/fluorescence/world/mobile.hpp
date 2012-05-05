@@ -103,6 +103,8 @@ public:
     void openProfile();
     
     void setStatusFlags(uint8_t flags);
+    
+    void displayStatChange(unsigned int str, unsigned int dex, unsigned int intel);
 
 private:
     unsigned int baseBodyId_; // as sent by the server

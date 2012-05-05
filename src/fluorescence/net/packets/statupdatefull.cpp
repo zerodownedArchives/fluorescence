@@ -113,6 +113,10 @@ void StatUpdateFull::onReceive() {
         LOG_WARN << "Received full stat update for unknown mobile serial=" << serial_ << std::endl;
         return;
     }
+    
+    if (mob->isPlayer()) {
+        mob->displayStatChange(str_, dex_, int_);
+    }
 
     mob->getProperty("name").setString(name_);
     mob->getProperty("hitpoints").setInt(hitpointsCurrent_);

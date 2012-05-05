@@ -535,5 +535,41 @@ void Mobile::setStatusFlags(uint8_t flags) {
     // TODO: handle other flags
 }
 
+void Mobile::displayStatChange(unsigned int str, unsigned int dex, unsigned int intel) {
+    if (!hasProperty("strength")) {
+        // avoid notice on init
+        return;
+    }
+    
+    unsigned int oldStr = getProperty("strength").asInt();
+    unsigned int oldDex = getProperty("dexterity").asInt();
+    unsigned int oldIntel = getProperty("intelligence").asInt();
+    
+    std::stringstream sstr;
+    
+    if (str != oldStr) {
+        int diff = str - oldStr;
+        sstr << "Your strength has changed by " << diff << ". It is now " << str << ".";
+        UnicodeString msg(sstr.str().c_str());
+        world::Manager::getSingleton()->systemMessage(msg, 64);
+    }
+    
+    if (dex != oldDex) {
+        int diff = dex - oldDex;
+        sstr.str();
+        sstr << "Your dexterity has changed by " << diff << ". It is now " << dex << ".";
+        UnicodeString msg(sstr.str().c_str());
+        world::Manager::getSingleton()->systemMessage(msg, 64);
+    }
+    
+    if (intel != oldIntel) {
+        int diff = intel - oldIntel;
+        sstr.str();
+        sstr << "Your intelligence has changed by " << diff << ". It is now " << intel << ".";
+        UnicodeString msg(sstr.str().c_str());
+        world::Manager::getSingleton()->systemMessage(msg, 64);
+    }
+}
+
 }
 }
