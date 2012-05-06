@@ -30,7 +30,9 @@
 #include "commands/opengump.hpp"
 #include "commands/disconnect.hpp"
 #include "commands/effect.hpp"
+#include "commands/osieffect.hpp"
 #include "commands/togglewarmode.hpp"
+#include "commands/directionlight.hpp"
 
 namespace fluo {
 namespace ui {
@@ -45,7 +47,9 @@ CommandManager::CommandManager(Config& config) {
     commandMap_["opengump"].reset(new commands::OpenGump());
     commandMap_["disconnect"].reset(new commands::Disconnect());
     commandMap_["effect"].reset(new commands::Effect());
+    commandMap_["osieffect"].reset(new commands::OsiEffect());
     commandMap_["togglewarmode"].reset(new commands::ToggleWarMode());
+    commandMap_["directionlight"].reset(new commands::DirectionLight());
     
     // TODO: fill prefixes with values from config
     
