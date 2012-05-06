@@ -17,46 +17,35 @@
  */
 
 
-#ifndef FLUO_UI_GUMPMENUS_HPP
-#define FLUO_UI_GUMPMENUS_HPP
+#ifndef FLUO_NET_PACKETS_BF_SPELLBOOKCONTENT_HPP
+#define FLUO_NET_PACKETS_BF_SPELLBOOKCONTENT_HPP
 
-#include <misc/string.hpp>
+#include <net/packet.hpp>
+
+#include <typedefs.hpp>
 
 namespace fluo {
-
-class Config;
-
-namespace world {
-class DynamicItem;
-}
-
 namespace net {
 namespace packets {
-class ServerList;
-class CharacterList;
-
 namespace bf {
-class OpenContextMenu;
-}
 
-}
-}
-
-namespace ui {
-
-class GumpMenu;
-
-class GumpMenus {
+class SpellbookContent : public Packet {
 public:
-    static GumpMenu* openMessageBox(const UnicodeString& message);
-    static GumpMenu* openShardSelectionGump();
-    static GumpMenu* openLoginGump();
-    static GumpMenu* openServerListGump(const net::packets::ServerList* list);
-    static GumpMenu* openCharacterListGump(const net::packets::CharacterList* list);
-    static GumpMenu* openContextMenu(const net::packets::bf::OpenContextMenu* pkt);
-    static GumpMenu* openSpellbook(const world::DynamicItem* itm);
+    SpellbookContent();
+
+    virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
+
+    virtual void onReceive();
+
+private:
+    Serial serial_;
+    uint16_t graphicId_;
+    uint16_t offset_;
+    uint8_t spellBits_[8];
 };
 
+}
+}
 }
 }
 

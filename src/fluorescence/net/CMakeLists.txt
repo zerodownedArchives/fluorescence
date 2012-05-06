@@ -94,6 +94,7 @@ set (PACKETS_HPP
     net/packets/bf/contextmenureply.hpp
     net/packets/bf/fastwalkinit.hpp
     net/packets/bf/fastwalkupdate.hpp
+    net/packets/bf/spellbookcontent.hpp
     )
 
 set (PACKETS_CPP
@@ -161,6 +162,7 @@ set (PACKETS_CPP
     net/packets/bf/contextmenureply.cpp
     net/packets/bf/fastwalkinit.cpp
     net/packets/bf/fastwalkupdate.cpp
+    net/packets/bf/spellbookcontent.cpp
     )
 
 set (MD5

@@ -1740,3 +1740,15 @@ tbackground
     bg-image:WindowBackdrop;
     bg-image-sizing:repeat;
 }
+
+label#spellbooktitle
+{
+    font-size:16pt;
+    text-color:#001052;
+}
+
+label#spellbooktext
+{
+    font-size:16pt;
+    text-color:#5a4a31;
+}

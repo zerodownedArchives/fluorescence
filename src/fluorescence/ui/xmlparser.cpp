@@ -36,6 +36,7 @@
 #include "components/scrollarea.hpp"
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
+#include "components/clicklabel.hpp"
 #include "components/worldview.hpp"
 #include "components/propertylabel.hpp"
 #include "components/gumpview.hpp"
@@ -92,6 +93,7 @@ XmlParser::XmlParser() {
     functionTable_["ttabs"] = boost::bind(&XmlParser::parseTTabs, this, _1, _2, _3);
     functionTable_["tslider"] = boost::bind(&XmlParser::parseTSlider, this, _1, _2, _3);
     functionTable_["tlabel"] = boost::bind(&XmlParser::parseTLabel, this, _1, _2, _3);
+    functionTable_["tclicklabel"] = boost::bind(&XmlParser::parseTClickLabel, this, _1, _2, _3);
     functionTable_["ttextedit"] = boost::bind(&XmlParser::parseTTextEdit, this, _1, _2, _3);
     functionTable_["tscrollarea"] = boost::bind(&XmlParser::parseTScrollArea, this, _1, _2, _3);
     functionTable_["repeat"] = boost::bind(&XmlParser::parseRepeat, this, _1, _2, _3);
@@ -1054,6 +1056,59 @@ bool XmlParser::parseWarModeButton(pugi::xml_node& node, CL_GUIComponent* parent
     button->set_geometry(bounds);
 
     top->addToCurrentPage(button);
+    return true;
+}
+
+bool XmlParser::parseTClickLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node);
+    std::string align = node.attribute("align").value();
+    std::string text = node.attribute("text").value();
+    
+    unsigned int buttonId = node.attribute("buttonid").as_uint();
+    unsigned int pageId = node.attribute("page").as_uint();
+    UnicodeString action = StringConverter::fromUtf8(node.attribute("action").value());
+    UnicodeString param = StringConverter::fromUtf8(node.attribute("param").value());
+    UnicodeString param2 = StringConverter::fromUtf8(node.attribute("param2").value());
+    UnicodeString param3 = StringConverter::fromUtf8(node.attribute("param3").value());
+    UnicodeString param4 = StringConverter::fromUtf8(node.attribute("param4").value());
+    UnicodeString param5 = StringConverter::fromUtf8(node.attribute("param5").value());
+
+    components::ClickLabel* label = new components::ClickLabel(parent);
+    parseId(node, label);
+
+    if (action.length() > 0) {
+        label->setLocalButton(action);
+        label->setParameter(param, 0);
+        label->setParameter(param2, 1);
+        label->setParameter(param3, 2);
+        label->setParameter(param4, 3);
+        label->setParameter(param5, 4);
+    } else if (!node.attribute("buttonid").empty()) {
+        label->setServerButton(buttonId);
+    } else if (!node.attribute("page").empty()) {
+        label->setPageButton(pageId);
+    } else {
+        LOG_WARN << "ClickLabel without action, id or page" << std::endl;
+        return false;
+    }
+
+    if (align.length() == 0 || align == "left") {
+        label->set_alignment(CL_Label::align_left);
+    } else if (align == "right") {
+        label->set_alignment(CL_Label::align_right);
+    } else if (align == "center") {
+        label->set_alignment(CL_Label::align_center);
+    } else if (align == "justify") {
+        label->set_alignment(CL_Label::align_justify);
+    } else {
+        LOG_WARN << "Unknown clicklabellabel align: " << align << std::endl;
+        return false;
+    }
+
+    label->set_text(text);
+    label->set_geometry(bounds);
+
+    top->addToCurrentPage(label);
     return true;
 }
 

@@ -80,6 +80,9 @@ public:
 
     void openContainerGump(unsigned int gumpId);
     void onContainerGumpClosed();
+    
+    bool isSpellbook() const;
+    void setSpellbook(unsigned int scrollOffset, const uint8_t* spellBits);
 
 private:
     unsigned int artId_;
@@ -104,6 +107,10 @@ private:
     ui::GumpMenu* containerGump_;
     
     unsigned int animType_; // only relevant when mounted
+    
+    bool isSpellbook_;
+    unsigned int spellbookScrollOffset_;
+    uint8_t spellbookSpellBits_[8];
 };
 
 }

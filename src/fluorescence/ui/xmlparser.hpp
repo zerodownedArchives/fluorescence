@@ -101,6 +101,7 @@ private:
     bool parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTClickLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseTBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);

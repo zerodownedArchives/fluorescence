@@ -24,6 +24,7 @@
 #include "bf/opencontextmenu.hpp"
 #include "bf/fastwalkinit.hpp"
 #include "bf/fastwalkupdate.hpp"
+#include "bf/spellbookcontent.hpp"
 
 #include <misc/log.hpp>
 
@@ -46,6 +47,7 @@ boost::shared_ptr<Packet> BF::getSubpacket(uint16_t subId) {
     case 0x02: ret.reset(new bf::FastWalkUpdate()); break;
     case 0x08: ret.reset(new bf::ChangeMap()); break;
     case 0x14: ret.reset(new bf::OpenContextMenu()); break;
+    case 0x1B: ret.reset(new bf::SpellbookContent()); break;
     }
 
     return ret;

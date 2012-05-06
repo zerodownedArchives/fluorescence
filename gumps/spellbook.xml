@@ -1,0 +1,84 @@
+<gump x="100" y="100" draggable="1" closable="1" resizable="1">
+    <page number ="0">
+        <image source="gumpart" imgid="2220" />
+    
+        <!-- circle numbers -->
+        <button x="58" y="175" page="1">
+            <normal source="gumpart" imgid="2225" />
+        </button>        
+        <button x="92" y="175" page="1">
+            <normal source="gumpart" imgid="2226" />
+        </button>
+        <button x="129" y="175" page="2">
+            <normal source="gumpart" imgid="2227" />
+        </button>
+        <button x="164" y="175" page="2">
+            <normal source="gumpart" imgid="2228" />
+        </button>
+        <button x="227" y="175" page="3">
+            <normal source="gumpart" imgid="2229" />
+        </button>
+        <button x="260" y="175" page="3">
+            <normal source="gumpart" imgid="2230" />
+        </button>
+        <button x="297" y="175" page="4">
+            <normal source="gumpart" imgid="2231" />
+        </button>
+        <button x="332" y="175" page="4">
+            <normal source="gumpart" imgid="2232" />
+        </button>
+    </page>
+    
+    <page number="1">
+        <!-- turn page -->
+        <button x="321" y="8" page="2">
+            <normal source="gumpart" imgid="2236" />
+        </button>
+        
+        <tlabel id="spellbooktitle" x="100" y="16" width="40" height="15" text="INDEX" />
+        <tlabel id="spellbooktitle" x="55" y="35" width="150" height="15" text="First circle" />
+        
+        <tclicklabel id="spellbooktext" x="55" y="50" width="150" height="15" text="Create food" page="2" />
+<!--        <tlabel id="spellbooktext" x="55" y="65" width="150" height="15" text="Fireball" />
+        <tlabel id="spellbooktext" x="55" y="80" width="150" height="15" text="Some spell" />
+        <tlabel id="spellbooktext" x="55" y="95" width="150" height="15" text="Destroy world" />
+        <tlabel id="spellbooktext" x="55" y="110" width="150" height="15" text="Destroy world" />
+        <tlabel id="spellbooktext" x="55" y="125" width="150" height="15" text="Destroy stuff" />
+        <tlabel id="spellbooktext" x="55" y="140" width="150" height="15" text="Ice thingy" />
+        <tlabel id="spellbooktext" x="55" y="155" width="150" height="15" text="Summon something" />
+-->
+        
+        <tlabel id="spellbooktitle" x="267" y="16" width="40" height="16" text="INDEX" />
+        <tlabel id="spellbooktitle" x="223" y="37" width="150" height="15" text="Second circle" />
+    </page>
+    
+    <page number="2">
+        <!-- turn pages -->
+        <button x="50" y="8" page="1">
+            <normal source="gumpart" imgid="2235" />
+        </button>
+        <button x="321" y="8" page="3">
+            <normal source="gumpart" imgid="2236" />
+        </button>
+    </page>
+    
+    <page number="3">
+        <!-- turn pages -->
+        <button x="50" y="8" page="2">
+            <normal source="gumpart" imgid="2235" />
+        </button>
+        <button x="321" y="8" page="4">
+            <normal source="gumpart" imgid="2236" />
+        </button>
+    </page>
+    
+    <page number="4">
+        <!-- turn pages -->
+        <button x="50" y="8" page="3">
+            <normal source="gumpart" imgid="2235" />
+        </button>
+        <button x="321" y="8" page="5">
+            <normal source="gumpart" imgid="2236" />
+        </button>
+    </page>
+</gump>

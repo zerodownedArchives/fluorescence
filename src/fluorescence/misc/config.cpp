@@ -119,7 +119,7 @@ Config::Config() {
     variablesMap_["/fluo/shard/account@save-password"].setBool(false, true);
     variablesMap_["/fluo/shard/address@host"].setString("", true);
     variablesMap_["/fluo/shard/address@port"].setInt(2593, true);
-    variablesMap_["/fluo/shard/client@version-id"].setString("fluorescence 0.1", true);
+    variablesMap_["/fluo/shard/client@version-id"].setString("0.1.0 fluo", true);
     
     // audio
     variablesMap_["/fluo/audio/music@off"].setBool(false, true);

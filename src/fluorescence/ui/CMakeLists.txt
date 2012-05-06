@@ -67,6 +67,7 @@ set (GUMPMENU_HPP
     ui/components/sysloglabel.hpp
     ui/components/tbackground.hpp
     ui/components/warmodebutton.hpp
+    ui/components/clicklabel.hpp
     )
 
 set (GUMPMENU_CPP
@@ -93,6 +94,7 @@ set (GUMPMENU_CPP
     ui/components/sysloglabel.cpp
     ui/components/tbackground.cpp
     ui/components/warmodebutton.cpp
+    ui/components/clicklabel.cpp
     )
 
 set (RENDER_HPP

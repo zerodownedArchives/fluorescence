@@ -55,7 +55,7 @@ namespace fluo {
 namespace world {
 
 DynamicItem::DynamicItem(Serial serial) : ServerObject(serial, IngameObject::TYPE_DYNAMIC_ITEM), 
-        artId_(0), tileDataInfo_(NULL), equipped_(false), containerGump_(NULL) {
+        artId_(0), tileDataInfo_(NULL), equipped_(false), containerGump_(NULL), isSpellbook_(false) {
 }
 
 boost::shared_ptr<ui::Texture> DynamicItem::getIngameTexture() const {
@@ -364,27 +364,30 @@ void DynamicItem::onRemovedFromParent() {
 }
 
 void DynamicItem::openContainerGump(unsigned int gumpId) {
-    if (containerGump_) {
+    if (gumpId == 0xFFFF || isSpellbook()) {
+        // spellbook
+        // do nothing, open on spellbook content packet
+    } else if (containerGump_) {
         containerGump_->bring_to_front();
     } else {
         containerGump_ = ui::Manager::getSingleton()->openXmlGump("container");
-    }
+        
+        ui::components::ContainerView* contView = dynamic_cast<ui::components::ContainerView*>(containerGump_->get_named_item("container"));
+        if (contView) {
+            contView->setBackgroundGumpId(gumpId);
+            boost::shared_ptr<DynamicItem> dynSelf = boost::static_pointer_cast<DynamicItem>(shared_from_this());
+            contView->setContainerObject(dynSelf);
+        } else {
+            LOG_ERROR << "Unable to find container component in container gump" << std::endl;
+            return;
+        }
 
-    ui::components::ContainerView* contView = dynamic_cast<ui::components::ContainerView*>(containerGump_->get_named_item("container"));
-    if (contView) {
-        contView->setBackgroundGumpId(gumpId);
-        boost::shared_ptr<DynamicItem> dynSelf = boost::static_pointer_cast<DynamicItem>(shared_from_this());
-        contView->setContainerObject(dynSelf);
-    } else {
-        LOG_ERROR << "Unable to find container component in container gump" << std::endl;
-        return;
-    }
+        std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+        std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
 
-    std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
-    std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
-
-    for (; iter != end; ++iter) {
-        contView->addObject(*iter);
+        for (; iter != end; ++iter) {
+            contView->addObject(*iter);
+        }
     }
 }
 
@@ -412,6 +415,20 @@ void DynamicItem::onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj
             LOG_ERROR << "Unable to find container component in container gump" << std::endl;
         }
     }
+}
+
+bool DynamicItem::isSpellbook() const {
+    return isSpellbook_;
+}
+
+void DynamicItem::setSpellbook(unsigned int scrollOffset, const uint8_t* spellBits) {
+    spellbookScrollOffset_ = scrollOffset;
+    for (unsigned int i = 0; i < 8; ++i) {
+        spellbookSpellBits_[i] = spellBits[i];
+    }
+    isSpellbook_ = true;
+    
+    ui::GumpMenus::openSpellbook(this);
 }
 
 }

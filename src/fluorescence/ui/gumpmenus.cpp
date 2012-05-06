@@ -190,5 +190,11 @@ GumpMenu* GumpMenus::openContextMenu(const net::packets::bf::OpenContextMenu* pk
     return menu;
 }
 
+GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
+    GumpMenu* menu = XmlParser::fromXmlFile("spellbook");
+    
+    return menu;
+}
+
 }
 }
