@@ -1,0 +1,33 @@
+<particleeffect>
+    <emitters>
+        <emitter capacity="400000" particlesmovewithemitter="false">
+            <texture source="file" id="effects/textures/small.png" />
+            <timeline>
+                <static state="state1" duration="10.0" />
+            </timeline>
+        </emitter>
+    </emitters>
+        
+    <states>
+        <state name="state1" default="true">
+            <frequency value="400000" />
+            <shape type="oval" width="50" height="50" />
+            <motion model="explosion" />
+            
+            <particles>
+                <lifetime min="1.0" max="1.0" />
+                <t0>
+                    <color min="#000000" max="#ffffff" />
+                    <acceleration min="50" max="300" />
+                    <size min="3" max="5" />
+                </t0>
+                
+                <t1>
+                    <color min="#000000" max="#ffffff" />
+                    <acceleration min="50" max="200" />
+                    <size min="2" max="4" />
+                </t1>
+            </particles>
+        </state>
+    </states>
+</particleeffect>
