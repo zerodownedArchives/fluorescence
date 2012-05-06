@@ -27,12 +27,14 @@ namespace ui {
 namespace commands {
     
 void DirectionLight::execute(const UnicodeString& args) {
-    world::Manager* worldMan = world::Manager::getSingleton();
+    boost::shared_ptr<world::LightManager> lightMan = world::Manager::getLightManager();
     
     if (args == "off") {
-        worldMan->getLightManager()->setGlobalIntensity(CL_Vec3f(0, 0, 0));
+        lightMan->setAmbientIntensity(CL_Vec3f(0.8, 0.8, 0.8));
+        lightMan->setGlobalIntensity(CL_Vec3f(0, 0, 0));
     } else if (args == "on") {
-        worldMan->getLightManager()->setGlobalIntensity(CL_Vec3f(0.5, 0.5, 0.5));
+        lightMan->setAmbientIntensity(CL_Vec3f(0.65, 0.65, 0.65));
+        lightMan->setGlobalIntensity(CL_Vec3f(0.5, 0.5, 0.5));
     }
 }
 

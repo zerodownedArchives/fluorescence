@@ -43,7 +43,6 @@ namespace world {
 
 namespace ui {
 
-class IngameView;
 class CursorManager;
 class GumpMenu;
 class FontEngine;

@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FLUO_UI_COMMANDS_EFFECT_HPP
-#define FLUO_UI_COMMANDS_EFFECT_HPP
+#ifndef FLUO_UI_COMMANDS_OSIEFFECT_HPP
+#define FLUO_UI_COMMANDS_OSIEFFECT_HPP
 
 #include "clientcommand.hpp"
 
@@ -25,7 +25,7 @@ namespace fluo {
 namespace ui {
 namespace commands {
     
-class Effect : public ClientCommand {
+class OsiEffect : public ClientCommand {
 public:
     virtual void execute(const UnicodeString& args);
 };

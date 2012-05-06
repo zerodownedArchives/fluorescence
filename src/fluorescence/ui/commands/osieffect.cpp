@@ -16,30 +16,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "effect.hpp"
+#include "osieffect.hpp"
 
 #include <typedefs.hpp>
 #include <world/manager.hpp>
 #include <world/ingameobject.hpp>
 #include <world/mobile.hpp>
-#include <world/particleeffect.hpp>
-#include <ui/particles/xmlloader.hpp>
+#include <world/osieffect.hpp>
 
 namespace fluo {
 namespace ui {
 namespace commands {
     
-void Effect::execute(const UnicodeString& args) {
+void OsiEffect::execute(const UnicodeString& args) {
+    int effectId = StringConverter::toInt(args);
+    if (effectId == 0) {
+        return;
+    }
+    
     world::Manager* worldMan = world::Manager::getSingleton();
     
     boost::shared_ptr<world::IngameObject> sourceObj = boost::static_pointer_cast<world::IngameObject>(worldMan->getPlayer());
     
-    boost::shared_ptr<world::Effect> effect = ui::particles::XmlLoader::fromFile(args);
-    if (effect) {
-        effect->setAtSource(sourceObj);
-        effect->setShouldExplode(false);
-        worldMan->addEffect(effect);
-    }
+    boost::shared_ptr<world::Effect> effect(new world::OsiEffect(effectId));
+    effect->setAtSource(sourceObj);
+    effect->setLifetimeMillis(10 * 50);
+    effect->setShouldExplode(false);
+    worldMan->addEffect(effect);
 }
 
 }

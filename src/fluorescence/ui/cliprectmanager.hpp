@@ -50,8 +50,12 @@ public:
     
     boost::recursive_mutex mutex_;
     
+    void forceFullRepaint();
+    
 private:
     std::vector<CL_Rectf> rectangles_;
+    
+    bool forceRepaint_;
 };
 
 }

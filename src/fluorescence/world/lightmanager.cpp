@@ -23,15 +23,16 @@
 #include <stdlib.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#undef _USE_MATH_DEFINES
 
 #include <ui/manager.hpp>
-#include <ui/render/renderqueue.hpp>
+#include <ui/cliprectmanager.hpp>
 
 namespace fluo {
 namespace world {
 
 LightManager::LightManager() :
-        ambientIntensity_(0.8, 0.8, 0.8), globalIntensity_(0.4, 0.4, 0.4) {
+        ambientIntensity_(0.8, 0.8, 0.8), globalIntensity_(0, 0, 0) {
     setGlobalAngle(45);
 }
 
@@ -42,7 +43,7 @@ CL_Vec3f LightManager::getAmbientIntensity() const {
 void LightManager::setAmbientIntensity(const CL_Vec3f& value) {
     ambientIntensity_ = value;
 
-    //ui::Manager::getWorldRenderQueue()->forceRepaint();
+    ui::Manager::getClipRectManager()->forceFullRepaint();
 }
 
 CL_Vec3f LightManager::getGlobalIntensity() const {
@@ -52,7 +53,7 @@ CL_Vec3f LightManager::getGlobalIntensity() const {
 void LightManager::setGlobalIntensity(const CL_Vec3f& value) {
     globalIntensity_ = value;
 
-    //ui::Manager::getWorldRenderQueue()->forceRepaint();
+    ui::Manager::getClipRectManager()->forceFullRepaint();
 }
 
 CL_Vec3f LightManager::getGlobalDirection() const {
@@ -62,7 +63,7 @@ CL_Vec3f LightManager::getGlobalDirection() const {
 void LightManager::setGlobalDirection(const CL_Vec3f& direction) {
     globalDirection_ = direction;
 
-    //ui::Manager::getWorldRenderQueue()->forceRepaint();
+    ui::Manager::getClipRectManager()->forceFullRepaint();
 }
 
 void LightManager::setGlobalAngle(float angle) {
@@ -70,7 +71,7 @@ void LightManager::setGlobalAngle(float angle) {
     float angleRad = angle * M_PI / 360.0f;
     globalDirection_ = CL_Vec3f(-cos(angleRad), 0, sin(angleRad)).normalize();
 
-    //ui::Manager::getWorldRenderQueue()->forceRepaint();
+    ui::Manager::getClipRectManager()->forceFullRepaint();
 }
 
 float LightManager::getGlobalAngle() const {

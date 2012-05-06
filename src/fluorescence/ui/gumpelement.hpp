@@ -30,9 +30,6 @@ class GumpMenu;
 class GumpElement : public CL_GUIComponent {
 public:
     GumpElement(CL_GUIComponent* parent);
-    
-    bool onPointerEnter();
-    bool onPointerExit();
 };
 
 }

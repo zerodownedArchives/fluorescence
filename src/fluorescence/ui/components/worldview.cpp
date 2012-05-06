@@ -57,7 +57,7 @@ WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpEleme
     setCenterObject(world::Manager::getSingleton()->getPlayer()->shared_from_this());
 
     set_constant_repaint(true);
-
+    
     func_render().set(this, &WorldView::renderOneFrame);
     func_input_pressed().set(this, &WorldView::onInputPressed);
     func_input_released().set(this, &WorldView::onInputReleased);

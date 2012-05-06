@@ -24,7 +24,7 @@
 namespace fluo {
 namespace ui {
     
-ClipRectManager::ClipRectManager() {
+ClipRectManager::ClipRectManager() : forceRepaint_(false) {
 }
     
 void ClipRectManager::add(const CL_Rectf& rect) {
@@ -57,7 +57,11 @@ size_t ClipRectManager::size() const {
 }
 
 void ClipRectManager::clamp(const CL_Vec2f& topleftBase, const CL_Size& sizeBase) {
-    if (rectangles_.empty()) {
+    if (forceRepaint_) {
+        CL_Rectf rect(topleftBase.x, topleftBase.y, CL_Sizef(sizeBase.width, sizeBase.height));
+        rectangles_.clear();
+        rectangles_.push_back(rect);
+    } else if (rectangles_.empty()) {
         return;
     }
     
@@ -120,6 +124,10 @@ bool ClipRectManager::overlapsAny(world::IngameObject* obj) {
     }
     
     return false;
+}
+
+void ClipRectManager::forceFullRepaint() {
+    forceRepaint_ = true;
 }
     
 }

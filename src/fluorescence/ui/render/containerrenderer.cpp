@@ -111,8 +111,6 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
         
         CL_Rectf texCoordHelper = bgTex->getNormalizedTextureCoords();
         
-        LOG_DEBUG << "Draw cont bg: " << texCoordHelper << std::endl;
-
         CL_Vec2f texCoords[6] = {
             CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
             CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
