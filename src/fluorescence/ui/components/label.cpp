@@ -39,7 +39,9 @@ UnicodeString Label::getText() {
 }
 
 void Label::setText(const UnicodeString& text) {
-    set_text(StringConverter::toUtf8String(text));
+    UnicodeString conLines(text);
+    conLines.findAndReplace("\\n", "\n");
+    set_text(StringConverter::toUtf8String(conLines));
 }
 
 void Label::setHtmlText(const UnicodeString& text, const CL_Colorf& colorDefault) {

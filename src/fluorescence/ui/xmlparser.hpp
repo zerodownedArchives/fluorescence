@@ -42,23 +42,14 @@ class UoButton;
 
 class XmlParser {
 public:
-    struct RepeatKeyword {
-        RepeatKeyword(const UnicodeString& node, const UnicodeString& attribute, const UnicodeString& search);
-
-        bool operator<(const RepeatKeyword& rhs) const;
-
-        UnicodeString nodeText_;
-        UnicodeString attributeText_;
-        UnicodeString searchText_;
-    };
-
     struct RepeatContext {
         unsigned int repeatCount_;
-        std::map<RepeatKeyword, std::vector<UnicodeString> > keywordReplacments_;
+        std::map<UnicodeString, std::vector<UnicodeString> > keywordReplacments_;
     };
 
     static void addRepeatContext(const UnicodeString& name, const RepeatContext& context);
     static void removeRepeatContext(const UnicodeString& name);
+    static void clearRepeatContexts();
 
     /**
      * \brief Create a gump menu according to the description in the xml file
@@ -107,6 +98,13 @@ private:
     bool parseTBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
     bool parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    void insertRepeatNodes(pugi::xml_node::iterator begin, pugi::xml_node::iterator end, pugi::xml_node dst, 
+            const RepeatContext& context, unsigned int index,
+            int xIncrease, int yIncrease, unsigned int xLimit, unsigned int yLimit);
+    void replaceRepeatKeywords(pugi::xml_node& node, const RepeatContext& context, unsigned int index,
+            int xIncrease, int yIncrease, unsigned int xLimit, unsigned int yLimit);
+    void checkRepeatIf(pugi::xml_node& node, unsigned int index, unsigned int xLimit, unsigned int yLimit);
+    
     bool parsePropertyLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
     // supports both themed and uo images

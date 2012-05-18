@@ -39,6 +39,7 @@ set(DATA_LOADERS_HPP
     data/mobtypesloader.hpp
     data/deffileloader.hpp
     data/equipconvdefloader.hpp
+    data/spellbooks.hpp
     )
 
 set(DATA_LOADERS_CPP
@@ -62,6 +63,7 @@ set(DATA_LOADERS_CPP
 
     data/mobtypesloader.cpp
     data/equipconvdefloader.cpp
+    data/spellbooks.cpp
     )
 
 set (DATA_FILES

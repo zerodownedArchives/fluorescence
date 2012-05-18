@@ -450,7 +450,7 @@ boost::shared_ptr<MacroManager> Manager::getMacroManager() {
 }
 
 bool Manager::onUnhandledInputEvent(const CL_InputEvent& event) {
-    if (event.type == CL_InputEvent::pressed) {
+    if (event.type == CL_InputEvent::pressed && macroManager_) {
         return macroManager_->execute(event);
     }
     
@@ -487,7 +487,9 @@ void Manager::queueComponentResize(CL_GUIComponent* elem, const CL_Rectf& geom) 
 
 void Manager::releaseIngameObjects() {
     singleClickWait_.first =  nullptr;
-    cursorManager_->releaseIngameObjects();
+    if (cursorManager_) {
+        cursorManager_->releaseIngameObjects();
+    }
 }
 
 void Manager::closeAllNonMessageGumps() {

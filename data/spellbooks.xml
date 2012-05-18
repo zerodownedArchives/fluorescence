@@ -1,0 +1,39 @@
+
+<!-- Holds data about all possible spells in the spellbooks. The values for spellbook::offset, section::byte and spell::bit 
+  are all based on the raw packet data of packet 0xBF, subpacket 0x1B -->
+
+<spellbooks>
+    <spellbook name="Magery" offset="1" gump="spellbook">
+        <section name="First Circle" byte="0">
+            <spell name="Clumsy" bit="0" wops="Uus Jus" description-header="Reagents:" description="Blood moss\nNightshade" gumpid="2240" />
+            <spell name="Create Food" bit="1" wops="In Mani Ylem" description-header="Reagents:" description="Garlic\nGinseng\nMandrake Root" gumpid="2241" />
+            <spell name="Feeblemind" bit="2" wops="Rel Wis" description-header="Reagents:" description="Ginseng\nNightshade" gumpid="2242" />
+            <spell name="Heal" bit="3" wops="In Mani" description-header="Reagents:" description="Garlic\nGinseng\nSpider's Silk" gumpid="2243" />
+            <spell name="Magic Arrow" bit="4" wops="In Por Ylem" description-header="Reagents:" description="Sulphurous Ash" gumpid="2244" />
+            <spell name="Nightsight" bit="5" wops="In Lor" description-header="Reagents:" description="Sulphurous Ash\nSpider's Silk" gumpid="2245" />
+            <spell name="Reactive Armor" bit="6" wops="Flam Sanct" description-header="Reagents:" description="Garlic\nSulphurous Ash\nSpider's Silk" gumpid="2246" />
+            <spell name="Weaken" bit="7" wops="Des Mani" description-header="Reagents:" description="Garlic\nNightshade" gumpid="2247" />
+        </section>
+        
+        <section name="Second Circle" byte="1">
+        </section>
+        
+        <section name="Third Circle" byte="2">
+        </section>
+        
+        <section name="Fourth Circle" byte="3">
+        </section>
+        
+        <section name="Fifth Circle" byte="4">
+        </section>
+        
+        <section name="Sixth Circle" byte="5">
+        </section>
+        
+        <section name="Seventh Circle" byte="6">
+        </section>
+        
+        <section name="Eighth Circle" byte="7">
+        </section>
+    </spellbook>
+</spellbooks>

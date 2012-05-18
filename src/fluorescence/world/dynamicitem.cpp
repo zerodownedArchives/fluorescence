@@ -428,7 +428,32 @@ void DynamicItem::setSpellbook(unsigned int scrollOffset, const uint8_t* spellBi
     }
     isSpellbook_ = true;
     
-    ui::GumpMenus::openSpellbook(this);
+    if (containerGump_) {
+        containerGump_->bring_to_front();
+    } else {
+        containerGump_ = ui::GumpMenus::openSpellbook(this);
+        if (containerGump_) {
+            containerGump_->setCloseCallback(boost::bind(&DynamicItem::spellbookClosedCallback, this));
+        }
+    }
+}
+
+uint8_t DynamicItem::getSpellbookSpellBits(unsigned int byteIndex) const {
+    if (byteIndex > 7) {
+        LOG_ERROR << "Trying to access spellbits with index " << byteIndex << std::endl;
+        byteIndex = 0;
+    }
+    
+    return spellbookSpellBits_[byteIndex];
+}
+
+unsigned int DynamicItem::getSpellbookScrollOffset() const {
+    return spellbookScrollOffset_;
+}
+
+bool DynamicItem::spellbookClosedCallback() {
+    containerGump_ = nullptr;
+    return false;
 }
 
 }

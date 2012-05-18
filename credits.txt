@@ -9,3 +9,6 @@ fluorescence makes extensive use of several boost libraries (www.boost.org).
 
 fluorescence relies on the International Components for Unicode (http://site.icu-project.org/).
 
+Sound in fluorescence make possible by FMOD (www.fmod.org).
+
+The explosion.png and firesmoke.png effect textures were created by the Iris2 Team/BuD (www.iris2.de).

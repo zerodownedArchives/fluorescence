@@ -83,6 +83,8 @@ public:
     
     bool isSpellbook() const;
     void setSpellbook(unsigned int scrollOffset, const uint8_t* spellBits);
+    unsigned int getSpellbookScrollOffset() const;
+    uint8_t getSpellbookSpellBits(unsigned int byteIndex) const;
 
 private:
     unsigned int artId_;
@@ -111,6 +113,7 @@ private:
     bool isSpellbook_;
     unsigned int spellbookScrollOffset_;
     uint8_t spellbookSpellBits_[8];
+    bool spellbookClosedCallback();
 };
 
 }

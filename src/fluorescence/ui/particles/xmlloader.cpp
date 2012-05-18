@@ -25,11 +25,11 @@
 
 #include <data/manager.hpp>
 #include <world/particleeffect.hpp>
+#include <misc/xmlloadexception.hpp>
 
 #include "particleemitter.hpp"
 #include "startlocationprovider.hpp"
 #include "motionmodel.hpp"
-#include "xmlloadexception.hpp"
 #include "timelinestatic.hpp"
 #include "timelinepause.hpp"
 #include "timelineimmediate.hpp"

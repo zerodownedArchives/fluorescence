@@ -53,6 +53,12 @@ GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
     ui::Manager::getSingleton()->registerGumpMenu(this);
 }
 
+GumpMenu::~GumpMenu() {
+    if (closeCallback_) {
+        closeCallback_();
+    }
+}
+
 void GumpMenu::addPage(unsigned int pageId) {
     std::map<unsigned int, std::vector<CL_GUIComponent*> >::iterator it = pages_.find(pageId);
 
@@ -390,6 +396,10 @@ void GumpMenu::setupResizeHandler() {
     for (; iter != end; ++iter) {
         (*iter)->func_resized().set(this, &GumpMenu::fitSizeToChildren);
     }
+}
+
+void GumpMenu::setCloseCallback(boost::function<void()> cb) {
+    closeCallback_ = cb;
 }
 
 }

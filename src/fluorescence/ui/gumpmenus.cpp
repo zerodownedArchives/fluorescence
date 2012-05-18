@@ -38,6 +38,9 @@
 
 #include <data/manager.hpp>
 #include <data/clilocloader.hpp>
+#include <data/spellbooks.hpp>
+
+#include <world/dynamicitem.hpp>
 
 #include "gumpmenu.hpp"
 #include "xmlparser.hpp"
@@ -102,8 +105,8 @@ GumpMenu* GumpMenus::openShardSelectionGump() {
 
     XmlParser::RepeatContext context;
     context.repeatCount_ = nameList.size();
-    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "param", "shardname")] = nameList;
-    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "text", "shardname")] = nameList;
+    context.keywordReplacments_["shardname"] = nameList;
+    context.keywordReplacments_["shardname"] = nameList;
 
     XmlParser::addRepeatContext("shardlist", context);
     GumpMenu* menu = XmlParser::fromXmlFile("shardselection");
@@ -128,8 +131,8 @@ GumpMenu* GumpMenus::openServerListGump(const net::packets::ServerList* list) {
 
     XmlParser::RepeatContext context;
     context.repeatCount_ = nameList.size();
-    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "param", "serverindex")] = indexList;
-    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "text", "servername")] = nameList;
+    context.keywordReplacments_["serverindex"] = indexList;
+    context.keywordReplacments_["servername"] = nameList;
 
     XmlParser::addRepeatContext("serverlist", context);
     GumpMenu* menu = XmlParser::fromXmlFile("serverlist");
@@ -151,9 +154,9 @@ GumpMenu* GumpMenus::openCharacterListGump(const net::packets::CharacterList* li
 
     XmlParser::RepeatContext context;
     context.repeatCount_ = nameList.size();
-    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "param", "characterindex")] = indexList;
-    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "text", "charactername")] = nameList;
-    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "param2", "characterpassword")] = nameList;
+    context.keywordReplacments_["characterindex"] = indexList;
+    context.keywordReplacments_["charactername"] = nameList;
+    context.keywordReplacments_["characterpassword"] = nameList;
 
     XmlParser::addRepeatContext("characterlist", context);
     GumpMenu* menu = XmlParser::fromXmlFile("characterlist");
@@ -179,9 +182,9 @@ GumpMenu* GumpMenus::openContextMenu(const net::packets::bf::OpenContextMenu* pk
 
     XmlParser::RepeatContext context;
     context.repeatCount_ = nameList.size();
-    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "text", "entrytext")] = nameList;
-    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "param", "serial")] = serialList;
-    context.keywordReplacments_[XmlParser::RepeatKeyword("tbutton", "param2", "entryindex")] = indexList;
+    context.keywordReplacments_["entrytext"] = nameList;
+    context.keywordReplacments_["serial"] = serialList;
+    context.keywordReplacments_["entryindex"] = indexList;
 
     XmlParser::addRepeatContext("contextmenu", context);
     GumpMenu* menu = XmlParser::fromXmlFile("contextmenu");
@@ -191,7 +194,81 @@ GumpMenu* GumpMenus::openContextMenu(const net::packets::bf::OpenContextMenu* pk
 }
 
 GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
+    const data::SpellbookInfo* book = data::Manager::getSpellbookInfo(itm->getSpellbookScrollOffset());
+    if (!book) {
+        return nullptr;
+    }
+        
+    XmlParser::RepeatContext indexContexts[8];
+    std::vector<UnicodeString> circleIndexNamesTmp;
+    std::vector<UnicodeString> circleIndexPagesTmp;
+    
+    std::vector<UnicodeString> allSpellsPreviousPage;
+    std::vector<UnicodeString> allSpellsCurrentPage;
+    std::vector<UnicodeString> allSpellsNextPage;
+    std::vector<UnicodeString> allSpellsSections;
+    std::vector<UnicodeString> allSpellsNames;
+    std::vector<UnicodeString> allSpellsIcons;
+    std::vector<UnicodeString> allSpellsDescriptionHeaders;
+    std::vector<UnicodeString> allSpellsDescriptions;
+    std::vector<UnicodeString> allSpellsIds;
+    
+    unsigned int spellCount = 0;
+    unsigned int curPage = 4; // index spreads over 4 pages
+    
+    for (unsigned int i = 0; i < 8; ++i) {
+        circleIndexNamesTmp.clear();
+        circleIndexPagesTmp.clear();
+        
+        uint8_t spellBits = itm->getSpellbookSpellBits(i);
+        for (unsigned int j = 0; j < 8; ++j) {
+            uint8_t test = (1 << j);
+            if (test & spellBits) {
+                // spell available
+                ++spellCount;
+                if (spellCount % 2 == 1) {
+                    ++curPage;
+                }
+                
+                circleIndexNamesTmp.push_back(book->sections_[i].spells_[j].name_);
+                circleIndexPagesTmp.push_back(StringConverter::fromNumber(curPage));
+                
+                
+                allSpellsNames.push_back(book->sections_[i].spells_[j].name_);
+                allSpellsSections.push_back(book->sections_[i].name_);
+                allSpellsPreviousPage.push_back(StringConverter::fromNumber(curPage - 1));
+                allSpellsCurrentPage.push_back(StringConverter::fromNumber(curPage));
+                allSpellsNextPage.push_back(StringConverter::fromNumber(curPage + 1));
+                allSpellsIcons.push_back(StringConverter::fromNumber(book->sections_[i].spells_[j].gumpId_));
+                allSpellsDescriptionHeaders.push_back(book->sections_[i].spells_[j].descriptionHeader_);
+                allSpellsDescriptions.push_back(book->sections_[i].spells_[j].description_);
+                allSpellsIds.push_back(StringConverter::fromNumber(book->sections_[i].spells_[j].spellId_));
+            }
+        }
+        
+        indexContexts[i].repeatCount_ = circleIndexNamesTmp.size();
+        indexContexts[i].keywordReplacments_["spellname"] = circleIndexNamesTmp;
+        indexContexts[i].keywordReplacments_["spellpage"] = circleIndexPagesTmp;
+        
+        XmlParser::addRepeatContext(book->sections_[i].name_, indexContexts[i]);
+    }
+    
+    XmlParser::RepeatContext allSpellsContext;
+    allSpellsContext.repeatCount_ = allSpellsNames.size();
+    allSpellsContext.keywordReplacments_["previouspage"] = allSpellsPreviousPage;
+    allSpellsContext.keywordReplacments_["currentpage"] = allSpellsCurrentPage;
+    allSpellsContext.keywordReplacments_["nextpage"] = allSpellsNextPage;
+    allSpellsContext.keywordReplacments_["sectionname"] = allSpellsSections;
+    allSpellsContext.keywordReplacments_["spellname"] = allSpellsNames;
+    allSpellsContext.keywordReplacments_["description"] = allSpellsDescriptions;
+    allSpellsContext.keywordReplacments_["descriptionheader"] = allSpellsDescriptionHeaders;
+    allSpellsContext.keywordReplacments_["gumpid"] = allSpellsIcons;
+    allSpellsContext.keywordReplacments_["spellid"] = allSpellsIds;
+    
+    XmlParser::addRepeatContext("allspells", allSpellsContext);
+    
     GumpMenu* menu = XmlParser::fromXmlFile("spellbook");
+    XmlParser::clearRepeatContexts();
     
     return menu;
 }

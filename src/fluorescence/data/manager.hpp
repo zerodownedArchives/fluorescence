@@ -51,6 +51,8 @@ class ClilocLoader;
 class HttpLoader;
 class FilePathLoader;
 class SoundLoader;
+class Spellbooks;
+class SpellbookInfo;
 
 template<typename ValueType>
 class DefFileLoader;
@@ -117,6 +119,8 @@ public:
     static boost::shared_ptr<ui::Texture> getTexture(const UnicodeString& source, const UnicodeString& id);
     
     static const boost::filesystem::path& getFilePathFor(const UnicodeString& string);
+    
+    static const SpellbookInfo* getSpellbookInfo(unsigned int packetOffset);
 
 private:
     static Manager* singleton_;
@@ -170,6 +174,8 @@ private:
     
     boost::shared_ptr<HttpLoader> httpLoader_;
     boost::shared_ptr<FilePathLoader> filePathLoader_;
+    
+    boost::shared_ptr<Spellbooks> spellbooks_;
 };
 
 }

@@ -95,6 +95,7 @@ set (PACKETS_HPP
     net/packets/bf/fastwalkinit.hpp
     net/packets/bf/fastwalkupdate.hpp
     net/packets/bf/spellbookcontent.hpp
+    net/packets/bf/castspell.hpp
     )
 
 set (PACKETS_CPP
@@ -163,6 +164,7 @@ set (PACKETS_CPP
     net/packets/bf/fastwalkinit.cpp
     net/packets/bf/fastwalkupdate.cpp
     net/packets/bf/spellbookcontent.cpp
+    net/packets/bf/castspell.cpp
     )
 
 set (MD5

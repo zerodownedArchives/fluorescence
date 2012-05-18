@@ -139,7 +139,6 @@ set (PARTICLES_HPP
     ui/particles/motionmodel.hpp
     ui/particles/xmlloader.hpp
     ui/particles/particleemitterstate.hpp
-    ui/particles/xmlloadexception.hpp
     ui/particles/timeline.hpp
     ui/particles/timelineelement.hpp
     ui/particles/timelinestatic.hpp

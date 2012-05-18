@@ -17,14 +17,12 @@
  */
 
 
-#ifndef FLUO_UI_PARTICLES_XMLLOADEXCEPTION_HPP
-#define FLUO_UI_PARTICLES_XMLLOADEXCEPTION_HPP
+#ifndef FLUO_XMLLOADEXCEPTION_HPP
+#define FLUO_XMLLOADEXCEPTION_HPP
 
 #include <stdexcept>
 
 namespace fluo {
-namespace ui {
-namespace particles {
     
 class XmlLoadException : public std::runtime_error {
 public:
@@ -33,8 +31,6 @@ public:
     }
 };
     
-}
-}
 }
 
 #endif

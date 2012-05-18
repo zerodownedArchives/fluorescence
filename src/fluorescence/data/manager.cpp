@@ -39,6 +39,7 @@
 #include "httploader.hpp"
 #include "filepathloader.hpp"
 #include "soundloader.hpp"
+#include "spellbooks.hpp"
 
 #include <client.hpp>
 
@@ -353,6 +354,11 @@ void Manager::init(Config& config) {
     path = filePathMap_["sound.def"];
     LOG_INFO << "Opening sound.def from path=" << path << std::endl;
     soundDefLoader_.reset(new DefFileLoader<SoundDef>(path, "iri"));
+    
+    checkFileExists("spellbooks.xml");
+    path = filePathMap_["spellbooks.xml"];
+    LOG_INFO << "Opening spellbooks.xml from path=" << path << std::endl;
+    spellbooks_.reset(new Spellbooks(path));
 
     checkFileExists("cliloc.enu");
     path = filePathMap_["cliloc.enu"];
@@ -777,6 +783,10 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(const UnicodeString& source, 
         boost::shared_ptr<ui::Texture> ret;
         return ret;
     }
+}
+
+const SpellbookInfo* Manager::getSpellbookInfo(unsigned int packetOffset) {
+    return getSingleton()->spellbooks_->get(packetOffset);
 }
 
 }

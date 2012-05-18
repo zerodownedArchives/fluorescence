@@ -22,6 +22,7 @@
 
 #include <ClanLib/GUI/Components/window.h>
 #include <map>
+#include <boost/function.hpp>
 
 #include <typedefs.hpp>
 #include <misc/config.hpp>
@@ -39,6 +40,7 @@ namespace ui {
 class GumpMenu : public CL_Window {
 public:
     GumpMenu(const CL_GUITopLevelDescription& desc);
+    ~GumpMenu();
 
     void addPage(unsigned int pageId);
 
@@ -117,6 +119,8 @@ public:
     
     virtual bool has_pixel(const CL_Point& p) const;
     
+    void setCloseCallback(boost::function<void()> cb);
+    
 private:
     Serial serial_;
     unsigned int typeId_;
@@ -145,6 +149,8 @@ private:
     world::Mobile* linkedMobile_;
     
     unsigned int currentRadioGroup_;
+    
+    boost::function<void()> closeCallback_;
 };
 
 }

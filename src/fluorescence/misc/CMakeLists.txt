@@ -7,6 +7,7 @@ set(MISC_HPP
     misc/exception.hpp
     misc/random.hpp
     misc/interpolation.hpp
+    misc/xmlloadexception.hpp
     )
 
 set(MISC_CPP

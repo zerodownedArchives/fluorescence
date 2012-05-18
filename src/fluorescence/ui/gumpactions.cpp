@@ -35,6 +35,7 @@
 #include <net/packets/helprequest.hpp>
 #include <net/packets/bf.hpp>
 #include <net/packets/bf/contextmenureply.hpp>
+#include <net/packets/bf/castspell.hpp>
 #include <net/packets/profile.hpp>
 
 #include <misc/log.hpp>
@@ -76,6 +77,8 @@ void GumpActions::buildFullActionTable() {
     actionTable_["openstatus"] = GumpAction(false, boost::bind(&GumpActions::openStatus, _1, _2, _3, _4));
     actionTable_["helprequest"] = GumpAction(false, boost::bind(&GumpActions::helpRequest, _1, _2, _3, _4));
     actionTable_["openprofile"] = GumpAction(false, boost::bind(&GumpActions::openProfile, _1, _2, _3, _4));
+    
+    actionTable_["castspell"] = GumpAction(false, boost::bind(&GumpActions::castSpell, _1, _2, _3, _4));
 }
 
 
@@ -200,6 +203,19 @@ bool GumpActions::openProfile(GumpMenu* menu, const UnicodeString& action, unsig
     } else {
         LOG_WARN << "openprofile gump action in unlinked gump" << std::endl;
     }
+    return true;
+}
+
+bool GumpActions::castSpell(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    if (parameterCount == 0) {
+        LOG_ERROR << "Calling castspell gump action without parameter" << std::endl;
+        return false;
+    }
+    LOG_DEBUG << "cast spell: " << parameters[0] << std::endl;
+    unsigned int spellId = StringConverter::toInt(parameters[0]);
+    boost::shared_ptr<net::Packet> subPacket(new net::packets::bf::CastSpell(spellId));
+    net::packets::BF pkt(subPacket);
+    net::Manager::getSingleton()->send(pkt);
     return true;
 }
 
