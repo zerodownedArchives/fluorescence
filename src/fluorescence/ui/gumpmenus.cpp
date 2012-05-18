@@ -267,7 +267,7 @@ GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
     
     XmlParser::addRepeatContext("allspells", allSpellsContext);
     
-    GumpMenu* menu = XmlParser::fromXmlFile("spellbook");
+    GumpMenu* menu = XmlParser::fromXmlFile(book->gumpName_);
     XmlParser::clearRepeatContexts();
     
     return menu;
