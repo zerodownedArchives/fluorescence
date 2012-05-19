@@ -16,24 +16,80 @@
         </section>
         
         <section name="Second Circle" byte="1">
+            <spell name="Agility" bit="0" wops="Ex Uus" description-header="Reagents:" description="Blood Moss\nMandrake Root" gumpid="2248" />
+            <spell name="Cunning" bit="1" wops="Uus Wis" description-header="Reagents:" description="Nightshade\nMandrake Root" gumpid="2249" />
+            <spell name="Cure" bit="2" wops="An Nox" description-header="Reagents:" description="Garlic\nGinseng" gumpid="2250" />
+            <spell name="Harm" bit="3" wops="An Mani" description-header="Reagents:" description="Nightshade\nSpider's Silk" gumpid="2251" />
+            <spell name="Magic Trap" bit="4" wops="In Jux" description-header="Reagents:" description="Garlic\nSpider's Silk\nSulphurous Ash" gumpid="2252" />
+            <spell name="Magic Untrap" bit="5" wops="An Jux" description-header="Reagents:" description="Blood Moss\nSulphurous Ash" gumpid="2253" />
+            <spell name="Protection" bit="6" wops="Uus Sanct" description-header="Reagents:" description="Garlic\nGinseng\nSulphurous Ash" gumpid="2254" />
+            <spell name="Strength" bit="7" wops="Us Mani" description-header="Reagents:" description="Mandrake Root\nNightshade" gumpid="2255" />
         </section>
         
         <section name="Third Circle" byte="2">
+            <spell name="Bless" bit="0" wops="Rel Sanct" description-header="Reagents:" description="Garlic\nMandrake Root" gumpid="2256" />
+            <spell name="Fireball" bit="1" wops="Vas Flam" description-header="Reagents:" description="Black Pearl" gumpid="2257" />
+            <spell name="Magic Lock" bit="2" wops="An Por" description-header="Reagents:" description="Blood Moss\nGarlic\nSulphurous Ash" gumpid="2258" />
+            <spell name="Poison" bit="3" wops="In Nox" description-header="Reagents:" description="Nightshade" gumpid="2259" />
+            <spell name="Telekinesis" bit="4" wops="Ort Por Ylem" description-header="Reagents:" description="Blood Moss\nMandrake Root" gumpid="2260" />
+            <spell name="Teleport" bit="5" wops="Rel Por" description-header="Reagents:" description="Blood Moss\nMandrake Root" gumpid="2261" />
+            <spell name="Unlock" bit="6" wops="Ex Por" description-header="Reagents:" description="Blood Moss\nSulphurous Ash" gumpid="2262" />
+            <spell name="Wall of Stone" bit="7" wops="In Sanct Ylem" description-header="Reagents:" description="Blood Moss\nGarlic" gumpid="2263" />
         </section>
         
         <section name="Fourth Circle" byte="3">
+            <spell name="Arch Cure" bit="0" wops="Vas An Nox" description-header="Reagents:" description="Garlic\nGinseng\nMandrake Root" gumpid="2264" />
+            <spell name="Arch Protection" bit="1" wops="Vas Uus Sanct" description-header="Reagents:" description="Garlic\nGinseng\nMandrake Root\nSulphurous Ash" gumpid="2265" />
+            <spell name="Curse" bit="2" wops="Des Sanct" description-header="Reagents:" description="Garlic\nNightshade\Sulphurous Ash" gumpid="2266" />
+            <spell name="Fire Field" bit="3" wops="In Flam Grav" description-header="Reagents:" description="Black Pearl\nSpider's Silk\nSulphurous Ash" gumpid="2267" />
+            <spell name="Greater Heal" bit="4" wops="In Vas Mani" description-header="Reagents:" description="Garlic\nGinseng\nMandrake Root\nSpider's Silk" gumpid="2268" />
+            <spell name="Lightning" bit="5" wops="Por Ort Grav" description-header="Reagents:" description="Mandrake Root\nSulphurous Ash" gumpid="2269" />
+            <spell name="Mana Drain" bit="6" wops="Ort Rel" description-header="Reagents:" description="Black Pearl\nMandrake Root\nSpider's Silk" gumpid="2270" />
+            <spell name="Recall" bit="7" wops="Kal Ort Por" description-header="Reagents:" description="Black Pearl\nBlood Moss\nMandrake Root" gumpid="2271" />
         </section>
         
         <section name="Fifth Circle" byte="4">
+            <spell name="Blade Spirits" bit="0" wops="In Jux Hur Ylem" description-header="Reagents:" description="Black Pearl\nMandrake Root\nNightshade" gumpid="2272" />
+            <spell name="Dispel Field" bit="1" wops="An Grav" description-header="Reagents:" description="Black Pearl\nGarlic\nSpider's Silk\nSulphurous Ash" gumpid="2273" />
+            <spell name="Incognito" bit="2" wops="Kal In Ex" description-header="Reagents:" description="Blood Moss\nMandrake Root\nNightshade\nSulphurous Ash" gumpid="2274" />
+            <spell name="Magic Reflection" bit="3" wops="In Jux Sanct" description-header="Reagents:" description="Garlic\nMandrake Root\nSpider's Silk" gumpid="2275" />
+            <spell name="Mind Blast" bit="4" wops="Por Corp Wis" description-header="Reagents:" description="Black Pearl\nMandrake Root\nNightshade\nSulphurous Ash" gumpid="2276" />
+            <spell name="Paralyze" bit="5" wops="An Ex Por" description-header="Reagents:" description="Black Pearl\nNightshade\nSulphurous Ash" gumpid="2277" />
+            <spell name="Poison Field" bit="6" wops="In Nox Grav" description-header="Reagents:" description="Black Pearl\nNightshade\nSpider's Silk" gumpid="2278" />
+            <spell name="Summon Creature" bit="7" wops="Kal Xen" description-header="Reagents:" description="Blood Moss\nMandrake Root\nSulphurous Ash" gumpid="2279" />
         </section>
         
         <section name="Sixth Circle" byte="5">
+            <spell name="Dispel" bit="0" wops="An Ort" description-header="Reagents:" description="Garlic\nMandrake Root\nSulphurous Ash" gumpid="2280" />
+            <spell name="Energy Bolt" bit="1" wops="Corp Por" description-header="Reagents:" description="Black Pearl\nNightshade" gumpid="2281" />
+            <spell name="Explosion" bit="2" wops="Vas Ort Flam" description-header="Reagents:" description="Blood Moss\nMandrake Root" gumpid="2282" />
+            <spell name="Invisibility" bit="3" wops="An Lor Xen" description-header="Reagents:" description="Blood Moss\nNightshade" gumpid="2283" />
+            <spell name="Mark" bit="4" wops="Kal Por Ylem" description-header="Reagents:" description="Black Pearl\nBlood Moss\nMandrake Root" gumpid="2284" />
+            <spell name="Mass Curse" bit="5" wops="Vas Des Sanct" description-header="Reagents:" description="Garlic\nMandrake Root\nNightshade\nSulphurous Ash" gumpid="2285" />
+            <spell name="Paralyze Field" bit="6" wops="In Ex Grav" description-header="Reagents:" description="Black Pearl\nGinseng\nSulphurous Ash" gumpid="2286" />
+            <spell name="Reveal" bit="7" wops="Wis Quas" description-header="Reagents:" description="Blood Moss\nSulphurous Ash" gumpid="2287" />
         </section>
         
         <section name="Seventh Circle" byte="6">
+            <spell name="Chain Lightning" bit="0" wops="Vas Ort Grav" description-header="Reagents:" description="Black Pearl\nBlood Moss\nMandrake Root\nSulphurous Ash" gumpid="2288" />
+            <spell name="Energy Field" bit="1" wops="In Sanct Grav" description-header="Reagents:" description="Black Pearl\nMandrake Root\nSpider's Silk\nSulphurous Ash" gumpid="2289" />
+            <spell name="Flamestrike" bit="2" wops="Kal Vas Flam" description-header="Reagents:" description="Spider's Silk\nSulphurous Ash" gumpid="2290" />
+            <spell name="Gate Travel" bit="3" wops="Vas Rel Por" description-header="Reagents:" description="Black Pearl\nMandrake Root\nSulphurous Ash" gumpid="2291" />
+            <spell name="Mana Vampire" bit="4" wops="Ort Sanct" description-header="Reagents:" description="Black Pearl\nBlood Moss\nMandrake Root\nSpider's Silk" gumpid="2292" />
+            <spell name="Mass Dispel" bit="5" wops="Vas An Ort" description-header="Reagents:" description="Black Pearl\nGarlic\nMandrake Root\nSulphurous Ash" gumpid="2293" />
+            <spell name="Meteor Swarm" bit="6" wops="Kal Des Flam Yelm" description-header="Reagents:" description="Blood Moss\nMandrake Root\nSpider's Silk\nSulphurous Ash" gumpid="2294" />
+            <spell name="Polymorph" bit="7" wops="Vas Yelm Rel" description-header="Reagents:" description="Blood Moss\nMandrake Root\nSpider's Silk" gumpid="2295" />
         </section>
         
         <section name="Eighth Circle" byte="7">
+            <spell name="Earthquake" bit="0" wops="In Vas Por" description-header="Reagents:" description="Blood Moss\nGinseng\nMandrake Root\nSulphurous Ash" gumpid="2296" />
+            <spell name="Energy Vortex" bit="1" wops="Vas Corp Por" description-header="Reagents:" description="Black Pearl\nBlood Moss\nMandrake Root\nNightshade" gumpid="2297" />
+            <spell name="Resurrection" bit="2" wops="An Corp" description-header="Reagents:" description="Blood Moss\nGarlic\nGinseng" gumpid="2298" />
+            <spell name="Air Elemental" bit="3" wops="Kal Vas Xen Hur" description-header="Reagents:" description="Blood Moss\nMandrake Root\nSpider's Silk" gumpid="2299" />
+            <spell name="Summon Daemon" bit="4" wops="Kal Vas Xen Corp" description-header="Reagents:" description="Blood Moss\nMandrake Root\nSpider's Silk\nSulphurous Ash" gumpid="2300" />
+            <spell name="Earth Elemental" bit="5" wops="Kal Vas Xen Ylem" description-header="Reagents:" description="Blood Moss\nMandrake Root\nSpider's Silk" gumpid="2301" />
+            <spell name="Fire Elemental" bit="6" wops="Kal Vas Xen Flam" description-header="Reagents:" description="Blood Moss\nMandrake Root\nSpider's Silk\nSulphurous Ash" gumpid="2302" />
+            <spell name="Water Elemental" bit="7" wops="Kal Vas Xen An Flam" description-header="Reagents:" description="Blood Moss\nMandrake Root\nSpider's Silk" gumpid="2303" />
         </section>
     </spellbook>
 </spellbooks>

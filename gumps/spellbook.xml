@@ -35,14 +35,14 @@
             <normal source="gumpart" imgid="2236" />
         </button>
         
-        <tlabel id="spellbooktitle" x="100" y="16" width="40" height="15" text="INDEX" />
-        <tlabel id="spellbooktitle" x="55" y="35" width="150" height="15" text="First Circle" />
+        <tlabel id="spellbooktitle" x="100" y="14" width="40" height="15" text="INDEX" />
+        <tlabel id="spellbooktitle" x="55" y="34" width="150" height="15" text="First Circle" />
         <repeat name="First Circle" yincrease="15" xlimit="1">
             <tclicklabel id="spellbooktext" x="55" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
         
-        <tlabel id="spellbooktitle" x="267" y="16" width="40" height="16" text="INDEX" />
-        <tlabel id="spellbooktitle" x="223" y="35" width="150" height="15" text="Second circle" />
+        <tlabel id="spellbooktitle" x="267" y="14" width="40" height="16" text="INDEX" />
+        <tlabel id="spellbooktitle" x="223" y="34" width="150" height="15" text="Second circle" />
         <repeat name="Second Circle" yincrease="15" xlimit="1">
             <tclicklabel id="spellbooktext" x="223" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
@@ -54,14 +54,14 @@
             <normal source="gumpart" imgid="2235" />
         </button>
         
-        <tlabel id="spellbooktitle" x="100" y="16" width="40" height="15" text="INDEX" />
-        <tlabel id="spellbooktitle" x="55" y="35" width="150" height="15" text="Third Circle" />
+        <tlabel id="spellbooktitle" x="100" y="14" width="40" height="15" text="INDEX" />
+        <tlabel id="spellbooktitle" x="55" y="34" width="150" height="15" text="Third Circle" />
         <repeat name="Third Circle" yincrease="15" xlimit="1">
             <tclicklabel id="spellbooktext" x="55" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
         
-        <tlabel id="spellbooktitle" x="267" y="16" width="40" height="16" text="INDEX" />
-        <tlabel id="spellbooktitle" x="223" y="35" width="150" height="15" text="Fourth circle" />
+        <tlabel id="spellbooktitle" x="267" y="14" width="40" height="16" text="INDEX" />
+        <tlabel id="spellbooktitle" x="223" y="34" width="150" height="15" text="Fourth circle" />
         <repeat name="Fourth Circle" yincrease="15" xlimit="1">
             <tclicklabel id="spellbooktext" x="223" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
@@ -77,14 +77,14 @@
             <normal source="gumpart" imgid="2235" />
         </button>
         
-        <tlabel id="spellbooktitle" x="100" y="16" width="40" height="15" text="INDEX" />
-        <tlabel id="spellbooktitle" x="55" y="35" width="150" height="15" text="Fifth Circle" />
+        <tlabel id="spellbooktitle" x="100" y="14" width="40" height="15" text="INDEX" />
+        <tlabel id="spellbooktitle" x="55" y="34" width="150" height="15" text="Fifth Circle" />
         <repeat name="Fifth Circle" yincrease="15" xlimit="1">
             <tclicklabel id="spellbooktext" x="55" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
         
-        <tlabel id="spellbooktitle" x="267" y="16" width="40" height="16" text="INDEX" />
-        <tlabel id="spellbooktitle" x="223" y="35" width="150" height="15" text="Sixth circle" />
+        <tlabel id="spellbooktitle" x="267" y="14" width="40" height="16" text="INDEX" />
+        <tlabel id="spellbooktitle" x="223" y="34" width="150" height="15" text="Sixth circle" />
         <repeat name="Sixth Circle" yincrease="15" xlimit="1">
             <tclicklabel id="spellbooktext" x="223" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
@@ -100,8 +100,8 @@
             <normal source="gumpart" imgid="2235" />
         </button>
         
-        <tlabel id="spellbooktitle" x="100" y="16" width="40" height="15" text="INDEX" />
-        <tlabel id="spellbooktitle" x="55" y="35" width="150" height="15" text="Seventh Circle" />
+        <tlabel id="spellbooktitle" x="100" y="14" width="40" height="15" text="INDEX" />
+        <tlabel id="spellbooktitle" x="55" y="34" width="150" height="15" text="Seventh Circle" />
         <repeat name="Seventh Circle" yincrease="15" xlimit="1">
             <tclicklabel id="spellbooktext" x="55" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
@@ -123,18 +123,18 @@
                 <button x="50" y="8" page="previouspage">
                     <normal source="gumpart" imgid="2235" />
                 </button>
-                <tlabel id="spellbooktitle" x="85" y="16" width="100" height="15" text="sectionname" />
+                <tlabel id="spellbooktitle" x="85" y="14" width="100" height="15" text="sectionname" />
             </repeatif>
             <repeatif xindex="1">
-                <tlabel id="spellbooktitle" x="65" y="16" width="100" height="15" text="sectionname" />
+                <tlabel id="spellbooktitle" x="65" y="14" width="100" height="15" text="sectionname" />
             </repeatif>
             
             <button x="55" y="40" action="castspell" param="spellid">
                 <normal source="gumpart" imgid="gumpid" />
             </button>
-            <tlabel id="spellbooktitle" x="105" y="40" width="150" height="15" text="spellname" />
-            <tlabel id="spellbooktitle" x="55" y="98" width="150" height="15" text="descriptionheader" />
-            <tlabel id="spellbooktext" x="55" y="115" width="150" height="55" text="description" />
+            <tlabel id="spellbooktitle" x="105" y="38" width="90" height="35" text="spellname" />
+            <tlabel id="spellbooktitle" x="55" y="95" width="150" height="15" text="descriptionheader" />
+            <tlabel id="spellbooktext" x="55" y="110" width="150" height="55" text="description" />
             
 
             <repeatif xindex="0">

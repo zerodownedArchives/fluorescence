@@ -130,6 +130,8 @@ void GumpMenu::internalActivatePage(unsigned int pageId) {
     for (; iter != end; ++iter) {
         (*iter)->set_visible(true);
     }
+    
+    request_repaint();
 }
 
 void GumpMenu::internalDeactivatePage(unsigned int pageId) {
