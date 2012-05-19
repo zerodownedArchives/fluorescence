@@ -36,10 +36,7 @@
 namespace fluo {
 namespace world {
 SectorManager::SectorManager(const Config& config) :
-        updateCounter_(0) {
-    sectorAddFrequency_ = 60;
-    sectorAddDistanceCache_ = 2;
-    sectorRemoveDistanceCache_ = 3;
+        updateCounter_(0), sectorAddFrequency_(60), sectorAddDistanceCache_(2), sectorRemoveDistanceCache_(3) {
 }
 
 SectorManager::~SectorManager() {
@@ -53,31 +50,50 @@ void SectorManager::unregisterWorldView(ui::components::WorldView* view) {
     worldViews_.remove(view);
 }
 
-void SectorManager::addNewSectors(bool force) {
+void SectorManager::onMapChange() {
+    clear();
+    updateCounter_ = 0; // force update
+}
+
+void SectorManager::updateSectorList() {
+    if (worldViews_.empty()) {
+        return;
+    }
+    
     // the player does not move overly fast, so it is enough to check for new sectors every x frames
-    bool doAddSector = (updateCounter_ % sectorAddFrequency_ == 0);
+    bool doUpdate = (updateCounter_ % sectorAddFrequency_ == 0);
     updateCounter_++;
 
-    if (!doAddSector) {
+    if (!doUpdate) {
         return;
     }
 
     //LOGARG_INFO(LOGTYPE_WORLD, "Sector manager has %u cached", sectorMap_.size());
-
+    
     unsigned int mapId = world::Manager::getSingleton()->getCurrentMapId();
-    if (mapId != lastMapId_) {
-        LOG_INFO << "SectorManager: map change detected, clearing sectors" << std::endl;
-        clear();
-        lastMapId_ = mapId;
-    }
 
     // these are all sectors we require for rendering
     std::list<IsoIndex> sectorRequiredList;
-    buildSectorRequiredList(sectorRequiredList, sectorAddDistanceCache_);
+    buildSectorRequiredList(sectorRequiredList, sectorAddDistanceCache_, mapId);
+    
+    // iterate over all stored sectors and remove the ones we do not need anymore
+    std::map<IsoIndex, boost::shared_ptr<Sector> >::iterator deleteIter = sectorMap_.begin();
+    std::map<IsoIndex, boost::shared_ptr<Sector> >::iterator deleteEnd = sectorMap_.end();
+
+    std::list<IsoIndex>::const_iterator requiredBegin = sectorRequiredList.begin();
+    std::list<IsoIndex>::const_iterator requiredEnd = sectorRequiredList.end();
+
+    while (deleteIter != deleteEnd) {
+        if (!std::binary_search(requiredBegin, requiredEnd, deleteIter->second->getSectorId())) {
+            //LOG_DEBUG << "sector remove from manager x=" << deleteIter->second->getSectorId().x_ << " y=" << deleteIter->second->getSectorId().y_ << std::endl;
+            sectorMap_.erase(deleteIter);
+        }
+
+        ++deleteIter;
+    }
 
 
     std::list<IsoIndex>::const_iterator requiredIter = sectorRequiredList.begin();
-    std::list<IsoIndex>::const_iterator requiredEnd = sectorRequiredList.end();
 
     // check all sectors if they are loaded, and load if they are not
     std::map<IsoIndex, boost::shared_ptr<Sector> >::const_iterator notFound = sectorMap_.end();
@@ -91,57 +107,22 @@ void SectorManager::addNewSectors(bool force) {
     }
 }
 
-void SectorManager::deleteSectors() {
-    if (worldViews_.empty()) {
-        return;
-    }
-    
-    unsigned int mapId = world::Manager::getSingleton()->getCurrentMapId();
-
-    if (mapId != lastMapId_) {
-        LOG_INFO << "Map change detected, clearing sectors" << std::endl;
-        lastMapId_ = mapId;
-    }
-
-    // these are all sectors we require for rendering
-    std::list<IsoIndex> sectorRequiredList;
-    buildSectorRequiredList(sectorRequiredList, sectorRemoveDistanceCache_);
-
-
-    // iterate over all stored sectors and remove them
-    std::map<IsoIndex, boost::shared_ptr<Sector> >::iterator deleteIter = sectorMap_.begin();
-    std::map<IsoIndex, boost::shared_ptr<Sector> >::iterator deleteEnd = sectorMap_.end();
-
-    std::list<IsoIndex>::const_iterator requiredBegin = sectorRequiredList.begin();
-    std::list<IsoIndex>::const_iterator requiredEnd = sectorRequiredList.end();
-
-    while (deleteIter != deleteEnd) {
-        if (deleteIter->second->getMapId() != mapId ||
-                !std::binary_search(requiredBegin, requiredEnd, deleteIter->second->getSectorId())) {
-            //LOG_DEBUG << "sector remove from manager x=" << deleteIter->second->getSectorId().x_ << " y=" << deleteIter->second->getSectorId().y_ << std::endl;
-            sectorMap_.erase(deleteIter);
-        }
-
-        ++deleteIter;
-    }
-}
-
-
 void SectorManager::clear() {
     sectorMap_.clear();
 }
 
 unsigned int SectorManager::calcSectorIndex(unsigned int x, unsigned int y) {
-    unsigned int mapHeight = data::Manager::getMapLoader(lastMapId_)->getBlockCountY();
+    unsigned int mapId = world::Manager::getSingleton()->getCurrentMapId();
+    unsigned int mapHeight = data::Manager::getMapLoader(mapId)->getBlockCountY();
     return x * mapHeight + y;
 }
 
-void SectorManager::buildSectorRequiredList(std::list<IsoIndex>& list, unsigned int cacheAdd) {
+void SectorManager::buildSectorRequiredList(std::list<IsoIndex>& list, unsigned int cacheAdd, unsigned int mapId) {
     // ask all ingame views which sectors they need
     std::list<ui::components::WorldView*>::iterator viewIter = worldViews_.begin();
     std::list<ui::components::WorldView*>::iterator viewEnd = worldViews_.end();
 
-    unsigned int mapHeight = data::Manager::getMapLoader(lastMapId_)->getBlockCountY();
+    unsigned int mapHeight = data::Manager::getMapLoader(mapId)->getBlockCountY();
 
     while (viewIter != viewEnd) {
         ui::components::WorldView* curView = (*viewIter);

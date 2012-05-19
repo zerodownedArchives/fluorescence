@@ -94,7 +94,8 @@ void Mobile::onDoubleClick() {
     LOG_INFO << "Double clicked mobile, id=" << std::hex << getBodyId() << std::dec << " loc=(" << getLocXGame() << "/" << getLocYGame() << "/" <<
             getLocZGame() << ")" << std::endl;
 
-    if (world::Manager::getSingleton()->getPlayer()->isWarMode()) {
+    world::Mobile* player = world::Manager::getSingleton()->getPlayer().get();
+    if (player->isWarMode() && player != this) {
         net::packets::AttackRequest pkt(getSerial());
         net::Manager::getSingleton()->send(pkt);
     } else {

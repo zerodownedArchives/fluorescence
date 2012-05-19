@@ -432,7 +432,7 @@ boost::shared_ptr<ClipRectManager> Manager::getClipRectManager() {
     return getSingleton()->clipRectManager_;
 }
 
-const UoFont& Manager::getUnifont(unsigned int index) {
+UoFont& Manager::getUnifont(unsigned int index) {
     if (index < 13) {
         return *(getSingleton()->unifonts_[index].get());
     } else {

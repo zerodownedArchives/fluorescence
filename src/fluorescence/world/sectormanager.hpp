@@ -50,13 +50,9 @@ public:
     void registerWorldView(ui::components::WorldView* view);
     void unregisterWorldView(ui::components::WorldView* view);
 
-    /**
-     * \param force If true, sector check is forced. If not, sector check only if update frequency kicks in
-     */
-    void addNewSectors(bool force = false);
+    void updateSectorList();
 
-    void deleteSectors();
-
+    void onMapChange();
     void clear();
 
     void update(unsigned int elapsedMillis);
@@ -77,13 +73,11 @@ private:
     unsigned int sectorAddDistanceCache_; ///< This many sectors further away from what an ingameview really needs are added
     unsigned int sectorRemoveDistanceCache_; ///< Similar to sectorAddDistanceCache_, but for removal. Should be > sectorAddDistanceCache_
 
-    unsigned int lastMapId_; ///< to detect map changes
-
     unsigned int calcSectorIndex(unsigned int x, unsigned int y);
 
     std::list<ui::components::WorldView*> worldViews_;
 
-    void buildSectorRequiredList(std::list<IsoIndex>& list, unsigned int cacheAdd);
+    void buildSectorRequiredList(std::list<IsoIndex>& list, unsigned int cacheAdd, unsigned int mapId);
 };
 
 }

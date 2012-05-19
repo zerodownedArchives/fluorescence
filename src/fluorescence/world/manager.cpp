@@ -105,7 +105,13 @@ unsigned int Manager::getCurrentMapId() {
 }
 
 void Manager::setCurrentMapId(unsigned int id) {
-    currentMapId_ = id;
+    if (currentMapId_ != id) {
+        currentMapId_ = id;
+        sectorManager_->onMapChange();
+        if (player_) {
+            player_->onLocationChanged(player_->getLocation()); // force sector change
+        }
+    }
 }
 
 boost::shared_ptr<LightManager> Manager::getLightManager() {
@@ -166,9 +172,7 @@ boost::shared_ptr<DynamicItem> Manager::getDynamicItem(Serial serial, bool creat
 }
 
 void Manager::step(unsigned int elapsedMillis) {
-    world::Manager::getSectorManager()->deleteSectors();
-    world::Manager::getSectorManager()->addNewSectors();
-    
+    sectorManager_->updateSectorList();
     sysLog_->update(elapsedMillis);
 
     update(elapsedMillis);

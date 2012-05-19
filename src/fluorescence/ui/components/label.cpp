@@ -25,6 +25,7 @@
 #include <unicode/regex.h>
 
 #include <ui/uofont.hpp>
+#include <ui/manager.hpp>
 #include <misc/log.hpp>
 
 namespace fluo {
@@ -47,9 +48,9 @@ void Label::setText(const UnicodeString& text) {
 void Label::setHtmlText(const UnicodeString& text, const CL_Colorf& colorDefault) {
     UErrorCode status = U_ZERO_ERROR;
     
-    static UoFont fontDefault(1);
-    static UoFont fontBold(3);
-    static UoFont fontItalic(4);
+    const UoFont& fontDefault = ui::Manager::getUnifont(1);
+    //const UoFont& fontBold = ui::Manager::getUnifont(3);
+    //const UoFont& fontItalic = ui::Manager::getUnifont(4);
     
     static RegexMatcher basefontMatcher("basefont\\s+color=([0-9a-fA-F#]+)", 0, status);
     

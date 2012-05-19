@@ -52,7 +52,7 @@ bool BaseText::mobileMessage() {
         mob->getProperty("name").setString(speaker_);
         mob->onPropertyUpdate();
 
-        boost::shared_ptr<world::OverheadMessage> msg(new world::OverheadMessage(text_, 1, hue_, false));
+        boost::shared_ptr<world::OverheadMessage> msg(new world::OverheadMessage(text_, font_, hue_, false));
         world::Manager::getSingleton()->registerOverheadMessage(msg);
         mob->addChildObject(msg);
         LOG_INFO << "Speech hue=" << hue_ << " from=" << speaker_ << ": " << text_ << std::endl;
@@ -65,7 +65,7 @@ bool BaseText::itemMessage() {
     boost::shared_ptr<world::DynamicItem> itm = world::Manager::getSingleton()->getDynamicItem(serial_, false);
 
     if (itm) {
-        boost::shared_ptr<world::OverheadMessage> msg(new world::OverheadMessage(text_, 1, hue_, false));
+        boost::shared_ptr<world::OverheadMessage> msg(new world::OverheadMessage(text_, font_, hue_, false));
         world::Manager::getSingleton()->registerOverheadMessage(msg);
         itm->addChildObject(msg);
         LOG_INFO << "Overhead text for " << speaker_ << ": " << text_ << std::endl;

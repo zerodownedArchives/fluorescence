@@ -138,7 +138,7 @@ CL_Colorf HuesLoader::getFontClColor(unsigned int hue) const {
     int r = (rgb >> 24) & 0xFF;
     int g = (rgb >> 16) & 0xFF;
     int b = (rgb >> 8) & 0xFF;
-        
+    
     return CL_Colorf(r, g, b);
 }
 
