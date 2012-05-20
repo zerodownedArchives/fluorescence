@@ -52,6 +52,9 @@
 #include "packets/equippedmobile.hpp" // 0x78
 #include "packets/loginrequest.hpp" // 0x80
 #include "packets/loginreject.hpp" // 0x82
+#include "packets/characterdelete.hpp" // 0x83
+#include "packets/characterdeletereject.hpp" // 0x85
+#include "packets/characterlistupdate.hpp" // 0x86
 #include "packets/openpaperdoll.hpp" //0x88
 #include "packets/serverredirect.hpp" // 0x8c
 #include "packets/gameserverloginrequest.hpp" // 0x91

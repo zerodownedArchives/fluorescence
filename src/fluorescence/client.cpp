@@ -40,6 +40,7 @@
 
 #include <net/manager.hpp>
 #include <net/packets/characterselect.hpp>
+#include <net/packets/characterdelete.hpp>
 
 namespace fluo {
 
@@ -376,6 +377,13 @@ void Client::doStateLogin() {
 
 bool Client::selectCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     net::packets::CharacterSelect reply(parameters[2], parameters[1], StringConverter::toInt(parameters[0]), net::Manager::getSingleton()->getSeed());
+    net::Manager::getSingleton()->send(reply);
+
+    return true;
+}
+
+bool Client::deleteCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    net::packets::CharacterDelete reply(parameters[1], StringConverter::toInt(parameters[0]), net::Manager::getSingleton()->getSeed());
     net::Manager::getSingleton()->send(reply);
 
     return true;

@@ -68,6 +68,7 @@ void GumpActions::buildFullActionTable() {
     actionTable_["selectserver-first"] = GumpAction(true, boost::bind(&GumpActions::selectServerFirst, _1, _2, _3, _4));
     actionTable_["selectcharacter"] = GumpAction(true, boost::bind(&Client::selectCharacter, Client::getSingleton(), _1, _2, _3, _4));
     actionTable_["selectcharacter-first"] = GumpAction(true, boost::bind(&GumpActions::selectCharacterFirst, _1, _2, _3, _4));
+    actionTable_["deletecharacter"] = GumpAction(true, boost::bind(&Client::deleteCharacter, Client::getSingleton(), _1, _2, _3, _4));
 
     actionTable_["sendspeech"] = GumpAction(false, boost::bind(&GumpActions::sendSpeech, _1, _2, _3, _4));
     actionTable_["contextmenureply"] = GumpAction(true, boost::bind(&GumpActions::contextMenuReply, _1, _2, _3, _4));
@@ -79,6 +80,8 @@ void GumpActions::buildFullActionTable() {
     actionTable_["openprofile"] = GumpAction(false, boost::bind(&GumpActions::openProfile, _1, _2, _3, _4));
     
     actionTable_["castspell"] = GumpAction(false, boost::bind(&GumpActions::castSpell, _1, _2, _3, _4));
+    
+    actionTable_["yesnogump"] = GumpAction(false, boost::bind(&GumpActions::yesNoGump, _1, _2, _3, _4));
 }
 
 
@@ -170,7 +173,7 @@ bool GumpActions::createDummyCharacter(GumpMenu* menu, const UnicodeString& acti
     
     pkt.name_ = "Dummy";
     pkt.slot_ = 0;
-    
+    pkt.startCity_ = 1;
     
     net::Manager::getSingleton()->send(pkt);
 
@@ -216,6 +219,11 @@ bool GumpActions::castSpell(GumpMenu* menu, const UnicodeString& action, unsigne
     boost::shared_ptr<net::Packet> subPacket(new net::packets::bf::CastSpell(spellId));
     net::packets::BF pkt(subPacket);
     net::Manager::getSingleton()->send(pkt);
+    return true;
+}
+
+bool GumpActions::yesNoGump(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    GumpMenus::openYesNoBox(action, parameterCount, parameters);
     return true;
 }
 

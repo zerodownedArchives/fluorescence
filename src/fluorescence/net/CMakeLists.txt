@@ -86,6 +86,9 @@ set (PACKETS_HPP
     net/packets/helprequest.hpp
     net/packets/profile.hpp
     net/packets/attackrequest.hpp
+    net/packets/characterdelete.hpp
+    net/packets/characterdeletereject.hpp
+    net/packets/characterlistupdate.hpp
 
     net/packets/bf.hpp
     net/packets/bf/changemap.hpp
@@ -155,6 +158,9 @@ set (PACKETS_CPP
     net/packets/helprequest.cpp
     net/packets/profile.cpp
     net/packets/attackrequest.cpp
+    net/packets/characterdelete.cpp
+    net/packets/characterdeletereject.cpp
+    net/packets/characterlistupdate.cpp
 
     net/packets/bf.cpp
     net/packets/bf/changemap.cpp
@@ -182,5 +188,3 @@ set (TWOFISH
     )
 
 set(NET_FILES ${NET_HPP} ${NET_CPP} ${MD5} ${TWOFISH} ${PACKETS_HPP} ${PACKETS_CPP} PARENT_SCOPE)
-
-#add_subdirectory(test)

@@ -134,6 +134,8 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0x72: ret.reset(new packets::WarMode()); break;
         case 0x77: ret.reset(new packets::NakedMobile()); break;
         case 0x78: ret.reset(new packets::EquippedMobile()); break;
+        case 0x85: ret.reset(new packets::CharacterDeleteReject()); break;
+        case 0x86: ret.reset(new packets::CharacterListUpdate()); break;
         case 0x88: ret.reset(new packets::OpenPaperdoll()); break;
         case 0xA8: ret.reset(new packets::ServerList()); break;
         case 0x8C: ret.reset(new packets::ServerRedirect()); break;

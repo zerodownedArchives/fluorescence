@@ -46,6 +46,7 @@
 #include "xmlparser.hpp"
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
+#include "components/basebutton.hpp"
 
 namespace fluo {
 namespace ui {
@@ -57,6 +58,33 @@ GumpMenu* GumpMenus::openMessageBox(const UnicodeString& message) {
     }
 
     LOG_INFO << "MessageBox: " << message << std::endl;
+
+    return menu;
+}
+
+GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    if (parameterCount < 2) {
+        LOG_ERROR << "No text or action given for YesNoBox" << std::endl;
+        return nullptr;
+    }
+    
+    GumpMenu* menu = XmlParser::fromXmlFile("yesnobox");
+    if (menu) {
+        menu->setComponentText<components::Label>("messagetext", parameters[0]);
+        
+        components::BaseButton* yesButton = dynamic_cast<components::BaseButton*>(menu->get_named_item("yes"));
+        if (yesButton) {
+            yesButton->setLocalButton(parameters[1]);
+            
+            for (unsigned int i = 2; i < parameterCount; ++i) {
+                yesButton->setParameter(parameters[i], i-2);
+            }
+        } else {
+            LOG_ERROR << "Unable to find yes button in yesnobox" << std::endl;
+        }
+    }
+
+    LOG_INFO << "YesNoBox: " << parameters[0] << std::endl;
 
     return menu;
 }
@@ -141,15 +169,15 @@ GumpMenu* GumpMenus::openServerListGump(const net::packets::ServerList* list) {
     return menu;
 }
 
-GumpMenu* GumpMenus::openCharacterListGump(const net::packets::CharacterList* list) {
+GumpMenu* GumpMenus::openCharacterListGump(unsigned int charCount, const UnicodeString* charNames, const UnicodeString* charPasswords) {
     std::vector<UnicodeString> nameList;
     std::vector<UnicodeString> indexList;
     std::vector<UnicodeString> passwordList;
 
-    for (unsigned int i = 0; i < list->charCount_; ++i) {
-        nameList.push_back(list->charNames_[i]);
+    for (unsigned int i = 0; i < charCount; ++i) {
+        nameList.push_back(charNames[i]);
         indexList.push_back(StringConverter::fromNumber(i));
-        passwordList.push_back(list->charPasswords_[i]);
+        passwordList.push_back(charPasswords[i]);
     }
 
     XmlParser::RepeatContext context;
