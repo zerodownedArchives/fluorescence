@@ -61,6 +61,7 @@ public:
     unsigned int getState();
     void loginComplete(); /// < called when the game window should be displayed => setState(playing)
     void disconnect();
+    void selectShard(const UnicodeString& shardName);
 
     // gump callbacks
     bool disconnect(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
@@ -68,7 +69,7 @@ public:
     bool selectShard(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
     bool selectCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
     bool deleteCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
-    
+
     timeval getElapsedTime() const;
 
 private:
@@ -93,7 +94,7 @@ private:
     void doStatePreLogin();
     void doStateLogin();
     void doStatePlaying(unsigned int elapsedMillis);
-    
+
     timeval startTime_;
 };
 

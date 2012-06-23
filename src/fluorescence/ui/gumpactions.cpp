@@ -21,6 +21,9 @@
 #include "gumpactions.hpp"
 
 #include <boost/bind.hpp>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/fstream.hpp>
 
 #include <client.hpp>
 
@@ -59,6 +62,9 @@ void GumpActions::buildBasicActionTable() {
     actionTable_["selectshard"] = GumpAction(true, boost::bind(&Client::selectShard, Client::getSingleton(), _1, _2, _3, _4));
     actionTable_["selectshard-first"] = GumpAction(true, boost::bind(&GumpActions::selectShardFirst, _1, _2, _3, _4));
     actionTable_["close"] = GumpAction(true, boost::bind(&GumpActions::closeHelper, _1, _2, _3, _4));
+
+    actionTable_["opengump"] = GumpAction(true, boost::bind(&GumpActions::openGump, _1, _2, _3, _4));
+    actionTable_["createshard"] = GumpAction(true, boost::bind(&GumpActions::createShard, _1, _2, _3, _4));
 }
 
 void GumpActions::buildFullActionTable() {
@@ -72,15 +78,15 @@ void GumpActions::buildFullActionTable() {
 
     actionTable_["sendspeech"] = GumpAction(false, boost::bind(&GumpActions::sendSpeech, _1, _2, _3, _4));
     actionTable_["contextmenureply"] = GumpAction(true, boost::bind(&GumpActions::contextMenuReply, _1, _2, _3, _4));
-    
+
     actionTable_["createdummychar"] = GumpAction(true, boost::bind(&GumpActions::createDummyCharacter, _1, _2, _3, _4));
-    
+
     actionTable_["openstatus"] = GumpAction(false, boost::bind(&GumpActions::openStatus, _1, _2, _3, _4));
     actionTable_["helprequest"] = GumpAction(false, boost::bind(&GumpActions::helpRequest, _1, _2, _3, _4));
     actionTable_["openprofile"] = GumpAction(false, boost::bind(&GumpActions::openProfile, _1, _2, _3, _4));
-    
+
     actionTable_["castspell"] = GumpAction(false, boost::bind(&GumpActions::castSpell, _1, _2, _3, _4));
-    
+
     actionTable_["yesnogump"] = GumpAction(false, boost::bind(&GumpActions::yesNoGump, _1, _2, _3, _4));
 }
 
@@ -170,11 +176,11 @@ bool GumpActions::contextMenuReply(GumpMenu* menu, const UnicodeString& action, 
 
 bool GumpActions::createDummyCharacter(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     net::packets::CreateCharacter pkt;
-    
+
     pkt.name_ = "Dummy";
     pkt.slot_ = 0;
     pkt.startCity_ = 1;
-    
+
     net::Manager::getSingleton()->send(pkt);
 
     return true;
@@ -224,6 +230,62 @@ bool GumpActions::castSpell(GumpMenu* menu, const UnicodeString& action, unsigne
 
 bool GumpActions::yesNoGump(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     GumpMenus::openYesNoBox(action, parameterCount, parameters);
+    return true;
+}
+
+bool GumpActions::openGump(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    ui::Manager::getSingleton()->openXmlGump(parameters[0]);
+    return true;
+}
+
+bool GumpActions::createShard(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    components::LineEdit* nameEdit = dynamic_cast<components::LineEdit*>(menu->get_named_item("shardname"));
+    components::LineEdit* pathEdit = dynamic_cast<components::LineEdit*>(menu->get_named_item("uopath"));
+
+    UnicodeString name = nameEdit->getText();
+    boost::filesystem::path path(pathEdit->get_text());
+
+    boost::filesystem::path artPath = path / "art.mul";
+    if (!boost::filesystem::exists(artPath)) {
+        LOG_ERROR << "Invalid Ultima Online directory" << std::endl;
+        GumpMenus::openMessageBox("Invalid Ultima Online directory");
+        return false;
+    }
+
+    boost::filesystem::path shardPath(nameEdit->get_text());
+    shardPath = "shards" / shardPath;
+    if (boost::filesystem::exists(shardPath)) {
+        LOG_ERROR << "Shard already exists" << std::endl;
+        GumpMenus::openMessageBox("Shard already exists");
+        return false;
+    }
+
+    try {
+        if (!boost::filesystem::create_directory(shardPath)) {
+            LOG_ERROR << "Failed to create shard directory: " << std::endl;
+            GumpMenus::openMessageBox("Failed to create shard directory");
+            return false;
+        }
+    } catch (std::exception& ex) {
+        LOG_ERROR << "Failed to create shard directory: " << ex.what() << std::endl;
+        GumpMenus::openMessageBox("Failed to create shard directory");
+        return false;
+    }
+
+    boost::filesystem::path configPath = shardPath / "config.xml";
+    boost::filesystem::ofstream configStream(configPath);
+    if (!configStream) {
+        LOG_ERROR << "Failed to create shard config file: " << std::endl;
+        GumpMenus::openMessageBox("Failed to create shard config file");
+        boost::filesystem::remove(shardPath);
+        return false;
+    } else {
+        configStream << "<?xml version=\"1.0\"?>\n<fluo>\n<files>\n<mul-directory path=\"" << path.string();
+        configStream << "\" />\n</files>\n</fluo>";
+        configStream.close();
+    }
+
+    Client::getSingleton()->selectShard(name);
     return true;
 }
 

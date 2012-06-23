@@ -1,0 +1,16 @@
+<gump x="400" y="300" closable="0" draggable="0">
+    <!--
+    In case you want to redesign this gump, keep in mind that at this point, you can not
+    access any uo data (e.g. art.mul graphics), as the mul files are not loaded yet.
+    -->
+    <tbackground x="0" y="0" width="350" height="150"  />
+
+    <tlabel x="15" y="18" width="95" height="20" text="Name:" />
+    <tlineedit id="shardname" x="120" y="15" width="215" height="25" />
+
+    <tlabel x="15" y="48" width="95" height="20" text="UO path:" />
+    <tlineedit id="uopath" x="120" y="45" width="215" height="25"/>
+
+    <tbutton x="30" y="115" width="130" height="25" text="Create shard" action="createshard" />
+    <tbutton x="190" y="115" width="130" height="25" text="Close fluorescence" action="shutdown" />
+</gump>

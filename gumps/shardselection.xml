@@ -10,6 +10,6 @@
         </repeat>
     </tscrollarea>
 
-    <tbutton x="20" y="175" width="210" height="25" text="Create shard" action="createshard" />
+    <tbutton x="20" y="175" width="210" height="25" text="Create shard" action="opengump" param="createshard" />
     <tbutton x="20" y="203" width="210" height="25" text="Close fluorescence" action="shutdown" />
 </gump>

@@ -78,9 +78,13 @@ bool Client::shutdown(ui::GumpMenu* menu, const UnicodeString& action, unsigned 
 }
 
 bool Client::selectShard(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    config_["/fluo/shard@name"].setString(parameters[0]);
-    setState(STATE_PRE_LOGIN);
+    selectShard(parameters[0]);
     return true;
+}
+
+void Client::selectShard(const UnicodeString& shardName) {
+    config_["/fluo/shard@name"].setString(shardName);
+    setState(STATE_PRE_LOGIN);
 }
 
 bool Client::disconnect(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
@@ -121,7 +125,7 @@ bool Client::handleStateChange() {
         uiManager->closeAllNonMessageGumps();
         uiManager->releaseIngameObjects();
         world::Manager::getSingleton()->clear();
-        
+
         break;
     }
 
@@ -406,7 +410,7 @@ timeval Client::getElapsedTime() const {
         t.tv_sec -= 1;
         t.tv_usec = (cur.tv_usec + 1000000) - startTime_.tv_usec;
     }
-    
+
     return t;
 }
 
