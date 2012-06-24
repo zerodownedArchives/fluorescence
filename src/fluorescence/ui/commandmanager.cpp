@@ -33,13 +33,15 @@
 #include "commands/osieffect.hpp"
 #include "commands/togglewarmode.hpp"
 #include "commands/directionlight.hpp"
+#include "commands/speechentry.hpp"
+#include "commands/zoom.hpp"
 
 namespace fluo {
 namespace ui {
-    
+
 CommandManager::CommandManager(Config& config) {
     commandMap_["command"].reset(new commands::Command(config));
-    
+
     commandMap_["say"].reset(new commands::Say(config));
     commandMap_["emote"].reset(new commands::Emote(config));
     commandMap_["whisper"].reset(new commands::Whisper(config));
@@ -50,9 +52,11 @@ CommandManager::CommandManager(Config& config) {
     commandMap_["osieffect"].reset(new commands::OsiEffect());
     commandMap_["togglewarmode"].reset(new commands::ToggleWarMode());
     commandMap_["directionlight"].reset(new commands::DirectionLight());
-    
+    commandMap_["speechentry"].reset(new commands::SpeechEntry());
+    commandMap_["zoom"].reset(new commands::Zoom());
+
     // TODO: fill prefixes with values from config
-    
+
     commandPrefix_ = '?';
     emotePrefix_ = ':';
     yellPrefix_ = '!';
@@ -63,7 +67,7 @@ void CommandManager::execute(const UnicodeString& command, const UnicodeString& 
     UnicodeString cmdLower(command);
     cmdLower.toLower();
     std::map<UnicodeString, boost::shared_ptr<commands::ClientCommand> >::iterator iter = commandMap_.find(cmdLower);
-    
+
     if (iter != commandMap_.end()) {
         iter->second->execute(args);
     } else {
@@ -76,7 +80,7 @@ void CommandManager::execute(const UnicodeString& command, const UnicodeString& 
 
 void CommandManager::handleTextInput(const UnicodeString& text) {
     boost::shared_ptr<commands::ClientCommand> command;
-    
+
     char cmdChar = text.charAt(0);
     bool removeFirstChar = true;
     if (cmdChar == commandPrefix_) {
@@ -91,7 +95,7 @@ void CommandManager::handleTextInput(const UnicodeString& text) {
         command = commandMap_["say"];
         removeFirstChar = false;
     }
-    
+
     if (removeFirstChar) {
         UnicodeString msg(text, 1);
         command->execute(msg.trim());
@@ -103,6 +107,6 @@ void CommandManager::handleTextInput(const UnicodeString& text) {
 bool CommandManager::hasCommand(const UnicodeString& cmd) const {
     return commandMap_.find(cmd) != commandMap_.end();
 }
-    
+
 }
 }

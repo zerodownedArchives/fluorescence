@@ -53,12 +53,16 @@ class AudioManager;
 class CommandManager;
 class MacroManager;
 
+namespace components {
+class WorldView;
+}
+
 class Manager {
 public:
     static bool create();
     static void destroy();
     static Manager* getSingleton();
-    
+
     static const unsigned int TEXTURE_GROUP_WIDTH = 2048;
     static const unsigned int TEXTURE_GROUP_HEIGHT = 2048;
 
@@ -80,9 +84,9 @@ public:
     static boost::shared_ptr<AudioManager> getAudioManager();
     static boost::shared_ptr<CommandManager> getCommandManager();
     static boost::shared_ptr<MacroManager> getMacroManager();
-    
+
     static UoFont& getUnifont(unsigned int index);
-    
+
     static bool isMapIdIgnored(unsigned int id);
     static bool isStaticIdIgnored(unsigned int id);
     static bool isMapIdWater(unsigned int id);
@@ -110,13 +114,16 @@ public:
     void onDragDrop(boost::shared_ptr<world::IngameObject> dragObj, boost::shared_ptr<world::IngameObject> dragTarget);
 
     bool onUnhandledInputEvent(const CL_InputEvent& event);
-    
+
     void queueComponentResize(CL_GUIComponent* elem, const CL_Rectf& geom);
-    
+
     void releaseIngameObjects();
-    
+
     CL_Point getMousePosition() const;
-    
+
+    void setWorldView(components::WorldView* view);
+    components::WorldView* getWorldView() const;
+
 private:
     static Manager* singleton_;
 
@@ -148,36 +155,34 @@ private:
     void loadUnifonts();
     boost::shared_ptr<UoFont> unifonts_[13];
 
-    CL_AcceleratorTable macros_;
-
-    void enterTest(CL_GUIMessage msg, CL_AcceleratorKey key);
-
     boost::shared_ptr<FontEngine> fontEngine_;
 
     boost::shared_ptr<ShaderManager> shaderManager_;
-    
+
     UnicodeString getOpenGLExtensions() const;
-    
+
     boost::shared_ptr<ClipRectManager> clipRectManager_;
-    
+
     boost::shared_ptr<AudioManager> audioManager_;
-    
+
     boost::shared_ptr<CommandManager> commandManager_;
     boost::shared_ptr<MacroManager> macroManager_;
-    
+
     std::map<unsigned int, CL_TextureGroup> textureGroups_;
-    
+
     void onInputOutsideWindows(const CL_InputEvent& event, const CL_InputState& state);
-    
+
     unsigned int doubleClickTimeout_;
     std::pair<world::IngameObject*, unsigned int> singleClickWait_;
-    
+
     std::vector<int> mapIgnoreIds_;
     std::vector<int> staticIgnoreIds_;
     std::vector<int> mapWaterIds_;
     std::vector<int> staticWaterIds_;
-    
+
     std::vector<std::pair<CL_GUIComponent*, CL_Rectf> > componentResizeQueue_;
+
+    components::WorldView* worldView_;
 };
 
 }

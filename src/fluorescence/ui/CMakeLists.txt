@@ -47,7 +47,7 @@ set (GUMPMENU_HPP
     ui/stringparser.hpp
     ui/gumpmenu.hpp
     ui/gumpelement.hpp
-    
+
     ui/components/multitextureimage.hpp
     ui/components/basebutton.hpp
     ui/components/templatebutton.hpp
@@ -166,7 +166,7 @@ set (PARTICLES_CPP
     ui/particles/timelineforever.cpp
     ui/particles/timelineevent.cpp
     )
-    
+
 set (CLIENTCOMMANDS_HPP
     ui/commands/clientcommand.hpp
     ui/commands/say.hpp
@@ -180,6 +180,8 @@ set (CLIENTCOMMANDS_HPP
     ui/commands/osieffect.hpp
     ui/commands/togglewarmode.hpp
     ui/commands/directionlight.hpp
+    ui/commands/speechentry.hpp
+    ui/commands/zoom.hpp
     )
 
 set (CLIENTCOMMANDS_CPP
@@ -194,6 +196,8 @@ set (CLIENTCOMMANDS_CPP
     ui/commands/osieffect.cpp
     ui/commands/togglewarmode.cpp
     ui/commands/directionlight.cpp
+    ui/commands/speechentry.cpp
+    ui/commands/zoom.cpp
     )
 
 

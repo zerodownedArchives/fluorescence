@@ -108,9 +108,9 @@ GumpMenu* XmlParser::fromXmlFile(const UnicodeString& name, GumpMenu* menu) {
     boost::filesystem::path path = "gumps";
     std::string utf8FileName = StringConverter::toUtf8String(name) + ".xml";
     path = path / utf8FileName;
-    
+
     path = data::Manager::getShardFilePath(path);
-    
+
     if (!boost::filesystem::exists(path)) {
         LOG_ERROR << "Unable to gump xml, file not found: " << utf8FileName << std::endl;
         return menu;
@@ -166,7 +166,7 @@ GumpMenu* XmlParser::fromXml(pugi::xml_document& doc, GumpMenu* menu) {
         CL_Rect bounds = getBoundsFromNode(rootNode);
         bounds.set_width(1);
         bounds.set_height(1);
-        
+
         bool closable = rootNode.attribute("closable").as_bool();
         bool draggable = rootNode.attribute("draggable").as_bool();
         UnicodeString action = StringConverter::fromUtf8(rootNode.attribute("action").value());
@@ -269,7 +269,7 @@ bool XmlParser::parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, Gump
     parseId(node, button);
     button->set_geometry(bounds);
     button->setText(text);
-    
+
     top->addToCurrentPage(button);
     return true;
 }
@@ -303,11 +303,11 @@ bool XmlParser::parseButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpM
     }
 
     parseId(node, button);
-    
+
     pugi::xml_node normalNode = node.child("normal");
     pugi::xml_node mouseOverNode = node.child("mouseover");
     pugi::xml_node mouseDownNode = node.child("mousedown");
-    
+
     if (normalNode) {
         parseMultiTextureImage(normalNode, button, components::UoButton::TEX_INDEX_UP);
     } else {
@@ -315,22 +315,22 @@ bool XmlParser::parseButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpM
         node.print(std::cout);
         return false;
     }
-    
+
     if (mouseOverNode) {
         parseMultiTextureImage(mouseOverNode, button, components::UoButton::TEX_INDEX_MOUSEOVER);
     }
     if (mouseDownNode) {
         parseMultiTextureImage(mouseDownNode, button, components::UoButton::TEX_INDEX_DOWN);
     }
-    
+
     if (bounds.get_width() == 0 || bounds.get_height() == 0) {
         button->setAutoResize(true);
         bounds.set_width(1);
         bounds.set_height(1);
     }
-    
+
     button->updateTexture();
-    
+
     button->set_geometry(bounds);
 
     top->addToCurrentPage(button);
@@ -646,24 +646,24 @@ bool XmlParser::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMe
     UnicodeString imgId = StringConverter::fromUtf8(node.attribute("imgid").value());
 
     CL_Rect bounds = getBoundsFromNode(node);
-    
+
     unsigned int hue = node.attribute("hue").as_uint();
     std::string rgba = node.attribute("rgba").value();
     float alpha = node.attribute("alpha").as_float();
-    
+
     bool tiled = node.attribute("tiled").as_bool();
 
     components::Image* img = new components::Image(parent);
     parseId(node, img);
-    
+
     boost::shared_ptr<ui::Texture> texture = data::Manager::getTexture(imgSource, imgId);
     texture->setUsage(ui::Texture::USAGE_GUMP);
-    
+
     if (!texture) {
         LOG_ERROR << "Unable to parse gump image, source=" << imgSource << " imgid=" << imgId << std::endl;
         return false;
     }
-    
+
     if (bounds.get_width() == 0 || bounds.get_height() == 0) {
         if (texture->getWidth() != 1) {
             bounds.set_width(texture->getWidth());
@@ -676,15 +676,15 @@ bool XmlParser::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMe
     } else if (tiled) {
         img->setTiled(true);
     }
-    
+
     img->setTexture(texture);
     img->set_geometry(bounds);
-    
+
     img->setHue(hue);
     if (rgba.length() > 0) {
         img->setColorRGBA(CL_Colorf(rgba));
     }
-    
+
     if (alpha) {
         img->setAlpha(alpha);
     }
@@ -695,13 +695,13 @@ bool XmlParser::parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMe
 
 bool XmlParser::parseBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node);
-    
+
     unsigned int hue = node.attribute("hue").as_uint();
     std::string rgba = node.attribute("rgba").value();
     float alpha = node.attribute("alpha").as_float();
-    
+
     unsigned int gumpId = node.attribute("gumpid").as_uint();
-    
+
     if (!gumpId) {
         LOG_ERROR << "Unable to parse background, gumpid not found, not a number or zero" << std::endl;
         return false;
@@ -709,16 +709,16 @@ bool XmlParser::parseBackground(pugi::xml_node& node, CL_GUIComponent* parent, G
 
     components::Background* img = new components::Background(parent);
     parseId(node, img);
-    
+
     img->set_geometry(bounds);
-    
+
     img->setBaseId(gumpId);
-    
+
     img->setHue(hue);
     if (rgba.length() > 0) {
         img->setColorRGBA(CL_Colorf(rgba));
     }
-    
+
     if (alpha) {
         img->setAlpha(alpha);
     }
@@ -828,14 +828,14 @@ bool XmlParser::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpM
     return true;
 }
 
-void XmlParser::insertRepeatNodes(pugi::xml_node::iterator begin, pugi::xml_node::iterator end, pugi::xml_node dst, 
+void XmlParser::insertRepeatNodes(pugi::xml_node::iterator begin, pugi::xml_node::iterator end, pugi::xml_node dst,
             const RepeatContext& context, unsigned int index,
             int xIncrease, int yIncrease, unsigned int xLimit, unsigned int yLimit) {
     for (pugi::xml_node::iterator iter = begin; iter != end; ++iter) {
         pugi::xml_node newNode = dst.insert_copy_after(*iter, dst.last_child());
-        
+
         checkRepeatIf(newNode, index, xLimit, yLimit);
-        
+
         replaceRepeatKeywords(newNode, context, index,
                 xIncrease, yIncrease, xLimit, yLimit);
     }
@@ -844,9 +844,9 @@ void XmlParser::insertRepeatNodes(pugi::xml_node::iterator begin, pugi::xml_node
 void XmlParser::checkRepeatIf(pugi::xml_node& node, unsigned int index, unsigned int xLimit, unsigned int yLimit) {
     unsigned int xIndex = xLimit > 0 ? index % xLimit : index;
     unsigned int yIndex = yLimit > 0 ? index % yLimit : index;
-    
+
     bool removeNode = false;
-    if (strcmp(node.name(), "repeatif") == 0) {    
+    if (strcmp(node.name(), "repeatif") == 0) {
         pugi::xml_node::attribute_iterator attrIter = node.attributes_begin();
         pugi::xml_node::attribute_iterator attrEnd = node.attributes_end();
 
@@ -863,7 +863,7 @@ void XmlParser::checkRepeatIf(pugi::xml_node& node, unsigned int index, unsigned
                 }
             }
         }
-        
+
         if (!removeNode) {
             // move children to parent node
             pugi::xml_node childIter = node.last_child();
@@ -873,7 +873,7 @@ void XmlParser::checkRepeatIf(pugi::xml_node& node, unsigned int index, unsigned
                 childIter = childIter.previous_sibling();
             }
         }
-    
+
         // remove repeatif node
         node.parent().remove_child(node);
     } else {
@@ -887,16 +887,16 @@ void XmlParser::checkRepeatIf(pugi::xml_node& node, unsigned int index, unsigned
 
 void XmlParser::replaceRepeatKeywords(pugi::xml_node& node, const RepeatContext& context, unsigned int index,
             int xIncrease, int yIncrease, unsigned int xLimit, unsigned int yLimit) {
-                
+
     static std::string attrNameX("x");
     static std::string attrNameY("y");
-            
+
     pugi::xml_node::attribute_iterator attrIter = node.attributes_begin();
     pugi::xml_node::attribute_iterator attrEnd = node.attributes_end();
 
     for (; attrIter != attrEnd; ++attrIter) {
         bool contextHit = false;
-        
+
         std::map<UnicodeString, std::vector<UnicodeString> >::const_iterator contextIter = context.keywordReplacments_.begin();
         std::map<UnicodeString, std::vector<UnicodeString> >::const_iterator contextEnd = context.keywordReplacments_.end();
 
@@ -926,7 +926,7 @@ void XmlParser::replaceRepeatKeywords(pugi::xml_node& node, const RepeatContext&
             }
         }
     }
-    
+
     // also apply keyword replacements to child nodes
     pugi::xml_node childIter = node.first_child();
     while (childIter) {
@@ -942,7 +942,7 @@ bool XmlParser::parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     ui::components::WorldView* worldView = new ui::components::WorldView(parent, bounds);
 
     parseId(node, worldView);
-    
+
     top->addToCurrentPage(worldView);
 
     return true;
@@ -954,7 +954,7 @@ bool XmlParser::parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     ui::components::GumpView* gumpView = new ui::components::GumpView(parent, bounds);
 
     parseId(node, gumpView);
-    
+
     top->addToCurrentPage(gumpView);
 
     return true;
@@ -966,7 +966,7 @@ bool XmlParser::parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, Gu
     ui::components::ContainerView* contView = new ui::components::ContainerView(parent, bounds);
 
     parseId(node, contView);
-    
+
     top->addToCurrentPage(contView);
 
     return true;
@@ -981,12 +981,12 @@ bool XmlParser::parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, Gum
     cb->switchId_ = switchId;
 
     parseId(node, cb);
-    
+
     pugi::xml_node uncheckedNode = node.child("unchecked");
     pugi::xml_node uncheckedMoNode = node.child("unchecked-mouseover");
     pugi::xml_node checkedNode = node.child("checked");
     pugi::xml_node checkedMoNode = node.child("checked-mouseover");
-    
+
     if (checkedNode && uncheckedNode) {
         parseMultiTextureImage(uncheckedNode, cb, components::UoCheckbox::TEX_INDEX_UNCHECKED);
         parseMultiTextureImage(checkedNode, cb, components::UoCheckbox::TEX_INDEX_CHECKED);
@@ -994,22 +994,22 @@ bool XmlParser::parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, Gum
         LOG_ERROR << "Checkbox needs to have checked and unchecked image node" << std::endl;
         return false;
     }
-    
+
     if (uncheckedMoNode) {
         parseMultiTextureImage(uncheckedMoNode, cb, components::UoCheckbox::TEX_INDEX_UNCHECKED_MOUSEOVER);
     }
     if (checkedMoNode) {
         parseMultiTextureImage(checkedMoNode, cb, components::UoCheckbox::TEX_INDEX_CHECKED_MOUSEOVER);
     }
-    
+
     if (bounds.get_width() == 0 || bounds.get_height() == 0) {
         cb->setAutoResize(true);
         bounds.set_width(1);
         bounds.set_height(1);
     }
-    
+
     cb->setChecked(isChecked);
-    
+
     cb->set_geometry(bounds);
 
     top->addToCurrentPage(cb);
@@ -1022,7 +1022,7 @@ bool XmlParser::parseSysLogLabel(pugi::xml_node& node, CL_GUIComponent* parent, 
     sysLogLabel->setMaxGeometry(bounds);
     parseId(node, sysLogLabel);
     top->addToCurrentPage(sysLogLabel);
-    
+
     return true;
 }
 
@@ -1042,30 +1042,30 @@ bool XmlParser::parseWarModeButton(pugi::xml_node& node, CL_GUIComponent* parent
 
     components::WarModeButton* button = new components::WarModeButton(parent);
     parseId(node, button);
-    
+
     pugi::xml_node normalNode = node.child("normal");
     pugi::xml_node mouseOverNode = node.child("mouseover");
     pugi::xml_node mouseDownNode = node.child("mousedown");
-    
+
     if (normalNode) {
         parseMultiTextureImage(normalNode, button, components::WarModeButton::TEX_INDEX_UP);
     } else {
         LOG_ERROR << "Normal image for warmode button not defined" << std::endl;
         return false;
     }
-    
+
     if (mouseOverNode) {
         parseMultiTextureImage(mouseOverNode, button, components::WarModeButton::TEX_INDEX_MOUSEOVER);
     }
     if (mouseDownNode) {
         parseMultiTextureImage(mouseDownNode, button, components::WarModeButton::TEX_INDEX_DOWN);
     }
-    
-    
+
+
     pugi::xml_node warmodeNormalNode = node.child("warmode-normal");
     pugi::xml_node warmodeMouseOverNode = node.child("warmode-mouseover");
     pugi::xml_node warmodeMouseDownNode = node.child("warmode-mousedown");
-    
+
     if (warmodeNormalNode) {
         parseMultiTextureImage(warmodeNormalNode, button, components::WarModeButton::WARMODE_TEX_INDEX_UP);
     }
@@ -1075,15 +1075,15 @@ bool XmlParser::parseWarModeButton(pugi::xml_node& node, CL_GUIComponent* parent
     if (warmodeMouseDownNode) {
         parseMultiTextureImage(warmodeMouseDownNode, button, components::WarModeButton::WARMODE_TEX_INDEX_DOWN);
     }
-    
+
     if (bounds.get_width() == 0 || bounds.get_height() == 0) {
         button->setAutoResize(true);
         bounds.set_width(1);
         bounds.set_height(1);
     }
-    
+
     button->updateTexture();
-    
+
     button->set_geometry(bounds);
 
     top->addToCurrentPage(button);
@@ -1094,7 +1094,7 @@ bool XmlParser::parseTClickLabel(pugi::xml_node& node, CL_GUIComponent* parent, 
     CL_Rect bounds = getBoundsFromNode(node);
     std::string align = node.attribute("align").value();
     std::string text = node.attribute("text").value();
-    
+
     unsigned int buttonId = node.attribute("buttonid").as_uint();
     unsigned int pageId = node.attribute("page").as_uint();
     UnicodeString action = StringConverter::fromUtf8(node.attribute("action").value());

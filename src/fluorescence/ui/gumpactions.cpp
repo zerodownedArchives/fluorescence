@@ -285,6 +285,32 @@ bool GumpActions::createShard(GumpMenu* menu, const UnicodeString& action, unsig
         configStream.close();
     }
 
+    boost::filesystem::path macroPath = shardPath / "macros.xml";
+    boost::filesystem::ofstream macroStream(macroPath);
+    if (!macroStream) {
+        LOG_ERROR << "Failed to create macros file: " << std::endl;
+        GumpMenus::openMessageBox("Failed to create macros file");
+        boost::filesystem::remove(shardPath);
+        return false;
+    } else {
+        macroStream << "<?xml version=\"1.0\"?>\n<macros>\n";
+        macroStream << "<macro key=\"enter\">\n\t<command name=\"speechentry\" />\n</macro>\n";
+        macroStream << "<macro key=\"q\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"countdown\" />\n</macro>\n";
+        macroStream << "<macro key=\"w\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"badsmell\" />\n</macro>\n";
+        macroStream << "<macro key=\"e\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"deadlyfog\" />\n</macro>\n";
+        macroStream << "<macro key=\"r\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"explosion\" />\n</macro>\n";
+        macroStream << "<macro key=\"t\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"rain\" />\n</macro>\n";
+        macroStream << "<macro key=\"a\" ctrl=\"true\">\n\t<command name=\"directionlight\" param=\"on\" />\n</macro>\n";
+        macroStream << "<macro key=\"s\" ctrl=\"true\">\n\t<command name=\"directionlight\" param=\"off\" />\n</macro>\n";
+        macroStream << "<macro key=\"s\" ctrl=\"true\">\n\t<command name=\"directionlight\" param=\"off\" />\n</macro>\n";
+        macroStream << "<macro key=\"add\">\n\t<command name=\"zoom\" param=\"in\" />\n</macro>\n";
+        macroStream << "<macro key=\"subtract\">\n\t<command name=\"zoom\" param=\"out\" />\n</macro>\n";
+        macroStream << "<macro key=\"multiply\">\n\t<command name=\"zoom\" param=\"reset\" />\n</macro>\n";
+        macroStream << "<macro key=\"tab\">\n\t<command name=\"togglewarmode\" />\n</macro>\n";
+        macroStream << "</macros>";
+        macroStream.close();
+    }
+
     Client::getSingleton()->selectShard(name);
     return true;
 }

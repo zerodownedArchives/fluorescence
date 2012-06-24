@@ -55,12 +55,15 @@ public:
 
     unsigned int getWidth() const;
     unsigned int getHeight() const;
-    
+
     // widht/height including zoom
     CL_Size getDrawSize() const;
     unsigned int getDrawWidth() const;
     unsigned int getDrawHeight() const;
     float getZoom() const;
+    void zoomIn(float val);
+    void zoomOut(float val);
+    void zoomReset();
 
     void renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect);
 
@@ -68,7 +71,7 @@ public:
     void getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd) const;
 
     boost::shared_ptr<world::IngameObject> getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) const;
-    
+
     CL_Mat4f getViewMatrix() const;
 
 private:
@@ -90,12 +93,12 @@ private:
     bool onPointerMoved(const CL_InputEvent& e);
     bool onPointerEnter();
     bool onPointerExit();
-    
+
     unsigned int getDirectionForMousePosition(const CL_Point& mouse) const;
-    
+
     float lastCenterPixelX_;
     float lastCenterPixelY_;
-    
+
     float zoom_;
 };
 

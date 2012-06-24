@@ -28,8 +28,8 @@
 
 namespace fluo {
 namespace ui {
-    
-Macro::Macro(unsigned int keyCode, bool shift, bool ctrl, bool alt) : 
+
+Macro::Macro(unsigned int keyCode, bool shift, bool ctrl, bool alt) :
         keyCode_(keyCode), shift_(shift), ctrl_(ctrl), alt_(alt) {
 }
 
@@ -56,12 +56,12 @@ UnicodeString Macro::toString() const {
     if (alt_) {
         str += "ALT+";
     }
-    
+
     str += ui::Manager::getInputContext().get_keyboard().keyid_to_string(keyCode_).c_str();
-    
+
     return str;
 }
-    
+
 bool Macro::matchesEvent(const CL_InputEvent& event) const {
     return keyCode_ == event.id && event.alt == alt_ && event.shift == shift_ && event.ctrl == ctrl_;
 }
@@ -69,21 +69,21 @@ bool Macro::matchesEvent(const CL_InputEvent& event) const {
 void Macro::execute() const {
     std::list<std::pair<UnicodeString, UnicodeString> >::const_iterator iter = commands_.begin();
     std::list<std::pair<UnicodeString, UnicodeString> >::const_iterator end = commands_.end();
-    
+
     for (; iter != end; ++iter) {
         ui::Manager::getCommandManager()->execute(iter->first, iter->second);
     }
 }
 
-    
+
 MacroManager::MacroManager(Config& config) {
 }
 
 bool MacroManager::execute(const CL_InputEvent& event) const {
     bool ret = false;
-    
+
     std::pair<std::multimap<int, Macro>::const_iterator, std::multimap<int, Macro>::const_iterator> range = macros_.equal_range(event.id);
-    
+
     if (range.first != range.second) {
         std::multimap<int, Macro>::const_iterator iter = range.first;
         for (; iter != range.second; ++iter) {
@@ -93,7 +93,7 @@ bool MacroManager::execute(const CL_InputEvent& event) const {
             }
         }
     }
-    
+
     return ret;
 }
 
@@ -107,32 +107,32 @@ void MacroManager::init() {
         LOG_ERROR << "Unable to load macros.xml: File not found" << std::endl;
         return;
     }
-    
+
     LOG_INFO << "Loading macros from " << path << std::endl;
-    
+
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(path.string().c_str());
-    
+
     if (result) {
         for (pugi::xml_node macroIter = doc.document_element().first_child(); macroIter; macroIter = macroIter.next_sibling()) {
             if (strcmp(macroIter.name(), "macro") == 0) {
                 const char* keyString = macroIter.attribute("key").value();
                 int keyCode = ui::Manager::getInputContext().get_keyboard().string_to_keyid(keyString);
-                
+
                 if (keyCode == 0) {
                     continue;
                 }
-                
+
                 bool shift = macroIter.attribute("shift").as_bool();
                 bool ctrl = macroIter.attribute("ctrl").as_bool();
                 bool alt = macroIter.attribute("alt").as_bool();
-                
+
                 Macro mac(keyCode, shift, ctrl, alt);
-                
+
                 for (pugi::xml_node cmdIter = macroIter.first_child(); cmdIter; cmdIter = cmdIter.next_sibling()) {
                     UnicodeString cmdStr = StringConverter::fromUtf8(cmdIter.attribute("name").value());
                     UnicodeString paramStr = StringConverter::fromUtf8(cmdIter.attribute("param").value());
-                    
+
                     if (cmdStr.length() > 0) {
                         if (ui::Manager::getCommandManager()->hasCommand(cmdStr)) {
                             mac.addCommand(cmdStr, paramStr);
@@ -144,7 +144,7 @@ void MacroManager::init() {
                         LOG_WARN << "Empty command in macro " << mac.toString() << std::endl;
                     }
                 }
-                
+
                 if (mac.isValid()) {
                     macros_.insert(std::make_pair(keyCode, mac));
                     //LOG_INFO << "Installing macro: " << mac.toString() << std::endl;

@@ -57,7 +57,7 @@ WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpEleme
     setCenterObject(world::Manager::getSingleton()->getPlayer()->shared_from_this());
 
     set_constant_repaint(true);
-    
+
     func_render().set(this, &WorldView::renderOneFrame);
     func_input_pressed().set(this, &WorldView::onInputPressed);
     func_input_released().set(this, &WorldView::onInputReleased);
@@ -65,10 +65,14 @@ WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpEleme
     func_input_pointer_moved().set(this, &WorldView::onPointerMoved);
     func_pointer_exit().set(this, &WorldView::onPointerExit);
     func_pointer_enter().set(this, &WorldView::onPointerEnter);
+
+    ui::Manager::getSingleton()->setWorldView(this);
 }
 
 WorldView::~WorldView() {
     world::Manager::getSectorManager()->unregisterWorldView(this);
+
+    ui::Manager::getSingleton()->setWorldView(nullptr);
 }
 
 float WorldView::getCenterTileX() const {
@@ -124,6 +128,18 @@ float WorldView::getZoom() const {
     return zoom_;
 }
 
+void WorldView::zoomIn(float val) {
+    zoom_ += val;
+}
+
+void WorldView::zoomOut(float val) {
+    zoom_ -= val;
+}
+
+void WorldView::zoomReset() {
+    zoom_ = 1.0;
+}
+
 unsigned int WorldView::getDrawWidth() const {
     return getWidth() / zoom_ + 0.5;
 }
@@ -139,17 +155,17 @@ CL_Size WorldView::getDrawSize() const {
 void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     float pixelMoveX = getCenterPixelX() - lastCenterPixelX_;
     float pixelMoveY = getCenterPixelY() - lastCenterPixelY_;
-    
+
     lastCenterPixelX_ = getCenterPixelX();
     lastCenterPixelY_ = getCenterPixelY();
-    
+
     pixelMoveX *= zoom_;
     pixelMoveY *= zoom_;
-    
+
     renderer_->moveCenter(pixelMoveX, pixelMoveY);
-    
+
     CL_Draw::texture(gc, renderer_->getTexture(gc), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
-    
+
     // particle effects are rendered on top, and not in the cached texture
     // because they are moving too fast, and it is hard to tell their bounding rectangle
     renderer_->renderParticleEffects(gc);
@@ -256,7 +272,7 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
     case CL_KEY_F:
         data::Manager::getArtLoader()->printStats();
         break;
-        
+
     case CL_KEY_N:
         ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(800, 800)).translate(getTopLeftPixel()));
         break;
@@ -267,16 +283,6 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
         if (clickedObject && clickedObject->isDraggable()) {
             ui::Manager::getCursorManager()->setDragCandidate(clickedObject, e.mouse_pos.x, e.mouse_pos.y);
         }
-        break;
-        
-    case CL_KEY_U:
-        zoom_ += 0.01;
-        renderer_->forceRepaint();
-        break;
-        
-    case CL_KEY_I:
-        zoom_ -= 0.01;
-        renderer_->forceRepaint();
         break;
 
     default:
@@ -297,7 +303,7 @@ bool WorldView::onInputReleased(const CL_InputEvent& e) {
     case CL_MOUSE_RIGHT:
         world::Manager::getPlayerWalkManager()->stopAtNextTile();
         break;
-        
+
     case CL_MOUSE_LEFT:
         clickedObject = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
         draggedObject = ui::Manager::getCursorManager()->stopDragging();
@@ -344,7 +350,7 @@ boost::shared_ptr<world::IngameObject> WorldView::getFirstIngameObjectAt(unsigne
     //LOG_INFO << "WorldView::getFirstObjectAt " << pixelX << " " << pixelY << std::endl;
     float worldX = getCenterPixelX() - getDrawWidth()/2.0;
     worldX += (pixelX / zoom_);
- 
+
     float worldY = getCenterPixelY() - getDrawHeight()/2.0;
     worldY += (pixelY / zoom_);
 
@@ -358,12 +364,12 @@ void WorldView::setCenterObject(boost::shared_ptr<world::IngameObject> obj) {
 bool WorldView::onPointerMoved(const CL_InputEvent& e) {
     unsigned int direction = getDirectionForMousePosition(e.mouse_pos);
     ui::Manager::getCursorManager()->setCursorDirection(direction);
-    
+
     if (e.device.get_keycode(CL_MOUSE_RIGHT)) {
         world::Manager::getPlayerWalkManager()->setWalkDirection(direction);
         return true;
     }
-    
+
     return false;
 }
 
@@ -381,12 +387,12 @@ unsigned int WorldView::getDirectionForMousePosition(const CL_Point& mouse) cons
     float posY = mouse.y - (get_height() / 2);
     float posX = mouse.x - (get_width() / 2);
     float angle = atan2(posY, posX);
-    
+
     unsigned int runDir = 0;
     if (fabs(posY) > 200 || fabs(posX) > 150) {
         runDir = Direction::RUNNING;
     }
-    
+
     if (fabs(angle) >= 2.7489) {
         return runDir | Direction::SW;
     } else if (angle <= -1.9635) {
@@ -409,9 +415,9 @@ unsigned int WorldView::getDirectionForMousePosition(const CL_Point& mouse) cons
 CL_Mat4f WorldView::getViewMatrix() const {
     CL_Vec2f topLeft = getTopLeftPixel();
     CL_Mat4f ret = CL_Mat4f::scale(zoom_, zoom_, zoom_);
-    
+
     ret.translate_self(-topLeft.x, -topLeft.y, 0);
-    
+
     return ret;
 }
 

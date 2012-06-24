@@ -81,7 +81,7 @@ Manager* Manager::getSingleton() {
     return singleton_;
 }
 
-Manager::Manager() {
+Manager::Manager() : worldView_(nullptr) {
     CL_OpenGLWindowDescription description;
     description.set_size(CL_Size(1024, 768), true);
     description.set_title("fluorescence");
@@ -325,44 +325,11 @@ void Manager::registerGumpMenu(GumpMenu* menu) {
 }
 
 void Manager::installMacros() {
-    // TODO: remove accelerator stuff
-    CL_AcceleratorKey keyEnter(CL_KEY_B);
-    keyEnter.set_shift(true);
-    keyEnter.func_pressed().set(this, &Manager::enterTest);
-    macros_.add_accelerator(keyEnter);
-
-    guiManager_->set_accelerator_table(macros_);
-
     macroManager_->init();
 }
 
 void Manager::uninstallMacros() {
-    // TODO: remove accelerator stuff
-    CL_AcceleratorTable empty;
-    macros_ = empty;
-
-    guiManager_->set_accelerator_table(macros_);
-
     macroManager_->clear();
-}
-
-void Manager::enterTest(CL_GUIMessage msg, CL_AcceleratorKey key) {
-    // TODO: make this a command
-    LOG_DEBUG << "accel Enter" << std::endl;
-
-    GumpMenu* gameWindow = getGumpMenu("gamewindow");
-    if (gameWindow) {
-        gameWindow->activatePage(2);
-
-        CL_GUIComponent* lineedit = gameWindow->get_named_item("speechtext");
-        if (lineedit) {
-            lineedit->set_focus();
-        } else {
-            LOG_ERROR << "Unable to find speech lineedit in gamewindow" << std::endl;
-        }
-    } else {
-        LOG_ERROR << "Unable to find gamewindow gump to activate speech lineedit" << std::endl;
-    }
 }
 
 void Manager::onSingleClick(boost::shared_ptr<world::IngameObject> obj) {
@@ -510,6 +477,14 @@ void Manager::closeAllNonMessageGumps() {
 CL_Point Manager::getMousePosition() const {
     CL_InputDevice& mouse = getInputContext().get_mouse();
     return CL_Point(mouse.get_x(), mouse.get_y());
+}
+
+void Manager::setWorldView(components::WorldView* view) {
+    worldView_ = view;
+}
+
+components::WorldView* Manager::getWorldView() const {
+    return worldView_;
 }
 
 }

@@ -32,7 +32,7 @@ namespace fluo {
 namespace world {
 
 LightManager::LightManager() :
-        ambientIntensity_(0.8, 0.8, 0.8), globalIntensity_(0, 0, 0) {
+        ambientIntensity_(0.65, 0.65, 0.65), globalIntensity_(0.5, 0.5, 0.5) {
     setGlobalAngle(45);
 }
 
