@@ -224,58 +224,58 @@ bool WorldView::onInputPressed(const CL_InputEvent& e) {
         break;
     }
 
-    case CL_KEY_Q:
-        lm = world::Manager::getLightManager();
-        intensity = lm->getAmbientIntensity();
-        intensity.r += 0.1;
-        intensity.g += 0.1;
-        intensity.b += 0.1;
-        lm->setAmbientIntensity(intensity);
-        break;
-    case CL_KEY_W:
-        lm = world::Manager::getLightManager();
-        intensity = lm->getAmbientIntensity();
-        intensity.r = (std::max)(0.0, intensity.r - 0.1);
-        intensity.g = (std::max)(0.0, intensity.g - 0.1);
-        intensity.b = (std::max)(0.0, intensity.b - 0.1);
-        lm->setAmbientIntensity(intensity);
-        break;
+    //case CL_KEY_Q:
+        //lm = world::Manager::getLightManager();
+        //intensity = lm->getAmbientIntensity();
+        //intensity.r += 0.1;
+        //intensity.g += 0.1;
+        //intensity.b += 0.1;
+        //lm->setAmbientIntensity(intensity);
+        //break;
+    //case CL_KEY_W:
+        //lm = world::Manager::getLightManager();
+        //intensity = lm->getAmbientIntensity();
+        //intensity.r = (std::max)(0.0, intensity.r - 0.1);
+        //intensity.g = (std::max)(0.0, intensity.g - 0.1);
+        //intensity.b = (std::max)(0.0, intensity.b - 0.1);
+        //lm->setAmbientIntensity(intensity);
+        //break;
 
-    case CL_KEY_A:
-        lm = world::Manager::getLightManager();
-        intensity = lm->getGlobalIntensity();
-        intensity.r += 0.5;
-        intensity.g += 0.5;
-        intensity.b += 0.5;
-        lm->setGlobalIntensity(intensity);
-        break;
-    case CL_KEY_S:
-        lm = world::Manager::getLightManager();
-        intensity = lm->getGlobalIntensity();
-        intensity.r = (std::max)(0.0, intensity.r - 0.2);
-        intensity.g = (std::max)(0.0, intensity.g - 0.2);
-        intensity.b = (std::max)(0.0, intensity.b - 0.2);
-        lm->setGlobalIntensity(intensity);
-        break;
+    //case CL_KEY_A:
+        //lm = world::Manager::getLightManager();
+        //intensity = lm->getGlobalIntensity();
+        //intensity.r += 0.5;
+        //intensity.g += 0.5;
+        //intensity.b += 0.5;
+        //lm->setGlobalIntensity(intensity);
+        //break;
+    //case CL_KEY_S:
+        //lm = world::Manager::getLightManager();
+        //intensity = lm->getGlobalIntensity();
+        //intensity.r = (std::max)(0.0, intensity.r - 0.2);
+        //intensity.g = (std::max)(0.0, intensity.g - 0.2);
+        //intensity.b = (std::max)(0.0, intensity.b - 0.2);
+        //lm->setGlobalIntensity(intensity);
+        //break;
 
-    case CL_KEY_R:
-        lm = world::Manager::getLightManager();
-        lm->setGlobalAngle(lm->getGlobalAngle() + 1);
-        LOG_DEBUG << "mw up " << lm->getGlobalAngle() << std::endl;
-        break;
-    case CL_KEY_E:
-        lm = world::Manager::getLightManager();
-        lm->setGlobalAngle(lm->getGlobalAngle() - 1);
-        LOG_DEBUG <<"mw down " << lm->getGlobalAngle() << std::endl;
-        break;
+    //case CL_KEY_R:
+        //lm = world::Manager::getLightManager();
+        //lm->setGlobalAngle(lm->getGlobalAngle() + 1);
+        //LOG_DEBUG << "mw up " << lm->getGlobalAngle() << std::endl;
+        //break;
+    //case CL_KEY_E:
+        //lm = world::Manager::getLightManager();
+        //lm->setGlobalAngle(lm->getGlobalAngle() - 1);
+        //LOG_DEBUG <<"mw down " << lm->getGlobalAngle() << std::endl;
+        //break;
 
-    case CL_KEY_F:
-        data::Manager::getArtLoader()->printStats();
-        break;
+    //case CL_KEY_F:
+        //data::Manager::getArtLoader()->printStats();
+        //break;
 
-    case CL_KEY_N:
-        ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(800, 800)).translate(getTopLeftPixel()));
-        break;
+    //case CL_KEY_N:
+        //ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(800, 800)).translate(getTopLeftPixel()));
+        //break;
 
 
     case CL_MOUSE_LEFT:
