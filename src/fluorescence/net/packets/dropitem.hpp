@@ -28,6 +28,7 @@
 namespace fluo {
 namespace world {
     class DynamicItem;
+    class ServerObject;
 }
 
 namespace net {
@@ -36,8 +37,9 @@ namespace packets {
 
 class DropItem : public Packet {
 public:
-    DropItem(const world::DynamicItem* itm, boost::shared_ptr<world::DynamicItem> target);
+    DropItem(const world::DynamicItem* itm, boost::shared_ptr<world::ServerObject> target);
     DropItem(const world::DynamicItem* itm, unsigned int x, unsigned int y, int z);
+    DropItem(const world::DynamicItem* itm, unsigned int x, unsigned int y, int z, boost::shared_ptr<world::ServerObject> target);
 
     virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
 

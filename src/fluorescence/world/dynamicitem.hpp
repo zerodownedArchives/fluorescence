@@ -65,7 +65,7 @@ public:
     virtual void onDoubleClick();
 
     virtual void onStartDrag(const CL_Point& mousePos);
-    virtual void onDraggedOnto(boost::shared_ptr<IngameObject> obj);
+    virtual void onDraggedOnto(boost::shared_ptr<IngameObject> obj, int locX = -1, int locY = -1);
 
     void setLayer(unsigned int layer);
     unsigned int getLayer() const;
@@ -80,7 +80,7 @@ public:
 
     void openContainerGump(unsigned int gumpId);
     void onContainerGumpClosed();
-    
+
     bool isSpellbook() const;
     void setSpellbook(unsigned int scrollOffset, const uint8_t* spellBits);
     unsigned int getSpellbookScrollOffset() const;
@@ -107,9 +107,9 @@ private:
     boost::shared_ptr<ui::AnimTextureProvider> animTextureProvider_;
 
     ui::GumpMenu* containerGump_;
-    
+
     unsigned int animType_; // only relevant when mounted
-    
+
     bool isSpellbook_;
     unsigned int spellbookScrollOffset_;
     uint8_t spellbookSpellBits_[8];

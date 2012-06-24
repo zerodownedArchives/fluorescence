@@ -121,8 +121,15 @@ bool ContainerView::onInputReleased(const CL_InputEvent& e) {
             }
         } else if (draggedObject) {
             // dragged to void
-            boost::shared_ptr<world::IngameObject> nullPtr;
-            ui::Manager::getSingleton()->onDragDrop(draggedObject, nullPtr);
+            // change drop position depending on texture width
+            int dropX = e.mouse_pos.x;
+            int dropY = e.mouse_pos.y;
+            boost::shared_ptr<ui::Texture> draggedTex = draggedObject->getIngameTexture();
+            if (draggedTex) {
+                dropX -= draggedTex->getWidth() / 2;
+                dropY -= draggedTex->getHeight() / 2;
+            }
+            ui::Manager::getSingleton()->onDragDrop(draggedObject, containerObject_, dropX, dropY);
         } else {
             consumed = false;
         }

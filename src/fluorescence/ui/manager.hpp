@@ -111,7 +111,7 @@ public:
 
     void onSingleClick(boost::shared_ptr<world::IngameObject> obj);
     void onDoubleClick(boost::shared_ptr<world::IngameObject> obj);
-    void onDragDrop(boost::shared_ptr<world::IngameObject> dragObj, boost::shared_ptr<world::IngameObject> dragTarget);
+    void onDragDrop(boost::shared_ptr<world::IngameObject> dragObj, boost::shared_ptr<world::IngameObject> dragTarget, int locX = -1, int locY = -1);
 
     bool onUnhandledInputEvent(const CL_InputEvent& event);
 

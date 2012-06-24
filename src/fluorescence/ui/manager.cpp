@@ -187,6 +187,10 @@ void Manager::stepDraw() {
 
     getGraphicContext().clear();
     windowManager_->draw_windows(getGraphicContext());
+
+    // draw cursor here
+    // CL_Draw::fill(getGraphicContext(), CL_Rectf(getInputContext().get_mouse().get_position().x, getInputContext().get_mouse().get_position().y, CL_Sizef(40, 40)), CL_Colorf::green);
+
     mainWindow_->flip(); // use parameter 1 here for vsync
 
     if (!componentResizeQueue_.empty()) {
@@ -358,9 +362,9 @@ void Manager::onDoubleClick(boost::shared_ptr<world::IngameObject> obj) {
     }
 }
 
-void Manager::onDragDrop(boost::shared_ptr<world::IngameObject> dragObj, boost::shared_ptr<world::IngameObject> dragTarget) {
+void Manager::onDragDrop(boost::shared_ptr<world::IngameObject> dragObj, boost::shared_ptr<world::IngameObject> dragTarget, int locX, int locY) {
     if (dragTarget) {
-        dragObj->onDraggedOnto(dragTarget);
+        dragObj->onDraggedOnto(dragTarget, locX, locY);
     } else {
         dragObj->onDraggedToVoid();
     }

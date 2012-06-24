@@ -54,7 +54,7 @@
 namespace fluo {
 namespace world {
 
-DynamicItem::DynamicItem(Serial serial) : ServerObject(serial, IngameObject::TYPE_DYNAMIC_ITEM), 
+DynamicItem::DynamicItem(Serial serial) : ServerObject(serial, IngameObject::TYPE_DYNAMIC_ITEM),
         artId_(0), tileDataInfo_(NULL), equipped_(false), containerGump_(NULL), isSpellbook_(false) {
 }
 
@@ -80,7 +80,7 @@ void DynamicItem::setArtId(unsigned int artId) {
         tileDataInfo_ = data::Manager::getTileDataLoader()->getStaticTileInfo(artId_);
         worldRenderData_.hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
         worldRenderData_.hueInfo_[2u] = tileDataInfo_->translucent() ? 0.8 : 1.0;
-        
+
         setIgnored(ui::Manager::isStaticIdIgnored(artId_));
         if (ui::Manager::isStaticIdWater(artId_)) {
             invalidateTextureProvider();
@@ -217,10 +217,10 @@ void DynamicItem::updateRenderDepth() {
 void DynamicItem::updateTextureProvider() {
     if (equipped_) {
         boost::shared_ptr<Mobile> parent = boost::static_pointer_cast<Mobile>(parentObject_.lock());
-        
+
         unsigned int animId;
         unsigned int idleAnim = parent->getIdleAnim();
-        
+
         if (layer_ == Layer::MOUNT) {
             animId = data::Manager::getMountDef(artId_).animId_;
             animType_ = data::Manager::getAnimType(animId);
@@ -232,7 +232,7 @@ void DynamicItem::updateTextureProvider() {
         } else {
             animId = tileDataInfo_->animId_;
         }
-        
+
         animTextureProvider_.reset(new ui::AnimTextureProvider(animId, idleAnim));
         animTextureProvider_->setDirection(getDirection());
 
@@ -284,25 +284,24 @@ void DynamicItem::onStartDrag(const CL_Point& mousePos) {
     net::Manager::getSingleton()->send(pkt);
 }
 
-void DynamicItem::onDraggedOnto(boost::shared_ptr<IngameObject> obj) {
-    const IngameObject* rawPtr = obj.get();
-
-    if (obj->isMap()) {
-        const MapTile* mapTile = static_cast<const MapTile*>(rawPtr);
-        net::packets::DropItem pkt(this, mapTile->getLocXGame(), mapTile->getLocYGame(), mapTile->getLocZGame());
+void DynamicItem::onDraggedOnto(boost::shared_ptr<IngameObject> obj, int locX, int locY) {
+    if (obj->isMap() || obj->isStaticItem()) {
+        net::packets::DropItem pkt(this, obj->getLocXGame(), obj->getLocYGame(), obj->getLocZGame());
         net::Manager::getSingleton()->send(pkt);
-        return;
-    } else if (obj->isStaticItem()) {
-        const StaticItem* sItem = static_cast<const StaticItem*>(rawPtr);
-        net::packets::DropItem pkt(this, sItem->getLocXGame(), sItem->getLocYGame(), sItem->getLocZGame());
-        net::Manager::getSingleton()->send(pkt);
-        return;
     } else if (obj->isDynamicItem()) {
-
-        // TODO
-        //const DynamicItem* dItem = dynamic_cast<const DynamicItem*>(rawPtr);
+        boost::shared_ptr<ServerObject> dItem = boost::dynamic_pointer_cast<ServerObject>(obj);
+        if (locX != -1 || locY != -1) {
+            // drop on container position
+            net::packets::DropItem pkt(this, locX, locY, 0, dItem);
+            net::Manager::getSingleton()->send(pkt);
+        } else {
+            net::packets::DropItem pkt(this, dItem);
+            net::Manager::getSingleton()->send(pkt);
+        }
     } else if (obj->isMobile()) {
-        //const Mobile* mobile = static_cast<const Mobile*>(rawPtr);
+        boost::shared_ptr<ServerObject> mob = boost::dynamic_pointer_cast<ServerObject>(obj);
+        net::packets::DropItem pkt(this, mob);
+        net::Manager::getSingleton()->send(pkt);
     }
 }
 
@@ -333,7 +332,7 @@ void DynamicItem::animate(unsigned int animId, unsigned int delay, unsigned int 
                 animId = animTextureProvider_->getDefaultAnimId();
             }
         }
-            
+
         animTextureProvider_->setAnimId(animId);
         animTextureProvider_->setRepeatMode(repeatMode);
         animTextureProvider_->setDelay(delay);
@@ -371,7 +370,7 @@ void DynamicItem::openContainerGump(unsigned int gumpId) {
         containerGump_->bring_to_front();
     } else {
         containerGump_ = ui::Manager::getSingleton()->openXmlGump("container");
-        
+
         ui::components::ContainerView* contView = dynamic_cast<ui::components::ContainerView*>(containerGump_->get_named_item("container"));
         if (contView) {
             contView->setBackgroundGumpId(gumpId);
@@ -427,7 +426,7 @@ void DynamicItem::setSpellbook(unsigned int scrollOffset, const uint8_t* spellBi
         spellbookSpellBits_[i] = spellBits[i];
     }
     isSpellbook_ = true;
-    
+
     if (containerGump_) {
         containerGump_->bring_to_front();
     } else {
@@ -443,7 +442,7 @@ uint8_t DynamicItem::getSpellbookSpellBits(unsigned int byteIndex) const {
         LOG_ERROR << "Trying to access spellbits with index " << byteIndex << std::endl;
         byteIndex = 0;
     }
-    
+
     return spellbookSpellBits_[byteIndex];
 }
 

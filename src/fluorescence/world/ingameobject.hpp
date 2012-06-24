@@ -37,7 +37,7 @@ namespace fluo {
 namespace ui {
     class Texture;
     class RenderQueue;
-    
+
     namespace render {
         class MaterialInfo;
     }
@@ -70,7 +70,7 @@ public:
     float getLocXDraw() const;
     float getLocYDraw() const;
     float getLocZDraw() const;
-    
+
     CL_Vec3f getLocation() const;
     void setLocation(float locX, float locY, float locZ);
     void setLocation(CL_Vec3f loc);
@@ -102,7 +102,7 @@ public:
     virtual bool isMirrored() const;
 
     bool isDraggable() const;
-    virtual void onDraggedOnto(boost::shared_ptr<IngameObject> obj);
+    virtual void onDraggedOnto(boost::shared_ptr<IngameObject> obj, int locX, int locY);
     virtual void onDraggedToVoid();
     virtual void onStartDrag(const CL_Point& mousePos);
 
@@ -129,7 +129,7 @@ public:
     virtual void onAfterChildObjectRemoved();
 
     virtual void onDelete();
-    
+
     virtual void onLocationChanged(const CL_Vec3f& oldLocation);
     virtual void onAddedToSector(world::Sector* sector);
     virtual void onRemovedFromSector(world::Sector* sector);
@@ -157,12 +157,12 @@ public:
     const RenderDepth& getRenderDepth() const;
 
     void printRenderDepth() const;
-    
+
     bool renderDepthChanged() const;
     bool textureOrVerticesChanged() const;
-    
+
     void repaintRectangle(bool repaintPreviousCoordinates = false) const;
-    
+
     void setMaterial(unsigned int material);
     const ui::render::MaterialInfo* getMaterial() const;
 
@@ -183,11 +183,11 @@ protected:
     std::list<boost::shared_ptr<IngameObject> > childObjects_;
 
     void forceRepaint();
-    
+
     boost::shared_ptr<Sector> sector_;
-    
+
     const ui::render::MaterialInfo* materialInfo_;
-    
+
 private:
     unsigned int objectType_;
     bool visible_;
@@ -202,7 +202,7 @@ private:
 
     void setParentObject();
     void setParentObject(boost::shared_ptr<IngameObject> parent);
-    
+
     bool ignored_;
 };
 

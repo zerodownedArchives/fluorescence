@@ -39,8 +39,8 @@
 namespace fluo {
 namespace world {
 
-IngameObject::IngameObject(unsigned int objectType) : 
-    draggable_(false), 
+IngameObject::IngameObject(unsigned int objectType) :
+    draggable_(false),
     materialInfo_(ui::render::MaterialInfo::get(Material::DEFAULT)),
     objectType_(objectType), visible_(true) {
 
@@ -78,9 +78,9 @@ void IngameObject::setLocation(CL_Vec3f loc) {
     if (ceilf(oldLocation[0u]) != ceilf(location_[0u]) ||
             ceilf(oldLocation[1u]) != ceilf(location_[1u]) ||
             ceilf(oldLocation[2u]) != ceilf(location_[2u])) {
-                
+
         invalidateRenderDepth();
-        
+
         onLocationChanged(oldLocation);
     }
 
@@ -156,7 +156,7 @@ const CL_Vec3f& IngameObject::getHueInfo() const {
 
 void IngameObject::updateRenderData(unsigned int elapsedMillis) {
     worldRenderData_.resetPreUpdate();
-    
+
     if (worldRenderData_.renderDataValid()) {
         bool frameChanged = updateAnimation(elapsedMillis);
 
@@ -193,7 +193,7 @@ void IngameObject::updateRenderData(unsigned int elapsedMillis) {
             updateRenderDepth();
             worldRenderData_.onRenderDepthUpdate();
             notifyRenderQueuesWorldDepth();
-            
+
             if (sector_) {
                 sector_->requestSort();
             }
@@ -237,15 +237,15 @@ bool IngameObject::hasContainerPixel(int pixelX, int pixelY) const {
     if (pixelX < gameX || pixelY < gameY) {
         return false;
     }
-    
+
     boost::shared_ptr<ui::Texture> tex = getIngameTexture();
     if (tex && tex->isReadComplete()) {
         pixelX -= gameX;
         pixelY -= gameY;
-        
+
         return pixelX < tex->getWidth() && pixelY < tex->getHeight() && tex->hasPixel(pixelX, pixelY);
     }
-    
+
     return false;
 }
 
@@ -277,7 +277,7 @@ bool IngameObject::isDraggable() const {
     return draggable_;
 }
 
-void IngameObject::onDraggedOnto(boost::shared_ptr<IngameObject> obj) {
+void IngameObject::onDraggedOnto(boost::shared_ptr<IngameObject> obj, int locX, int locY) {
     LOG_ERROR << "Undraggable object dragged on other object" << std::endl;
 }
 
@@ -576,7 +576,7 @@ void IngameObject::forceRepaint() {
             (*rqIter)->forceRepaint();
         }
     }
-    
+
     repaintRectangle();
 }
 

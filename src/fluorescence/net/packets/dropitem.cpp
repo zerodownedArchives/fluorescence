@@ -21,17 +21,22 @@
 #include "dropitem.hpp"
 
 #include <world/dynamicitem.hpp>
+#include <world/serverobject.hpp>
 
 namespace fluo {
 namespace net {
 namespace packets {
 
-DropItem::DropItem(const world::DynamicItem* itm, boost::shared_ptr<world::DynamicItem> target) : Packet(0x08, 14),
-    serial_(itm->getSerial()), locX_(target->getLocXGame()), locY_(target->getLocYGame()), locZ_(target->getLocZGame()), containerSerial_(target->getSerial()) {
+DropItem::DropItem(const world::DynamicItem* itm, boost::shared_ptr<world::ServerObject> target) : Packet(0x08, 14),
+    serial_(itm->getSerial()), locX_(0xFFFF), locY_(0xFFFF), locZ_(0), containerSerial_(target->getSerial()) {
 }
 
 DropItem::DropItem(const world::DynamicItem* itm, unsigned int x, unsigned int y, int z) : Packet(0x08, 14),
     serial_(itm->getSerial()), locX_(x), locY_(y), locZ_(z), containerSerial_(0xFFFFFFFF) {
+}
+
+DropItem::DropItem(const world::DynamicItem* itm, unsigned int x, unsigned int y, int z, boost::shared_ptr<world::ServerObject> target) : Packet(0x08, 14),
+    serial_(itm->getSerial()), locX_(x), locY_(y), locZ_(z), containerSerial_(target->getSerial()) {
 }
 
 bool DropItem::write(int8_t* buf, unsigned int len, unsigned int& index) const {
