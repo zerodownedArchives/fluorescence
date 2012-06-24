@@ -23,6 +23,7 @@
 #include <vector>
 #include <ClanLib/Core/Text/string8.h>
 #include <map>
+#include <boost/filesystem/path.hpp>
 
 #include <misc/pugixml/pugixml.hpp>
 #include <misc/string.hpp>
@@ -44,8 +45,15 @@ public:
     bool save(const boost::filesystem::path& path, bool includeDefaultValues);
     void dumpMap() const;
 
+    const UnicodeString& getShardName() const;
+    boost::filesystem::path getShardPath() const;
+    void setShardName(const UnicodeString& name);
+
+    bool isLoaded() const;
+
 private:
     std::map<UnicodeString, Variable> variablesMap_;
+    UnicodeString shardName_;
 
     Config(const Config& copy) { }
     Config& operator=(const Config& copy) { return *this; }

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<fluo>
+    <audio>
+        <music off="0" volume="66" />
+        <sound off="0" volume="100" />
+    </audio>
+    <files>
+        <anim2 highdetail="200" lowdetail="200" />
+        <anim3 highdetail="420" lowdetail="70" />
+        <anim4 highdetail="200" lowdetail="200" />
+        <anim5 highdetail="200" lowdetail="200" />
+        <anim highdetail="200" lowdetail="200" />
+        <cliloc language="enu" />
+        <map0 difs-enabled="1" enabled="1" height="512" width="768" />
+        <map1 difs-enabled="1" enabled="1" height="512" width="768" />
+        <map2 difs-enabled="1" enabled="1" height="200" width="288" />
+        <map3 difs-enabled="1" enabled="1" height="256" width="320" />
+        <map4 difs-enabled="1" enabled="1" height="181" width="181" />
+        <map5 difs-enabled="1" enabled="1" height="256" width="320" />
+        <mul-directory path="./" />
+    </files>
+    <input>
+        <mouse doubleclick-timeout-ms="300" drag-start-distance="40" />
+    </input>
+    <shard>
+        <account name="" save-password="0" />
+        <address host="" port="2593" />
+        <client version-id="0.1.0 fluo" />
+    </shard>
+    <specialids>
+        <ignore mapart="0, 2, 431, 432, 433, 434, 435, 436, 437" staticart="0, 1, 1168, 5702, 5703, 8600, 8601, 8602, 8603, 8604, 8605, 8606, 8607, 8608, 8609 8610, 8611, 8612, 8636, 22160" />
+        <water mapart="168, 169, 170, 171" staticart="6038, 6039, 6040, 6041, 6042, 6043, 6044, 6045, 6046, 6047, 6048, 6049, 6050, 6051, 6052, 6053, 6054, 6055, 6056, 6057, 6058, 6059, 6060, 6061, 6062, 6063, 6064, 6065, 6066" />
+    </specialids>
+    <ui>
+        <cursor normal-artid-start="8298" warmode-artid-start="8275" />
+        <gameview>
+            <font name="Arial" size="12" />
+        </gameview>
+        <layer-priorities east="21, 23,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 22, 24, 16, 12,  4" north="21, 22,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 23, 24, 16, 12,  4" northeast="21, 23,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 22, 24, 16, 12,  4" northwest="21, 22,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 23, 24, 16, 12,  4" paperdoll="22, 23,  4,  3,  2, 21, 13,  9, 10, 15, 16, 17,  7, 11, 12, 19,  8, 20,  6,  1, 24, 17, 14,  5" south="21, 23,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 22, 24, 16, 12,  4" southeast="22, 23,  4,  3,  2, 21, 12,  7,  8, 15, 16, 18,  6,  9, 10, 19, 14, 20, 11,  1, 24, 17, 13,  5" southwest="21, 23,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 22, 24, 16, 12,  4" west="21, 22,  3,  2,  1, 20, 11,  6,  7, 14, 15, 17,  5,  8,  9, 18, 13, 19, 10, 23, 24, 16, 12,  4" />
+        <theme name="default" />
+    </ui>
+</fluo>

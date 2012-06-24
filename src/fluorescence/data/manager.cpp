@@ -98,7 +98,7 @@ void Manager::init(Config& config) {
         LOG_ERROR << "Unsupported file format. Supported: \"mul\" for pre high seas files, \"mul-hs\" for high seas files" << std::endl;
         throw Exception("Unsupported file format");
     }
-    
+
     buildFilePathMap(config);
 
     //std::map<std::string, boost::filesystem::path>::iterator iter = filePathMap_.begin();
@@ -185,12 +185,12 @@ void Manager::init(Config& config) {
         if (difsEnabled) {
             ss.str(""); ss.clear();
             ss << "mapdifl" << index << ".mul";
-            checkFileExists(ss.str());
+            //checkFileExists(ss.str());
             difOffsetsPath = filePathMap_[ss.str()];
 
             ss.str(""); ss.clear();
             ss << "mapdif" << index << ".mul";
-            checkFileExists(ss.str());
+            //checkFileExists(ss.str());
             difPath = filePathMap_[ss.str()];
 
             LOG_INFO << "Opening map" << index << " from mul=" << path << ", dif-offsets=" << difOffsetsPath <<
@@ -220,17 +220,17 @@ void Manager::init(Config& config) {
         if (difsEnabled) {
             ss.str(""); ss.clear();
             ss << "stadifl" << index << ".mul";
-            checkFileExists(ss.str());
+            //checkFileExists(ss.str());
             difOffsetsPath = filePathMap_[ss.str()];
 
             ss.str(""); ss.clear();
             ss << "stadifi" << index << ".mul";
-            checkFileExists(ss.str());
+            //checkFileExists(ss.str());
             difIdxPath = filePathMap_[ss.str()];
 
             ss.str(""); ss.clear();
             ss << "stadif" << index << ".mul";
-            checkFileExists(ss.str());
+            //checkFileExists(ss.str());
             difPath = filePathMap_[ss.str()];
 
             LOG_INFO << "Opening statics" << index << " from idx=" << idxPath << ", mul=" << path << ", dif-offsets=" << difOffsetsPath <<
@@ -301,7 +301,7 @@ void Manager::init(Config& config) {
             LOG_WARN << "Unable to find " << unifontNames[index] << ".mul" << std::endl;
         }
     }
-    
+
     checkFileExists("soundidx.mul");
     checkFileExists("sound.mul");
     idxPath = filePathMap_["soundidx.mul"];
@@ -334,27 +334,27 @@ void Manager::init(Config& config) {
     path = filePathMap_["equipconv.def"];
     LOG_INFO << "Opening equipconv.def from path=" << path << std::endl;
     equipConvDefLoader_.reset(new EquipConvDefLoader(path));
-    
+
     checkFileExists("mount.def");
     path = filePathMap_["mount.def"];
     LOG_INFO << "Opening mount.def from path=" << path << std::endl;
     mountDefLoader_.reset(new DefFileLoader<MountDef>(path, "ii"));
-    
+
     checkFileExists("effecttranslation.def");
     path = filePathMap_["effecttranslation.def"];
     LOG_INFO << "Opening effecttranslation.def from path=" << path << std::endl;
     effectTranslationDefLoader_.reset(new DefFileLoader<EffectTranslationDef>(path, "is", &EffectTranslationDef::setEffectName));
-    
+
     checkFileExists("music/digital/config.txt");
     path = filePathMap_["music/digital/config.txt"];
     LOG_INFO << "Opening sound config.txt from path=" << path << std::endl;
     musicConfigDefLoader_.reset(new DefFileLoader<MusicConfigDef>(path, "is", &MusicConfigDef::parse));
-    
+
     checkFileExists("sound.def");
     path = filePathMap_["sound.def"];
     LOG_INFO << "Opening sound.def from path=" << path << std::endl;
     soundDefLoader_.reset(new DefFileLoader<SoundDef>(path, "iri"));
-    
+
     checkFileExists("spellbooks.xml");
     path = filePathMap_["spellbooks.xml"];
     LOG_INFO << "Opening spellbooks.xml from path=" << path << std::endl;
@@ -376,11 +376,11 @@ void Manager::init(Config& config) {
         LOG_INFO << "Opening " << ss.str() << " from path=" << path << std::endl;
         clilocLoader_->indexFile(path, false);
     }
-    
-    
+
+
     LOG_INFO << "Initializing http loader" << std::endl;
     httpLoader_.reset(new HttpLoader());
-    
+
     filePathLoader_.reset(new FilePathLoader());
 }
 
@@ -439,7 +439,7 @@ boost::shared_ptr<ui::TextureProvider> Manager::getItemTextureProvider(unsigned 
 
 unsigned int Manager::getAnimType(unsigned int bodyId) {
     Manager* sing = getSingleton();
-    
+
     BodyConvDef bodyConvEntry = sing->bodyConvDefLoader_->get(bodyId);
     boost::shared_ptr<AnimLoader> ldr;
     if (bodyConvEntry.bodyId_ != 0) {
@@ -448,7 +448,7 @@ unsigned int Manager::getAnimType(unsigned int bodyId) {
     } else {
         ldr = getAnimLoader(0);
     }
-    
+
     return ldr->getAnimType(bodyId);
 }
 
@@ -584,8 +584,7 @@ void Manager::buildFilePathMap(Config& config) {
     boost::filesystem::path fluoDataPath("data");
     addToFilePathMap(fluoDataPath);
 
-    boost::filesystem::path shardDataPath("shards");
-    shardDataPath = shardDataPath / config["/fluo/shard@name"].asPath() / "data";
+    boost::filesystem::path shardDataPath = config.getShardPath() / "data";
     addToFilePathMap(shardDataPath);
 }
 
@@ -605,7 +604,7 @@ void Manager::addToFilePathMap(const boost::filesystem::path& directory, bool ad
                 UnicodeString nextPre = prefix + StringConverter::fromUtf8(nameIter->path().filename()) + "/";
                 addToFilePathMap(nameIter->path(), true, nextPre);
             }
-            
+
             continue;
         }
 
@@ -664,28 +663,28 @@ boost::shared_ptr<ClilocLoader> Manager::getClilocLoader() {
     return getSingleton()->clilocLoader_;
 }
 
-boost::shared_ptr<ArtLoader> Manager::getArtLoader() { 
-    return getSingleton()->artLoader_; 
+boost::shared_ptr<ArtLoader> Manager::getArtLoader() {
+    return getSingleton()->artLoader_;
 }
 
-boost::shared_ptr<TileDataLoader> Manager::getTileDataLoader() { 
-    return getSingleton()->tileDataLoader_; 
+boost::shared_ptr<TileDataLoader> Manager::getTileDataLoader() {
+    return getSingleton()->tileDataLoader_;
 }
 
-boost::shared_ptr<HuesLoader> Manager::getHuesLoader() { 
-    return getSingleton()->huesLoader_; 
+boost::shared_ptr<HuesLoader> Manager::getHuesLoader() {
+    return getSingleton()->huesLoader_;
 }
 
-boost::shared_ptr<GumpArtLoader> Manager::getGumpArtLoader() { 
-    return getSingleton()->gumpArtLoader_; 
+boost::shared_ptr<GumpArtLoader> Manager::getGumpArtLoader() {
+    return getSingleton()->gumpArtLoader_;
 }
 
-boost::shared_ptr<MapTexLoader> Manager::getMapTexLoader() { 
-    return getSingleton()->mapTexLoader_; 
+boost::shared_ptr<MapTexLoader> Manager::getMapTexLoader() {
+    return getSingleton()->mapTexLoader_;
 }
 
-boost::shared_ptr<AnimDataLoader> Manager::getAnimDataLoader() { 
-    return getSingleton()->animDataLoader_; 
+boost::shared_ptr<AnimDataLoader> Manager::getAnimDataLoader() {
+    return getSingleton()->animDataLoader_;
 }
 
 boost::shared_ptr<SoundLoader> Manager::getSoundLoader() {
@@ -695,9 +694,9 @@ boost::shared_ptr<SoundLoader> Manager::getSoundLoader() {
 
 boost::filesystem::path Manager::getShardFilePath(const boost::filesystem::path& innerPath) {
     boost::filesystem::path ret;
-    
-    if (Client::getSingleton()->getConfig().exists("/fluo/shard@name")) {
-        ret = "shards" / Client::getSingleton()->getConfig()["/fluo/shard@name"].asPath() / innerPath;
+
+    if (Client::getSingleton()->getConfig().isLoaded()) {
+        ret = Client::getSingleton()->getConfig().getShardPath() / innerPath;
     }
 
     if (!boost::filesystem::exists(ret)) {
@@ -708,54 +707,54 @@ boost::filesystem::path Manager::getShardFilePath(const boost::filesystem::path&
             return boost::filesystem::path();
         }
     }
-    
+
     return ret;
 }
 
 boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, unsigned int id) {
     boost::shared_ptr<ui::Texture> ret;
-	switch (source) {
+    switch (source) {
     case TextureSource::HTTP:
-	case TextureSource::FILE:
-		LOG_ERROR << "Unable to handle getTexture(int, int) for file or http source" << std::endl;
+    case TextureSource::FILE:
+        LOG_ERROR << "Unable to handle getTexture(int, int) for file or http source" << std::endl;
         return ret;
-        
-	case TextureSource::MAPART:
-		return getArtLoader()->getMapTexture(id);
-		
-	case TextureSource::STATICART:
-		return getArtLoader()->getItemTexture(id);
-	
-	case TextureSource::GUMPART:
-		return getGumpArtLoader()->getTexture(id);
-	
-	default:
-		LOG_ERROR << "Unknown texture source \"" << source << "\"" << std::endl;
+
+    case TextureSource::MAPART:
+        return getArtLoader()->getMapTexture(id);
+
+    case TextureSource::STATICART:
+        return getArtLoader()->getItemTexture(id);
+
+    case TextureSource::GUMPART:
+        return getGumpArtLoader()->getTexture(id);
+
+    default:
+        LOG_ERROR << "Unknown texture source \"" << source << "\"" << std::endl;
         return ret;
-	}
+    }
 }
 
 boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, const UnicodeString& id) {
     boost::shared_ptr<ui::Texture> ret;
-	switch (source) {
-	case TextureSource::FILE: {
-		boost::filesystem::path idPath(StringConverter::toUtf8String(id));
+    switch (source) {
+    case TextureSource::FILE: {
+        boost::filesystem::path idPath(StringConverter::toUtf8String(id));
         idPath = getShardFilePath(idPath);
         return getSingleton()->filePathLoader_->getTexture(idPath);
     }
-    
+
     case TextureSource::HTTP:
         return getSingleton()->httpLoader_->getTexture(id);
-        
+
     case TextureSource::MAPART:
     case TextureSource::STATICART:
     case TextureSource::GUMPART: {
-		int idInt = StringConverter::toInt(id);
-		return getTexture(source, idInt);
+        int idInt = StringConverter::toInt(id);
+        return getTexture(source, idInt);
     }
-		
+
     default:
-		LOG_ERROR << "Unknown texture source \"" << source << "\"" << std::endl;
+        LOG_ERROR << "Unknown texture source \"" << source << "\"" << std::endl;
         return ret;
     }
 }
@@ -763,19 +762,19 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, const Un
 boost::shared_ptr<ui::Texture> Manager::getTexture(const UnicodeString& source, const UnicodeString& id) {
     UnicodeString lowerSource(source);
     lowerSource.toLower();
-	unsigned int sourceId = 0;
+    unsigned int sourceId = 0;
     if (lowerSource == "file") {
-		sourceId = TextureSource::FILE;
-	} else if (lowerSource == "mapart") {
-		sourceId = TextureSource::MAPART;
-	} else if (lowerSource == "staticart") {
-		sourceId = TextureSource::STATICART;
-	} else if (lowerSource == "gumpart") {
-		sourceId = TextureSource::GUMPART;
-	} else if (lowerSource == "http") {
+        sourceId = TextureSource::FILE;
+    } else if (lowerSource == "mapart") {
+        sourceId = TextureSource::MAPART;
+    } else if (lowerSource == "staticart") {
+        sourceId = TextureSource::STATICART;
+    } else if (lowerSource == "gumpart") {
+        sourceId = TextureSource::GUMPART;
+    } else if (lowerSource == "http") {
         sourceId = TextureSource::HTTP;
     }
-    
+
     if (sourceId != 0) {
         return getTexture(sourceId, id);
     } else {

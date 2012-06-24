@@ -245,7 +245,7 @@ bool GumpActions::createShard(GumpMenu* menu, const UnicodeString& action, unsig
     UnicodeString name = nameEdit->getText();
     boost::filesystem::path path(pathEdit->get_text());
 
-    boost::filesystem::path artPath = path / "art.mul";
+    boost::filesystem::path artPath = path / "client.exe";
     if (!boost::filesystem::exists(artPath)) {
         LOG_ERROR << "Invalid Ultima Online directory" << std::endl;
         GumpMenus::openMessageBox("Invalid Ultima Online directory");

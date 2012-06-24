@@ -101,13 +101,12 @@ Manager::Manager() {
 
     path = "fonts";
     loadFontDirectory(path);
-    
+
     LOG_DEBUG << "OpenGL extensions: " << getOpenGLExtensions() << std::endl;
 }
 
 bool Manager::setShardConfig(Config& config) {
-    boost::filesystem::path path = "shards";
-    path = path / config["/fluo/shard@name"].asPath() / "themes" / config["/fluo/ui/theme@name"].asPath();
+    boost::filesystem::path path = config.getShardPath() / "themes" / config["/fluo/ui/theme@name"].asPath();
 
     if (!boost::filesystem::exists(path)) {
         path = "themes";
@@ -121,33 +120,32 @@ bool Manager::setShardConfig(Config& config) {
 
     guiManager_->exit_with_code(0);
     guiManager_.reset(new CL_GUIManager(*windowManager_, path.string()));
-    
+
     guiManager_->func_input_received_nowindow().set(this, &Manager::onInputOutsideWindows);
 
     path = "fonts";
     loadFontDirectory(path);
 
-    path = "shards";
-    path = path / config["/fluo/shard@name"].asPath() / "fonts";
+    path = config.getShardPath() / "fonts";
     loadFontDirectory(path);
-    
+
     loadUnifonts();
-    
+
     fontEngine_.reset(new FontEngine(config, getGraphicContext()));
 
     cursorManager_.reset(new CursorManager(config, mainWindow_));
 
     shaderManager_.reset(new ShaderManager(getGraphicContext()));
-    
+
     clipRectManager_.reset(new ClipRectManager());
-    
+
     audioManager_.reset(new AudioManager(config));
-    
+
     commandManager_.reset(new CommandManager(config));
     macroManager_.reset(new MacroManager(config));
-    
+
     doubleClickTimeout_ = config["/fluo/input/mouse@doubleclick-timeout-ms"].asInt();
-    
+
     config["/fluo/specialids/ignore@mapart"].toIntList(mapIgnoreIds_);
     config["/fluo/specialids/ignore@staticart"].toIntList(staticIgnoreIds_);
     config["/fluo/specialids/water@mapart"].toIntList(mapWaterIds_);
@@ -156,7 +154,7 @@ bool Manager::setShardConfig(Config& config) {
     std::sort(staticIgnoreIds_.begin(), staticIgnoreIds_.end());
     std::sort(mapWaterIds_.begin(), mapWaterIds_.end());
     std::sort(staticWaterIds_.begin(), staticWaterIds_.end());
-    
+
     return true;
 }
 
@@ -166,7 +164,7 @@ Manager::~Manager() {
 
 void Manager::stepInput(unsigned int elapsedMillis) {
     CL_KeepAlive::process();
-    
+
     // waiting for a doubleclick?
     if (singleClickWait_.first) {
         if (singleClickWait_.second <= elapsedMillis) {
@@ -176,7 +174,7 @@ void Manager::stepInput(unsigned int elapsedMillis) {
             singleClickWait_.second -= elapsedMillis;
         }
     }
-    
+
     processGumpCloseList();
 }
 
@@ -186,11 +184,11 @@ void Manager::stepAudio() {
 
 void Manager::stepDraw() {
     windowManager_->process();
-    
+
     getGraphicContext().clear();
     windowManager_->draw_windows(getGraphicContext());
     mainWindow_->flip(); // use parameter 1 here for vsync
-    
+
     if (!componentResizeQueue_.empty()) {
         std::vector<std::pair<CL_GUIComponent*, CL_Rectf> >::iterator iter = componentResizeQueue_.begin();
         std::vector<std::pair<CL_GUIComponent*, CL_Rectf> >::iterator end = componentResizeQueue_.end();
@@ -334,7 +332,7 @@ void Manager::installMacros() {
     macros_.add_accelerator(keyEnter);
 
     guiManager_->set_accelerator_table(macros_);
-    
+
     macroManager_->init();
 }
 
@@ -344,7 +342,7 @@ void Manager::uninstallMacros() {
     macros_ = empty;
 
     guiManager_->set_accelerator_table(macros_);
-    
+
     macroManager_->clear();
 }
 
@@ -372,7 +370,7 @@ void Manager::onSingleClick(boost::shared_ptr<world::IngameObject> obj) {
     if (cursorManager_->hasTarget()) {
         cursorManager_->onTarget(obj);
     } else if (singleClickWait_.first) {
-        // we are already waiting for a doubleclick    
+        // we are already waiting for a doubleclick
         obj->onDoubleClick();
         singleClickWait_.first = nullptr;
     } else {
@@ -385,7 +383,7 @@ void Manager::onSingleClick(boost::shared_ptr<world::IngameObject> obj) {
 void Manager::onDoubleClick(boost::shared_ptr<world::IngameObject> obj) {
     LOG_DEBUG << "double click" << std::endl;
     singleClickWait_.first = nullptr;
-    
+
     if (cursorManager_->hasTarget()) {
         cursorManager_->onTarget(obj);
     } else {
@@ -416,7 +414,7 @@ void Manager::loadUnifonts() {
     fontDesc.set_typeface_name("unifont");
     LOG_DEBUG << "Registering font unifont" << std::endl;
     getGuiManager()->register_font(*(unifonts_[0].get()), fontDesc);
-    
+
     for (unsigned int i = 1; i <= 12; ++i) {
         unifonts_[i].reset(new UoFont(i));
         CL_FontDescription curDesc;
@@ -453,13 +451,13 @@ bool Manager::onUnhandledInputEvent(const CL_InputEvent& event) {
     if (event.type == CL_InputEvent::pressed && macroManager_) {
         return macroManager_->execute(event);
     }
-    
+
     return false;
 }
 
 void Manager::onInputOutsideWindows(const CL_InputEvent& event, const CL_InputState& state) {
      //LOG_DEBUG << "event outside: " << event.type << std::endl;
-    
+
     if (event.type == CL_InputEvent::released && event.id == CL_MOUSE_RIGHT) {
         world::Manager::getPlayerWalkManager()->stopAtNextTile();
     }

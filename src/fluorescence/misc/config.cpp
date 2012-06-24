@@ -120,14 +120,14 @@ Config::Config() {
     variablesMap_["/fluo/shard/address@host"].setString("", true);
     variablesMap_["/fluo/shard/address@port"].setInt(2593, true);
     variablesMap_["/fluo/shard/client@version-id"].setString("0.1.0 fluo", true);
-    
+
     // audio
     variablesMap_["/fluo/audio/music@off"].setBool(false, true);
     variablesMap_["/fluo/audio/sound@off"].setBool(false, true);
     variablesMap_["/fluo/audio/music@volume"].setInt(66, true);
     variablesMap_["/fluo/audio/sound@volume"].setInt(100, true);
-    
-    
+
+
     // ids that should be treated in some special way (ignored, water, chairs, ...)
     variablesMap_["/fluo/specialids/ignore@mapart"].setString("0, 2, 431, 432, 433, 434, 435, 436, 437", true);
     variablesMap_["/fluo/specialids/ignore@staticart"].setString("0, 1, 1168, 5702, 5703, "
@@ -176,7 +176,7 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
 
         if (consoleOptions.count("shard") > 0) {
             UnicodeString shard = StringConverter::fromUtf8(consoleOptions["shard"].as<std::string>());
-            variablesMap_["/fluo/shard@name"].setString(shard);
+            setShardName(shard);
         }
     } catch (const std::exception& ex) {
         LOG_EMERGENCY << "Error parsing command line: " << ex.what() << std::endl;
@@ -191,7 +191,7 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
 }
 
 bool Config::parseShardConfig() {
-    boost::filesystem::path path = "shards" / variablesMap_["/fluo/shard@name"].asPath() / "config.xml";
+    boost::filesystem::path path = getShardPath() / "config.xml";
     if (!boost::filesystem::exists(path)) {
         LOG_EMERGENCY << "Unable to open config file " << path << std::endl;
         return false;
@@ -302,11 +302,6 @@ bool Config::save(const boost::filesystem::path& path, bool includeDefaultValues
         }
     }
 
-    pugi::xml_node shardNode = rootNode.first_element_by_path("/fluo/shard");
-    if (shardNode) {
-        shardNode.remove_attribute("name");
-    }
-
     return rootNode.save_file(path.string().c_str(), "    ");
 }
 
@@ -335,6 +330,24 @@ pugi::xml_node Config::buildXmlNode(pugi::xml_node& rootNode, const UnicodeStrin
     ret.set_name(StringConverter::toUtf8String(selfName).c_str());
 
     return ret;
+}
+
+const UnicodeString& Config::getShardName() const {
+    return shardName_;
+}
+
+boost::filesystem::path Config::getShardPath() const {
+    boost::filesystem::path ret(StringConverter::toUtf8String(shardName_));
+    ret = "shards" / ret;
+    return ret;
+}
+
+void Config::setShardName(const UnicodeString& name) {
+    shardName_ = name;
+}
+
+bool Config::isLoaded() const {
+    return shardName_.length() > 0;
 }
 
 }

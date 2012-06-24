@@ -83,7 +83,7 @@ bool Client::selectShard(ui::GumpMenu* menu, const UnicodeString& action, unsign
 }
 
 void Client::selectShard(const UnicodeString& shardName) {
-    config_["/fluo/shard@name"].setString(shardName);
+    config_.setShardName(shardName);
     setState(STATE_PRE_LOGIN);
 }
 
@@ -112,7 +112,7 @@ bool Client::handleStateChange() {
     switch (state_) {
     case STATE_SHARD_SELECTION:
         if (requestedState_ != STATE_SHUTDOWN) {
-            LOG_INFO << "Selected shard: " << config_["/fluo/shard@name"].asString() << std::endl;
+            LOG_INFO << "Selected shard: " << config_.getShardName() << std::endl;
 
             if (!initFull()) {
                 return false;
@@ -157,12 +157,12 @@ void Client::cleanUp() {
 }
 
 void Client::saveConfig() {
-    if (config_.exists("/fluo/shard@name")) {
+    if (config_.isLoaded()) {
         LOG_INFO << "Saving config" << std::endl;
-        boost::filesystem::path tempPath = "config.xml.tmp";
+        boost::filesystem::path tempPath("config.xml.tmp");
         if (config_.save(tempPath, false)) {
-            boost::filesystem::path path = "shards" / config_["/fluo/shard@name"].asPath() / "config.xml";
-            boost::filesystem::path backupPath = "shards" / config_["/fluo/shard@name"].asPath() / "config.xml.backup";
+            boost::filesystem::path path = config_.getShardPath() / "config.xml";
+            boost::filesystem::path backupPath = config_.getShardPath() / "config.xml.backup";
 
             if (boost::filesystem::exists(backupPath)) {
                 boost::filesystem::remove(backupPath);
@@ -175,10 +175,11 @@ void Client::saveConfig() {
 
             boost::filesystem::rename(tempPath, path);
         }
-
-        //path = "fullConfig.xml";
-        //config_.save(path, true);
     }
+
+    // uncomment to generate the default config file on next start
+    //boost::filesystem::path defaultPath("defaultConfig.xml");
+    //config_.save(defaultPath, true);
 }
 
 bool Client::initBase(const std::vector<CL_String8>& args) {
@@ -271,7 +272,7 @@ int Client::main(const std::vector<CL_String8>& args) {
 
     //UnicodeString selectedShard;
     // if we already have a command line argument, take it
-    if (config_.exists("/fluo/shard@name")) {
+    if (config_.isLoaded()) {
         setState(STATE_PRE_LOGIN);
     } else {
         if (!ui::GumpMenus::openShardSelectionGump()) {
