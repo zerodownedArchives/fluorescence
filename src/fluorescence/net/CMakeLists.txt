@@ -89,6 +89,7 @@ set (PACKETS_HPP
     net/packets/characterdelete.hpp
     net/packets/characterdeletereject.hpp
     net/packets/characterlistupdate.hpp
+    net/packets/equiprequest.hpp
 
     net/packets/bf.hpp
     net/packets/bf/changemap.hpp
@@ -161,6 +162,7 @@ set (PACKETS_CPP
     net/packets/characterdelete.cpp
     net/packets/characterdeletereject.cpp
     net/packets/characterlistupdate.cpp
+    net/packets/equiprequest.cpp
 
     net/packets/bf.cpp
     net/packets/bf/changemap.cpp
