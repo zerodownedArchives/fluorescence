@@ -36,7 +36,7 @@
 #include <ui/manager.hpp>
 #include <ui/gumpmenu.hpp>
 #include <ui/cursormanager.hpp>
-#include <ui/components/gumpview.hpp>
+#include <ui/components/paperdollview.hpp>
 #include <ui/singletextureprovider.hpp>
 #include <ui/animtextureprovider.hpp>
 
@@ -114,7 +114,7 @@ void Mobile::setBodyId(unsigned int value) {
         } else {
             bodyId_ = baseBodyId_;
         }
-        
+
         animType_ = data::Manager::getAnimType(bodyId_);
 
         invalidateTextureProvider();
@@ -155,7 +155,7 @@ void Mobile::updateRenderDepth() {
 void Mobile::updateTextureProvider() {
     textureProvider_.reset(new ui::AnimTextureProvider(bodyId_, getIdleAnim()));
     textureProvider_->setDirection(direction_);
-    
+
     data::PaperdollDef pdDef = data::Manager::getPaperdollDef(bodyId_);
     if (pdDef.bodyId_ == 0) {
         LOG_ERROR << "Unable to find paperdoll.def entry for body " << bodyId_ << std::endl;
@@ -183,7 +183,7 @@ void Mobile::animate(unsigned int animId, unsigned int delay, unsigned int repea
         // not yet initialized
         return;
     }
-    
+
     textureProvider_->setAnimId(animId);
     textureProvider_->setRepeatMode(repeatMode);
     textureProvider_->setDelay(delay);
@@ -321,7 +321,7 @@ void Mobile::openPaperdoll() {
         paperdoll = findOrCreateLinkedGump("paperdoll-other");
     }
 
-    ui::components::GumpView* pdView = dynamic_cast<ui::components::GumpView*>(paperdoll->get_named_item("paperdoll"));
+    ui::components::PaperdollView* pdView = dynamic_cast<ui::components::PaperdollView*>(paperdoll->get_named_item("paperdoll"));
     if (pdView) {
         pdView->addObject(shared_from_this());
     } else {
@@ -380,11 +380,11 @@ void Mobile::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
     if (sector_) {
         obj->setSector(sector_);
     }
-    
+
     if (obj->isDynamicItem()) {
         boost::static_pointer_cast<DynamicItem>(obj)->setDirection(getDirection());
     }
-    
+
     updateIdleAnim();
     repaintRectangle(true);
 }
@@ -399,7 +399,7 @@ void Mobile::onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
             obj->removeFromRenderQueue(*iter);
         }
     }
-    
+
     if (sector_) {
         sector_->removeDynamicObject(obj.get());
     }
@@ -407,7 +407,7 @@ void Mobile::onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
 
 void Mobile::onAfterChildObjectRemoved() {
     updateIdleAnim();
-    
+
     repaintRectangle(true);
 }
 
@@ -416,10 +416,10 @@ void Mobile::updateIdleAnim() {
     if (textureProvider_) {
         textureProvider_->setDefaultAnimId(idleAnim);
     }
-    
+
     std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
     std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
-    
+
     for (; iter != end; ++iter) {
         if ((*iter)->isDynamicItem()) {
              boost::static_pointer_cast<DynamicItem>(*iter)->setIdleAnim(idleAnim);
@@ -504,13 +504,13 @@ void Mobile::onRemovedFromSector(world::Sector* sector) {
 bool Mobile::hasItemOnLayer(unsigned int layer) const {
     std::list<boost::shared_ptr<IngameObject> >::const_iterator iter = childObjects_.begin();
     std::list<boost::shared_ptr<IngameObject> >::const_iterator end = childObjects_.end();
-    
+
     for (; iter != end; ++iter) {
         if ((*iter)->isDynamicItem() && boost::static_pointer_cast<DynamicItem>(*iter)->getLayer() == layer) {
             return true;
         }
     }
-    
+
     return false;
 }
 
@@ -518,21 +518,21 @@ void Mobile::setWarMode(bool warMode) {
     if (warMode != isWarMode_) {
         isWarMode_ = warMode;
         invalidateTextureProvider();
-        
+
         if (isPlayer()) {
             net::packets::WarMode pkt(isWarMode_);
             net::Manager::getSingleton()->send(pkt);
-            
+
             ui::Manager::getCursorManager()->setWarMode(isWarMode_);
         }
-        
+
         onPropertyUpdate();
     }
 }
 
 void Mobile::setStatusFlags(uint8_t flags) {
     setWarMode(flags & MobileStatusFlags::WARMODE);
-    
+
     // TODO: handle other flags
 }
 
@@ -541,20 +541,20 @@ void Mobile::displayStatChange(unsigned int str, unsigned int dex, unsigned int 
         // avoid notice on init
         return;
     }
-    
+
     unsigned int oldStr = getProperty("strength").asInt();
     unsigned int oldDex = getProperty("dexterity").asInt();
     unsigned int oldIntel = getProperty("intelligence").asInt();
-    
+
     std::stringstream sstr;
-    
+
     if (str != oldStr) {
         int diff = str - oldStr;
         sstr << "Your strength has changed by " << diff << ". It is now " << str << ".";
         UnicodeString msg(sstr.str().c_str());
         world::Manager::getSingleton()->systemMessage(msg, 64);
     }
-    
+
     if (dex != oldDex) {
         int diff = dex - oldDex;
         sstr.str();
@@ -562,7 +562,7 @@ void Mobile::displayStatChange(unsigned int str, unsigned int dex, unsigned int 
         UnicodeString msg(sstr.str().c_str());
         world::Manager::getSingleton()->systemMessage(msg, 64);
     }
-    
+
     if (intel != oldIntel) {
         int diff = intel - oldIntel;
         sstr.str();

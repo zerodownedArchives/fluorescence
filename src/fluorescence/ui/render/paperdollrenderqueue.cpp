@@ -18,7 +18,7 @@
 
 
 
-#include "gumprenderqueue.hpp"
+#include "paperdollrenderqueue.hpp"
 
 #include <boost/bind.hpp>
 
@@ -34,7 +34,7 @@
 namespace fluo {
 namespace ui {
 
-bool GumpRenderQueue::renderDepthComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
+bool PaperdollRenderQueue::renderDepthComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b) {
     // mobile is always rendered first;
     if (a->isMobile()) {
         return true;
@@ -44,7 +44,7 @@ bool GumpRenderQueue::renderDepthComparator(const boost::shared_ptr<world::Ingam
 
     if (!a->isDynamicItem() || !b->isDynamicItem()) {
         // why is that in this queue?
-        LOG_WARN << "Object other than mobile or item in GumpRenderQueue" << std::endl;
+        LOG_WARN << "Object other than mobile or item in PaperdollRenderQueue" << std::endl;
         return true;
     }
 
@@ -65,22 +65,22 @@ bool GumpRenderQueue::renderDepthComparator(const boost::shared_ptr<world::Ingam
     }
 
     if (layerPriorities_[aLayer] == layerPriorities_[bLayer]) {
-        LOG_WARN << "2 Items at same layer in GumpRenderQueue::renderDepthComparator" << std::endl;
+        LOG_WARN << "2 Items at same layer in PaperdollRenderQueue::renderDepthComparator" << std::endl;
         return true;
     }
 
     return layerPriorities_[aLayer] <= layerPriorities_[bLayer];
 }
 
-GumpRenderQueue::GumpRenderQueue() : RenderQueue(boost::bind(&GumpRenderQueue::renderDepthComparator, this, _1, _2)) {
+PaperdollRenderQueue::PaperdollRenderQueue() : RenderQueue(boost::bind(&PaperdollRenderQueue::renderDepthComparator, this, _1, _2)) {
     Client::getSingleton()->getConfig()["/fluo/ui/layer-priorities@paperdoll"].toIntList(layerPriorities_);
 }
 
-GumpRenderQueue::~GumpRenderQueue() {
+PaperdollRenderQueue::~PaperdollRenderQueue() {
 }
 
 
-void GumpRenderQueue::preRender() {
+void PaperdollRenderQueue::preRender() {
     if (!removeList_.empty()) {
         processRemoveList();
         forceRepaint_ = true;
@@ -93,14 +93,14 @@ void GumpRenderQueue::preRender() {
     }
 }
 
-void GumpRenderQueue::postRender(bool renderingComplete) {
+void PaperdollRenderQueue::postRender(bool renderingComplete) {
     resetGumpRepaintIndicators();
 
     // force repaint if the rendering was not complete (e.g. a texture not yet loaded)
     forceRepaint_ = !renderingComplete;
 }
 
-boost::shared_ptr<world::IngameObject> GumpRenderQueue::getFirstObjectAt(int pixelX, int pixelY, bool getTopParent) {
+boost::shared_ptr<world::IngameObject> PaperdollRenderQueue::getFirstObjectAt(int pixelX, int pixelY, bool getTopParent) {
     RenderQueue::reverse_iterator igIter = rbegin();
     RenderQueue::reverse_iterator igEnd = rend();
 

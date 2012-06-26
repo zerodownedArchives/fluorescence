@@ -17,44 +17,40 @@
  */
 
 
-#ifndef FLUO_UI_GUMPRENDERER_HPP
-#define FLUO_UI_GUMPRENDERER_HPP
+#ifndef FLUO_UI_PAPERDOLLRENDERQUEUE_HPP
+#define FLUO_UI_PAPERDOLLRENDERQUEUE_HPP
 
-#include <ClanLib/Display/Render/graphic_context.h>
-#include <ClanLib/Display/Render/texture.h>
-
+#include <list>
 #include <boost/shared_ptr.hpp>
 
-namespace fluo {
-namespace ui {
+#include <ui/render/renderqueue.hpp>
 
-namespace components {
-class GumpView;
+namespace fluo {
+
+namespace world {
+    class IngameObject;
+    class Sector;
 }
 
-class RenderQueue;
-class Texture;
+namespace ui {
 
-class GumpRenderer {
+class PaperdollRenderQueue : public RenderQueue {
 public:
-    GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::GumpView* gumpView);
-    ~GumpRenderer();
+    PaperdollRenderQueue();
+    ~PaperdollRenderQueue();
 
-    CL_Texture getTexture(CL_GraphicContext& gc);
+    virtual void preRender();
+    virtual void postRender(bool renderingComplete);
 
-    void render(CL_GraphicContext& gc);
-
-    boost::shared_ptr<RenderQueue> getRenderQueue() const;
+    virtual boost::shared_ptr<world::IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopParent);
 
 private:
-    components::GumpView* gumpView_;
-    boost::shared_ptr<RenderQueue> renderQueue_;
+    /// used to sort the objects according to their layer
+    bool renderDepthComparator(const boost::shared_ptr<world::IngameObject>& a, const boost::shared_ptr<world::IngameObject>& b);
 
-    CL_Texture texture_;
-    void checkTextureSize(CL_GraphicContext& gc);
-    
-    CL_FrameBuffer frameBuffer_;
+    std::vector<int> layerPriorities_;
 };
+
 }
 }
 

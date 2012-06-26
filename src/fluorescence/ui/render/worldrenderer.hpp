@@ -17,8 +17,8 @@
  */
 
 
-#ifndef FLUO_UI_WORLDVIEWRENDERER_HPP
-#define FLUO_UI_WORLDVIEWRENDERER_HPP
+#ifndef FLUO_UI_WORLDRENDERER_HPP
+#define FLUO_UI_WORLDRENDERER_HPP
 
 #include <ClanLib/Display/Render/graphic_context.h>
 #include <ClanLib/Display/Render/texture.h>
@@ -45,41 +45,41 @@ class WorldView;
 
 namespace render {
 
-class WorldViewRenderer {
+class WorldRenderer {
 public:
-    WorldViewRenderer(components::WorldView* ingameView);
-    ~WorldViewRenderer();
+    WorldRenderer(components::WorldView* ingameView);
+    ~WorldRenderer();
 
     void moveCenter(float moveX, float moveY);
     CL_Texture getTexture(CL_GraphicContext& gc);
-    
+
     void renderParticleEffects(CL_GraphicContext& gc);
-    
+
     void forceRepaint();
 
 private:
     components::WorldView* worldView_;
-    
+
     virtual void render(CL_GraphicContext& gc);
     void renderObject(CL_GraphicContext& gc, world::IngameObject* obj, ui::Texture* tex);
-    
+
     unsigned int textureWidth_;
     unsigned int textureHeight_;
     void checkTextureSize();
-    
+
     CL_Texture colorBuffers_[2];
     CL_RenderBuffer depthStencilBuffers_[2];
     unsigned int frameBufferIndex_;
     void initFrameBuffer(unsigned int index);
     CL_FrameBuffer frameBuffers_[2];
     bool texturesInitialized_[2];
-    
+
     // draws the texture from the last frame, moved x/y pixels
     void renderPreviousTexture(CL_GraphicContext& gc, float pixelX, float pixelY);
-    
+
     float movePixelX_;
     float movePixelY_;
-    
+
     static const unsigned int BATCH_NUM_VERTICES = 600; // render up to 100 objects at the same time
     CL_Vec3f batchPositions_[BATCH_NUM_VERTICES];
     CL_Vec3f batchNormals_[BATCH_NUM_VERTICES];
@@ -90,16 +90,16 @@ private:
     CL_Texture lastTexture_;
     unsigned int batchFill_;
     void batchFlush(CL_GraphicContext& gc);
-    
+
     void prepareStencil(CL_GraphicContext& gc);
-    
+
     bool forceRepaint_;
-    
+
     void initBufferControls();
     CL_BufferControl bufferControlClips_;
     CL_BufferControl bufferControlObjects_;
     CL_BufferControl bufferControlParticles_;
-    
+
     CL_Texture renderEffectTexture_;
 };
 

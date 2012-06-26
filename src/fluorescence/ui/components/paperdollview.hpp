@@ -17,8 +17,8 @@
  */
 
 
-#ifndef FLUO_UI_GUMPVIEW_HPP
-#define FLUO_UI_GUMPVIEW_HPP
+#ifndef FLUO_UI_PAPERDOLLVIEW_HPP
+#define FLUO_UI_PAPERDOLLVIEW_HPP
 
 #include <boost/shared_ptr.hpp>
 
@@ -34,14 +34,14 @@ class IngameObject;
 
 namespace ui {
 
-class GumpRenderer;
+class PaperdollRenderer;
 
 namespace components {
 
-class GumpView : public GumpElement {
+class PaperdollView : public GumpElement {
 public:
-    GumpView(CL_GUIComponent* parent, const CL_Rect& bounds);
-    ~GumpView();
+    PaperdollView(CL_GUIComponent* parent, const CL_Rect& bounds);
+    ~PaperdollView();
 
     unsigned int getWidth();
     unsigned int getHeight();
@@ -50,11 +50,11 @@ public:
 
     void addObject(boost::shared_ptr<world::IngameObject> obj);
     void removeObject(boost::shared_ptr<world::IngameObject> obj);
-    
+
     virtual bool has_pixel(const CL_Point& p) const;
 
 private:
-    boost::shared_ptr<GumpRenderer> renderer_;
+    boost::shared_ptr<PaperdollRenderer> renderer_;
 
     bool onInputPressed(const CL_InputEvent& e);
     bool onInputReleased(const CL_InputEvent & e);

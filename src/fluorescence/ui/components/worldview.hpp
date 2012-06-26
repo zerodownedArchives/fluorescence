@@ -35,7 +35,7 @@ class IngameObject;
 namespace ui {
 
 namespace render {
-class WorldViewRenderer;
+class WorldRenderer;
 }
 
 namespace components {
@@ -85,7 +85,7 @@ private:
     float getCenterTileY() const;
     float getCenterTileZ() const;
 
-    boost::shared_ptr<render::WorldViewRenderer> renderer_;
+    boost::shared_ptr<render::WorldRenderer> renderer_;
 
     bool onInputPressed(const CL_InputEvent& e);
     bool onInputReleased(const CL_InputEvent & e);

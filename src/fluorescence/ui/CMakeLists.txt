@@ -57,7 +57,7 @@ set (GUMPMENU_HPP
     ui/components/label.hpp
     ui/components/worldview.hpp
     ui/components/propertylabel.hpp
-    ui/components/gumpview.hpp
+    ui/components/paperdollview.hpp
     ui/components/containerview.hpp
     ui/components/image.hpp
     ui/components/background.hpp
@@ -84,7 +84,7 @@ set (GUMPMENU_CPP
     ui/components/label.cpp
     ui/components/worldview.cpp
     ui/components/propertylabel.cpp
-    ui/components/gumpview.cpp
+    ui/components/paperdollview.cpp
     ui/components/containerview.cpp
     ui/components/image.cpp
     ui/components/background.cpp
@@ -100,9 +100,9 @@ set (GUMPMENU_CPP
 set (RENDER_HPP
     ui/render/renderqueue.hpp
     ui/render/worldrenderdata.hpp
-    ui/render/worldviewrenderer.hpp
-    ui/render/gumprenderer.hpp
-    ui/render/gumprenderqueue.hpp
+    ui/render/worldrenderer.hpp
+    ui/render/paperdollrenderer.hpp
+    ui/render/paperdollrenderqueue.hpp
     ui/render/containerrenderer.hpp
     ui/render/containerrenderqueue.hpp
     ui/render/shadermanager.hpp
@@ -112,9 +112,9 @@ set (RENDER_HPP
 set (RENDER_CPP
     ui/render/renderqueue.cpp
     ui/render/worldrenderdata.cpp
-    ui/render/worldviewrenderer.cpp
-    ui/render/gumprenderer.cpp
-    ui/render/gumprenderqueue.cpp
+    ui/render/worldrenderer.cpp
+    ui/render/paperdollrenderer.cpp
+    ui/render/paperdollrenderqueue.cpp
     ui/render/containerrenderer.cpp
     ui/render/containerrenderqueue.cpp
     ui/render/shadermanager.cpp

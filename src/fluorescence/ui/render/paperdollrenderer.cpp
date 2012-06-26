@@ -18,7 +18,7 @@
 
 
 
-#include "gumprenderer.hpp"
+#include "paperdollrenderer.hpp"
 
 #include <ClanLib/Display/Render/program_object.h>
 
@@ -26,7 +26,7 @@
 #include <ui/render/renderqueue.hpp>
 #include <ui/render/shadermanager.hpp>
 #include <ui/texture.hpp>
-#include <ui/components/gumpview.hpp>
+#include <ui/components/paperdollview.hpp>
 
 #include <misc/log.hpp>
 
@@ -38,32 +38,28 @@
 namespace fluo {
 namespace ui {
 
-GumpRenderer::GumpRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::GumpView* gumpView) : 
-            gumpView_(gumpView), renderQueue_(renderQueue) {
+PaperdollRenderer::PaperdollRenderer(boost::shared_ptr<RenderQueue> renderQueue, components::PaperdollView* pdView) :
+            paperdollView_(pdView), renderQueue_(renderQueue) {
 }
 
-GumpRenderer::~GumpRenderer() {
+PaperdollRenderer::~PaperdollRenderer() {
     renderQueue_->clear();
 }
 
 
-void GumpRenderer::checkTextureSize(CL_GraphicContext& gc) {
-    if (texture_.is_null() || texture_.get_size() != gumpView_->get_size()) {
-        texture_ = ui::Manager::getSingleton()->providerRenderBufferTexture(gumpView_->get_size());
-        
+void PaperdollRenderer::checkTextureSize(CL_GraphicContext& gc) {
+    if (texture_.is_null() || texture_.get_size() != paperdollView_->get_size()) {
+        texture_ = ui::Manager::getSingleton()->providerRenderBufferTexture(paperdollView_->get_size());
+
         frameBuffer_ = CL_FrameBuffer(gc);
         frameBuffer_.attach_color_buffer(0, texture_);
     }
 }
 
-CL_Texture GumpRenderer::getTexture(CL_GraphicContext& gc) {
+CL_Texture PaperdollRenderer::getTexture(CL_GraphicContext& gc) {
     if (renderQueue_->requireGumpRepaint() || texture_.is_null()) {
         checkTextureSize(gc);
         CL_FrameBuffer origBuffer = gc.get_write_frame_buffer();
-        
-        if (origBuffer.is_null()) {
-            LOG_DEBUG << "oimg" << std::endl;
-        }
 
         gc.set_frame_buffer(frameBuffer_);
 
@@ -76,7 +72,7 @@ CL_Texture GumpRenderer::getTexture(CL_GraphicContext& gc) {
 }
 
 
-void GumpRenderer::render(CL_GraphicContext& gc) {
+void PaperdollRenderer::render(CL_GraphicContext& gc) {
     renderQueue_->preRender();
 
     gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
@@ -88,7 +84,7 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
     gc.set_texture(0, huesTexture);
     // set texture unit 1 active to avoid overriding the hue texture with newly loaded object textures
     gc.set_texture(1, huesTexture);
-    
+
     shader->set_uniform1i("HueTexture", 0);
     shader->set_uniform1i("ObjectTexture", 1);
 
@@ -118,7 +114,7 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
             renderingComplete = false;
             continue;
         }
-        
+
         CL_Rectf texCoordHelper = tex->getNormalizedTextureCoords();
 
         CL_Vec2f texCoords[6] = {
@@ -153,13 +149,13 @@ void GumpRenderer::render(CL_GraphicContext& gc) {
     gc.reset_program_object();
 
     renderQueue_->postRender(renderingComplete);
-    
+
     if (!renderingComplete) {
-        gumpView_->request_repaint();
+        paperdollView_->request_repaint();
     }
 }
 
-boost::shared_ptr<RenderQueue> GumpRenderer::getRenderQueue() const {
+boost::shared_ptr<RenderQueue> PaperdollRenderer::getRenderQueue() const {
     return renderQueue_;
 }
 

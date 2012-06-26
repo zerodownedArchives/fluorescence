@@ -39,7 +39,7 @@
 #include "components/clicklabel.hpp"
 #include "components/worldview.hpp"
 #include "components/propertylabel.hpp"
-#include "components/gumpview.hpp"
+#include "components/paperdollview.hpp"
 #include "components/containerview.hpp"
 #include "components/image.hpp"
 #include "components/background.hpp"
@@ -951,11 +951,11 @@ bool XmlParser::parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, Gu
 bool XmlParser::parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node);
 
-    ui::components::GumpView* gumpView = new ui::components::GumpView(parent, bounds);
+    ui::components::PaperdollView* pdView = new ui::components::PaperdollView(parent, bounds);
 
-    parseId(node, gumpView);
+    parseId(node, pdView);
 
-    top->addToCurrentPage(gumpView);
+    top->addToCurrentPage(pdView);
 
     return true;
 }

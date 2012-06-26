@@ -18,7 +18,7 @@
 
 
 
-#include "gumpview.hpp"
+#include "paperdollview.hpp"
 
 #include <misc/log.hpp>
 
@@ -32,8 +32,8 @@
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
 #include <ui/cursormanager.hpp>
-#include <ui/render/gumprenderer.hpp>
-#include <ui/render/gumprenderqueue.hpp>
+#include <ui/render/paperdollrenderer.hpp>
+#include <ui/render/paperdollrenderqueue.hpp>
 
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
@@ -45,33 +45,33 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-GumpView::GumpView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent) {
+PaperdollView::PaperdollView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent) {
     this->set_geometry(bounds);
-    boost::shared_ptr<GumpRenderQueue> rq(new GumpRenderQueue());
-    renderer_.reset(new GumpRenderer(rq, this));
+    boost::shared_ptr<PaperdollRenderQueue> rq(new PaperdollRenderQueue());
+    renderer_.reset(new PaperdollRenderer(rq, this));
 
-    func_render().set(this, &GumpView::renderOneFrame);
-    func_input_pressed().set(this, &GumpView::onInputPressed);
-    func_input_released().set(this, &GumpView::onInputReleased);
-    func_input_doubleclick().set(this, &GumpView::onDoubleClick);
+    func_render().set(this, &PaperdollView::renderOneFrame);
+    func_input_pressed().set(this, &PaperdollView::onInputPressed);
+    func_input_released().set(this, &PaperdollView::onInputReleased);
+    func_input_doubleclick().set(this, &PaperdollView::onDoubleClick);
 }
 
-GumpView::~GumpView() {
+PaperdollView::~PaperdollView() {
 }
 
-unsigned int GumpView::getWidth() {
+unsigned int PaperdollView::getWidth() {
     return get_width();
 }
 
-unsigned int GumpView::getHeight() {
+unsigned int PaperdollView::getHeight() {
     return get_height();
 }
 
-void GumpView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
+void PaperdollView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     CL_Draw::texture(gc, renderer_->getTexture(gc), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
 }
 
-bool GumpView::onInputPressed(const CL_InputEvent& e) {
+bool PaperdollView::onInputPressed(const CL_InputEvent& e) {
     bool consumed = true;
 
     boost::shared_ptr<world::IngameObject> clickedObject;
@@ -97,7 +97,7 @@ bool GumpView::onInputPressed(const CL_InputEvent& e) {
     return consumed;
 }
 
-bool GumpView::onInputReleased(const CL_InputEvent& e) {
+bool PaperdollView::onInputReleased(const CL_InputEvent& e) {
     bool consumed = true;
 
     boost::shared_ptr<world::IngameObject> clickedObject;
@@ -131,7 +131,7 @@ bool GumpView::onInputReleased(const CL_InputEvent& e) {
     return consumed;
 }
 
-bool GumpView::onDoubleClick(const CL_InputEvent& e) {
+bool PaperdollView::onDoubleClick(const CL_InputEvent& e) {
     if (e.id == CL_MOUSE_LEFT) {
         boost::shared_ptr<world::IngameObject> clickedObject = renderer_->getRenderQueue()->getFirstObjectAt(e.mouse_pos.x, e.mouse_pos.y, false);
         if (!clickedObject) {
@@ -146,17 +146,17 @@ bool GumpView::onDoubleClick(const CL_InputEvent& e) {
     return false;
 }
 
-void GumpView::addObject(boost::shared_ptr<world::IngameObject> obj) {
+void PaperdollView::addObject(boost::shared_ptr<world::IngameObject> obj) {
     obj->addToRenderQueue(renderer_->getRenderQueue());
     request_repaint();
 }
 
-void GumpView::removeObject(boost::shared_ptr<world::IngameObject> obj) {
+void PaperdollView::removeObject(boost::shared_ptr<world::IngameObject> obj) {
     obj->removeFromRenderQueue(renderer_->getRenderQueue());
     request_repaint();
 }
 
-bool GumpView::has_pixel(const CL_Point& p) const {
+bool PaperdollView::has_pixel(const CL_Point& p) const {
     return (bool)renderer_->getRenderQueue()->getFirstObjectAt(p.x, p.y, false);
 }
 

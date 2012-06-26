@@ -34,7 +34,7 @@
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
 #include <ui/cursormanager.hpp>
-#include <ui/render/worldviewrenderer.hpp>
+#include <ui/render/worldrenderer.hpp>
 #include <ui/cliprectmanager.hpp>
 
 #include <data/manager.hpp>
@@ -51,7 +51,7 @@ WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpEleme
         centerTileX_(0), centerTileY_(0), centerTileZ_(0),
         lastCenterPixelX_(0), lastCenterPixelY_(0), zoom_(1) {
     this->set_geometry(bounds);
-    renderer_.reset(new render::WorldViewRenderer(this));
+    renderer_.reset(new render::WorldRenderer(this));
 
     world::Manager::getSectorManager()->registerWorldView(this);
     setCenterObject(world::Manager::getSingleton()->getPlayer()->shared_from_this());
