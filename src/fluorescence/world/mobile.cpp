@@ -323,7 +323,9 @@ void Mobile::openPaperdoll() {
 
     ui::components::PaperdollView* pdView = dynamic_cast<ui::components::PaperdollView*>(paperdoll->get_named_item("paperdoll"));
     if (pdView) {
-        pdView->addObject(shared_from_this());
+        boost::shared_ptr<Mobile> sharedThis = boost::static_pointer_cast<Mobile>(shared_from_this());
+        pdView->addObject(sharedThis);
+        pdView->setMobile(sharedThis);
     } else {
         LOG_ERROR << "Unable to find paperdoll component in paperdoll gump" << std::endl;
     }

@@ -30,6 +30,7 @@ namespace fluo {
 
 namespace world {
 class IngameObject;
+class Mobile;
 }
 
 namespace ui {
@@ -53,12 +54,16 @@ public:
 
     virtual bool has_pixel(const CL_Point& p) const;
 
+    void setMobile(boost::shared_ptr<world::Mobile> mob);
+
 private:
     boost::shared_ptr<PaperdollRenderer> renderer_;
 
     bool onInputPressed(const CL_InputEvent& e);
     bool onInputReleased(const CL_InputEvent & e);
     bool onDoubleClick(const CL_InputEvent& e);
+
+    boost::shared_ptr<world::Mobile> mobile_;
 };
 
 }

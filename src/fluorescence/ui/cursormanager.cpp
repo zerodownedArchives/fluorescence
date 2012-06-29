@@ -20,17 +20,22 @@
 
 #include "cursormanager.hpp"
 
+#include <ClanLib/Display/2D/draw.h>
+#include <ClanLib/Display/Render/texture.h>
+#include <ClanLib/Core/Math/quad.h>
+
 #include <client.hpp>
 #include <misc/config.hpp>
 #include <misc/log.hpp>
 
+#include "texture.hpp"
 #include "targeting/target.hpp"
 
 namespace fluo {
 namespace ui {
 
 CursorManager::CursorManager(Config& config, boost::shared_ptr<CL_DisplayWindow> window) :
-        isDragging_(false), enableFlags_(CursorEnableFlags::NONE), warMode_(false), 
+        isDragging_(false), enableFlags_(CursorEnableFlags::NONE), warMode_(false),
         cursorDirection_(CursorType::GAME_WEST), cursorOverride_(0xFFFFFFFFu) {
 
     unsigned int artIdStart = config["/fluo/ui/cursor@normal-artid-start"].asInt();
@@ -40,7 +45,7 @@ CursorManager::CursorManager(Config& config, boost::shared_ptr<CL_DisplayWindow>
         setCursorImage(i, artIdStart + i, false, window);
         setCursorImage(i, artIdStartWarMode + i, true, window);
     }
-    
+
     updateCursor();
 }
 
@@ -83,12 +88,12 @@ void CursorManager::updateCursor() {
     } else if (enableFlags_ & CursorEnableFlags::DIRECTION) {
         cursorId = cursorDirection_;
     }
-    
+
     if (warMode_) {
         cursorId += CursorType::COUNT;
     }
 
-    //LOG_DEBUG << "NEW CURSOR ID: " << cursorId 
+    //LOG_DEBUG << "NEW CURSOR ID: " << cursorId
             //<< " enable: " << std::hex << enableFlags_ << std::dec
             //<< " dir: " << cursorDirection_
             //<< " override: " << cursorOverride_
@@ -109,7 +114,6 @@ void CursorManager::setDragCandidate(boost::shared_ptr<world::IngameObject> itm,
 void CursorManager::startDragging() {
     if (dragCandidate_ && !isDragging_) {
         isDragging_ = true;
-        LOG_DEBUG << "start dragging" << std::endl;
     }
 }
 
@@ -185,6 +189,21 @@ void CursorManager::releaseIngameObjects() {
     cancelTarget();
     dragCandidate_.reset();
     updateCursor();
+}
+
+void CursorManager::drawDragObject(CL_GraphicContext& gc, const CL_Point& mousePos) const {
+    if (isDragging_ && dragCandidate_) {
+        boost::shared_ptr<ui::Texture> dragTex = dragCandidate_->getIngameTexture();
+        if (dragTex && dragTex->isReadComplete()) {
+            // TODO: load shader here for correct hueing
+            CL_Draw::texture(gc, dragTex->getTexture(),
+                    CL_Quadf(CL_Rectf(mousePos.x - dragTex->getWidth() / 2, mousePos.y - dragTex->getHeight() / 2, CL_Sizef(dragTex->getWidth(), dragTex->getHeight()))),
+                    CL_Colorf::white, dragTex->getNormalizedTextureCoords()
+            );
+        } else {
+            dragCandidate_->updateRenderData(0);
+        }
+    }
 }
 
 }

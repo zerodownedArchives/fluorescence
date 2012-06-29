@@ -28,6 +28,7 @@
 #include "packets/dropitem.hpp" // 0x08
 #include "packets/singleclick.hpp" // 0x09
 #include "packets/statupdatefull.hpp" //0x11
+#include "packets/equiprequest.hpp" //0x13
 #include "packets/worlditem.hpp" // 0x1a
 #include "packets/playerinit.hpp" // 0x1b
 #include "packets/asciitext.hpp" // 0x1c

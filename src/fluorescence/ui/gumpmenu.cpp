@@ -49,7 +49,7 @@ GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
     func_input_pressed().set(this, &GumpMenu::onInputPressed);
     func_input_released().set(this, &GumpMenu::onInputReleased);
     func_input_pointer_moved().set(this, &GumpMenu::onPointerMoved);
-    
+
     ui::Manager::getSingleton()->registerGumpMenu(this);
 }
 
@@ -115,7 +115,7 @@ void GumpMenu::activatePage(unsigned int pageId) {
 
     activePageId_ = pageId;
     internalActivatePage(activePageId_);
-    
+
     setCurrentRadioGroup(pageId);
 }
 
@@ -130,7 +130,7 @@ void GumpMenu::internalActivatePage(unsigned int pageId) {
     for (; iter != end; ++iter) {
         (*iter)->set_visible(true);
     }
-    
+
     request_repaint();
 }
 
@@ -181,7 +181,7 @@ bool GumpMenu::onInputPressed(const CL_InputEvent& msg) {
         consumed = false;
         break;
     }
-    
+
     if (!consumed) {
         consumed = ui::Manager::getSingleton()->onUnhandledInputEvent(msg);
     }
@@ -202,7 +202,7 @@ bool GumpMenu::onInputReleased(const CL_InputEvent& msg) {
 
         consumed = true;
     }
-    
+
     if (!consumed) {
         consumed = ui::Manager::getSingleton()->onUnhandledInputEvent(msg);
     }
@@ -312,7 +312,7 @@ void GumpMenu::startDragging(const CL_Point& mousePos) {
 void GumpMenu::fitSizeToChildren() {
     int childWidth = 0;
     int childHeight = 0;
-    
+
     std::vector<CL_GUIComponent*> children = get_child_components();
     std::vector<CL_GUIComponent*>::const_iterator iter = children.begin();
     std::vector<CL_GUIComponent*>::const_iterator end = children.end();
@@ -326,13 +326,13 @@ void GumpMenu::fitSizeToChildren() {
             childHeight = cur.y;
         }
     }
-    
+
     childWidth = (std::max)(1, childWidth);
     childHeight = (std::max)(1, childHeight);
-    
+
     CL_Rectf geom = get_geometry();
     if (geom.get_width() != childWidth || geom.get_height() != childHeight) {
-        geom.set_width(childWidth); 
+        geom.set_width(childWidth);
         geom.set_height(childHeight);
         set_geometry(geom);
     }
@@ -341,7 +341,7 @@ void GumpMenu::fitSizeToChildren() {
 void GumpMenu::setSerial(Serial serial) {
     if (serial_ == 0) {
         serial_ = serial;
-    
+
         // TODO: register somewhere?
     }
 }
@@ -353,7 +353,7 @@ void GumpMenu::setTypeId(unsigned int typeId) {
 void GumpMenu::sendReply(unsigned int buttonId) {
     std::list<uint32_t> switches;
     std::list<net::packets::GumpReply::TextEntryInfo> textEntries;
-    
+
     std::vector<CL_GUIComponent*> children = get_child_components();
     std::vector<CL_GUIComponent*>::const_iterator iter = children.begin();
     std::vector<CL_GUIComponent*>::const_iterator end = children.end();
@@ -363,7 +363,7 @@ void GumpMenu::sendReply(unsigned int buttonId) {
             switches.push_back(cb->getSwitchId());
             continue;
         }
-        
+
         components::TextEntry* entry = dynamic_cast<components::TextEntry*>(*iter);
         if (entry && entry->getEntryId() != 0xFFFFFFFFu) {
             net::packets::GumpReply::TextEntryInfo info;
@@ -372,10 +372,10 @@ void GumpMenu::sendReply(unsigned int buttonId) {
             textEntries.push_back(info);
         }
     }
-    
+
     net::packets::GumpReply pkt(serial_, typeId_, buttonId, switches, textEntries);
     net::Manager::getSingleton()->send(pkt);
-    
+
     ui::Manager::getSingleton()->closeGumpMenu(this);
 }
 

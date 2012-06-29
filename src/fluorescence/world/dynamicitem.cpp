@@ -50,6 +50,7 @@
 #include <net/packets/doubleclick.hpp>
 #include <net/packets/pickupitem.hpp>
 #include <net/packets/dropitem.hpp>
+#include <net/packets/equiprequest.hpp>
 
 namespace fluo {
 namespace world {
@@ -299,9 +300,16 @@ void DynamicItem::onDraggedOnto(boost::shared_ptr<IngameObject> obj, int locX, i
             net::Manager::getSingleton()->send(pkt);
         }
     } else if (obj->isMobile()) {
-        boost::shared_ptr<ServerObject> mob = boost::dynamic_pointer_cast<ServerObject>(obj);
-        net::packets::DropItem pkt(this, mob);
-        net::Manager::getSingleton()->send(pkt);
+        if (locX != -1 || locY != -1) {
+            // paperdoll
+            boost::shared_ptr<Mobile> mob = boost::dynamic_pointer_cast<Mobile>(obj);
+            net::packets::EquipRequest pkt(this->getSerial(), mob->getSerial());
+            net::Manager::getSingleton()->send(pkt);
+        } else {
+            boost::shared_ptr<ServerObject> mob = boost::dynamic_pointer_cast<ServerObject>(obj);
+            net::packets::DropItem pkt(this, mob);
+            net::Manager::getSingleton()->send(pkt);
+        }
     }
 }
 

@@ -28,6 +28,7 @@
 #include <world/map.hpp>
 #include <world/statics.hpp>
 #include <world/ingameobject.hpp>
+#include <world/mobile.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
@@ -82,10 +83,14 @@ bool PaperdollView::onInputPressed(const CL_InputEvent& e) {
     case CL_MOUSE_LEFT:
         set_focus();
         clickedObject = renderer_->getRenderQueue()->getFirstObjectAt(e.mouse_pos.x, e.mouse_pos.y, false);
+
         if (!clickedObject) {
-            consumed = false;
+            // also consume event if an item is dragged. otherwise, this click would start dragging the menu itself
+            if (!ui::Manager::getCursorManager()->isDragging()) {
+                consumed = false;
+            }
         } else if (clickedObject->isDraggable()) {
-            ui::Manager::getSingleton()->getCursorManager()->setDragCandidate(clickedObject, e.mouse_pos.x, e.mouse_pos.y);
+            ui::Manager::getCursorManager()->setDragCandidate(clickedObject, e.mouse_pos.x, e.mouse_pos.y);
         }
         break;
 
@@ -116,8 +121,7 @@ bool PaperdollView::onInputReleased(const CL_InputEvent& e) {
             }
         } else if (draggedObject) {
             // dragged to void
-            boost::shared_ptr<world::IngameObject> nullPtr;
-            ui::Manager::getSingleton()->onDragDrop(draggedObject, nullPtr);
+            ui::Manager::getSingleton()->onDragDrop(draggedObject, mobile_, e.mouse_pos.x, e.mouse_pos.y);
         } else {
             consumed = false;
         }
@@ -158,6 +162,10 @@ void PaperdollView::removeObject(boost::shared_ptr<world::IngameObject> obj) {
 
 bool PaperdollView::has_pixel(const CL_Point& p) const {
     return (bool)renderer_->getRenderQueue()->getFirstObjectAt(p.x, p.y, false);
+}
+
+void PaperdollView::setMobile(boost::shared_ptr<world::Mobile> mob) {
+    mobile_ = mob;
 }
 
 }

@@ -87,10 +87,14 @@ bool ContainerView::onInputPressed(const CL_InputEvent& e) {
     case CL_MOUSE_LEFT:
         set_focus();
         clickedObject = renderer_->getRenderQueue()->getFirstObjectAt(e.mouse_pos.x, e.mouse_pos.y, false);
+
         if (!clickedObject) {
-            consumed = false;
+            // also consume event if an item is dragged. otherwise, this click would start dragging the menu itself
+            if (!ui::Manager::getCursorManager()->isDragging()) {
+                consumed = false;
+            }
         } else if (clickedObject->isDraggable()) {
-            ui::Manager::getSingleton()->getCursorManager()->setDragCandidate(clickedObject, e.mouse_pos.x, e.mouse_pos.y);
+            ui::Manager::getCursorManager()->setDragCandidate(clickedObject, e.mouse_pos.x, e.mouse_pos.y);
         }
         break;
 

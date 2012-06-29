@@ -21,11 +21,11 @@
 #define FLUO_UI_CURSORMANAGER_HPP
 
 #include <boost/shared_ptr.hpp>
-
-#include <misc/config.hpp>
+#include <ClanLib/Display/Render/graphic_context.h>
 
 #include "cursorimage.hpp"
 
+#include <misc/config.hpp>
 #include <world/ingameobject.hpp>
 
 class CL_DisplayWindow;
@@ -43,7 +43,7 @@ struct CursorEnableFlags {
         DIRECTION = 0x1,
         TARGET = 0x2,
         OVERRIDE = 0x4,
-        
+
         ALL = 0xFFFFFFFFu,
     };
 };
@@ -91,8 +91,10 @@ public:
     void cancelTarget();
     bool hasTarget() const;
     bool onTarget(boost::shared_ptr<world::IngameObject> obj);
-    
+
     void releaseIngameObjects();
+
+    void drawDragObject(CL_GraphicContext& gc, const CL_Point& mousePos) const;
 
 private:
     unsigned int warmodeArtOffset_;
@@ -111,7 +113,7 @@ private:
     boost::shared_ptr<world::IngameObject> dragCandidate_;
 
     boost::shared_ptr<targeting::Target> target_;
-    
+
     unsigned int enableFlags_;
     bool warMode_;
     unsigned int cursorDirection_;

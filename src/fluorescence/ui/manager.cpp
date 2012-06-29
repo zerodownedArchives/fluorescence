@@ -188,8 +188,7 @@ void Manager::stepDraw() {
     getGraphicContext().clear();
     windowManager_->draw_windows(getGraphicContext());
 
-    // draw cursor here
-    // CL_Draw::fill(getGraphicContext(), CL_Rectf(getInputContext().get_mouse().get_position().x, getInputContext().get_mouse().get_position().y, CL_Sizef(40, 40)), CL_Colorf::green);
+    cursorManager_->drawDragObject(getGraphicContext(), getInputContext().get_mouse().get_position());
 
     mainWindow_->flip(); // use parameter 1 here for vsync
 
