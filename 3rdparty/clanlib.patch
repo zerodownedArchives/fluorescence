@@ -1,7 +1,7 @@
-Index: Sources/GUI/gui_manager_impl.cpp
+Index: GUI/gui_manager_impl.cpp
 ===================================================================
---- Sources/GUI/gui_manager_impl.cpp	(revision 7504)
-+++ Sources/GUI/gui_manager_impl.cpp	(working copy)
+--- GUI/gui_manager_impl.cpp	(revision 7820)
++++ GUI/gui_manager_impl.cpp	(working copy)
 @@ -62,6 +62,7 @@
  	func_close.set(this, &CL_GUIManager_Impl::on_close);
  	func_destroy.set(this, &CL_GUIManager_Impl::on_destroy);
@@ -52,10 +52,10 @@ Index: Sources/GUI/gui_manager_impl.cpp
  CL_GUIComponent *CL_GUIManager_Impl::get_cancel_component(CL_GUIComponent *comp)
  {
  	if (comp && comp->is_cancel())
-Index: Sources/GUI/gui_manager_impl.h
+Index: GUI/gui_manager_impl.h
 ===================================================================
---- Sources/GUI/gui_manager_impl.h	(revision 7504)
-+++ Sources/GUI/gui_manager_impl.h	(working copy)
+--- GUI/gui_manager_impl.h	(revision 7820)
++++ GUI/gui_manager_impl.h	(working copy)
 @@ -139,6 +139,8 @@
  	CL_Callback_v1<CL_GUITopLevelWindow *> func_close;
  	CL_Callback_v1<CL_GUITopLevelWindow *> func_destroy;
@@ -73,10 +73,10 @@ Index: Sources/GUI/gui_manager_impl.h
  	void on_gc_destruction_imminent();
  	mutable std::map< CL_String, std::vector<CL_CSSProperty> > properties_cache;
  
-Index: Sources/GUI/gui_component.cpp
+Index: GUI/gui_component.cpp
 ===================================================================
---- Sources/GUI/gui_component.cpp	(revision 7504)
-+++ Sources/GUI/gui_component.cpp	(working copy)
+--- GUI/gui_component.cpp	(revision 7820)
++++ GUI/gui_component.cpp	(working copy)
 @@ -86,6 +86,7 @@
  	impl->component = this;
  	impl->allow_resize = description.get_allow_resize();
@@ -167,10 +167,10 @@ Index: Sources/GUI/gui_component.cpp
  /////////////////////////////////////////////////////////////////////////////
  // CL_GUIComponent Implementation:
  
-Index: Sources/GUI/gui_manager.cpp
+Index: GUI/gui_manager.cpp
 ===================================================================
---- Sources/GUI/gui_manager.cpp	(revision 7504)
-+++ Sources/GUI/gui_manager.cpp	(working copy)
+--- GUI/gui_manager.cpp	(revision 7820)
++++ GUI/gui_manager.cpp	(working copy)
 @@ -165,6 +165,11 @@
  	return impl->func_exec_handler;
  }
@@ -183,10 +183,10 @@ Index: Sources/GUI/gui_manager.cpp
  /////////////////////////////////////////////////////////////////////////////
  // CL_GUIManager Operations:
  
-Index: Sources/GUI/Theme/gui_theme_part_impl.h
+Index: GUI/Theme/gui_theme_part_impl.h
 ===================================================================
---- Sources/GUI/Theme/gui_theme_part_impl.h	(revision 7504)
-+++ Sources/GUI/Theme/gui_theme_part_impl.h	(working copy)
+--- GUI/Theme/gui_theme_part_impl.h	(revision 7820)
++++ GUI/Theme/gui_theme_part_impl.h	(working copy)
 @@ -152,6 +152,11 @@
  
  inline CL_StringRef CL_GUIThemePart_Impl::get_property(const CL_GUIThemePart &part, const CL_String &name, const CL_String8 &hash, const CL_String &default_value) const
@@ -199,10 +199,10 @@ Index: Sources/GUI/Theme/gui_theme_part_impl.h
  	CL_StringRef css_value = get_css_value(name, hash, default_value);
  
  	// Check if theme wants to override the property:
-Index: Sources/GUI/Theme/gui_theme_part.cpp
+Index: GUI/Theme/gui_theme_part.cpp
 ===================================================================
---- Sources/GUI/Theme/gui_theme_part.cpp	(revision 7504)
-+++ Sources/GUI/Theme/gui_theme_part.cpp	(working copy)
+--- GUI/Theme/gui_theme_part.cpp	(revision 7820)
++++ GUI/Theme/gui_theme_part.cpp	(working copy)
 @@ -191,6 +191,11 @@
  
  CL_Font CL_GUIThemePart::get_font() const
@@ -215,10 +215,19 @@ Index: Sources/GUI/Theme/gui_theme_part.cpp
  	CL_GUIFontCache &font_cache = impl->component->get_gui_manager().impl->font_cache;
  	CL_Font font = font_cache.get_font(get_element_name(), impl->states);
  	if (!font.is_null())
-Index: Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
+Index: GUI/WindowManager/gui_window_manager_provider_texture.cpp
 ===================================================================
---- Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp	(revision 7504)
-+++ Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp	(working copy)
+--- GUI/WindowManager/gui_window_manager_provider_texture.cpp	(revision 7820)
++++ GUI/WindowManager/gui_window_manager_provider_texture.cpp	(working copy)
+@@ -49,7 +49,7 @@
+ // CL_GUIWindowManagerProvider_Texture Construction:
+ 
+ CL_GUIWindowManagerProvider_Texture::CL_GUIWindowManagerProvider_Texture(CL_DisplayWindow &display_window)
+-: site(0), activated_window(0), capture_mouse_window(NULL), display_window(display_window), 
++: site(0), activated_window(0), capture_mouse_window(NULL), display_window(display_window),
+   setup_painting_called(false), painting_set(false), frame_buffer_initial_setup(false), frame_buffer_stencil_attached(false), frame_buffer_depth_attached(false)
+ {
+ //	slots.connect(display_window.sig_paint(), this, &CL_GUIWindowManagerProvider_Texture::on_displaywindow_paint);
 @@ -154,7 +154,7 @@
  
  void CL_GUIWindowManagerProvider_Texture::on_input(const CL_InputEvent &input_event, const CL_InputState &input_state)
@@ -233,7 +242,7 @@ Index: Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
  		func_input_intercept.invoke(new_input_event, new_input_state);
  
 -	invoke_input_received(activated_window, new_input_event, new_input_state);
-+	if (activated_window) 
++	if (activated_window)
 +	{
 +		invoke_input_received(activated_window, new_input_event, new_input_state);
 +	}
@@ -245,12 +254,27 @@ Index: Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
  }
  
  void CL_GUIWindowManagerProvider_Texture::on_input_mouse_move(const CL_InputEvent &input_event, const CL_InputState &input_state)
-@@ -204,8 +212,12 @@
- 		toplevel_window = get_window_at_point(new_input_event.mouse_pos);
- 	}
+@@ -177,7 +185,7 @@
+ 	bool capture_mouse_flag = false;
+ 	if (capture_mouse_window)
+ 	{
+-		// Only capture when left mouse is pressed 
++		// Only capture when left mouse is pressed
+ 		//(see win32 mouse capture for behaviour http://msdn.microsoft.com/en-us/library/ms646262.aspx )
+ // ** Disabled - It seems multiple windows in the same app act differently to microsoft docs **
+ //		if (get_display_window(capture_mouse_window).get_ic().get_mouse().get_keycode(CL_MOUSE_LEFT))
+@@ -191,7 +199,7 @@
+ 	if (capture_mouse_flag)
+ 	{
+ 		// From MSDN:
+-		//   "Only the foreground window can capture the mouse. 
++		//   "Only the foreground window can capture the mouse.
+ 		//    When a background window attempts to do so, the window receives messages
+ 		//    only for mouse events that occur when the cursor hot spot is within
+ 		//    the visible portion of the window."
+@@ -206,25 +214,74 @@
  
--	if (toplevel_window)
-+	if (toplevel_window) 
+ 	if (toplevel_window)
  		invoke_input_received(toplevel_window, new_input_event, new_input_state);
 +	else if (!site->func_input_received_nowindow->is_null())
 +	{
@@ -259,7 +283,80 @@ Index: Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
  }
  
  void CL_GUIWindowManagerProvider_Texture::on_input_mouse_up(const CL_InputEvent &input_event, const CL_InputState &input_state)
-@@ -245,7 +257,7 @@
+ {
+-	// It seems multiple windows in the same app act differently for window SetCapture()
+-	if (!capture_mouse_window)
+-	{
+-		// Process MouseUp as normal input event when capture mouse is not used
+-		on_input(input_event, input_state);
+-		return;
+-	}
+-
+ 	CL_InputEvent new_input_event = input_event;
+ 	CL_InputState new_input_state = input_state;
+ 
+ 	if (!func_input_intercept.is_null())
+ 		func_input_intercept.invoke(new_input_event, new_input_state);
+ 
+-	invoke_input_received(capture_mouse_window, new_input_event, new_input_state);
++	if (capture_mouse_window)
++	{
++		invoke_input_received(capture_mouse_window, new_input_event, new_input_state);
++		return;
++	}
++
++	CL_GUITopLevelWindow *toplevel_window;
++	toplevel_window = get_window_at_point(new_input_event.mouse_pos);
++
++	if (toplevel_window && !toplevel_window->component->get_stay_in_background())
++		bring_to_front(toplevel_window);
++
++	// Send focus lost events
++	if (toplevel_window)
++	{
++		if (toplevel_window != activated_window)
++		{
++			// Change of focus required
++			// From: http://msdn.microsoft.com/en-us/library/ms646274(VS.85).aspx - deactivation occurs before activation
++
++			if (activated_window)
++			{
++				CL_GUITopLevelWindow_Alive toplevel_window_alive(toplevel_window);
++
++				site->func_focus_lost->invoke(activated_window);
++
++				if (toplevel_window_alive.is_null())
++					toplevel_window = get_window_at_point(new_input_event.mouse_pos);
++			}
++		}
++	}
++
++	// Send focus gained events
++	if (toplevel_window)
++	{
++		if (toplevel_window != activated_window)
++		{
++			activated_window = toplevel_window;
++			CL_GUITopLevelWindow_Alive toplevel_window_alive(toplevel_window);
++			site->func_focus_gained->invoke(activated_window);
++			if (toplevel_window_alive.is_null())
++				toplevel_window = get_window_at_point(new_input_event.mouse_pos);
++		}
++	}
++
++	// Send mouse click event to toplevel window
++	if (toplevel_window)
++	{
++		invoke_input_received(toplevel_window, new_input_event, new_input_state);
++	}
++	else if (site->func_input_received_nowindow->is_null())
++	{
++		site->func_input_received_nowindow->invoke(new_input_event, new_input_state);
++	}
+ }
+ 
+ void CL_GUIWindowManagerProvider_Texture::on_input_mouse_down(const CL_InputEvent &input_event, const CL_InputState &input_state)
+@@ -245,7 +302,7 @@
  	CL_GUITopLevelWindow *toplevel_window;
  	toplevel_window = get_window_at_point(new_input_event.mouse_pos);
  
@@ -268,18 +365,18 @@ Index: Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
  		bring_to_front(toplevel_window);
  
  	// Send focus lost events
-@@ -285,6 +297,10 @@
- 	if (toplevel_window)
+@@ -286,6 +343,10 @@
  	{
  		invoke_input_received(toplevel_window, new_input_event, new_input_state);
-+	} 
+ 	}
 +	else if (site->func_input_received_nowindow->is_null())
 +	{
 +		site->func_input_received_nowindow->invoke(new_input_event, new_input_state);
- 	}
++	}
  
  }
-@@ -433,7 +449,10 @@
+ 
+@@ -433,7 +494,10 @@
  	else
  	{
  		// Attach to root
@@ -291,7 +388,7 @@ Index: Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
  	}
  
  	activated_window = handle;
-@@ -859,7 +878,11 @@
+@@ -859,7 +923,11 @@
  
  			if (toplevel_window_texture->geometry.contains(point))
  			{
@@ -304,10 +401,10 @@ Index: Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
  			}
  		}
  	}
-Index: Sources/GUI/gui_component_impl.cpp
+Index: GUI/gui_component_impl.cpp
 ===================================================================
---- Sources/GUI/gui_component_impl.cpp	(revision 7504)
-+++ Sources/GUI/gui_component_impl.cpp	(working copy)
+--- GUI/gui_component_impl.cpp	(revision 7820)
++++ GUI/gui_component_impl.cpp	(working copy)
 @@ -42,6 +42,7 @@
    focus_policy(CL_GUIComponent::focus_refuse), allow_resize(false), clip_children(false), enabled(true),
    visible(true), activated(false), default_handler(false), cancel_handler(false),
@@ -325,10 +422,10 @@ Index: Sources/GUI/gui_component_impl.cpp
  		return CL_Image(gc, url, &resources);
  	}
  	catch (CL_Exception e)
-Index: Sources/GUI/gui_component_impl.h
+Index: GUI/gui_component_impl.h
 ===================================================================
---- Sources/GUI/gui_component_impl.h	(revision 7504)
-+++ Sources/GUI/gui_component_impl.h	(working copy)
+--- GUI/gui_component_impl.h	(revision 7820)
++++ GUI/gui_component_impl.h	(working copy)
 @@ -115,6 +115,8 @@
  	CL_CSSLayoutElement css_element;
  	bool double_click_enabled;
@@ -338,10 +435,10 @@ Index: Sources/GUI/gui_component_impl.h
  /// \}
  /// \name Operations
  /// \{
-Index: Sources/Display/Window/display_window_description.cpp
+Index: Display/Window/display_window_description.cpp
 ===================================================================
---- Sources/Display/Window/display_window_description.cpp	(revision 7504)
-+++ Sources/Display/Window/display_window_description.cpp	(working copy)
+--- Display/Window/display_window_description.cpp	(revision 7820)
++++ Display/Window/display_window_description.cpp	(working copy)
 @@ -192,6 +192,11 @@
  	return impl->topmost;
  }
@@ -366,10 +463,10 @@ Index: Sources/Display/Window/display_window_description.cpp
  void CL_DisplayWindowDescription::set_visible(bool value)
  {
  	impl->visible = value;
-Index: Sources/Display/Window/display_window_description_impl.h
+Index: Display/Window/display_window_description_impl.h
 ===================================================================
---- Sources/Display/Window/display_window_description_impl.h	(revision 7504)
-+++ Sources/Display/Window/display_window_description_impl.h	(working copy)
+--- Display/Window/display_window_description_impl.h	(revision 7820)
++++ Display/Window/display_window_description_impl.h	(working copy)
 @@ -48,6 +48,7 @@
  		decorations = true;
  		caption = true;
@@ -386,10 +483,10 @@ Index: Sources/Display/Window/display_window_description_impl.h
  	bool visible;
  	bool drop_shadow;
  	bool tool_window;
-Index: Sources/API/GUI/gui_window_manager.h
+Index: API/GUI/gui_window_manager.h
 ===================================================================
---- Sources/API/GUI/gui_window_manager.h	(revision 7504)
-+++ Sources/API/GUI/gui_window_manager.h	(working copy)
+--- API/GUI/gui_window_manager.h	(revision 7820)
++++ API/GUI/gui_window_manager.h	(working copy)
 @@ -76,8 +76,11 @@
  	/// \brief Pointer to destroy notification callback function.
  	CL_Callback_v1<CL_GUITopLevelWindow *> *func_destroy;
@@ -403,10 +500,10 @@ Index: Sources/API/GUI/gui_window_manager.h
  /// \}
  };
  
-Index: Sources/API/GUI/gui_component.h
+Index: API/GUI/gui_component.h
 ===================================================================
---- Sources/API/GUI/gui_component.h	(revision 7504)
-+++ Sources/API/GUI/gui_component.h	(working copy)
+--- API/GUI/gui_component.h	(revision 7820)
++++ API/GUI/gui_component.h	(working copy)
 @@ -62,6 +62,7 @@
  class CL_CSSLayout;
  class CL_CSSLayoutElement;
@@ -439,10 +536,10 @@ Index: Sources/API/GUI/gui_component.h
  /// \}
  /// \name Implementation
  /// \{
-Index: Sources/API/GUI/gui_manager.h
+Index: API/GUI/gui_manager.h
 ===================================================================
---- Sources/API/GUI/gui_manager.h	(revision 7504)
-+++ Sources/API/GUI/gui_manager.h	(working copy)
+--- API/GUI/gui_manager.h	(revision 7820)
++++ API/GUI/gui_manager.h	(working copy)
 @@ -39,6 +39,7 @@
  #include "../Core/Signals/callback_0.h"
  #include "../Core/Signals/callback_1.h"
@@ -470,10 +567,10 @@ Index: Sources/API/GUI/gui_manager.h
  
  /// \}
  /// \name Operations
-Index: Sources/API/Display/Window/display_window_description.h
+Index: API/Display/Window/display_window_description.h
 ===================================================================
---- Sources/API/Display/Window/display_window_description.h	(revision 7504)
-+++ Sources/API/Display/Window/display_window_description.h	(working copy)
+--- API/Display/Window/display_window_description.h	(revision 7820)
++++ API/Display/Window/display_window_description.h	(working copy)
 @@ -155,6 +155,9 @@
  	/// \brief Returns true if the window should be placed above all non-topmost windows.
  	bool is_topmost() const;
