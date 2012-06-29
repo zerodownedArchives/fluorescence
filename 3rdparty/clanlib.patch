@@ -1,7 +1,7 @@
-Index: GUI/gui_manager_impl.cpp
+Index: Sources/GUI/gui_manager_impl.cpp
 ===================================================================
---- GUI/gui_manager_impl.cpp	(revision 7820)
-+++ GUI/gui_manager_impl.cpp	(working copy)
+--- Sources/GUI/gui_manager_impl.cpp	(revision 7820)
++++ Sources/GUI/gui_manager_impl.cpp	(working copy)
 @@ -62,6 +62,7 @@
  	func_close.set(this, &CL_GUIManager_Impl::on_close);
  	func_destroy.set(this, &CL_GUIManager_Impl::on_destroy);
@@ -52,10 +52,10 @@ Index: GUI/gui_manager_impl.cpp
  CL_GUIComponent *CL_GUIManager_Impl::get_cancel_component(CL_GUIComponent *comp)
  {
  	if (comp && comp->is_cancel())
-Index: GUI/gui_manager_impl.h
+Index: Sources/GUI/gui_manager_impl.h
 ===================================================================
---- GUI/gui_manager_impl.h	(revision 7820)
-+++ GUI/gui_manager_impl.h	(working copy)
+--- Sources/GUI/gui_manager_impl.h	(revision 7820)
++++ Sources/GUI/gui_manager_impl.h	(working copy)
 @@ -139,6 +139,8 @@
  	CL_Callback_v1<CL_GUITopLevelWindow *> func_close;
  	CL_Callback_v1<CL_GUITopLevelWindow *> func_destroy;
@@ -73,10 +73,10 @@ Index: GUI/gui_manager_impl.h
  	void on_gc_destruction_imminent();
  	mutable std::map< CL_String, std::vector<CL_CSSProperty> > properties_cache;
  
-Index: GUI/gui_component.cpp
+Index: Sources/GUI/gui_component.cpp
 ===================================================================
---- GUI/gui_component.cpp	(revision 7820)
-+++ GUI/gui_component.cpp	(working copy)
+--- Sources/GUI/gui_component.cpp	(revision 7820)
++++ Sources/GUI/gui_component.cpp	(working copy)
 @@ -86,6 +86,7 @@
  	impl->component = this;
  	impl->allow_resize = description.get_allow_resize();
@@ -167,10 +167,10 @@ Index: GUI/gui_component.cpp
  /////////////////////////////////////////////////////////////////////////////
  // CL_GUIComponent Implementation:
  
-Index: GUI/gui_manager.cpp
+Index: Sources/GUI/gui_manager.cpp
 ===================================================================
---- GUI/gui_manager.cpp	(revision 7820)
-+++ GUI/gui_manager.cpp	(working copy)
+--- Sources/GUI/gui_manager.cpp	(revision 7820)
++++ Sources/GUI/gui_manager.cpp	(working copy)
 @@ -165,6 +165,11 @@
  	return impl->func_exec_handler;
  }
@@ -183,10 +183,10 @@ Index: GUI/gui_manager.cpp
  /////////////////////////////////////////////////////////////////////////////
  // CL_GUIManager Operations:
  
-Index: GUI/Theme/gui_theme_part_impl.h
+Index: Sources/GUI/Theme/gui_theme_part_impl.h
 ===================================================================
---- GUI/Theme/gui_theme_part_impl.h	(revision 7820)
-+++ GUI/Theme/gui_theme_part_impl.h	(working copy)
+--- Sources/GUI/Theme/gui_theme_part_impl.h	(revision 7820)
++++ Sources/GUI/Theme/gui_theme_part_impl.h	(working copy)
 @@ -152,6 +152,11 @@
  
  inline CL_StringRef CL_GUIThemePart_Impl::get_property(const CL_GUIThemePart &part, const CL_String &name, const CL_String8 &hash, const CL_String &default_value) const
@@ -199,10 +199,10 @@ Index: GUI/Theme/gui_theme_part_impl.h
  	CL_StringRef css_value = get_css_value(name, hash, default_value);
  
  	// Check if theme wants to override the property:
-Index: GUI/Theme/gui_theme_part.cpp
+Index: Sources/GUI/Theme/gui_theme_part.cpp
 ===================================================================
---- GUI/Theme/gui_theme_part.cpp	(revision 7820)
-+++ GUI/Theme/gui_theme_part.cpp	(working copy)
+--- Sources/GUI/Theme/gui_theme_part.cpp	(revision 7820)
++++ Sources/GUI/Theme/gui_theme_part.cpp	(working copy)
 @@ -191,6 +191,11 @@
  
  CL_Font CL_GUIThemePart::get_font() const
@@ -215,10 +215,10 @@ Index: GUI/Theme/gui_theme_part.cpp
  	CL_GUIFontCache &font_cache = impl->component->get_gui_manager().impl->font_cache;
  	CL_Font font = font_cache.get_font(get_element_name(), impl->states);
  	if (!font.is_null())
-Index: GUI/WindowManager/gui_window_manager_provider_texture.cpp
+Index: Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp
 ===================================================================
---- GUI/WindowManager/gui_window_manager_provider_texture.cpp	(revision 7820)
-+++ GUI/WindowManager/gui_window_manager_provider_texture.cpp	(working copy)
+--- Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp	(revision 7820)
++++ Sources/GUI/WindowManager/gui_window_manager_provider_texture.cpp	(working copy)
 @@ -49,7 +49,7 @@
  // CL_GUIWindowManagerProvider_Texture Construction:
  
@@ -401,10 +401,10 @@ Index: GUI/WindowManager/gui_window_manager_provider_texture.cpp
  			}
  		}
  	}
-Index: GUI/gui_component_impl.cpp
+Index: Sources/GUI/gui_component_impl.cpp
 ===================================================================
---- GUI/gui_component_impl.cpp	(revision 7820)
-+++ GUI/gui_component_impl.cpp	(working copy)
+--- Sources/GUI/gui_component_impl.cpp	(revision 7820)
++++ Sources/GUI/gui_component_impl.cpp	(working copy)
 @@ -42,6 +42,7 @@
    focus_policy(CL_GUIComponent::focus_refuse), allow_resize(false), clip_children(false), enabled(true),
    visible(true), activated(false), default_handler(false), cancel_handler(false),
@@ -422,10 +422,10 @@ Index: GUI/gui_component_impl.cpp
  		return CL_Image(gc, url, &resources);
  	}
  	catch (CL_Exception e)
-Index: GUI/gui_component_impl.h
+Index: Sources/GUI/gui_component_impl.h
 ===================================================================
---- GUI/gui_component_impl.h	(revision 7820)
-+++ GUI/gui_component_impl.h	(working copy)
+--- Sources/GUI/gui_component_impl.h	(revision 7820)
++++ Sources/GUI/gui_component_impl.h	(working copy)
 @@ -115,6 +115,8 @@
  	CL_CSSLayoutElement css_element;
  	bool double_click_enabled;
@@ -435,10 +435,10 @@ Index: GUI/gui_component_impl.h
  /// \}
  /// \name Operations
  /// \{
-Index: Display/Window/display_window_description.cpp
+Index: Sources/Display/Window/display_window_description.cpp
 ===================================================================
---- Display/Window/display_window_description.cpp	(revision 7820)
-+++ Display/Window/display_window_description.cpp	(working copy)
+--- Sources/Display/Window/display_window_description.cpp	(revision 7820)
++++ Sources/Display/Window/display_window_description.cpp	(working copy)
 @@ -192,6 +192,11 @@
  	return impl->topmost;
  }
@@ -463,10 +463,10 @@ Index: Display/Window/display_window_description.cpp
  void CL_DisplayWindowDescription::set_visible(bool value)
  {
  	impl->visible = value;
-Index: Display/Window/display_window_description_impl.h
+Index: Sources/Display/Window/display_window_description_impl.h
 ===================================================================
---- Display/Window/display_window_description_impl.h	(revision 7820)
-+++ Display/Window/display_window_description_impl.h	(working copy)
+--- Sources/Display/Window/display_window_description_impl.h	(revision 7820)
++++ Sources/Display/Window/display_window_description_impl.h	(working copy)
 @@ -48,6 +48,7 @@
  		decorations = true;
  		caption = true;
@@ -483,10 +483,10 @@ Index: Display/Window/display_window_description_impl.h
  	bool visible;
  	bool drop_shadow;
  	bool tool_window;
-Index: API/GUI/gui_window_manager.h
+Index: Sources/API/GUI/gui_window_manager.h
 ===================================================================
---- API/GUI/gui_window_manager.h	(revision 7820)
-+++ API/GUI/gui_window_manager.h	(working copy)
+--- Sources/API/GUI/gui_window_manager.h	(revision 7820)
++++ Sources/API/GUI/gui_window_manager.h	(working copy)
 @@ -76,8 +76,11 @@
  	/// \brief Pointer to destroy notification callback function.
  	CL_Callback_v1<CL_GUITopLevelWindow *> *func_destroy;
@@ -500,10 +500,10 @@ Index: API/GUI/gui_window_manager.h
  /// \}
  };
  
-Index: API/GUI/gui_component.h
+Index: Sources/API/GUI/gui_component.h
 ===================================================================
---- API/GUI/gui_component.h	(revision 7820)
-+++ API/GUI/gui_component.h	(working copy)
+--- Sources/API/GUI/gui_component.h	(revision 7820)
++++ Sources/API/GUI/gui_component.h	(working copy)
 @@ -62,6 +62,7 @@
  class CL_CSSLayout;
  class CL_CSSLayoutElement;
@@ -536,10 +536,10 @@ Index: API/GUI/gui_component.h
  /// \}
  /// \name Implementation
  /// \{
-Index: API/GUI/gui_manager.h
+Index: Sources/API/GUI/gui_manager.h
 ===================================================================
---- API/GUI/gui_manager.h	(revision 7820)
-+++ API/GUI/gui_manager.h	(working copy)
+--- Sources/API/GUI/gui_manager.h	(revision 7820)
++++ Sources/API/GUI/gui_manager.h	(working copy)
 @@ -39,6 +39,7 @@
  #include "../Core/Signals/callback_0.h"
  #include "../Core/Signals/callback_1.h"
@@ -567,10 +567,10 @@ Index: API/GUI/gui_manager.h
  
  /// \}
  /// \name Operations
-Index: API/Display/Window/display_window_description.h
+Index: Sources/API/Display/Window/display_window_description.h
 ===================================================================
---- API/Display/Window/display_window_description.h	(revision 7820)
-+++ API/Display/Window/display_window_description.h	(working copy)
+--- Sources/API/Display/Window/display_window_description.h	(revision 7820)
++++ Sources/API/Display/Window/display_window_description.h	(working copy)
 @@ -155,6 +155,9 @@
  	/// \brief Returns true if the window should be placed above all non-topmost windows.
  	bool is_topmost() const;
