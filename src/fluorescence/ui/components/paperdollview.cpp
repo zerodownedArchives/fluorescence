@@ -29,6 +29,7 @@
 #include <world/statics.hpp>
 #include <world/ingameobject.hpp>
 #include <world/mobile.hpp>
+#include <world/dynamicitem.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/render/renderqueue.hpp>
@@ -115,8 +116,20 @@ bool PaperdollView::onInputReleased(const CL_InputEvent& e) {
 
         if (clickedObject) {
             if (draggedObject) {
-                ui::Manager::getSingleton()->onDragDrop(draggedObject, clickedObject);
-            } else {
+                if (clickedObject->isDynamicItem()) {
+                    // check if it was dropped on the backpack
+                    boost::shared_ptr<world::DynamicItem> dynItm = boost::dynamic_pointer_cast<world::DynamicItem>(clickedObject);
+                    if (dynItm->getLayer() == Layer::BACKPACK) {
+                        ui::Manager::getSingleton()->onDragDrop(draggedObject, clickedObject);
+                    } else {
+                        // some other equipped item
+                        ui::Manager::getSingleton()->onDragDrop(draggedObject, mobile_, e.mouse_pos.x, e.mouse_pos.y);
+                    }
+                } else {
+                    // dropped on mobile directly
+                    ui::Manager::getSingleton()->onDragDrop(draggedObject, mobile_, e.mouse_pos.x, e.mouse_pos.y);
+                }
+            } else if (clickedObject->isDynamicItem()) {
                 ui::Manager::getSingleton()->onSingleClick(clickedObject);
             }
         } else if (draggedObject) {

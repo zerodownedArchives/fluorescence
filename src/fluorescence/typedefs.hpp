@@ -61,6 +61,7 @@ public:
 enum {
     ONEHANDED = 0x01,
     TWOHANDED = 0x02,
+    BACKPACK = 0x15,
     MOUNT = 0x19,
 };
 };
@@ -103,12 +104,12 @@ public:
 struct RenderDepth {
     RenderDepth() : value_(0) { }
     RenderDepth(uint64_t value) : value_(value) { }
-    
+
     bool operator>(const RenderDepth& other) const { return value_ > other.value_; }
     bool operator<(const RenderDepth& other) const { return value_ < other.value_; }
     bool operator==(const RenderDepth& other) const { return value_ == other.value_; }
     bool operator!=(const RenderDepth& other) const { return value_ != other.value_; }
-    
+
     uint64_t value_;
 };
 

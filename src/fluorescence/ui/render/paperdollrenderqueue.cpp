@@ -108,7 +108,7 @@ boost::shared_ptr<world::IngameObject> PaperdollRenderQueue::getFirstObjectAt(in
 
     for (; igIter != igEnd; ++igIter) {
         boost::shared_ptr<world::IngameObject> curObj = *igIter;
-        if (curObj->isDynamicItem() && curObj->isVisible() && curObj->hasGumpPixel(pixelX, pixelY)) {
+        if (curObj->isVisible() && curObj->hasGumpPixel(pixelX, pixelY)) {
 
             if (getTopParent) {
                 curObj = curObj->getTopParent();
