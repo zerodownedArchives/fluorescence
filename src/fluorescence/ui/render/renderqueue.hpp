@@ -44,10 +44,10 @@ public:
     typedef std::list<boost::shared_ptr<world::IngameObject> >::const_reverse_iterator const_reverse_iterator;
 
     typedef boost::function<bool (const boost::shared_ptr<world::IngameObject>&, const boost::shared_ptr<world::IngameObject>&)> SortFunction;
+    typedef boost::function<void ()> NotifyFunction;
 
 
     RenderQueue(SortFunction sortFunction);
-    RenderQueue(SortFunction sortFunction, SortFunction batchedSortFunction_);
 
     void clear();
     void sort();
@@ -83,6 +83,8 @@ public:
     bool requireGumpRepaint() const;
     void resetGumpRepaintIndicators();
 
+    void setNotifyFunction(NotifyFunction func);
+
 protected:
     void processRemoveList();
     bool processAddList();
@@ -115,6 +117,8 @@ private:
 
     friend void world::IngameObject::addToRenderQueue(const boost::shared_ptr<RenderQueue>& rq);
     friend void world::IngameObject ::removeFromRenderQueue(const boost::shared_ptr<RenderQueue>& rq);
+
+    NotifyFunction notifyFunction_;
 };
 
 }

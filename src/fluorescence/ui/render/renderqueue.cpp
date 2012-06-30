@@ -222,6 +222,10 @@ void RenderQueue::onGumpChanged() {
 
 void RenderQueue::forceRepaint() {
     forceRepaint_ = true;
+
+    if (notifyFunction_) {
+        notifyFunction_();
+    }
 }
 
 bool RenderQueue::requireWorldRepaint() const {
@@ -242,6 +246,10 @@ bool RenderQueue::requireGumpRepaint() const {
 void RenderQueue::resetGumpRepaintIndicators() {
     gumpChanged_ = false;
     forceRepaint_ = false;
+}
+
+void RenderQueue::setNotifyFunction(NotifyFunction func) {
+    notifyFunction_ = func;
 }
 
 }

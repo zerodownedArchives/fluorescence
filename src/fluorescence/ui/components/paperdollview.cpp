@@ -51,6 +51,7 @@ PaperdollView::PaperdollView(CL_GUIComponent* parent, const CL_Rect& bounds) : G
     this->set_geometry(bounds);
     boost::shared_ptr<PaperdollRenderQueue> rq(new PaperdollRenderQueue());
     renderer_.reset(new PaperdollRenderer(rq, this));
+    renderer_->getRenderQueue()->setNotifyFunction(boost::bind(&PaperdollView::request_repaint, this));
 
     func_render().set(this, &PaperdollView::renderOneFrame);
     func_input_pressed().set(this, &PaperdollView::onInputPressed);
