@@ -188,7 +188,9 @@ void Manager::stepDraw() {
     getGraphicContext().clear();
     windowManager_->draw_windows(getGraphicContext());
 
-    cursorManager_->drawDragObject(getGraphicContext(), getInputContext().get_mouse().get_position());
+	if (cursorManager_) {
+		cursorManager_->drawDragObject(getGraphicContext(), getInputContext().get_mouse().get_position());
+	}
 
     mainWindow_->flip(); // use parameter 1 here for vsync
 
