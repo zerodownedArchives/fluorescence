@@ -1,0 +1,8 @@
+build/*
+winbuild/*
+_out32-Release/*
+fluorescence.log
+screenshots/*
+shards/*
+packages/*
+
