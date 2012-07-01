@@ -21,6 +21,16 @@
 namespace fluo {
 namespace data {
 
+WaveHeader::WaveHeader(unsigned int dataLen) : 
+            totalLength_(dataLen + 36), 
+            chunkSize_(16), formatTag_(1), numChannels_(1), sampleRate_(22050), byteRate_(88200), blockAlign_(4), bitsPerSample_(16),
+            dataLength_(dataLen) {
+	txtRiff_[0] = 'R';  txtRiff_[1] = 'I'; txtRiff_[2] = 'F'; txtRiff_[3] = 'F';
+	txtWave_[0] = 'W'; txtWave_[1] = 'A'; txtWave_[2] = 'V'; txtWave_[3] = 'E';
+	txtFmt_[0] = 'f'; txtFmt_[1] = 'm'; txtFmt_[2] = 't'; txtFmt_[3] = ' ';
+	txtData_[0] = 'd'; txtData_[1] = 'a'; txtData_[2] = 't'; txtData_[3] = 'a';
+}
+
 Sound::Sound() : dataLength_(0), rawData_(nullptr) {
 }
 

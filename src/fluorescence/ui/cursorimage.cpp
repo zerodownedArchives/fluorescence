@@ -59,7 +59,7 @@ void CursorImage::set(unsigned int cursorId, unsigned int artId, boost::shared_p
 #ifdef WIN32
     CL_Point hotspot(hotspotX_, hotspotY_);
     CL_SpriteDescription desc;
-    desc.add_frame(*texture->getPixelBuffer().get());
+    desc.add_frame(texture->getPixelBuffer());
     winCursor_ = CL_Cursor(*window.get(), desc, hotspot);
 #else
     XcursorImage* cursorImage = XcursorImageCreate(width_, height_);

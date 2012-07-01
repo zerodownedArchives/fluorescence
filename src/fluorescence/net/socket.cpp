@@ -261,7 +261,12 @@ bool Socket::sendAll() {
     //dumpBuffer(sendBuffer_, sendSize_);
 
     socketMutex_.lock();
+#ifdef WIN32
+	// no SIGPIPE on windows
+	unsigned int sendLen = ::send(socketFd_, reinterpret_cast<char*>(sendBuffer_), sendSize_, 0);
+#else
     unsigned int sendLen = ::send(socketFd_, reinterpret_cast<char*>(sendBuffer_), sendSize_, MSG_NOSIGNAL);
+#endif
     socketMutex_.unlock();
 
     if (sendLen != sendSize_) {

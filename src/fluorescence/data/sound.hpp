@@ -44,11 +44,7 @@ struct WaveHeader {
     char txtData_[4];
     uint32_t dataLength_;
     
-    WaveHeader(unsigned int dataLen) : 
-            txtRiff_({'R', 'I', 'F', 'F'}), totalLength_(dataLen + 36), txtWave_({'W', 'A', 'V', 'E'}),
-            txtFmt_({'f', 'm', 't', ' '}), chunkSize_(16), formatTag_(1), numChannels_(1), sampleRate_(22050), byteRate_(88200), blockAlign_(4), bitsPerSample_(16),
-            txtData_({'d', 'a', 't', 'a'}), dataLength_(dataLen) {
-    }
+    WaveHeader(unsigned int dataLen);
 };
     
 class Sound : public OnDemandReadable<Sound> {

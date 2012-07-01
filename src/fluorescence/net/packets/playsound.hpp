@@ -27,9 +27,10 @@ namespace net {
 
 namespace packets {
 
-class PlaySound : public Packet {
+// needs to have "Packet" in the name as well to enable VS to distinguish it from the windows PlaySound function
+class PlaySoundPacket : public Packet {
 public:
-    PlaySound();
+    PlaySoundPacket();
 
     virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
 

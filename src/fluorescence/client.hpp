@@ -25,6 +25,7 @@
 
 #include <boost/program_options.hpp>
 
+#include <platform.hpp>
 #include <misc/config.hpp>
 
 namespace fluo {
@@ -70,7 +71,7 @@ public:
     bool selectCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
     bool deleteCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
 
-    timeval getElapsedTime() const;
+    struct timeval getElapsedTime() const;
 
 private:
     static Client* singleton_;
@@ -95,7 +96,7 @@ private:
     void doStateLogin();
     void doStatePlaying(unsigned int elapsedMillis);
 
-    timeval startTime_;
+    struct timeval startTime_;
 };
 
 }

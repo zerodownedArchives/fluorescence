@@ -26,10 +26,10 @@ namespace fluo {
 namespace net {
 namespace packets {
 
-PlaySound::PlaySound() : Packet(0x54, 12) {
+PlaySoundPacket::PlaySoundPacket() : Packet(0x54, 12) {
 }
 
-bool PlaySound::read(const int8_t* buf, unsigned int len, unsigned int& index) {
+bool PlaySoundPacket::read(const int8_t* buf, unsigned int len, unsigned int& index) {
     bool ret = true;
     
     ret &= PacketReader::read(buf, len, index, playMode_);
@@ -44,7 +44,7 @@ bool PlaySound::read(const int8_t* buf, unsigned int len, unsigned int& index) {
     return ret;
 }
 
-void PlaySound::onReceive() {
+void PlaySoundPacket::onReceive() {
     ui::Manager::getAudioManager()->playSound(soundId_);
 }
 
