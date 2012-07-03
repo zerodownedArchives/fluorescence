@@ -90,6 +90,8 @@ set (PACKETS_HPP
     net/packets/characterdeletereject.hpp
     net/packets/characterlistupdate.hpp
     net/packets/equiprequest.hpp
+    net/packets/skilllockchange.hpp
+    net/packets/skillsupdate.hpp
 
     net/packets/bf.hpp
     net/packets/bf/changemap.hpp
@@ -163,6 +165,8 @@ set (PACKETS_CPP
     net/packets/characterdeletereject.cpp
     net/packets/characterlistupdate.cpp
     net/packets/equiprequest.cpp
+    net/packets/skilllockchange.cpp
+    net/packets/skillsupdate.cpp
 
     net/packets/bf.cpp
     net/packets/bf/changemap.cpp

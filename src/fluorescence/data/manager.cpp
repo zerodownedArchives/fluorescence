@@ -86,11 +86,11 @@ Manager::Manager() {
 }
 
 void Manager::init(Config& config) {
-    if (config["/fluo/files/format"].asString() == "mul") {
+    if (config["/fluo/files@format"].asString() == "mul") {
         fileFormat_ = FileFormat::MUL;
-    } else if (config["/fluo/files/format"].asString() == "mul-hs") {
+    } else if (config["/fluo/files@format"].asString() == "mul-hs") {
         fileFormat_ = FileFormat::MUL_HIGH_SEAS;
-    } else if (config["/fluo/files/format"].asString() == "uop") {
+    } else if (config["/fluo/files@format"].asString() == "uop") {
         fileFormat_ = FileFormat::UOP;
         LOG_ERROR << "UOP file format not qupported yet" << std::endl;
         throw Exception("Unsupported file format");

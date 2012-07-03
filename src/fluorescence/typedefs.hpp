@@ -134,6 +134,14 @@ enum {
 };
 };
 
+struct SkillLock {
+enum {
+    GAIN = 0x00,
+    LOSE = 0x01,
+    LOCK = 0x02,
+};
+};
+
 }
 
 

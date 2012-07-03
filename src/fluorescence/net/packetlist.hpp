@@ -41,6 +41,8 @@
 #include "packets/pickupreject.hpp" // 0x27
 #include "packets/equippeditem.hpp" // 0x2e
 #include "packets/statskillquery.hpp" //0x34
+#include "packets/skilllockchange.hpp" //0x3a, sent by client
+#include "packets/skillsupdate.hpp" //0x3a, sent by server
 #include "packets/containercontent.hpp" // 0x3c
 #include "packets/playsound.hpp" // 0x54
 #include "packets/logincomplete.hpp" // 0x55

@@ -4,7 +4,7 @@
         <music off="0" volume="66" />
         <sound off="0" volume="100" />
     </audio>
-    <files>
+    <files format="mul">
         <anim2 highdetail="200" lowdetail="200" />
         <anim3 highdetail="420" lowdetail="70" />
         <anim4 highdetail="200" lowdetail="200" />

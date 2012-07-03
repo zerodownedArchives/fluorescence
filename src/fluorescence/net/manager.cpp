@@ -101,7 +101,7 @@ void Manager::step() {
 
         // send packets to server
         socket_.sendAll();
-        
+
         if (socket_.hasCriticalError()) {
             ui::GumpMenus::openMessageBox("Lost connection to server");
             Client::getSingleton()->disconnect();
@@ -125,6 +125,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0x25: ret.reset(new packets::ContainerUpdate()); break;
         case 0x27: ret.reset(new packets::PickUpReject()); break;
         case 0x2E: ret.reset(new packets::EquippedItem()); break;
+        case 0x3A: ret.reset(new packets::SkillsUpdate()); break;
         case 0x3C: ret.reset(new packets::ContainerContent()); break;
         case 0x54: ret.reset(new packets::PlaySoundPacket()); break;
         case 0x55: ret.reset(new packets::LoginComplete()); break;
