@@ -40,6 +40,7 @@
 #include "filepathloader.hpp"
 #include "soundloader.hpp"
 #include "spellbooks.hpp"
+#include "skillsloader.hpp"
 
 #include <client.hpp>
 
@@ -308,6 +309,13 @@ void Manager::init(Config& config) {
     path = filePathMap_["sound.mul"];
     LOG_INFO << "Opening sound from idx=" << idxPath << " mul=" << path << std::endl;
     soundLoader_.reset(new SoundLoader(idxPath, path));
+
+    checkFileExists("skills.idx");
+    checkFileExists("skills.mul");
+    idxPath = filePathMap_["skills.idx"];
+    path = filePathMap_["skills.mul"];
+    LOG_INFO << "Opening skills from idx=" << idxPath << " mul=" << path << std::endl;
+    skillsLoader_.reset(new SkillsLoader(idxPath, path));
 
 
     checkFileExists("body.def");
@@ -689,6 +697,10 @@ boost::shared_ptr<AnimDataLoader> Manager::getAnimDataLoader() {
 
 boost::shared_ptr<SoundLoader> Manager::getSoundLoader() {
     return getSingleton()->soundLoader_;
+}
+
+boost::shared_ptr<SkillsLoader> Manager::getSkillsLoader() {
+    return getSingleton()->skillsLoader_;
 }
 
 

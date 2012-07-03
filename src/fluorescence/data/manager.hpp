@@ -53,6 +53,7 @@ class FilePathLoader;
 class SoundLoader;
 class Spellbooks;
 class SpellbookInfo;
+class SkillsLoader;
 
 template<typename ValueType>
 class DefFileLoader;
@@ -82,7 +83,7 @@ public:
     static void destroy();
     static Manager* getSingleton();
     ~Manager();
-    
+
     // return the path to the file inside the current shard directory, if the file exists there.
     // if not, return default path
     static boost::filesystem::path getShardFilePath(const boost::filesystem::path& innerPath);
@@ -113,18 +114,19 @@ public:
     static boost::shared_ptr<UniFontLoader> getUniFontLoader(unsigned int index);
     static boost::shared_ptr<ClilocLoader> getClilocLoader();
     static boost::shared_ptr<SoundLoader> getSoundLoader();
-    
+    static boost::shared_ptr<SkillsLoader> getSkillsLoader();
+
     static boost::shared_ptr<ui::Texture> getTexture(unsigned int source, unsigned int id);
     static boost::shared_ptr<ui::Texture> getTexture(unsigned int source, const UnicodeString& id);
     static boost::shared_ptr<ui::Texture> getTexture(const UnicodeString& source, const UnicodeString& id);
-    
+
     static const boost::filesystem::path& getFilePathFor(const UnicodeString& string);
-    
+
     static const SpellbookInfo* getSpellbookInfo(unsigned int packetOffset);
 
 private:
     static Manager* singleton_;
-    
+
     unsigned int fileFormat_;
 
     Manager();
@@ -156,8 +158,10 @@ private:
 
     boost::shared_ptr<UniFontLoader> uniFontLoader_[13];
     boost::shared_ptr<UniFontLoader> fallbackUniFontLoader_;
-    
+
     boost::shared_ptr<SoundLoader> soundLoader_;
+
+    boost::shared_ptr<SkillsLoader> skillsLoader_;
 
     boost::shared_ptr<DefFileLoader<MobTypeDef> > mobTypesLoader_;
     boost::shared_ptr<DefFileLoader<BodyDef> > bodyDefLoader_;
@@ -171,10 +175,10 @@ private:
     boost::shared_ptr<DefFileLoader<SoundDef> > soundDefLoader_;
 
     boost::shared_ptr<ClilocLoader> clilocLoader_;
-    
+
     boost::shared_ptr<HttpLoader> httpLoader_;
     boost::shared_ptr<FilePathLoader> filePathLoader_;
-    
+
     boost::shared_ptr<Spellbooks> spellbooks_;
 };
 

@@ -17,39 +17,43 @@
  */
 
 
-#ifndef FLUO_DATA_INDEXLOADER_HPP
-#define FLUO_DATA_INDEXLOADER_HPP
+#ifndef FLUO_NET_PACKETS_SKILLSUPDATE_HPP
+#define FLUO_NET_PACKETS_SKILLSUPDATE_HPP
 
-#include <boost/filesystem.hpp>
+#include <net/packet.hpp>
 
-#include <misc/exception.hpp>
+#include <list>
 
 namespace fluo {
-namespace data {
+namespace net {
 
-struct IndexBlock {
-    uint32_t offset_;
-    uint32_t length_;
-    uint32_t extra_;
+namespace packets {
+
+struct SkillValue {
+    uint16_t skillId_; // 1-based
+    uint16_t value_;
+    uint16_t baseValue_;
+    uint8_t lockStatus_;
+    uint16_t maxValue_;
 };
 
-class IndexLoader {
+class SkillsUpdate : public Packet {
 public:
-    IndexLoader(const boost::filesystem::path& path);
-    ~IndexLoader();
+    SkillsUpdate();
 
-    const IndexBlock& get(unsigned int id) const;
+    virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
 
-    unsigned int size() const;
-
-    void read(int8_t* buf, unsigned int len);
+    virtual void onReceive();
 
 private:
-    unsigned int size_;
-    IndexBlock* indexBlocks_;
+    uint8_t type_;
 
+    std::list<SkillValue> skillValues_;
+
+    SkillValue readValue(const int8_t* buf, unsigned int len, unsigned int& index, bool readMaxValue) const;
 };
 
+}
 }
 }
 

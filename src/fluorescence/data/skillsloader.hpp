@@ -17,37 +17,35 @@
  */
 
 
-#ifndef FLUO_DATA_INDEXLOADER_HPP
-#define FLUO_DATA_INDEXLOADER_HPP
+#ifndef FLUO_DATA_SKILLSLOADER_HPP
+#define FLUO_DATA_SKILLSLOADER_HPP
+
+#include <misc/string.hpp>
 
 #include <boost/filesystem.hpp>
-
-#include <misc/exception.hpp>
 
 namespace fluo {
 namespace data {
 
-struct IndexBlock {
-    uint32_t offset_;
-    uint32_t length_;
-    uint32_t extra_;
+struct SkillInfo {
+    uint32_t skillId_;
+    UnicodeString name_;
+    bool isUsable_;
 };
 
-class IndexLoader {
+class SkillsLoader {
 public:
-    IndexLoader(const boost::filesystem::path& path);
-    ~IndexLoader();
+    SkillsLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath);
+    ~SkillsLoader();
 
-    const IndexBlock& get(unsigned int id) const;
+    // 0-based
+    const SkillInfo* getSkillInfo(unsigned int id) const;
 
-    unsigned int size() const;
-
-    void read(int8_t* buf, unsigned int len);
+    void read(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath);
 
 private:
-    unsigned int size_;
-    IndexBlock* indexBlocks_;
-
+    unsigned int skillCount_;
+    SkillInfo* skillInfos_;
 };
 
 }

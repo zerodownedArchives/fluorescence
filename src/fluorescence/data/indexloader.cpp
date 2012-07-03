@@ -71,5 +71,9 @@ const IndexBlock& IndexLoader::get(unsigned int id) const {
     return indexBlocks_[id];
 }
 
+unsigned int IndexLoader::size() const {
+    return size_;
+}
+
 }
 }
