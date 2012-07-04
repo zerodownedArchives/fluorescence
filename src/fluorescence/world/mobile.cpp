@@ -265,10 +265,10 @@ void Mobile::removeLinkedGump(ui::GumpMenu* menu) {
 void Mobile::onStartDrag(const CL_Point& mousePos) {
     ui::Manager::getSingleton()->getCursorManager()->stopDragging();
 
-    openStatWindow(mousePos);
+    openStatusGump(mousePos);
 }
 
-void Mobile::openStatWindow(const CL_Point& mousePos) {
+void Mobile::openStatusGump(const CL_Point& mousePos) {
     ui::GumpMenu* statsMenu;
     if (isPlayer()) {
         statsMenu = findOrCreateLinkedGump("status-self");
@@ -293,6 +293,13 @@ void Mobile::openProfile() {
     } else {
         findOrCreateLinkedGump("profile-other");
     }
+}
+
+void Mobile::openSkillsGump() {
+    findOrCreateLinkedGump("skills");
+
+    net::packets::StatSkillQuery queryPacket(getSerial(), net::packets::StatSkillQuery::QUERY_SKILLS);
+    net::Manager::getSingleton()->send(queryPacket);
 }
 
 ui::GumpMenu* Mobile::findOrCreateLinkedGump(const UnicodeString& gumpName) {

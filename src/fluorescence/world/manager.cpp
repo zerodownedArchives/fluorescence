@@ -33,6 +33,9 @@
 #include <ui/manager.hpp>
 #include <ui/cliprectmanager.hpp>
 
+#include <net/manager.hpp>
+#include <net/packets/statskillquery.hpp>
+
 #include <misc/exception.hpp>
 #include <misc/log.hpp>
 
@@ -73,9 +76,9 @@ Manager::Manager(const Config& config) : currentMapId_(0) {
     lightManager_.reset(new LightManager());
     smoothMovementManager_.reset(new SmoothMovementManager());
     playerWalkManager_.reset(new PlayerWalkManager());
-    
+
     sysLog_.reset(new SysLog());
-    
+
     setAutoDeleteRange(18);
 }
 
@@ -121,6 +124,9 @@ boost::shared_ptr<LightManager> Manager::getLightManager() {
 boost::shared_ptr<Mobile> Manager::initPlayer(Serial serial) {
     player_.reset(new Mobile(serial));
     mobiles_[serial] = player_;
+
+    net::packets::StatSkillQuery queryPacket(player_->getSerial(), net::packets::StatSkillQuery::QUERY_SKILLS);
+    net::Manager::getSingleton()->send(queryPacket);
 
     return player_;
 }
@@ -180,17 +186,17 @@ void Manager::step(unsigned int elapsedMillis) {
 
 void Manager::update(unsigned int elapsedMillis) {
     smoothMovementManager_->update(elapsedMillis);
-    
+
     int playerX = player_->getLocXGame();
     int playerY = player_->getLocYGame();
-    
+
     std::list<Serial> outOfRangeDelete;
 
     std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobIter = mobiles_.begin();
     std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobEnd = mobiles_.end();
 
     for (; mobIter != mobEnd; ++mobIter) {
-        if (abs((int)mobIter->second->getLocXGame() - playerX) > autoDeleteRange_ || 
+        if (abs((int)mobIter->second->getLocXGame() - playerX) > autoDeleteRange_ ||
                 abs((int)mobIter->second->getLocYGame() - playerY) > autoDeleteRange_) {
             outOfRangeDelete.push_back(mobIter->first);
         } else {
@@ -202,7 +208,7 @@ void Manager::update(unsigned int elapsedMillis) {
     std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator itmEnd = dynamicItems_.end();
 
     for (; itmIter != itmEnd; ++itmIter) {
-        if ((abs((int)itmIter->second->getLocXGame() - playerX) > autoDeleteRange_ || 
+        if ((abs((int)itmIter->second->getLocXGame() - playerX) > autoDeleteRange_ ||
                 abs((int)itmIter->second->getLocYGame() - playerY) > autoDeleteRange_) && !itmIter->second->hasParent()) {
             outOfRangeDelete.push_back(itmIter->first);
         } else {
@@ -231,8 +237,8 @@ void Manager::update(unsigned int elapsedMillis) {
             (*msgIter)->expire();
         }
     }
-    
-    
+
+
     std::list<boost::shared_ptr<Effect> >::iterator effectIter = effects_.begin();
     std::list<boost::shared_ptr<Effect> >::iterator effectEnd = effects_.end();
     std::list<boost::shared_ptr<Effect> > expiredEffects;
@@ -256,20 +262,20 @@ void Manager::update(unsigned int elapsedMillis) {
             effects_.remove(*effectIter);
         }
     }
-        
-    
+
+
     if (!outOfRangeDelete.empty()) {
         //LOG_DEBUG << "out of range coords=" << playerX << "/" << playerY << std::endl;
         std::list<Serial>::const_iterator iter = outOfRangeDelete.begin();
         std::list<Serial>::const_iterator end = outOfRangeDelete.end();
-        
+
         for (; iter != end; ++iter) {
             deleteObject(*iter);
         }
     }
-    
+
     sectorManager_->update(elapsedMillis);
-    
+
     // do after sector sorting
     playerWalkManager_->update(elapsedMillis);
 }
@@ -302,9 +308,9 @@ void Manager::addEffect(boost::shared_ptr<Effect> effect) {
 
 void Manager::systemMessage(const UnicodeString& msg, unsigned int hue, unsigned int font) {
     LOG_INFO << "SysMsg: " << msg << std::endl;
-    
+
     sysLog_->add(msg, hue, font);
-    
+
     // TODO: add to journal
 }
 

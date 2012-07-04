@@ -50,7 +50,7 @@ private:
 
     std::list<SkillValue> skillValues_;
 
-    SkillValue readValue(const int8_t* buf, unsigned int len, unsigned int& index, bool readMaxValue) const;
+    SkillValue readValue(const int8_t* buf, unsigned int len, unsigned int& index, bool readMaxValue, bool stopOnZero) const;
 };
 
 }

@@ -84,6 +84,7 @@ void GumpActions::buildFullActionTable() {
     actionTable_["openstatus"] = GumpAction(false, boost::bind(&GumpActions::openStatus, _1, _2, _3, _4));
     actionTable_["helprequest"] = GumpAction(false, boost::bind(&GumpActions::helpRequest, _1, _2, _3, _4));
     actionTable_["openprofile"] = GumpAction(false, boost::bind(&GumpActions::openProfile, _1, _2, _3, _4));
+    actionTable_["openskills"] = GumpAction(false, boost::bind(&GumpActions::openSkills, _1, _2, _3, _4));
 
     actionTable_["castspell"] = GumpAction(false, boost::bind(&GumpActions::castSpell, _1, _2, _3, _4));
 
@@ -189,9 +190,19 @@ bool GumpActions::createDummyCharacter(GumpMenu* menu, const UnicodeString& acti
 bool GumpActions::openStatus(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     world::Mobile* mob = menu->getLinkedMobile();
     if (mob) {
-        mob->openStatWindow(ui::Manager::getSingleton()->getMousePosition());
+        mob->openStatusGump(ui::Manager::getSingleton()->getMousePosition());
     } else {
         LOG_WARN << "openstatus gump action in unlinked gump" << std::endl;
+    }
+    return true;
+}
+
+bool GumpActions::openSkills(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    world::Mobile* mob = menu->getLinkedMobile();
+    if (mob) {
+        mob->openSkillsGump();
+    } else {
+        LOG_WARN << "openskills gump action in unlinked gump" << std::endl;
     }
     return true;
 }

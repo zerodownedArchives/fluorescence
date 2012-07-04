@@ -91,19 +91,20 @@ public:
     bool isPlayer() const;
     bool isMounted() const;
     bool isWarMode() const;
-    
+
     void setWarMode(bool warMode);
-    
+
     virtual void onAddedToSector(world::Sector* sector);
     virtual void onRemovedFromSector(world::Sector* sector);
-    
+
     bool hasItemOnLayer(unsigned int layer) const;
-    
-    void openStatWindow(const CL_Point& mousePos);
+
+    void openStatusGump(const CL_Point& mousePos);
     void openProfile();
-    
+    void openSkillsGump();
+
     void setStatusFlags(uint8_t flags);
-    
+
     void displayStatChange(unsigned int str, unsigned int dex, unsigned int intel);
 
 private:
@@ -130,9 +131,9 @@ private:
     bool female_;
 
     bool isWarMode_;
-    
+
     unsigned int animType_; // high detail, low detail, people
-    
+
 };
 
 }

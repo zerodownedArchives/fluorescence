@@ -21,6 +21,10 @@
 #include "skillsupdate.hpp"
 
 #include <misc/log.hpp>
+#include <data/manager.hpp>
+#include <data/skillsloader.hpp>
+#include <world/manager.hpp>
+#include <world/mobile.hpp>
 
 namespace fluo {
 namespace net {
@@ -38,7 +42,7 @@ bool SkillsUpdate::read(const int8_t* buf, unsigned int len, unsigned int& index
     case 0x00: {
         // skill list without caps
         while (true) {
-            SkillValue newVal = readValue(buf, len, index, false);
+            SkillValue newVal = readValue(buf, len, index, false, true);
             if (newVal.skillId_ == 0) {
                 break;
             }
@@ -48,9 +52,8 @@ bool SkillsUpdate::read(const int8_t* buf, unsigned int len, unsigned int& index
     }
     case 0x02:
         // skill list with caps
-        // skill list without caps
         while (true) {
-            SkillValue newVal = readValue(buf, len, index, true);
+            SkillValue newVal = readValue(buf, len, index, true, true);
             if (newVal.skillId_ == 0) {
                 break;
             }
@@ -58,14 +61,14 @@ bool SkillsUpdate::read(const int8_t* buf, unsigned int len, unsigned int& index
         }
         break;
     case 0xDF: {
-        // single skill update without cap
-        SkillValue newVal = readValue(buf, len, index, true);
+        // single skill update with cap
+        SkillValue newVal = readValue(buf, len, index, true, false);
         skillValues_.push_back(newVal);
         break;
     }
     case 0xFF: {
         // single skill update without cap
-        SkillValue newVal = readValue(buf, len, index, false);
+        SkillValue newVal = readValue(buf, len, index, false, false);
         skillValues_.push_back(newVal);
         break;
     }
@@ -74,13 +77,18 @@ bool SkillsUpdate::read(const int8_t* buf, unsigned int len, unsigned int& index
     return ret;
 }
 
-SkillValue SkillsUpdate::readValue(const int8_t* buf, unsigned int len, unsigned int& index, bool readMaxValue) const {
+SkillValue SkillsUpdate::readValue(const int8_t* buf, unsigned int len, unsigned int& index, bool readMaxValue, bool stopOnZero) const {
     SkillValue val;
 
     PacketReader::read(buf, len, index, val.skillId_);
 
-    if (val.skillId_ == 0) {
+    if (stopOnZero && val.skillId_ == 0) {
         return val;
+    }
+
+    if (!stopOnZero) {
+        // skill id is 0-based in this case => change it to be the same as in the full update packet
+        val.skillId_ += 1;
     }
 
     PacketReader::read(buf, len, index, val.value_);
@@ -97,12 +105,63 @@ SkillValue SkillsUpdate::readValue(const int8_t* buf, unsigned int len, unsigned
 }
 
 void SkillsUpdate::onReceive() {
+    boost::shared_ptr<world::Mobile> player = world::Manager::getSingleton()->getPlayer();
+    if (!player) {
+        LOG_ERROR << "Skills update without player" << std::endl;
+        return;
+    }
+
     LOG_DEBUG << "Skills update for " << skillValues_.size() << " skills:" << std::endl;
     std::list<SkillValue>::const_iterator iter = skillValues_.begin();
     std::list<SkillValue>::const_iterator end = skillValues_.end();
     for (; iter != end; ++iter) {
-        LOG_DEBUG << "Skill " << iter->skillId_ << ": " << iter->value_ << "/" << iter->baseValue_ << "/" << iter->maxValue_ << " lock=" << (unsigned int)iter->lockStatus_ << std::endl;
+        UnicodeString propNameBase("skills.");
+        propNameBase += data::Manager::getSkillsLoader()->getSkillInfo(iter->skillId_ - 1)->name_;
+
+        UnicodeString propNameCur(propNameBase);
+        propNameCur += ".value";
+
+        if (player->hasProperty(propNameCur)) {
+            Variable& skillValue = player->getProperty(propNameCur);
+            float diff = (iter->value_ - skillValue.asInt()) / 10.0;
+            // check skill changed => syslog message
+            if (diff > 0) {
+                std::stringstream sstr;
+                sstr << "Your skill in " << data::Manager::getSkillsLoader()->getSkillInfo(iter->skillId_ - 1)->name_
+                        << " has increased by " << diff << "%. It is now " << (iter->value_ / 10.f) << "%.";
+                UnicodeString msg(sstr.str().c_str());
+                world::Manager::getSingleton()->systemMessage(msg, 64);
+            } else if (diff < 0) {
+                std::stringstream sstr;
+                sstr << "Your skill in " << data::Manager::getSkillsLoader()->getSkillInfo(iter->skillId_ - 1)->name_
+                        << " has decreased by " << (-diff) << "%. It is now " << (iter->value_ / 10.f) << "%.";
+                UnicodeString msg(sstr.str().c_str());
+                world::Manager::getSingleton()->systemMessage(msg, 64);
+            }
+            skillValue.setInt(iter->value_);
+        } else {
+            player->getProperty(propNameCur).setInt(iter->value_);
+        }
+
+        propNameCur = propNameBase;
+        propNameCur += ".base";
+        player->getProperty(propNameCur).setInt(iter->baseValue_);
+
+        propNameCur = propNameBase;
+        propNameCur += ".cap";
+        player->getProperty(propNameCur).setInt(iter->maxValue_);
+
+        propNameCur = propNameBase;
+        propNameCur += ".lock";
+        player->getProperty(propNameCur).setBool(iter->lockStatus_);
+
+        LOG_DEBUG << "Skill " << iter->skillId_ << ": "
+                << data::Manager::getSkillsLoader()->getSkillInfo(iter->skillId_ - 1)->name_ << " "
+                << iter->value_ << "/" << iter->baseValue_ << "/" << iter->maxValue_ << " lock="
+                << (unsigned int)iter->lockStatus_ << std::endl;
     }
+
+    player->onPropertyUpdate();
 }
 
 }
