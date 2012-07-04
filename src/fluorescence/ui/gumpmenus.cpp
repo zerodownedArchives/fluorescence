@@ -39,8 +39,10 @@
 #include <data/manager.hpp>
 #include <data/clilocloader.hpp>
 #include <data/spellbooks.hpp>
+#include <data/skillsloader.hpp>
 
 #include <world/dynamicitem.hpp>
+#include <world/mobile.hpp>
 
 #include "gumpmenu.hpp"
 #include "xmlparser.hpp"
@@ -67,15 +69,15 @@ GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int para
         LOG_ERROR << "No text or action given for YesNoBox" << std::endl;
         return nullptr;
     }
-    
+
     GumpMenu* menu = XmlParser::fromXmlFile("yesnobox");
     if (menu) {
         menu->setComponentText<components::Label>("messagetext", parameters[0]);
-        
+
         components::BaseButton* yesButton = dynamic_cast<components::BaseButton*>(menu->get_named_item("yes"));
         if (yesButton) {
             yesButton->setLocalButton(parameters[1]);
-            
+
             for (unsigned int i = 2; i < parameterCount; ++i) {
                 yesButton->setParameter(parameters[i], i-2);
             }
@@ -226,11 +228,11 @@ GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
     if (!book) {
         return nullptr;
     }
-        
+
     XmlParser::RepeatContext indexContexts[8];
     std::vector<UnicodeString> circleIndexNamesTmp;
     std::vector<UnicodeString> circleIndexPagesTmp;
-    
+
     std::vector<UnicodeString> allSpellsPreviousPage;
     std::vector<UnicodeString> allSpellsCurrentPage;
     std::vector<UnicodeString> allSpellsNextPage;
@@ -240,14 +242,14 @@ GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
     std::vector<UnicodeString> allSpellsDescriptionHeaders;
     std::vector<UnicodeString> allSpellsDescriptions;
     std::vector<UnicodeString> allSpellsIds;
-    
+
     unsigned int spellCount = 0;
     unsigned int curPage = 4; // index spreads over 4 pages
-    
+
     for (unsigned int i = 0; i < 8; ++i) {
         circleIndexNamesTmp.clear();
         circleIndexPagesTmp.clear();
-        
+
         uint8_t spellBits = itm->getSpellbookSpellBits(i);
         for (unsigned int j = 0; j < 8; ++j) {
             uint8_t test = (1 << j);
@@ -257,11 +259,11 @@ GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
                 if (spellCount % 2 == 1) {
                     ++curPage;
                 }
-                
+
                 circleIndexNamesTmp.push_back(book->sections_[i].spells_[j].name_);
                 circleIndexPagesTmp.push_back(StringConverter::fromNumber(curPage));
-                
-                
+
+
                 allSpellsNames.push_back(book->sections_[i].spells_[j].name_);
                 allSpellsSections.push_back(book->sections_[i].name_);
                 allSpellsPreviousPage.push_back(StringConverter::fromNumber(curPage - 1));
@@ -273,14 +275,14 @@ GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
                 allSpellsIds.push_back(StringConverter::fromNumber(book->sections_[i].spells_[j].spellId_));
             }
         }
-        
+
         indexContexts[i].repeatCount_ = circleIndexNamesTmp.size();
         indexContexts[i].keywordReplacments_["spellname"] = circleIndexNamesTmp;
         indexContexts[i].keywordReplacments_["spellpage"] = circleIndexPagesTmp;
-        
+
         XmlParser::addRepeatContext(book->sections_[i].name_, indexContexts[i]);
     }
-    
+
     XmlParser::RepeatContext allSpellsContext;
     allSpellsContext.repeatCount_ = allSpellsNames.size();
     allSpellsContext.keywordReplacments_["previouspage"] = allSpellsPreviousPage;
@@ -292,12 +294,54 @@ GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
     allSpellsContext.keywordReplacments_["descriptionheader"] = allSpellsDescriptionHeaders;
     allSpellsContext.keywordReplacments_["gumpid"] = allSpellsIcons;
     allSpellsContext.keywordReplacments_["spellid"] = allSpellsIds;
-    
+
     XmlParser::addRepeatContext("allspells", allSpellsContext);
-    
+
     GumpMenu* menu = XmlParser::fromXmlFile(book->gumpName_);
     XmlParser::clearRepeatContexts();
-    
+
+    return menu;
+}
+
+GumpMenu* GumpMenus::openSkills(const world::Mobile* mob) {
+    std::vector<UnicodeString> nameList;
+    std::vector<UnicodeString> valueList;
+    std::vector<UnicodeString> baseList;
+    std::vector<UnicodeString> capList;
+
+    unsigned int skillCount = data::Manager::getSkillsLoader()->getSkillCount();
+
+    for (unsigned int i = 0; i < skillCount; ++i) {
+        const data::SkillInfo* curInfo = data::Manager::getSkillsLoader()->getSkillInfo(i);
+        nameList.push_back(curInfo->name_);
+
+        UnicodeString propNameBase("skills.");
+        propNameBase += curInfo->name_;
+
+        UnicodeString propNameCur(propNameBase);
+        propNameCur += ".value";
+        valueList.push_back(propNameCur);
+
+        propNameCur = propNameBase;
+        propNameCur += ".base";
+        baseList.push_back(propNameCur);
+
+        propNameCur = propNameBase;
+        propNameCur += ".cap";
+        capList.push_back(propNameCur);
+    }
+
+    XmlParser::RepeatContext context;
+    context.repeatCount_ = nameList.size();
+    context.keywordReplacments_["skillname"] = nameList;
+    context.keywordReplacments_["skillvalue"] = valueList;
+    context.keywordReplacments_["skillbase"] = baseList;
+    context.keywordReplacments_["skillcap"] = capList;
+
+    XmlParser::addRepeatContext("skills", context);
+    GumpMenu* menu = XmlParser::fromXmlFile("skills");
+    XmlParser::removeRepeatContext("contextmenu");
+
     return menu;
 }
 

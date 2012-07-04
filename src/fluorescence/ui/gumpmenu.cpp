@@ -268,7 +268,11 @@ void GumpMenu::updateMobileProperties() {
         return;
     }
 
-    std::vector<CL_GUIComponent*> children = get_child_components();
+    updateMobilePropertiesRec(this);
+}
+
+void GumpMenu::updateMobilePropertiesRec(CL_GUIComponent* comp) {
+    std::vector<CL_GUIComponent*> children = comp->get_child_components();
 
     std::vector<CL_GUIComponent*>::iterator iter = children.begin();
     std::vector<CL_GUIComponent*>::iterator end = children.end();
@@ -283,6 +287,8 @@ void GumpMenu::updateMobileProperties() {
                 wmbut->setWarMode(linkedMobile_->isWarMode());
             }
         }
+
+        updateMobilePropertiesRec(*iter);
     }
 }
 

@@ -40,6 +40,7 @@ public:
 
     // 0-based
     const SkillInfo* getSkillInfo(unsigned int id) const;
+    unsigned int getSkillCount() const;
 
     void read(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath);
 

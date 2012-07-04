@@ -35,6 +35,7 @@
 #include "commands/directionlight.hpp"
 #include "commands/speechentry.hpp"
 #include "commands/zoom.hpp"
+#include "commands/property.hpp"
 
 namespace fluo {
 namespace ui {
@@ -54,6 +55,7 @@ CommandManager::CommandManager(Config& config) {
     commandMap_["directionlight"].reset(new commands::DirectionLight());
     commandMap_["speechentry"].reset(new commands::SpeechEntry());
     commandMap_["zoom"].reset(new commands::Zoom());
+    commandMap_["property"].reset(new commands::Property());
 
     // TODO: fill prefixes with values from config
 

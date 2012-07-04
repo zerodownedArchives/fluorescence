@@ -182,6 +182,7 @@ set (CLIENTCOMMANDS_HPP
     ui/commands/directionlight.hpp
     ui/commands/speechentry.hpp
     ui/commands/zoom.hpp
+    ui/commands/property.hpp
     )
 
 set (CLIENTCOMMANDS_CPP
@@ -198,6 +199,7 @@ set (CLIENTCOMMANDS_CPP
     ui/commands/directionlight.cpp
     ui/commands/speechentry.cpp
     ui/commands/zoom.cpp
+    ui/commands/property.cpp
     )
 
 

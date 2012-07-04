@@ -296,13 +296,21 @@ void Mobile::openProfile() {
 }
 
 void Mobile::openSkillsGump() {
-    findOrCreateLinkedGump("skills");
+    ui::GumpMenu* menu = findLinkedGump("skills");
 
-    net::packets::StatSkillQuery queryPacket(getSerial(), net::packets::StatSkillQuery::QUERY_SKILLS);
-    net::Manager::getSingleton()->send(queryPacket);
+    if (!menu) {
+        menu = ui::GumpMenus::openSkills(this);
+        addLinkedGump(menu);
+    }
+
+    onPropertyUpdate();
+
+    // not necessary, skills are always up to date
+    //net::packets::StatSkillQuery queryPacket(getSerial(), net::packets::StatSkillQuery::QUERY_SKILLS);
+    //net::Manager::getSingleton()->send(queryPacket);
 }
 
-ui::GumpMenu* Mobile::findOrCreateLinkedGump(const UnicodeString& gumpName) {
+ui::GumpMenu* Mobile::findLinkedGump(const UnicodeString& gumpName) {
     std::list<ui::GumpMenu*>::iterator iter = linkedGumps_.begin();
     std::list<ui::GumpMenu*>::iterator end = linkedGumps_.end();
 
@@ -313,9 +321,17 @@ ui::GumpMenu* Mobile::findOrCreateLinkedGump(const UnicodeString& gumpName) {
         }
     }
 
-    // not found, create
-    ui::GumpMenu* menu = ui::Manager::getSingleton()->openXmlGump(gumpName);
-    addLinkedGump(menu);
+    return nullptr;
+}
+
+ui::GumpMenu* Mobile::findOrCreateLinkedGump(const UnicodeString& gumpName) {
+    ui::GumpMenu* menu = findLinkedGump(gumpName);
+
+    if (!menu) {
+        // not found, create
+        menu = ui::Manager::getSingleton()->openXmlGump(gumpName);
+        addLinkedGump(menu);
+    }
 
     return menu;
 }

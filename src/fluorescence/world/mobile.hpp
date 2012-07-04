@@ -125,6 +125,7 @@ private:
     std::map<UnicodeString, Variable> propertyMap_;
 
     std::list<ui::GumpMenu*> linkedGumps_;
+    ui::GumpMenu* findLinkedGump(const UnicodeString& gumpName);
     ui::GumpMenu* findOrCreateLinkedGump(const UnicodeString& gumpName);
 
     unsigned int race_;

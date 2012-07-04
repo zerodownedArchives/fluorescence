@@ -28,6 +28,7 @@ class Config;
 
 namespace world {
 class DynamicItem;
+class Mobile;
 }
 
 namespace net {
@@ -56,6 +57,7 @@ public:
     static GumpMenu* openCharacterListGump(unsigned int charCount, const UnicodeString* charNames, const UnicodeString* charPasswords);
     static GumpMenu* openContextMenu(const net::packets::bf::OpenContextMenu* pkt);
     static GumpMenu* openSpellbook(const world::DynamicItem* itm);
+    static GumpMenu* openSkills(const world::Mobile* mob);
 };
 
 }

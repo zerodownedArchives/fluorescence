@@ -111,7 +111,8 @@ void SkillsUpdate::onReceive() {
         return;
     }
 
-    LOG_DEBUG << "Skills update for " << skillValues_.size() << " skills:" << std::endl;
+    //LOG_DEBUG << "Skills update for " << skillValues_.size() << " skills:" << std::endl;
+
     std::list<SkillValue>::const_iterator iter = skillValues_.begin();
     std::list<SkillValue>::const_iterator end = skillValues_.end();
     for (; iter != end; ++iter) {
@@ -130,13 +131,13 @@ void SkillsUpdate::onReceive() {
                 sstr << "Your skill in " << data::Manager::getSkillsLoader()->getSkillInfo(iter->skillId_ - 1)->name_
                         << " has increased by " << diff << "%. It is now " << (iter->value_ / 10.f) << "%.";
                 UnicodeString msg(sstr.str().c_str());
-                world::Manager::getSingleton()->systemMessage(msg, 64);
+                world::Manager::getSingleton()->systemMessage(msg, 86);
             } else if (diff < 0) {
                 std::stringstream sstr;
                 sstr << "Your skill in " << data::Manager::getSkillsLoader()->getSkillInfo(iter->skillId_ - 1)->name_
                         << " has decreased by " << (-diff) << "%. It is now " << (iter->value_ / 10.f) << "%.";
                 UnicodeString msg(sstr.str().c_str());
-                world::Manager::getSingleton()->systemMessage(msg, 64);
+                world::Manager::getSingleton()->systemMessage(msg, 86);
             }
             skillValue.setInt(iter->value_);
         } else {
@@ -153,12 +154,12 @@ void SkillsUpdate::onReceive() {
 
         propNameCur = propNameBase;
         propNameCur += ".lock";
-        player->getProperty(propNameCur).setBool(iter->lockStatus_);
+        player->getProperty(propNameCur).setInt(iter->lockStatus_);
 
-        LOG_DEBUG << "Skill " << iter->skillId_ << ": "
-                << data::Manager::getSkillsLoader()->getSkillInfo(iter->skillId_ - 1)->name_ << " "
-                << iter->value_ << "/" << iter->baseValue_ << "/" << iter->maxValue_ << " lock="
-                << (unsigned int)iter->lockStatus_ << std::endl;
+        //LOG_DEBUG << "Skill " << iter->skillId_ << ": "
+                //<< data::Manager::getSkillsLoader()->getSkillInfo(iter->skillId_ - 1)->name_ << " "
+                //<< iter->value_ << "/" << iter->baseValue_ << "/" << iter->maxValue_ << " lock="
+                //<< (unsigned int)iter->lockStatus_ << std::endl;
     }
 
     player->onPropertyUpdate();

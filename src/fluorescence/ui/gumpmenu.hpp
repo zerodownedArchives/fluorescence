@@ -105,26 +105,26 @@ public:
     void onClose();
 
     void startDragging(const CL_Point& mousePos);
-    
+
     void setupResizeHandler();
     void fitSizeToChildren();
-    
+
     void setSerial(Serial serial);
     void setTypeId(unsigned int typeId);
-    
+
     void sendReply(unsigned int buttonId_);
-    
+
     void setCurrentRadioGroup(unsigned int groupId);
     unsigned int getCurrentRadioGroup() const;
-    
+
     virtual bool has_pixel(const CL_Point& p) const;
-    
+
     void setCloseCallback(boost::function<void()> cb);
-    
+
 private:
     Serial serial_;
     unsigned int typeId_;
-    
+
     unsigned int activePageId_;
     std::map<unsigned int, std::vector<CL_GUIComponent*> > pages_;
     unsigned int firstPageId_;
@@ -140,16 +140,17 @@ private:
     bool onInputPressed(const CL_InputEvent& msg);
     bool onInputReleased(const CL_InputEvent& msg);
     bool onPointerMoved(const CL_InputEvent& msg);
-    
+
     UnicodeString name_;
 
     UnicodeString action_;
     UnicodeString cancelAction_;
 
     world::Mobile* linkedMobile_;
-    
+    void updateMobilePropertiesRec(CL_GUIComponent* comp);
+
     unsigned int currentRadioGroup_;
-    
+
     boost::function<void()> closeCallback_;
 };
 

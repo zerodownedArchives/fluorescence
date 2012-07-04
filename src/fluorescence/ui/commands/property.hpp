@@ -16,28 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef FLUO_UI_COMMANDS_PROPERTY_HPP
+#define FLUO_UI_COMMANDS_PROPERTY_HPP
 
-
-#include "propertylabel.hpp"
-
-#include <world/mobile.hpp>
-
-#include <misc/log.hpp>
+#include "clientcommand.hpp"
 
 namespace fluo {
 namespace ui {
-namespace components {
+namespace commands {
 
-PropertyLabel::PropertyLabel(CL_GUIComponent* parent, const UnicodeString& link) : Label(parent), linkName_(link) {
-}
-
-void PropertyLabel::update(world::Mobile* mob) {
-    LOG_DEBUG << "Property update: " << linkName_ << std::endl;
-    if (mob->hasProperty(linkName_)) {
-        setText(mob->getProperty(linkName_).asString());
-    }
-}
+class Property : public ClientCommand {
+public:
+    virtual void execute(const UnicodeString& args);
+};
 
 }
 }
 }
+
+#endif
+

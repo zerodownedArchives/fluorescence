@@ -52,6 +52,7 @@ void SkillsLoader::read(const boost::filesystem::path& idxPath, const boost::fil
     char* buf = (char*)malloc(bufSize);
 
     skillInfos_ = new SkillInfo[idxLdr.size()];
+    skillCount_ = 0;
 
     unsigned int i;
     for (i = 0; i < idxLdr.size(); ++i) {
@@ -60,6 +61,8 @@ void SkillsLoader::read(const boost::filesystem::path& idxPath, const boost::fil
         if (curBlock.offset_ == 0xFFFFFFFF || curBlock.length_ == 0) {
             continue;
         }
+
+        ++skillCount_;
 
         if (curBlock.length_ > bufSize) {
             bufSize *= 2;
@@ -76,7 +79,6 @@ void SkillsLoader::read(const boost::filesystem::path& idxPath, const boost::fil
         LOG_DEBUG << "Skill " << skillInfos_[i].skillId_ << ": " << skillInfos_[i].name_ << " - " << skillInfos_[i].isUsable_ << std::endl;
     }
 
-    skillCount_ = i; // real skill count
     stream.close();
     free(buf);
 }
@@ -88,6 +90,10 @@ const SkillInfo* SkillsLoader::getSkillInfo(unsigned int id) const {
     }
 
     return &skillInfos_[id];
+}
+
+unsigned int SkillsLoader::getSkillCount() const {
+    return skillCount_;
 }
 
 }

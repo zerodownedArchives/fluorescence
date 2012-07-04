@@ -16,28 +16,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "property.hpp"
 
-
-#include "propertylabel.hpp"
-
+#include <typedefs.hpp>
+#include <world/manager.hpp>
 #include <world/mobile.hpp>
-
-#include <misc/log.hpp>
 
 namespace fluo {
 namespace ui {
-namespace components {
+namespace commands {
 
-PropertyLabel::PropertyLabel(CL_GUIComponent* parent, const UnicodeString& link) : Label(parent), linkName_(link) {
-}
-
-void PropertyLabel::update(world::Mobile* mob) {
-    LOG_DEBUG << "Property update: " << linkName_ << std::endl;
-    if (mob->hasProperty(linkName_)) {
-        setText(mob->getProperty(linkName_).asString());
+void Property::execute(const UnicodeString& args) {
+    UnicodeString msg("Property ");
+    msg += args;
+    if (!world::Manager::getSingleton()->getPlayer()->hasProperty(args)) {
+        msg += " not found";
+    } else {
+        msg += ": ";
+        msg += world::Manager::getSingleton()->getPlayer()->getProperty(args).asString();
     }
+    world::Manager::getSingleton()->systemMessage(msg);
 }
 
 }
 }
 }
+
