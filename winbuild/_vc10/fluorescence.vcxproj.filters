@@ -1,451 +1,1386 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\src\fluorescence\client.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\animdataloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\animloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\artloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\clilocloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\equipconvdefloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\filepathloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\fullfileloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\gumpartloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\httploader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\huesloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\indexloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\manager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\maploader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\maptexloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\mobtypesloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\staticsloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\tiledataloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\unifontloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\util.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\main.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\misc\config.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\misc\interpolation.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\misc\log.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\misc\pugixml\pugixml.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\misc\random.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\misc\string.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\misc\variable.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\decompress.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\manager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\md5\md5c.c" />
-    <ClCompile Include="..\..\src\fluorescence\net\multipurposepacket.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\noencryption.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packet.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packetreader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\asciitext.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\basetext.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\bf.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\changemap.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\contextmenureply.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\contextmenurequest.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\fastwalkinit.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\fastwalkupdate.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\opencontextmenu.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\characterlist.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\characterselect.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\clientversion.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\containercontent.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\containerupdate.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\createcharacter.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\deleteobject.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\displaycontainer.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\doubleclick.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\dropitem.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\equippeditem.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\equippedmobile.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\gameserverloginrequest.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\gameserverselect.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\gumpmenu.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\gumpreply.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\localizedtext.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\localizedtextaffix.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\logincomplete.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\loginreject.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\loginrequest.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\mobileanimation.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\movementaccept.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\movementdeny.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\movementrequest.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\nakedmobile.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\openpaperdoll.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\pickupitem.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\pickupreject.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\playerinit.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\serverlist.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\serverredirect.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\singleclick.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\speechrequest.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\statskillquery.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\statupdatefull.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\statupdatehitpoints.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\statupdatemana.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\statupdatestamina.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\target.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\teleport.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\unicodetext.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\unknown.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\updaterange.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\worlditem.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packetwriter.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\socket.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\twofishencryption.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\twofish\twofish.c" />
-    <ClCompile Include="..\..\src\fluorescence\net\walkpacketmanager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\xorencryption.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\platform.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\animation.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\animdatatextureprovider.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\animtextureprovider.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\bitmask.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\cliprectmanager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\background.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\basebutton.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\containerview.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\image.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\label.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\lineedit.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\propertylabel.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\scrollarea.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\templatebutton.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\textentry.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\uobutton.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\uocheckbox.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\uoradiobutton.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\worldview.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\cursorimage.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\cursormanager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\fontengine.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\gumpactions.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\gumpelement.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\gumpmenu.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\gumpmenus.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\manager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\motionmodel.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\xmlloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\render\containerrenderer.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\render\containerrenderqueue.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\render\renderqueue.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\render\shadermanager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\render\worldrenderdata.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\singletextureprovider.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\stringparser.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\targeting\servertarget.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\targeting\target.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\texture.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\uofont.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\uofontprovider.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\xmlparser.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\dynamicitem.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\ingameobject.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\lightmanager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\manager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\map.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\mobile.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\overheadmessage.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\playerwalkmanager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\sector.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\sectormanager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\serverobject.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\smoothmovement.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\smoothmovementmanager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\statics.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\sound.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\soundloader.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\data\spellbooks.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\emitter.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\particleemitter.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\particleemitterstate.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\startlocationprovider.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\timeline.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelineblend.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelineevent.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelineforever.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelineimmediate.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelineinterpolate.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelinepause.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelinestatic.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\attackrequest.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\characterdelete.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\characterdeletereject.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\characterlistupdate.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\equiprequest.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\helprequest.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\osieffect.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\osieffectextended.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\playmusic.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\playsound.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\profile.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\warmode.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\castspell.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\spellbookcontent.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\audiomanager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commandmanager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\macromanager.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commands\command.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commands\directionlight.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commands\disconnect.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commands\effect.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commands\emote.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commands\opengump.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commands\osieffect.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commands\say.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commands\speechentry.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commands\togglewarmode.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commands\whisper.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commands\yell.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\commands\zoom.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\clicklabel.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\paperdollview.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\sysloglabel.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\tbackground.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\components\warmodebutton.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\render\material.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\render\paperdollrenderer.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\render\paperdollrenderqueue.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\ui\render\worldrenderer.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\effect.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\osieffect.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\particleeffect.cpp" />
-    <ClCompile Include="..\..\src\fluorescence\world\syslog.cpp" />
+    <Filter Include="data">
+      <UniqueIdentifier>{f7c73195-5088-461e-8a8f-4c8725b63745}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="misc">
+      <UniqueIdentifier>{412877c2-52c7-43b2-9d6a-8c9b00cd0c02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="misc\pugixml">
+      <UniqueIdentifier>{2c102fea-2c98-4a89-b9ea-be810225fdf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="world">
+      <UniqueIdentifier>{93d4554b-bb15-4224-bce4-b6370fd66ce7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net">
+      <UniqueIdentifier>{5a73b6a7-fa84-46bc-b6f0-2d883c683acb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\md5">
+      <UniqueIdentifier>{c4571178-2d37-4bdb-9a6b-29451eae7b8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\packets">
+      <UniqueIdentifier>{29dce822-11ac-49d4-9358-48bffa1f7198}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\packets\bf">
+      <UniqueIdentifier>{6110cf55-26c2-4640-ab3a-daddc9c21c47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\twofish">
+      <UniqueIdentifier>{400d4ceb-2fc5-4c56-9cc8-1fa88b996fb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{251ad41f-76bb-4adf-9c96-11210d21a330}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\commands">
+      <UniqueIdentifier>{616f4d41-334c-4e55-9154-626a72b6e9a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\components">
+      <UniqueIdentifier>{c03bd0d8-4dff-4d7f-a909-425ca6281131}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\particles">
+      <UniqueIdentifier>{dab5f2d7-37d8-41d4-a224-741bc66500eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\render">
+      <UniqueIdentifier>{01243292-6a7a-467c-ac72-d85f8af83359}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\targeting">
+      <UniqueIdentifier>{09d47fe0-4890-42c4-80c6-9a5c79a4dad6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\fluorescence\data\animdataloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\animloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\artloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\clilocloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\deffileloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\defstructs.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\equipconvdefloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\filepathloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\fixedsizeondemandfileloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\fullfileloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\gumpartloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\httploader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\huesloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\indexedondemandfileloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\indexloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\manager.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\maploader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\maptexloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\mobtypesloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\ondemandfileloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\ondemandreadable.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\ondemandurlloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\sound.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\soundloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\spellbooks.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\staticsloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\tiledataloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\unifontloader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\util.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\data\weakptrcache.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\misc\pugixml\pugiconfig.hpp">
+      <Filter>misc\pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\misc\pugixml\pugixml.hpp">
+      <Filter>misc\pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\misc\config.hpp">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\misc\exception.hpp">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\misc\interpolation.hpp">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\misc\log.hpp">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\misc\random.hpp">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\misc\string.hpp">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\misc\uoconstants.hpp">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\misc\variable.hpp">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\misc\xmlloadexception.hpp">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\dynamicitem.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\effect.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\ingameobject.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\lightmanager.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\manager.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\map.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\mobile.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\osieffect.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\overheadmessage.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\particleeffect.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\playerwalkmanager.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\sector.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\sectormanager.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\serverobject.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\smoothmovement.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\smoothmovementmanager.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\statics.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\world\syslog.hpp">
+      <Filter>world</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\fluorescence\client.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\animdataloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\animloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\artloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\clilocloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\deffileloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\defstructs.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\equipconvdefloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\filepathloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\fixedsizeondemandfileloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\fullfileloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\gumpartloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\httploader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\huesloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\indexedondemandfileloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\indexloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\manager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\maploader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\maptexloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\mobtypesloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\ondemandfileloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\ondemandreadable.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\ondemandurlloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\staticsloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\tiledataloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\unifontloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\util.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\weakptrcache.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\misc\config.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\misc\exception.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\misc\interpolation.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\misc\log.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\misc\pugixml\pugiconfig.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\misc\pugixml\pugixml.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\misc\random.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\misc\string.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\misc\uoconstants.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\misc\variable.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\decompress.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\encryption.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\manager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\md5\global.h" />
-    <ClInclude Include="..\..\src\fluorescence\net\md5\md5.h" />
-    <ClInclude Include="..\..\src\fluorescence\net\multipurposepacket.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\noencryption.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packet.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packetlist.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packetreader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\asciitext.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\basetext.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\bf.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\changemap.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\contextmenureply.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\contextmenurequest.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\fastwalkinit.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\fastwalkupdate.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\opencontextmenu.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\characterlist.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\characterselect.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\clientversion.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\containercontent.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\containerupdate.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\createcharacter.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\deleteobject.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\displaycontainer.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\doubleclick.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\dropitem.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\equippeditem.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\equippedmobile.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\gameserverloginrequest.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\gameserverselect.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\gumpmenu.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\gumpreply.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\localizedtext.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\localizedtextaffix.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\logincomplete.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\loginreject.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\loginrequest.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\mobileanimation.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\movementaccept.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\movementdeny.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\movementrequest.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\nakedmobile.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\openpaperdoll.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\pickupitem.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\pickupreject.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\playerinit.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\serverlist.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\serverredirect.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\singleclick.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\speechrequest.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\statskillquery.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\statupdatefull.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\statupdatehitpoints.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\statupdatemana.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\statupdatestamina.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\target.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\teleport.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\unicodetext.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\unknown.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\updaterange.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\worlditem.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packetwriter.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\socket.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\twofishencryption.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\twofish\aes.h" />
-    <ClInclude Include="..\..\src\fluorescence\net\twofish\debug.h" />
-    <ClInclude Include="..\..\src\fluorescence\net\twofish\platform.h" />
-    <ClInclude Include="..\..\src\fluorescence\net\twofish\table.h" />
-    <ClInclude Include="..\..\src\fluorescence\net\walkpacketmanager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\xorencryption.hpp" />
     <ClInclude Include="..\..\src\fluorescence\platform.hpp" />
     <ClInclude Include="..\..\src\fluorescence\typedefs.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\animation.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\animdatatextureprovider.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\animtextureprovider.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\bitmask.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\cliprectmanager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\background.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\basebutton.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\containerview.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\image.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\label.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\lineedit.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\multitextureimage.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\propertylabel.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\scrollarea.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\templatebutton.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\textentry.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\uobutton.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\uocheckbox.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\uoradiobutton.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\worldview.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\cursorimage.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\cursormanager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\fontengine.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\gumpactions.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\gumpelement.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\gumpmenu.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\gumpmenus.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\manager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\motionmodel.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\xmlloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\render\containerrenderer.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\render\containerrenderqueue.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\render\renderqueue.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\render\shadermanager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\render\worldrenderdata.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\singletextureprovider.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\stringparser.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\targeting\servertarget.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\targeting\target.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\texture.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\textureprovider.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\uofont.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\uofontprovider.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\xmlparser.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\dynamicitem.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\ingameobject.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\lightmanager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\manager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\map.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\mobile.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\overheadmessage.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\playerwalkmanager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\sector.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\sectormanager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\serverobject.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\smoothmovement.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\smoothmovementmanager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\statics.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\sound.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\soundloader.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\data\spellbooks.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\emitter.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\particle.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\particleemitter.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\particleemitterstate.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\startlocationprovider.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\timeline.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelineblend.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelineelement.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelineevent.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelineforever.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelineimmediate.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelineinterpolate.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelinepause.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelinestatic.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\misc\xmlloadexception.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\attackrequest.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\characterdelete.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\characterdeletereject.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\characterlistupdate.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\equiprequest.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\helprequest.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\osieffect.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\osieffectextended.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\playmusic.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\playsound.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\profile.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\warmode.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\castspell.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\spellbookcontent.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\audiomanager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commandmanager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\macromanager.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\clientcommand.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\command.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\directionlight.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\disconnect.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\effect.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\emote.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\opengump.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\osieffect.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\say.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\speechentry.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\togglewarmode.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\whisper.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\yell.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\commands\zoom.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\clicklabel.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\paperdollview.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\sysloglabel.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\tbackground.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\components\warmodebutton.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\render\material.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\render\materialinfo.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\render\paperdollrenderer.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\render\paperdollrenderqueue.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\ui\render\worldrenderer.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\effect.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\osieffect.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\particleeffect.hpp" />
-    <ClInclude Include="..\..\src\fluorescence\world\syslog.hpp" />
+    <ClInclude Include="..\..\src\fluorescence\net\decompress.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\encryption.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\manager.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\multipurposepacket.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\noencryption.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packet.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packetlist.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packetreader.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packetwriter.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\socket.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\twofishencryption.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\walkpacketmanager.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\xorencryption.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\md5\global.h">
+      <Filter>net\md5</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\md5\md5.h">
+      <Filter>net\md5</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\asciitext.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\attackrequest.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\basetext.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\bf.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\characterdelete.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\characterdeletereject.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\characterlist.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\characterlistupdate.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\characterselect.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\clientversion.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\containercontent.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\containerupdate.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\createcharacter.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\deleteobject.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\displaycontainer.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\doubleclick.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\dropitem.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\equippeditem.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\equippedmobile.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\equiprequest.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\gameserverloginrequest.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\gameserverselect.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\gumpmenu.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\gumpreply.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\helprequest.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\localizedtext.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\localizedtextaffix.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\logincomplete.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\loginreject.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\loginrequest.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\mobileanimation.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\movementaccept.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\movementdeny.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\movementrequest.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\nakedmobile.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\openpaperdoll.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\osieffect.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\osieffectextended.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\pickupitem.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\pickupreject.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\playerinit.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\playmusic.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\playsound.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\profile.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\serverlist.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\serverredirect.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\singleclick.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\speechrequest.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\statskillquery.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\statupdatefull.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\statupdatehitpoints.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\statupdatemana.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\statupdatestamina.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\target.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\teleport.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\unicodetext.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\unknown.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\updaterange.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\warmode.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\worlditem.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\castspell.hpp">
+      <Filter>net\packets\bf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\changemap.hpp">
+      <Filter>net\packets\bf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\contextmenureply.hpp">
+      <Filter>net\packets\bf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\contextmenurequest.hpp">
+      <Filter>net\packets\bf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\fastwalkinit.hpp">
+      <Filter>net\packets\bf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\fastwalkupdate.hpp">
+      <Filter>net\packets\bf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\opencontextmenu.hpp">
+      <Filter>net\packets\bf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\spellbookcontent.hpp">
+      <Filter>net\packets\bf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\twofish\aes.h">
+      <Filter>net\twofish</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\twofish\debug.h">
+      <Filter>net\twofish</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\twofish\platform.h">
+      <Filter>net\twofish</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\twofish\table.h">
+      <Filter>net\twofish</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\animation.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\animdatatextureprovider.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\animtextureprovider.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\audiomanager.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\bitmask.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\cliprectmanager.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commandmanager.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\cursorimage.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\cursormanager.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\fontengine.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\gumpactions.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\gumpelement.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\gumpmenu.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\gumpmenus.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\macromanager.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\manager.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\singletextureprovider.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\stringparser.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\texture.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\textureprovider.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\uofont.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\uofontprovider.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\xmlparser.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\clientcommand.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\command.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\directionlight.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\disconnect.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\effect.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\emote.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\opengump.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\osieffect.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\say.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\speechentry.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\togglewarmode.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\whisper.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\yell.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\commands\zoom.hpp">
+      <Filter>ui\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\background.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\basebutton.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\clicklabel.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\containerview.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\image.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\label.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\lineedit.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\multitextureimage.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\paperdollview.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\propertylabel.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\scrollarea.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\sysloglabel.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\tbackground.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\templatebutton.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\textentry.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\uobutton.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\uocheckbox.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\uoradiobutton.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\warmodebutton.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\worldview.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\emitter.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\motionmodel.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\particle.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\particleemitter.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\particleemitterstate.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\startlocationprovider.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\timeline.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelineblend.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelineelement.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelineevent.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelineforever.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelineimmediate.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelineinterpolate.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelinepause.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\timelinestatic.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\particles\xmlloader.hpp">
+      <Filter>ui\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\render\containerrenderer.hpp">
+      <Filter>ui\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\render\containerrenderqueue.hpp">
+      <Filter>ui\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\render\material.hpp">
+      <Filter>ui\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\render\materialinfo.hpp">
+      <Filter>ui\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\render\paperdollrenderer.hpp">
+      <Filter>ui\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\render\paperdollrenderqueue.hpp">
+      <Filter>ui\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\render\renderqueue.hpp">
+      <Filter>ui\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\render\shadermanager.hpp">
+      <Filter>ui\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\render\worldrenderdata.hpp">
+      <Filter>ui\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\render\worldrenderer.hpp">
+      <Filter>ui\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\targeting\servertarget.hpp">
+      <Filter>ui\targeting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\targeting\target.hpp">
+      <Filter>ui\targeting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\0xE2_newmobileanimation.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\0xF3_worldobject.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\fluorescence\data\animdataloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\animloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\artloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\clilocloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\equipconvdefloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\filepathloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\fullfileloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\gumpartloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\httploader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\huesloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\indexloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\manager.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\maploader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\maptexloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\mobtypesloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\sound.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\soundloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\spellbooks.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\staticsloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\tiledataloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\unifontloader.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\data\util.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\misc\pugixml\pugixml.cpp">
+      <Filter>misc\pugixml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\misc\config.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\misc\interpolation.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\misc\log.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\misc\random.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\misc\string.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\misc\variable.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\dynamicitem.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\effect.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\ingameobject.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\lightmanager.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\manager.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\map.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\mobile.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\osieffect.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\overheadmessage.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\particleeffect.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\playerwalkmanager.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\sector.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\sectormanager.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\serverobject.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\smoothmovement.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\smoothmovementmanager.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\statics.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\world\syslog.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\client.cpp" />
+    <ClCompile Include="..\..\src\fluorescence\main.cpp" />
+    <ClCompile Include="..\..\src\fluorescence\platform.cpp" />
+    <ClCompile Include="..\..\src\fluorescence\net\decompress.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\manager.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\multipurposepacket.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\noencryption.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packet.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packetreader.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packetwriter.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\socket.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\twofishencryption.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\walkpacketmanager.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\xorencryption.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\md5\md5c.c">
+      <Filter>net\md5</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\asciitext.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\attackrequest.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\basetext.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\bf.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\characterdelete.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\characterdeletereject.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\characterlist.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\characterlistupdate.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\characterselect.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\clientversion.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\containercontent.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\containerupdate.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\createcharacter.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\deleteobject.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\displaycontainer.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\doubleclick.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\dropitem.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\equippeditem.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\equippedmobile.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\equiprequest.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\gameserverloginrequest.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\gameserverselect.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\gumpmenu.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\gumpreply.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\helprequest.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\localizedtext.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\localizedtextaffix.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\logincomplete.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\loginreject.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\loginrequest.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\mobileanimation.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\movementaccept.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\movementdeny.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\movementrequest.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\nakedmobile.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\openpaperdoll.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\osieffect.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\osieffectextended.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\pickupitem.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\pickupreject.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\playerinit.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\playmusic.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\playsound.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\profile.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\serverlist.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\serverredirect.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\singleclick.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\speechrequest.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\statskillquery.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\statupdatefull.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\statupdatehitpoints.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\statupdatemana.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\statupdatestamina.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\target.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\teleport.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\unicodetext.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\unknown.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\updaterange.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\warmode.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\worlditem.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\castspell.cpp">
+      <Filter>net\packets\bf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\changemap.cpp">
+      <Filter>net\packets\bf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\contextmenureply.cpp">
+      <Filter>net\packets\bf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\contextmenurequest.cpp">
+      <Filter>net\packets\bf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\fastwalkinit.cpp">
+      <Filter>net\packets\bf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\fastwalkupdate.cpp">
+      <Filter>net\packets\bf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\opencontextmenu.cpp">
+      <Filter>net\packets\bf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\spellbookcontent.cpp">
+      <Filter>net\packets\bf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\twofish\twofish.c">
+      <Filter>net\twofish</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\animation.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\animdatatextureprovider.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\animtextureprovider.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\audiomanager.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\bitmask.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\cliprectmanager.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commandmanager.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\cursorimage.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\cursormanager.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\fontengine.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\gumpactions.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\gumpelement.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\gumpmenu.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\gumpmenus.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\macromanager.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\manager.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\singletextureprovider.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\stringparser.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\texture.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\uofont.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\uofontprovider.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\xmlparser.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commands\command.cpp">
+      <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commands\directionlight.cpp">
+      <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commands\disconnect.cpp">
+      <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commands\effect.cpp">
+      <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commands\emote.cpp">
+      <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commands\opengump.cpp">
+      <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commands\osieffect.cpp">
+      <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commands\say.cpp">
+      <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commands\speechentry.cpp">
+      <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commands\togglewarmode.cpp">
+      <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commands\whisper.cpp">
+      <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commands\yell.cpp">
+      <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\commands\zoom.cpp">
+      <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\background.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\basebutton.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\clicklabel.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\containerview.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\image.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\label.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\lineedit.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\paperdollview.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\propertylabel.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\scrollarea.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\sysloglabel.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\tbackground.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\templatebutton.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\textentry.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\uobutton.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\uocheckbox.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\uoradiobutton.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\warmodebutton.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\worldview.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\emitter.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\motionmodel.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\particleemitter.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\particleemitterstate.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\startlocationprovider.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\timeline.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelineblend.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelineevent.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelineforever.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelineimmediate.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelineinterpolate.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelinepause.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\timelinestatic.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\particles\xmlloader.cpp">
+      <Filter>ui\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\render\containerrenderer.cpp">
+      <Filter>ui\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\render\containerrenderqueue.cpp">
+      <Filter>ui\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\render\material.cpp">
+      <Filter>ui\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\render\paperdollrenderer.cpp">
+      <Filter>ui\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\render\paperdollrenderqueue.cpp">
+      <Filter>ui\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\render\renderqueue.cpp">
+      <Filter>ui\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\render\shadermanager.cpp">
+      <Filter>ui\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\render\worldrenderdata.cpp">
+      <Filter>ui\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\render\worldrenderer.cpp">
+      <Filter>ui\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\targeting\servertarget.cpp">
+      <Filter>ui\targeting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\targeting\target.cpp">
+      <Filter>ui\targeting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\0xE2_newmobileanimation.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\0xF3_worldobject.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
