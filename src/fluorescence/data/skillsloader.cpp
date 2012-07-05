@@ -76,7 +76,7 @@ void SkillsLoader::read(const boost::filesystem::path& idxPath, const boost::fil
         skillInfos_[i].isUsable_ = (buf[0] == 1);
         skillInfos_[i].name_ = StringConverter::fromUtf8(buf + 1, curBlock.length_ - 1);
 
-        LOG_DEBUG << "Skill " << skillInfos_[i].skillId_ << ": " << skillInfos_[i].name_ << " - " << skillInfos_[i].isUsable_ << std::endl;
+        //LOG_DEBUG << "Skill " << skillInfos_[i].skillId_ << ": " << skillInfos_[i].name_ << " - " << skillInfos_[i].isUsable_ << std::endl;
     }
 
     stream.close();
