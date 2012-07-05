@@ -32,7 +32,6 @@ PropertyLabel::PropertyLabel(CL_GUIComponent* parent, const UnicodeString& link)
 }
 
 void PropertyLabel::update(world::Mobile* mob) {
-    LOG_DEBUG << "Property update: " << linkName_ << std::endl;
     if (mob->hasProperty(linkName_)) {
         setText(mob->getProperty(linkName_).asString());
     }

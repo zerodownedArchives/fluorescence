@@ -35,7 +35,7 @@
 
 namespace fluo {
 namespace ui {
-    
+
 namespace components {
 class UoButton;
 }
@@ -44,7 +44,7 @@ class XmlParser {
 public:
     struct RepeatContext {
         unsigned int repeatCount_;
-        std::map<UnicodeString, std::vector<UnicodeString> > keywordReplacments_;
+        std::map<UnicodeString, std::vector<UnicodeString> > keywordReplacements_;
     };
 
     static void addRepeatContext(const UnicodeString& name, const RepeatContext& context);
@@ -98,13 +98,13 @@ private:
     bool parseTBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
     bool parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    void insertRepeatNodes(pugi::xml_node::iterator begin, pugi::xml_node::iterator end, pugi::xml_node dst, 
+    void insertRepeatNodes(pugi::xml_node::iterator begin, pugi::xml_node::iterator end, pugi::xml_node dst,
             const RepeatContext& context, unsigned int index,
             int xIncrease, int yIncrease, unsigned int xLimit, unsigned int yLimit);
     void replaceRepeatKeywords(pugi::xml_node& node, const RepeatContext& context, unsigned int index,
             int xIncrease, int yIncrease, unsigned int xLimit, unsigned int yLimit);
     void checkRepeatIf(pugi::xml_node& node, unsigned int index, unsigned int xLimit, unsigned int yLimit);
-    
+
     bool parsePropertyLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
     // supports both themed and uo images
@@ -121,8 +121,8 @@ private:
     bool parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseSysLogLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     bool parseWarModeButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    
-    
+
+
     typedef boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> XmlParseFunction;
     std::map<UnicodeString, XmlParseFunction> functionTable_;
     std::map<UnicodeString, RepeatContext> repeatContexts_;
@@ -131,9 +131,9 @@ private:
     bool parseMultiTextureImage(pugi::xml_node& node, components::MultiTextureImage<N>* button, unsigned int index) {
         UnicodeString imgSource = StringConverter::fromUtf8(node.attribute("source").value());
         UnicodeString imgId = StringConverter::fromUtf8(node.attribute("imgid").value());
-        
+
         boost::shared_ptr<ui::Texture> texture = data::Manager::getTexture(imgSource, imgId);
-        
+
         if (!texture) {
             LOG_ERROR << "Unable to parse gump button image, source=" << imgSource << " imgid=" << imgId << std::endl;
             return false;
@@ -142,11 +142,11 @@ private:
         unsigned int hue = node.attribute("hue").as_uint();
         std::string rgba = node.attribute("rgba").value();
         float alpha = node.attribute("alpha").as_float();
-        
+
         bool tiled = node.attribute("tiled").as_bool();
-        
+
         button->addTexture(index, texture, hue, rgba, alpha, tiled);
-        
+
         return true;
     }
 };

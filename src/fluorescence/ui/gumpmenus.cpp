@@ -135,8 +135,8 @@ GumpMenu* GumpMenus::openShardSelectionGump() {
 
     XmlParser::RepeatContext context;
     context.repeatCount_ = nameList.size();
-    context.keywordReplacments_["shardname"] = nameList;
-    context.keywordReplacments_["shardname"] = nameList;
+    context.keywordReplacements_["shardname"] = nameList;
+    context.keywordReplacements_["shardname"] = nameList;
 
     XmlParser::addRepeatContext("shardlist", context);
     GumpMenu* menu = XmlParser::fromXmlFile("shardselection");
@@ -161,8 +161,8 @@ GumpMenu* GumpMenus::openServerListGump(const net::packets::ServerList* list) {
 
     XmlParser::RepeatContext context;
     context.repeatCount_ = nameList.size();
-    context.keywordReplacments_["serverindex"] = indexList;
-    context.keywordReplacments_["servername"] = nameList;
+    context.keywordReplacements_["serverindex"] = indexList;
+    context.keywordReplacements_["servername"] = nameList;
 
     XmlParser::addRepeatContext("serverlist", context);
     GumpMenu* menu = XmlParser::fromXmlFile("serverlist");
@@ -184,9 +184,9 @@ GumpMenu* GumpMenus::openCharacterListGump(unsigned int charCount, const Unicode
 
     XmlParser::RepeatContext context;
     context.repeatCount_ = nameList.size();
-    context.keywordReplacments_["characterindex"] = indexList;
-    context.keywordReplacments_["charactername"] = nameList;
-    context.keywordReplacments_["characterpassword"] = nameList;
+    context.keywordReplacements_["characterindex"] = indexList;
+    context.keywordReplacements_["charactername"] = nameList;
+    context.keywordReplacements_["characterpassword"] = nameList;
 
     XmlParser::addRepeatContext("characterlist", context);
     GumpMenu* menu = XmlParser::fromXmlFile("characterlist");
@@ -212,9 +212,9 @@ GumpMenu* GumpMenus::openContextMenu(const net::packets::bf::OpenContextMenu* pk
 
     XmlParser::RepeatContext context;
     context.repeatCount_ = nameList.size();
-    context.keywordReplacments_["entrytext"] = nameList;
-    context.keywordReplacments_["serial"] = serialList;
-    context.keywordReplacments_["entryindex"] = indexList;
+    context.keywordReplacements_["entrytext"] = nameList;
+    context.keywordReplacements_["serial"] = serialList;
+    context.keywordReplacements_["entryindex"] = indexList;
 
     XmlParser::addRepeatContext("contextmenu", context);
     GumpMenu* menu = XmlParser::fromXmlFile("contextmenu");
@@ -277,23 +277,23 @@ GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
         }
 
         indexContexts[i].repeatCount_ = circleIndexNamesTmp.size();
-        indexContexts[i].keywordReplacments_["spellname"] = circleIndexNamesTmp;
-        indexContexts[i].keywordReplacments_["spellpage"] = circleIndexPagesTmp;
+        indexContexts[i].keywordReplacements_["spellname"] = circleIndexNamesTmp;
+        indexContexts[i].keywordReplacements_["spellpage"] = circleIndexPagesTmp;
 
         XmlParser::addRepeatContext(book->sections_[i].name_, indexContexts[i]);
     }
 
     XmlParser::RepeatContext allSpellsContext;
     allSpellsContext.repeatCount_ = allSpellsNames.size();
-    allSpellsContext.keywordReplacments_["previouspage"] = allSpellsPreviousPage;
-    allSpellsContext.keywordReplacments_["currentpage"] = allSpellsCurrentPage;
-    allSpellsContext.keywordReplacments_["nextpage"] = allSpellsNextPage;
-    allSpellsContext.keywordReplacments_["sectionname"] = allSpellsSections;
-    allSpellsContext.keywordReplacments_["spellname"] = allSpellsNames;
-    allSpellsContext.keywordReplacments_["description"] = allSpellsDescriptions;
-    allSpellsContext.keywordReplacments_["descriptionheader"] = allSpellsDescriptionHeaders;
-    allSpellsContext.keywordReplacments_["gumpid"] = allSpellsIcons;
-    allSpellsContext.keywordReplacments_["spellid"] = allSpellsIds;
+    allSpellsContext.keywordReplacements_["previouspage"] = allSpellsPreviousPage;
+    allSpellsContext.keywordReplacements_["currentpage"] = allSpellsCurrentPage;
+    allSpellsContext.keywordReplacements_["nextpage"] = allSpellsNextPage;
+    allSpellsContext.keywordReplacements_["sectionname"] = allSpellsSections;
+    allSpellsContext.keywordReplacements_["spellname"] = allSpellsNames;
+    allSpellsContext.keywordReplacements_["description"] = allSpellsDescriptions;
+    allSpellsContext.keywordReplacements_["descriptionheader"] = allSpellsDescriptionHeaders;
+    allSpellsContext.keywordReplacements_["gumpid"] = allSpellsIcons;
+    allSpellsContext.keywordReplacements_["spellid"] = allSpellsIds;
 
     XmlParser::addRepeatContext("allspells", allSpellsContext);
 
@@ -308,6 +308,7 @@ GumpMenu* GumpMenus::openSkills(const world::Mobile* mob) {
     std::vector<UnicodeString> valueList;
     std::vector<UnicodeString> baseList;
     std::vector<UnicodeString> capList;
+    std::vector<UnicodeString> usableList;
 
     unsigned int skillCount = data::Manager::getSkillsLoader()->getSkillCount();
 
@@ -329,14 +330,21 @@ GumpMenu* GumpMenus::openSkills(const world::Mobile* mob) {
         propNameCur = propNameBase;
         propNameCur += ".cap";
         capList.push_back(propNameCur);
+
+        if (curInfo->isUsable_) {
+            usableList.push_back("1");
+        } else {
+            usableList.push_back("0");
+        }
     }
 
     XmlParser::RepeatContext context;
     context.repeatCount_ = nameList.size();
-    context.keywordReplacments_["skillname"] = nameList;
-    context.keywordReplacments_["skillvalue"] = valueList;
-    context.keywordReplacments_["skillbase"] = baseList;
-    context.keywordReplacments_["skillcap"] = capList;
+    context.keywordReplacements_["skillname"] = nameList;
+    context.keywordReplacements_["skillvalue"] = valueList;
+    context.keywordReplacements_["skillbase"] = baseList;
+    context.keywordReplacements_["skillcap"] = capList;
+    context.keywordReplacements_["skillusable"] = usableList;
 
     XmlParser::addRepeatContext("skills", context);
     GumpMenu* menu = XmlParser::fromXmlFile("skills");

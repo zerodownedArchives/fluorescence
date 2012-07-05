@@ -834,10 +834,10 @@ void XmlParser::insertRepeatNodes(pugi::xml_node::iterator begin, pugi::xml_node
     for (pugi::xml_node::iterator iter = begin; iter != end; ++iter) {
         pugi::xml_node newNode = dst.insert_copy_after(*iter, dst.last_child());
 
-        checkRepeatIf(newNode, index, xLimit, yLimit);
-
         replaceRepeatKeywords(newNode, context, index,
                 xIncrease, yIncrease, xLimit, yLimit);
+
+        checkRepeatIf(newNode, index, xLimit, yLimit);
     }
 }
 
@@ -858,6 +858,11 @@ void XmlParser::checkRepeatIf(pugi::xml_node& node, unsigned int index, unsigned
                 }
             } else if (strcmp(attrIter->name(), "yindex") == 0) {
                 if (attrIter->as_uint() != yIndex) {
+                    removeNode = true;
+                    break;
+                }
+            } else if (strcmp(attrIter->name(), "test") == 0) {
+                if (attrIter->as_uint() != 1) {
                     removeNode = true;
                     break;
                 }
@@ -897,8 +902,8 @@ void XmlParser::replaceRepeatKeywords(pugi::xml_node& node, const RepeatContext&
     for (; attrIter != attrEnd; ++attrIter) {
         bool contextHit = false;
 
-        std::map<UnicodeString, std::vector<UnicodeString> >::const_iterator contextIter = context.keywordReplacments_.begin();
-        std::map<UnicodeString, std::vector<UnicodeString> >::const_iterator contextEnd = context.keywordReplacments_.end();
+        std::map<UnicodeString, std::vector<UnicodeString> >::const_iterator contextIter = context.keywordReplacements_.begin();
+        std::map<UnicodeString, std::vector<UnicodeString> >::const_iterator contextEnd = context.keywordReplacements_.end();
 
         for (; contextIter != contextEnd; ++contextIter) {
             if (contextIter->first == attrIter->value()) {
