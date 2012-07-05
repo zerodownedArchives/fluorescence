@@ -46,11 +46,11 @@
 #include <ui/render/material.hpp>
 
 #include <net/manager.hpp>
-#include <net/packets/singleclick.hpp>
-#include <net/packets/doubleclick.hpp>
-#include <net/packets/pickupitem.hpp>
-#include <net/packets/dropitem.hpp>
-#include <net/packets/equiprequest.hpp>
+#include <net/packets/09_singleclick.hpp>
+#include <net/packets/06_doubleclick.hpp>
+#include <net/packets/07_pickupitem.hpp>
+#include <net/packets/08_dropitem.hpp>
+#include <net/packets/13_equiprequest.hpp>
 
 namespace fluo {
 namespace world {

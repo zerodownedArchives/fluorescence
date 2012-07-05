@@ -29,8 +29,8 @@
 #include <misc/log.hpp>
 
 #include "manager.hpp"
-#include "packets/movementdeny.hpp"
-#include "packets/movementrequest.hpp"
+#include "packets/21_movementdeny.hpp"
+#include "packets/02_movementrequest.hpp"
 
 namespace fluo {
 namespace net {

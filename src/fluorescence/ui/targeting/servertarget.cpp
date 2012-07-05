@@ -21,7 +21,7 @@
 #include "servertarget.hpp"
 
 #include <net/manager.hpp>
-#include <net/packets/target.hpp>
+#include <net/packets/6c_target.hpp>
 
 #include <misc/log.hpp>
 

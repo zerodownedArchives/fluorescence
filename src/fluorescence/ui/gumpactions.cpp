@@ -33,14 +33,14 @@
 #include <ui/components/basebutton.hpp>
 
 #include <net/manager.hpp>
-#include <net/packets/speechrequest.hpp>
-#include <net/packets/createcharacter.hpp>
-#include <net/packets/helprequest.hpp>
+#include <net/packets/ad_speechrequest.hpp>
+#include <net/packets/00_createcharacter.hpp>
+#include <net/packets/b9_helprequest.hpp>
 #include <net/packets/bf.hpp>
-#include <net/packets/bf/contextmenureply.hpp>
-#include <net/packets/bf/castspell.hpp>
-#include <net/packets/profile.hpp>
-#include <net/packets/useskill.hpp>
+#include <net/packets/bf/15_contextmenureply.hpp>
+#include <net/packets/bf/1c_castspell.hpp>
+#include <net/packets/b8_profile.hpp>
+#include <net/packets/12_useskill.hpp>
 
 #include <misc/log.hpp>
 

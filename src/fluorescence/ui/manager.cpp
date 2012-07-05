@@ -45,7 +45,7 @@
 #include <world/playerwalkmanager.hpp>
 
 #include <net/manager.hpp>
-#include <net/packets/speechrequest.hpp>
+#include <net/packets/ad_speechrequest.hpp>
 
 namespace fluo {
 namespace ui {

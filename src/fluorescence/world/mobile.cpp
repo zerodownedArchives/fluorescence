@@ -24,11 +24,11 @@
 
 #include <net/manager.hpp>
 #include <net/packets/bf.hpp>
-#include <net/packets/bf/contextmenurequest.hpp>
-#include <net/packets/doubleclick.hpp>
-#include <net/packets/statskillquery.hpp>
-#include <net/packets/warmode.hpp>
-#include <net/packets/attackrequest.hpp>
+#include <net/packets/bf/13_contextmenurequest.hpp>
+#include <net/packets/06_doubleclick.hpp>
+#include <net/packets/34_statskillquery.hpp>
+#include <net/packets/72_warmode.hpp>
+#include <net/packets/05_attackrequest.hpp>
 
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>

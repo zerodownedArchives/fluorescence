@@ -32,9 +32,9 @@
 #include <misc/config.hpp>
 #include <misc/exception.hpp>
 
-#include <net/packets/serverlist.hpp>
-#include <net/packets/characterlist.hpp>
-#include <net/packets/bf/opencontextmenu.hpp>
+#include <net/packets/a8_serverlist.hpp>
+#include <net/packets/a9_characterlist.hpp>
+#include <net/packets/bf/14_opencontextmenu.hpp>
 
 #include <data/manager.hpp>
 #include <data/clilocloader.hpp>

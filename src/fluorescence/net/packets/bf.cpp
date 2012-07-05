@@ -20,11 +20,11 @@
 
 #include "bf.hpp"
 
-#include "bf/changemap.hpp"
-#include "bf/opencontextmenu.hpp"
-#include "bf/fastwalkinit.hpp"
-#include "bf/fastwalkupdate.hpp"
-#include "bf/spellbookcontent.hpp"
+#include "bf/08_changemap.hpp"
+#include "bf/14_opencontextmenu.hpp"
+#include "bf/01_fastwalkinit.hpp"
+#include "bf/02_fastwalkupdate.hpp"
+#include "bf/1b_spellbookcontent.hpp"
 
 #include <misc/log.hpp>
 

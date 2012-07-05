@@ -20,12 +20,12 @@
 
 #include <typedefs.hpp>
 #include <net/manager.hpp>
-#include <net/packets/speechrequest.hpp>
+#include <net/packets/ad_speechrequest.hpp>
 
 namespace fluo {
 namespace ui {
 namespace commands {
-    
+
 Emote::Emote(Config& config) : font_(1), hue_(1) {
     // TODO: pull the properties from the config
 }

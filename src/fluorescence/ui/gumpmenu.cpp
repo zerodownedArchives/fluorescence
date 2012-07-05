@@ -32,7 +32,7 @@
 #include <misc/log.hpp>
 #include <world/mobile.hpp>
 #include <net/manager.hpp>
-#include <net/packets/gumpreply.hpp>
+#include <net/packets/b1_gumpreply.hpp>
 
 namespace fluo {
 namespace ui {

@@ -34,7 +34,7 @@
 #include <ui/cliprectmanager.hpp>
 
 #include <net/manager.hpp>
-#include <net/packets/statskillquery.hpp>
+#include <net/packets/34_statskillquery.hpp>
 
 #include <misc/exception.hpp>
 #include <misc/log.hpp>

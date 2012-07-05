@@ -39,8 +39,8 @@
 #include <world/sector.hpp>
 
 #include <net/manager.hpp>
-#include <net/packets/characterselect.hpp>
-#include <net/packets/characterdelete.hpp>
+#include <net/packets/5d_characterselect.hpp>
+#include <net/packets/83_characterdelete.hpp>
 
 namespace fluo {
 
