@@ -40,6 +40,7 @@
 #include <net/packets/bf/contextmenureply.hpp>
 #include <net/packets/bf/castspell.hpp>
 #include <net/packets/profile.hpp>
+#include <net/packets/useskill.hpp>
 
 #include <misc/log.hpp>
 
@@ -85,6 +86,7 @@ void GumpActions::buildFullActionTable() {
     actionTable_["helprequest"] = GumpAction(false, boost::bind(&GumpActions::helpRequest, _1, _2, _3, _4));
     actionTable_["openprofile"] = GumpAction(false, boost::bind(&GumpActions::openProfile, _1, _2, _3, _4));
     actionTable_["openskills"] = GumpAction(false, boost::bind(&GumpActions::openSkills, _1, _2, _3, _4));
+    actionTable_["useskill"] = GumpAction(false, boost::bind(&GumpActions::useSkill, _1, _2, _3, _4));
 
     actionTable_["castspell"] = GumpAction(false, boost::bind(&GumpActions::castSpell, _1, _2, _3, _4));
 
@@ -323,6 +325,15 @@ bool GumpActions::createShard(GumpMenu* menu, const UnicodeString& action, unsig
     }
 
     Client::getSingleton()->selectShard(name);
+    return true;
+}
+
+bool GumpActions::useSkill(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+    unsigned int skillId = StringConverter::toInt(parameters[0]);
+
+    net::packets::UseSkill pkt(skillId);
+    net::Manager::getSingleton()->send(pkt);
+
     return true;
 }
 

@@ -59,7 +59,12 @@ void OverheadMessage::updateVertexCoordinates() {
 void OverheadMessage::updateRenderDepth() {
     // Move to front
     // TODO: Handle mouse over
-    boost::shared_ptr<Mobile> parent = boost::dynamic_pointer_cast<Mobile>(parentObject_.lock());
+    boost::shared_ptr<IngameObject> parent = parentObject_.lock();
+
+    if (!parent) {
+        LOG_ERROR << "Overhead message without parent" << std::endl;
+        return;
+    }
 
     int8_t z = parent->getLocZGame() + 7;
 
@@ -90,11 +95,11 @@ void OverheadMessage::expire() {
 
     boost::shared_ptr<OverheadMessage> sharedThis = boost::static_pointer_cast<OverheadMessage>(shared_from_this());
     world::Manager::getSingleton()->unregisterOverheadMessage(sharedThis);
-    
+
     if (sector_) {
         sector_->removeDynamicObject(this);
     }
-    
+
     sector_.reset();
 }
 
@@ -143,17 +148,17 @@ void OverheadMessage::onRemovedFromParent() {
 
 void OverheadMessage::onLocationChanged(const CL_Vec3f& oldLocation) {
     boost::shared_ptr<Sector> newSector = world::Manager::getSectorManager()->getSectorForCoordinates(getLocXGame(), getLocYGame());
-    
+
     if (sector_ != newSector) {
         if (sector_) {
             sector_->removeDynamicObject(this);
         }
-        
+
         if (newSector) {
             newSector->addDynamicObject(this);
         }
     }
-    
+
     sector_ = newSector;
 }
 

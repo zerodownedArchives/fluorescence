@@ -309,6 +309,7 @@ GumpMenu* GumpMenus::openSkills(const world::Mobile* mob) {
     std::vector<UnicodeString> baseList;
     std::vector<UnicodeString> capList;
     std::vector<UnicodeString> usableList;
+    std::vector<UnicodeString> idList;
 
     unsigned int skillCount = data::Manager::getSkillsLoader()->getSkillCount();
 
@@ -336,6 +337,8 @@ GumpMenu* GumpMenus::openSkills(const world::Mobile* mob) {
         } else {
             usableList.push_back("0");
         }
+
+        idList.push_back(StringConverter::fromNumber(curInfo->skillId_));
     }
 
     XmlParser::RepeatContext context;
@@ -345,6 +348,7 @@ GumpMenu* GumpMenus::openSkills(const world::Mobile* mob) {
     context.keywordReplacements_["skillbase"] = baseList;
     context.keywordReplacements_["skillcap"] = capList;
     context.keywordReplacements_["skillusable"] = usableList;
+    context.keywordReplacements_["skillid"] = idList;
 
     XmlParser::addRepeatContext("skills", context);
     GumpMenu* menu = XmlParser::fromXmlFile("skills");

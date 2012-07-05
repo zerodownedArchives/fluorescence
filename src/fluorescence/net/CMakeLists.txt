@@ -92,6 +92,7 @@ set (PACKETS_HPP
     net/packets/equiprequest.hpp
     net/packets/skilllockchange.hpp
     net/packets/skillsupdate.hpp
+    net/packets/useskill.hpp
 
     net/packets/bf.hpp
     net/packets/bf/changemap.hpp
@@ -167,6 +168,7 @@ set (PACKETS_CPP
     net/packets/equiprequest.cpp
     net/packets/skilllockchange.cpp
     net/packets/skillsupdate.cpp
+    net/packets/useskill.cpp
 
     net/packets/bf.cpp
     net/packets/bf/changemap.cpp
