@@ -307,7 +307,7 @@ bool GumpActions::createShard(GumpMenu* menu, const UnicodeString& action, unsig
         return false;
     } else {
         macroStream << "<?xml version=\"1.0\"?>\n<macros>\n";
-        macroStream << "<macro key=\"enter\">\n\t<command name=\"speechentry\" />\n</macro>\n";
+        macroStream << "<macro key=\"return\">\n\t<command name=\"speechentry\" />\n</macro>\n";
         macroStream << "<macro key=\"q\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"countdown\" />\n</macro>\n";
         macroStream << "<macro key=\"w\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"badsmell\" />\n</macro>\n";
         macroStream << "<macro key=\"e\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"deadlyfog\" />\n</macro>\n";
