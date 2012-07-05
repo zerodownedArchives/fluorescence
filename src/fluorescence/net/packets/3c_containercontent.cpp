@@ -40,8 +40,6 @@ bool ContainerContent::read(const int8_t* buf, unsigned int len, unsigned int& i
     uint16_t itemCount;
     ret &= PacketReader::read(buf, len, index, itemCount);
 
-    bool useGridByte = (len-5 == itemCount* 20);
-
     for (unsigned int i = 0; i < itemCount; ++i) {
         ContainerContentEntry curEntry;
 
@@ -52,10 +50,8 @@ bool ContainerContent::read(const int8_t* buf, unsigned int len, unsigned int& i
         ret &= PacketReader::read(buf, len, index, curEntry.pxX_);
         ret &= PacketReader::read(buf, len, index, curEntry.pxY_);
 
-        if (useGridByte) {
-            // jump, for now
-            ++index;
-        }
+        // jump grid byte
+        ++index;
 
         ret &= PacketReader::read(buf, len, index, curEntry.container_);
         ret &= PacketReader::read(buf, len, index, curEntry.hue_);

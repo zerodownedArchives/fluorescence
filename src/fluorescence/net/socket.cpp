@@ -176,7 +176,7 @@ void Socket::close() {
     }
 
     receiveThread_.join();
-    
+
     boost::mutex::scoped_lock myLock(packetQueueMutex_);
     while (!packetQueue_.empty()) {
         packetQueue_.pop();
@@ -286,9 +286,8 @@ bool Socket::sendAll() {
     return true;
 }
 
-void Socket::writeSeed(uint32_t seed) {
+void Socket::setSeed(uint32_t seed) {
     seed_ = seed;
-    PacketWriter::write(sendBuffer_, 0x10000, sendSize_, seed);
 }
 
 uint32_t Socket::getSeed() const {

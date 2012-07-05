@@ -52,7 +52,7 @@ public:
         return packet.write(sendBuffer_, 0x10000, sendSize_);
     }
 
-    void writeSeed(uint32_t seed);
+    void setSeed(uint32_t seed);
     uint32_t getSeed() const;
 
     bool sendAll();
@@ -60,7 +60,7 @@ public:
     void setUseDecompress(bool value);
 
     boost::shared_ptr<Packet> getNextPacket();
-    
+
     bool hasCriticalError() const;
 
 private:

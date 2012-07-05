@@ -119,7 +119,13 @@ Config::Config() {
     variablesMap_["/fluo/shard/account@save-password"].setBool(false, true);
     variablesMap_["/fluo/shard/address@host"].setString("", true);
     variablesMap_["/fluo/shard/address@port"].setInt(2593, true);
-    variablesMap_["/fluo/shard/client@version-id"].setString("0.1.0 fluo", true);
+
+    // identify as pre-hs client by default
+    variablesMap_["/fluo/shard/clientversion@string"].setString("7.0.7.0 fluo", true);
+    variablesMap_["/fluo/shard/clientversion@major"].setInt(7, true);
+    variablesMap_["/fluo/shard/clientversion@minor"].setInt(0, true);
+    variablesMap_["/fluo/shard/clientversion@revision"].setInt(7, true);
+    variablesMap_["/fluo/shard/clientversion@build"].setInt(0, true);
     variablesMap_["/fluo/shard/protocol@version"].setString("pre-hs", true);
 
     // audio

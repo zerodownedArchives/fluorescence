@@ -31,6 +31,7 @@
 #include "packetlist.hpp"
 #include "twofishencryption.hpp"
 #include "walkpacketmanager.hpp"
+#include "packets/ef_seed.hpp"
 
 namespace fluo {
 namespace net {
@@ -216,7 +217,14 @@ bool Manager::connect(ui::GumpMenu* menu, const UnicodeString& action, unsigned 
         clientSing->getConfig()["/fluo/shard/address@host"].setString(host);
         clientSing->getConfig()["/fluo/shard/address@port"].setInt(port);
 
-        socket_.writeSeed(0xDEADBEEF);
+        packets::Seed seed(0xDEADBEEF,
+            clientSing->getConfig()["/fluo/shard/clientversion@major"].asInt(),
+            clientSing->getConfig()["/fluo/shard/clientversion@minor"].asInt(),
+            clientSing->getConfig()["/fluo/shard/clientversion@revision"].asInt(),
+            clientSing->getConfig()["/fluo/shard/clientversion@build"].asInt()
+        );
+        socket_.write(seed);
+
         // send packet
         packets::LoginRequest req(accName, accPw);
         socket_.write(req);
@@ -249,7 +257,15 @@ void Manager::handleServerRedirect(const packets::ServerRedirect* packet) {
     socket_.connect(packet->ipaddr_, packet->port_);
     socket_.setUseDecompress(true);
 
-    socket_.writeSeed(packet->encryptionKey_);
+    Client* clientSing = Client::getSingleton();
+    packets::Seed seed(packet->encryptionKey_,
+        clientSing->getConfig()["/fluo/shard/clientversion@major"].asInt(),
+        clientSing->getConfig()["/fluo/shard/clientversion@minor"].asInt(),
+        clientSing->getConfig()["/fluo/shard/clientversion@revision"].asInt(),
+        clientSing->getConfig()["/fluo/shard/clientversion@build"].asInt()
+    );
+    socket_.write(seed);
+
 
     Config& config = Client::getSingleton()->getConfig();
     packets::GameServerLoginRequest loginReq(config["/fluo/shard/account@name"].asString(),

@@ -55,7 +55,7 @@ bool ClientVersion::read(const int8_t* buf, unsigned int len, unsigned int& inde
 }
 
 void ClientVersion::onReceive() {
-    UnicodeString version = Client::getSingleton()->getConfig()["/fluo/shard/client@version-id"].asString();
+    UnicodeString version = Client::getSingleton()->getConfig()["/fluo/shard/clientversion@string"].asString();
     LOG_INFO << "Identifying myself as " << version << std::endl;
     ClientVersion reply(version);
     net::Manager::getSingleton()->send(reply);

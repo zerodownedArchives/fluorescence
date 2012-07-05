@@ -31,7 +31,7 @@ namespace fluo {
 namespace net {
 namespace packets {
 
-ContainerUpdate::ContainerUpdate() : Packet(0x25, 20) {
+ContainerUpdate::ContainerUpdate() : Packet(0x25, 21) {
 }
 
 bool ContainerUpdate::read(const int8_t* buf, unsigned int len, unsigned int& index) {

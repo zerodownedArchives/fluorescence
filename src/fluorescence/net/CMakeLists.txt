@@ -94,6 +94,7 @@ set (PACKETS_HPP
     net/packets/c8_updaterange.hpp
     net/packets/cc_localizedtextaffix.hpp
     net/packets/e2_mobileanimation_sa.hpp
+    net/packets/ef_seed.hpp
     net/packets/f3_worldobject.hpp
 
     net/packets/bf.hpp
@@ -172,6 +173,7 @@ set (PACKETS_CPP
     net/packets/c8_updaterange.cpp
     net/packets/cc_localizedtextaffix.cpp
     net/packets/e2_mobileanimation_sa.cpp
+    net/packets/ef_seed.cpp
     net/packets/f3_worldobject.cpp
 
     net/packets/bf.cpp
