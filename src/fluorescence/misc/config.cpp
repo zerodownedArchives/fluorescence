@@ -41,12 +41,12 @@ Config::Config() {
     // maps
     variablesMap_["/fluo/files/map0@enabled"].setBool(true, true);
     variablesMap_["/fluo/files/map0@difs-enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map0@width"].setInt(768, true);
+    variablesMap_["/fluo/files/map0@width"].setInt(896, true);
     variablesMap_["/fluo/files/map0@height"].setInt(512, true);
 
     variablesMap_["/fluo/files/map1@enabled"].setBool(true, true);
     variablesMap_["/fluo/files/map1@difs-enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map1@width"].setInt(768, true);
+    variablesMap_["/fluo/files/map1@width"].setInt(896, true);
     variablesMap_["/fluo/files/map1@height"].setInt(512, true);
 
     variablesMap_["/fluo/files/map2@enabled"].setBool(true, true);
@@ -55,19 +55,19 @@ Config::Config() {
     variablesMap_["/fluo/files/map2@height"].setInt(200, true);
 
     variablesMap_["/fluo/files/map3@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map3@difs-enabled"].setBool(true, true);
+    variablesMap_["/fluo/files/map3@difs-enabled"].setBool(false, true);
     variablesMap_["/fluo/files/map3@width"].setInt(320, true);
     variablesMap_["/fluo/files/map3@height"].setInt(256, true);
 
     variablesMap_["/fluo/files/map4@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map4@difs-enabled"].setBool(true, true);
+    variablesMap_["/fluo/files/map4@difs-enabled"].setBool(false, true);
     variablesMap_["/fluo/files/map4@width"].setInt(181, true);
     variablesMap_["/fluo/files/map4@height"].setInt(181, true);
 
     variablesMap_["/fluo/files/map5@enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map5@difs-enabled"].setBool(true, true);
-    variablesMap_["/fluo/files/map5@width"].setInt(320, true);
-    variablesMap_["/fluo/files/map5@height"].setInt(256, true);
+    variablesMap_["/fluo/files/map5@difs-enabled"].setBool(false, true);
+    variablesMap_["/fluo/files/map5@width"].setInt(160, true);
+    variablesMap_["/fluo/files/map5@height"].setInt(512, true);
 
 
 
