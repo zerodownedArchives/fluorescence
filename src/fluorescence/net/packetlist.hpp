@@ -52,6 +52,7 @@
 #include "packets/6d_playmusic.hpp"
 #include "packets/6e_mobileanimation.hpp" // deprecated since SA, replaced by e2
 #include "packets/72_warmode.hpp"
+#include "packets/73_ping.hpp"
 #include "packets/77_nakedmobile.hpp"
 #include "packets/78_equippedmobile.hpp"
 #include "packets/80_loginrequest.hpp"

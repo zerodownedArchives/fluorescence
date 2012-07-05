@@ -65,6 +65,7 @@ set (PACKETS_HPP
     net/packets/6d_playmusic.hpp
     net/packets/6e_mobileanimation.hpp
     net/packets/72_warmode.hpp
+    net/packets/73_ping.hpp
     net/packets/77_nakedmobile.hpp
     net/packets/78_equippedmobile.hpp
     net/packets/80_loginrequest.hpp
@@ -145,6 +146,7 @@ set (PACKETS_CPP
     net/packets/6d_playmusic.cpp
     net/packets/6e_mobileanimation.cpp
     net/packets/72_warmode.cpp
+    net/packets/73_ping.cpp
     net/packets/77_nakedmobile.cpp
     net/packets/78_equippedmobile.cpp
     net/packets/80_loginrequest.cpp

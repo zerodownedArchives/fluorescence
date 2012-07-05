@@ -110,6 +110,12 @@ void Manager::step() {
             packet = socket_.getNextPacket();
         }
 
+        // send ping packets, if nothing else has been sent in the last 20 seconds
+        if (lastSendTime_ + 20 < time(NULL)) {
+            net::packets::Ping ping;
+            send(ping);
+        }
+
         // send packets to server
         socket_.sendAll();
 
@@ -144,6 +150,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0x6D: ret.reset(new packets::PlayMusic()); break;
         case 0x6E: ret.reset(new packets::MobileAnimation()); break;
         case 0x72: ret.reset(new packets::WarMode()); break;
+        case 0x73: ret.reset(new packets::Ping()); break;
         case 0x77: ret.reset(new packets::NakedMobile()); break;
         case 0x78: ret.reset(new packets::EquippedMobile()); break;
         case 0x85: ret.reset(new packets::CharacterDeleteReject()); break;
@@ -224,11 +231,11 @@ bool Manager::connect(ui::GumpMenu* menu, const UnicodeString& action, unsigned 
             clientSing->getConfig()["/fluo/shard/clientversion@revision"].asInt(),
             clientSing->getConfig()["/fluo/shard/clientversion@build"].asInt()
         );
-        socket_.write(seed);
+        send(seed);
 
         // send packet
         packets::LoginRequest req(accName, accPw);
-        socket_.write(req);
+        send(req);
 
         return true;
     } else {
@@ -245,7 +252,7 @@ bool Manager::selectServer(ui::GumpMenu* menu, const UnicodeString& action, unsi
     unsigned int index = StringConverter::toInt(parameters[0]);
 
     packets::GameServerSelect pkt(index);
-    socket_.write(pkt);
+    send(pkt);
 
     return true;
 }
@@ -265,14 +272,14 @@ void Manager::handleServerRedirect(const packets::ServerRedirect* packet) {
         clientSing->getConfig()["/fluo/shard/clientversion@revision"].asInt(),
         clientSing->getConfig()["/fluo/shard/clientversion@build"].asInt()
     );
-    socket_.write(seed);
+    send(seed);
 
 
     Config& config = Client::getSingleton()->getConfig();
     packets::GameServerLoginRequest loginReq(config["/fluo/shard/account@name"].asString(),
             config["/fluo/shard/account@password"].asString(),
             packet->encryptionKey_);
-    socket_.write(loginReq);
+    send(loginReq);
 }
 
 uint32_t Manager::getSeed() const {

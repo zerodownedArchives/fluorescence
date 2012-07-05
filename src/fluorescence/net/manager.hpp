@@ -66,6 +66,7 @@ public:
 
     template<class P>
     bool send(const P& packet) {
+        lastSendTime_ = time(NULL);
         return socket_.write(packet);
     }
 
@@ -85,6 +86,8 @@ private:
     boost::shared_ptr<WalkPacketManager> walkPacketManager_;
 
     unsigned int protocolVersion_;
+
+    time_t lastSendTime_;
 };
 
 }
