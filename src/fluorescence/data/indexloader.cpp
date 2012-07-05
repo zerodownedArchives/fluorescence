@@ -31,6 +31,8 @@ namespace data {
 IndexLoader::IndexLoader(const boost::filesystem::path& path) : indexBlocks_(NULL) {
     FullFileLoader ldr(path);
     ldr.read(boost::bind(&IndexLoader::read, this, _1, _2));
+
+    fileName_ = StringConverter::fromUtf8(path.leaf());
 }
 
 IndexLoader::~IndexLoader() {
@@ -64,7 +66,7 @@ void IndexLoader::read(int8_t* buf, unsigned int len) {
 const IndexBlock& IndexLoader::get(unsigned int id) const {
     // if someone tries to load an unknown id, just return the first entry
     if (id > size_) {
-        LOG_WARN << "Trying to access out of bounds index=" << id << " size=" << size_ << std::endl;
+        LOG_WARN << "Trying to access out of bounds index=" << id << " size=" << size_ << " in file " << fileName_ << std::endl;
         id = 0;
     }
 

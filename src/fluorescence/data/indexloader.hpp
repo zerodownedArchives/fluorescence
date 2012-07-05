@@ -48,6 +48,8 @@ private:
     unsigned int size_;
     IndexBlock* indexBlocks_;
 
+    UnicodeString fileName_;
+
 };
 
 }
