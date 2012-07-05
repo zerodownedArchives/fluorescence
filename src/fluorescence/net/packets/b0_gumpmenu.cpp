@@ -28,16 +28,6 @@ namespace fluo {
 namespace net {
 namespace packets {
 
-void dumpBuffer(int8_t* buf, unsigned int length) {
-    for (unsigned int i = 0; i < length; ++i) {
-        if (i % 8 == 0) {
-            printf("\n%4u: ", i);
-        }
-        printf("%x(%c) ", (uint8_t)buf[i], buf[i]);
-    }
-    printf("\n");
-}
-
 GumpMenu::GumpMenu() : Packet(0xB0) {
 }
 

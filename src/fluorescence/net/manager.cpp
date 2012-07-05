@@ -165,6 +165,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0xC7: ret.reset(new packets::OsiEffectExtended()); break;
         case 0xC8: ret.reset(new packets::UpdateRange()); break;
         case 0xCC: ret.reset(new packets::LocalizedTextAffix()); break;
+        case 0xDD: ret.reset(new packets::CompressedGumpMenu()); break;
         case 0xE2: ret.reset(new packets::MobileAnimationSA()); break;
         case 0xF3: ret.reset(new packets::WorldObject()); break;
         default: ret.reset(new packets::Unknown(id)); break;

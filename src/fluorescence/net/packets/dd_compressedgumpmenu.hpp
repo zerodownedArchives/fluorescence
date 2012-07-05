@@ -17,8 +17,8 @@
  */
 
 
-#ifndef FLUO_NET_PACKETS_GUMPMENU_HPP
-#define FLUO_NET_PACKETS_GUMPMENU_HPP
+#ifndef FLUO_NET_PACKETS_COMPRESSEDGUMPMENU_HPP
+#define FLUO_NET_PACKETS_COMPRESSEDGUMPMENU_HPP
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
@@ -32,9 +32,9 @@ namespace net {
 
 namespace packets {
 
-class GumpMenu : public Packet {
+class CompressedGumpMenu : public Packet {
 public:
-    GumpMenu();
+    CompressedGumpMenu();
 
     virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
 

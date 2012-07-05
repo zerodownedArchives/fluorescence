@@ -81,6 +81,7 @@
 #include "packets/c7_osieffectextended.hpp"
 #include "packets/c8_updaterange.hpp"
 #include "packets/cc_localizedtextaffix.hpp"
+#include "packets/dd_compressedgumpmenu.hpp"
 #include "packets/e2_mobileanimation_sa.hpp" // replaces 6e
 #include "packets/ef_seed.hpp"
 #include "packets/f3_worldobject.hpp" // replaces 1a
