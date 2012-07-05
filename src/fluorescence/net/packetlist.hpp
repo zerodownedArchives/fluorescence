@@ -20,67 +20,69 @@
 #ifndef FLUO_NET_PACKETLIST_HPP
 #define FLUO_NET_PACKETLIST_HPP
 
-#include "packets/00_createcharacter.hpp" // 0x00
-#include "packets/02_movementrequest.hpp" // 0x02
-#include "packets/05_attackrequest.hpp" // 0x05
-#include "packets/06_doubleclick.hpp" // 0x06
-#include "packets/07_pickupitem.hpp" // 0x07
-#include "packets/08_dropitem.hpp" // 0x08
-#include "packets/09_singleclick.hpp" // 0x09
-#include "packets/11_statupdatefull.hpp" //0x11
-#include "packets/12_useskill.hpp" //0x12
-#include "packets/13_equiprequest.hpp" //0x13
-#include "packets/1a_worlditem.hpp" // 0x1a
-#include "packets/1b_playerinit.hpp" // 0x1b
-#include "packets/1c_asciitext.hpp" // 0x1c
-#include "packets/1d_deleteobject.hpp" // 0x1d
-#include "packets/20_teleport.hpp" // 0x20
-#include "packets/21_movementdeny.hpp" // 0x21
-#include "packets/22_movementaccept.hpp" // 0x22
-#include "packets/24_displaycontainer.hpp" // 0x24
-#include "packets/25_containerupdate.hpp" // 0x25
-#include "packets/27_pickupreject.hpp" // 0x27
-#include "packets/2e_equippeditem.hpp" // 0x2e
-#include "packets/34_statskillquery.hpp" //0x34
-#include "packets/3a_skilllockchange.hpp" //0x3a, sent by client
-#include "packets/3a_skillsupdate.hpp" //0x3a, sent by server
-#include "packets/3c_containercontent.hpp" // 0x3c
-#include "packets/54_playsound.hpp" // 0x54
-#include "packets/55_logincomplete.hpp" // 0x55
-#include "packets/5d_characterselect.hpp" // 0x5d
-#include "packets/6c_target.hpp" // 0x6c
-#include "packets/6d_playmusic.hpp" // 0x6d
-#include "packets/6e_mobileanimation.hpp" // 0x6e
-#include "packets/72_warmode.hpp" // 0x72
-#include "packets/77_nakedmobile.hpp" // 0x77
-#include "packets/78_equippedmobile.hpp" // 0x78
-#include "packets/80_loginrequest.hpp" // 0x80
-#include "packets/82_loginreject.hpp" // 0x82
-#include "packets/83_characterdelete.hpp" // 0x83
-#include "packets/85_characterdeletereject.hpp" // 0x85
-#include "packets/86_characterlistupdate.hpp" // 0x86
-#include "packets/88_openpaperdoll.hpp" //0x88
-#include "packets/8c_serverredirect.hpp" // 0x8c
-#include "packets/91_gameserverloginrequest.hpp" // 0x91
-#include "packets/a0_gameserverselect.hpp" // 0xA0
-#include "packets/a1_statupdatehitpoints.hpp" // 0xA1
-#include "packets/a2_statupdatemana.hpp" // 0xA2
-#include "packets/a3_statupdatestamina.hpp" // 0xA3
-#include "packets/a8_serverlist.hpp" // 0xA8
-#include "packets/a9_characterlist.hpp" // 0xa9
-#include "packets/ad_speechrequest.hpp" // 0xad
-#include "packets/ae_unicodetext.hpp" // 0xae
-#include "packets/b0_gumpmenu.hpp" // 0xb0
-#include "packets/b1_gumpreply.hpp" // 0xb1
-#include "packets/b8_profile.hpp" // 0xb8
-#include "packets/b9_helprequest.hpp" // 0xb9
-#include "packets/bd_clientversion.hpp" // 0xbd
-#include "packets/bf.hpp" // 0xbf
-#include "packets/c0_osieffect.hpp" // 0xc0
-#include "packets/c1_localizedtext.hpp" // 0xc1
-#include "packets/c7_osieffectextended.hpp" // 0xc7
-#include "packets/c8_updaterange.hpp" // 0xc8
-#include "packets/cc_localizedtextaffix.hpp" // 0xcc
+#include "packets/00_createcharacter.hpp"
+#include "packets/02_movementrequest.hpp"
+#include "packets/05_attackrequest.hpp"
+#include "packets/06_doubleclick.hpp"
+#include "packets/07_pickupitem.hpp"
+#include "packets/08_dropitem.hpp"
+#include "packets/09_singleclick.hpp"
+#include "packets/11_statupdatefull.hpp"
+#include "packets/12_useskill.hpp"
+#include "packets/13_equiprequest.hpp"
+#include "packets/1a_worlditem.hpp" // deprecated since SA, replaced by f3
+#include "packets/1b_playerinit.hpp"
+#include "packets/1c_asciitext.hpp"
+#include "packets/1d_deleteobject.hpp"
+#include "packets/20_teleport.hpp"
+#include "packets/21_movementdeny.hpp"
+#include "packets/22_movementaccept.hpp"
+#include "packets/24_displaycontainer.hpp"
+#include "packets/25_containerupdate.hpp"
+#include "packets/27_pickupreject.hpp"
+#include "packets/2e_equippeditem.hpp"
+#include "packets/34_statskillquery.hpp"
+#include "packets/3a_skilllockchange.hpp" // sent by client
+#include "packets/3a_skillsupdate.hpp" // sent by server
+#include "packets/3c_containercontent.hpp"
+#include "packets/54_playsound.hpp"
+#include "packets/55_logincomplete.hpp"
+#include "packets/5d_characterselect.hpp"
+#include "packets/6c_target.hpp"
+#include "packets/6d_playmusic.hpp"
+#include "packets/6e_mobileanimation.hpp" // deprecated since SA, replaced by e2
+#include "packets/72_warmode.hpp"
+#include "packets/77_nakedmobile.hpp"
+#include "packets/78_equippedmobile.hpp"
+#include "packets/80_loginrequest.hpp"
+#include "packets/82_loginreject.hpp"
+#include "packets/83_characterdelete.hpp"
+#include "packets/85_characterdeletereject.hpp"
+#include "packets/86_characterlistupdate.hpp"
+#include "packets/88_openpaperdoll.hpp"
+#include "packets/8c_serverredirect.hpp"
+#include "packets/91_gameserverloginrequest.hpp"
+#include "packets/9b_helprequest.hpp"
+#include "packets/a0_gameserverselect.hpp"
+#include "packets/a1_statupdatehitpoints.hpp"
+#include "packets/a2_statupdatemana.hpp"
+#include "packets/a3_statupdatestamina.hpp"
+#include "packets/a8_serverlist.hpp"
+#include "packets/a9_characterlist.hpp"
+#include "packets/ad_speechrequest.hpp"
+#include "packets/ae_unicodetext.hpp"
+#include "packets/b0_gumpmenu.hpp"
+#include "packets/b1_gumpreply.hpp"
+#include "packets/b8_profile.hpp"
+#include "packets/bd_clientversion.hpp"
+#include "packets/bf.hpp"
+#include "packets/c0_osieffect.hpp"
+#include "packets/c1_localizedtext.hpp"
+#include "packets/c7_osieffectextended.hpp"
+#include "packets/c8_updaterange.hpp"
+#include "packets/cc_localizedtextaffix.hpp"
+#include "packets/e2_mobileanimation_sa.hpp" // replaces 6e
+#include "packets/f3_worldobject.hpp" // replaces 1a
 
 #include "packets/unknown.hpp"
 

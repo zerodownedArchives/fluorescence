@@ -37,7 +37,7 @@ public:
 
     virtual void onReceive();
 
-
+private:
     Serial serial_;
     uint16_t artId_;
     uint8_t stackIdOffset_;

@@ -17,29 +17,35 @@
  */
 
 
+#ifndef FLUO_NET_PACKETS_MOBILEANIMATIONSA_HPP
+#define FLUO_NET_PACKETS_MOBILEANIMATIONSA_HPP
 
-#include "b9_helprequest.hpp"
+#include <net/packet.hpp>
+
+#include <typedefs.hpp>
 
 namespace fluo {
 namespace net {
+
 namespace packets {
 
-HelpRequest::HelpRequest() : Packet(0x9b, 258) {
-}
+class MobileAnimationSA : public Packet {
+public:
+    MobileAnimationSA();
 
-bool HelpRequest::write(int8_t* buf, unsigned int len, unsigned int& index) const {
-    bool ret = true;
+    virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
 
-    ret &= writePacketId(buf, len, index);
+    virtual void onReceive();
 
-    uint8_t zero = 0;
-    for (unsigned int i = 0; i < 257; ++i) {
-        ret &= PacketWriter::write(buf, len, index, zero);
-    }
+private:
+    Serial serial_;
+    uint16_t actionId_;
+    uint16_t frameCount_;
+    uint8_t delay_;
+};
 
-    return ret;
-}
-
-}
 }
 }
+}
+
+#endif

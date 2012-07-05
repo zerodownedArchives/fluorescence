@@ -37,7 +37,7 @@ namespace net {
 
 Manager* Manager::singleton_ = 0;
 
-bool Manager::create(const Config& config) {
+bool Manager::create(Config& config) {
     if (!singleton_) {
         try {
             singleton_ = new Manager(config);
@@ -65,7 +65,7 @@ void Manager::destroy() {
     }
 }
 
-Manager::Manager(const Config& config) {
+Manager::Manager(Config& config) {
 #ifdef WIN32
     // Initialize Winsock
     WSADATA wsaData;
@@ -77,6 +77,16 @@ Manager::Manager(const Config& config) {
         LOG_INFO << "WSAStartup ok" << std::endl;
     }
 #endif
+
+    UnicodeString protocolVersionStr = config["/fluo/shard/protocol@version"].asString();
+    if (protocolVersionStr == "pre-hs") {
+        protocolVersion_ = ProtocolVersion::PRE_HS;
+    } else if (protocolVersionStr == "hs") {
+        protocolVersion_ = ProtocolVersion::HS;
+    } else {
+        LOG_ERROR << "Unknown network protocol version " << protocolVersionStr << ". Valid versions are \"hs\" and \"pre-hs\". Setting to default \"pre-hs\"." << std::endl;
+        protocolVersion_ = ProtocolVersion::PRE_HS;
+    }
 
     walkPacketManager_.reset(new WalkPacketManager());
 }
@@ -154,6 +164,8 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0xC7: ret.reset(new packets::OsiEffectExtended()); break;
         case 0xC8: ret.reset(new packets::UpdateRange()); break;
         case 0xCC: ret.reset(new packets::LocalizedTextAffix()); break;
+        case 0xE2: ret.reset(new packets::MobileAnimationSA()); break;
+        case 0xF3: ret.reset(new packets::WorldObject()); break;
         default: ret.reset(new packets::Unknown(id)); break;
     }
 
@@ -252,6 +264,10 @@ uint32_t Manager::getSeed() const {
 
 boost::shared_ptr<WalkPacketManager> Manager::getWalkPacketManager() {
     return getSingleton()->walkPacketManager_;
+}
+
+unsigned int Manager::getProtocolVersion() const {
+    return protocolVersion_;
 }
 
 }

@@ -37,9 +37,10 @@ public:
 
     virtual void onReceive();
 
-
+private:
     Serial serial_;
     uint16_t gumpId_;
+    uint16_t containerType_;
 };
 
 }

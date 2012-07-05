@@ -120,6 +120,7 @@ Config::Config() {
     variablesMap_["/fluo/shard/address@host"].setString("", true);
     variablesMap_["/fluo/shard/address@port"].setInt(2593, true);
     variablesMap_["/fluo/shard/client@version-id"].setString("0.1.0 fluo", true);
+    variablesMap_["/fluo/shard/protocol@version"].setString("pre-hs", true);
 
     // audio
     variablesMap_["/fluo/audio/music@off"].setBool(false, true);

@@ -75,6 +75,7 @@ set (PACKETS_HPP
     net/packets/88_openpaperdoll.hpp
     net/packets/8c_serverredirect.hpp
     net/packets/91_gameserverloginrequest.hpp
+    net/packets/9b_helprequest.hpp
     net/packets/a0_gameserverselect.hpp
     net/packets/a1_statupdatehitpoints.hpp
     net/packets/a2_statupdatemana.hpp
@@ -86,13 +87,14 @@ set (PACKETS_HPP
     net/packets/b0_gumpmenu.hpp
     net/packets/b1_gumpreply.hpp
     net/packets/b8_profile.hpp
-    net/packets/b9_helprequest.hpp
     net/packets/bd_clientversion.hpp
     net/packets/c0_osieffect.hpp
     net/packets/c1_localizedtext.hpp
     net/packets/c7_osieffectextended.hpp
     net/packets/c8_updaterange.hpp
     net/packets/cc_localizedtextaffix.hpp
+    net/packets/e2_mobileanimation_sa.hpp
+    net/packets/f3_worldobject.hpp
 
     net/packets/bf.hpp
     net/packets/bf/01_fastwalkinit.hpp
@@ -151,6 +153,7 @@ set (PACKETS_CPP
     net/packets/88_openpaperdoll.cpp
     net/packets/8c_serverredirect.cpp
     net/packets/91_gameserverloginrequest.cpp
+    net/packets/9b_helprequest.cpp
     net/packets/a0_gameserverselect.cpp
     net/packets/a1_statupdatehitpoints.cpp
     net/packets/a2_statupdatemana.cpp
@@ -162,13 +165,14 @@ set (PACKETS_CPP
     net/packets/b0_gumpmenu.cpp
     net/packets/b1_gumpreply.cpp
     net/packets/b8_profile.cpp
-    net/packets/b9_helprequest.cpp
     net/packets/bd_clientversion.cpp
     net/packets/c0_osieffect.cpp
     net/packets/c1_localizedtext.cpp
     net/packets/c7_osieffectextended.cpp
     net/packets/c8_updaterange.cpp
     net/packets/cc_localizedtextaffix.cpp
+    net/packets/e2_mobileanimation_sa.cpp
+    net/packets/f3_worldobject.cpp
 
     net/packets/bf.cpp
     net/packets/bf/01_fastwalkinit.cpp

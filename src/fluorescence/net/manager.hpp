@@ -39,9 +39,16 @@ namespace packets {
     class ServerRedirect;
 }
 
+struct ProtocolVersion {
+enum {
+    PRE_HS = 0,
+    HS = 2,
+};
+};
+
 class Manager {
 public:
-    static bool create(const Config& config);
+    static bool create(Config& config);
     static Manager* getSingleton();
     static void destroy();
 
@@ -64,9 +71,11 @@ public:
 
     uint32_t getSeed() const;
 
+    unsigned int getProtocolVersion() const;
+
 private:
     static Manager* singleton_;
-    Manager(const Config& config);
+    Manager(Config& config);
     Manager(const Manager& copy) { }
     Manager& operator=(const Manager& copy) { return *this; }
     ~Manager();
@@ -74,6 +83,8 @@ private:
     Socket socket_;
 
     boost::shared_ptr<WalkPacketManager> walkPacketManager_;
+
+    unsigned int protocolVersion_;
 };
 
 }

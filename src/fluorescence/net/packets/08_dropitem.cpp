@@ -27,15 +27,15 @@ namespace fluo {
 namespace net {
 namespace packets {
 
-DropItem::DropItem(const world::DynamicItem* itm, boost::shared_ptr<world::ServerObject> target) : Packet(0x08, 14),
+DropItem::DropItem(const world::DynamicItem* itm, boost::shared_ptr<world::ServerObject> target) : Packet(0x08, 15),
     serial_(itm->getSerial()), locX_(0xFFFF), locY_(0xFFFF), locZ_(0), containerSerial_(target->getSerial()) {
 }
 
-DropItem::DropItem(const world::DynamicItem* itm, unsigned int x, unsigned int y, int z) : Packet(0x08, 14),
+DropItem::DropItem(const world::DynamicItem* itm, unsigned int x, unsigned int y, int z) : Packet(0x08, 15),
     serial_(itm->getSerial()), locX_(x), locY_(y), locZ_(z), containerSerial_(0xFFFFFFFF) {
 }
 
-DropItem::DropItem(const world::DynamicItem* itm, unsigned int x, unsigned int y, int z, boost::shared_ptr<world::ServerObject> target) : Packet(0x08, 14),
+DropItem::DropItem(const world::DynamicItem* itm, unsigned int x, unsigned int y, int z, boost::shared_ptr<world::ServerObject> target) : Packet(0x08, 15),
     serial_(itm->getSerial()), locX_(x), locY_(y), locZ_(z), containerSerial_(target->getSerial()) {
 }
 
@@ -47,6 +47,11 @@ bool DropItem::write(int8_t* buf, unsigned int len, unsigned int& index) const {
     ret &= PacketWriter::write(buf, len, index, locX_);
     ret &= PacketWriter::write(buf, len, index, locY_);
     ret &= PacketWriter::write(buf, len, index, locZ_);
+
+    // compliance to protocol change 6.0.1.7
+    uint8_t gridDummy = 0;
+    ret &= PacketWriter::write(buf, len, index, gridDummy);
+
     ret &= PacketWriter::write(buf, len, index, containerSerial_);
 
     return ret;

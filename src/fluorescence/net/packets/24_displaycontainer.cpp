@@ -22,16 +22,16 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <misc/log.hpp>
+#include <net/manager.hpp>
 #include <world/manager.hpp>
 #include <world/dynamicitem.hpp>
-
-#include <misc/log.hpp>
 
 namespace fluo {
 namespace net {
 namespace packets {
 
-DisplayContainer::DisplayContainer() : Packet(0x24, 7) {
+DisplayContainer::DisplayContainer() : Packet(0x24, net::Manager::getSingleton()->getProtocolVersion() >= ProtocolVersion::HS ? 9 : 7) {
 }
 
 bool DisplayContainer::read(const int8_t* buf, unsigned int len, unsigned int& index) {
@@ -39,6 +39,12 @@ bool DisplayContainer::read(const int8_t* buf, unsigned int len, unsigned int& i
 
     ret &= PacketReader::read(buf, len, index, serial_);
     ret &= PacketReader::read(buf, len, index, gumpId_);
+
+    if (net::Manager::getSingleton()->getProtocolVersion() >= ProtocolVersion::HS) {
+        ret &= PacketReader::read(buf, len, index, containerType_);
+    } else {
+        containerType_ = 0;
+    }
 
     return ret;
 }

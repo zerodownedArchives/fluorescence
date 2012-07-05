@@ -44,9 +44,9 @@ bool ContainerUpdate::read(const int8_t* buf, unsigned int len, unsigned int& in
     ret &= PacketReader::read(buf, len, index, pxX_);
     ret &= PacketReader::read(buf, len, index, pxY_);
 
-    //if (useGridByte) {
-        //++index;
-    //}
+    // compliance to protocol change 6.0.1.7
+    // jump grid byte
+    ++index;
 
     ret &= PacketReader::read(buf, len, index, container_);
     ret &= PacketReader::read(buf, len, index, hue_);

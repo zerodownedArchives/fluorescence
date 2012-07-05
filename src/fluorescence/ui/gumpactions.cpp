@@ -35,7 +35,7 @@
 #include <net/manager.hpp>
 #include <net/packets/ad_speechrequest.hpp>
 #include <net/packets/00_createcharacter.hpp>
-#include <net/packets/b9_helprequest.hpp>
+#include <net/packets/9b_helprequest.hpp>
 #include <net/packets/bf.hpp>
 #include <net/packets/bf/15_contextmenureply.hpp>
 #include <net/packets/bf/1c_castspell.hpp>
