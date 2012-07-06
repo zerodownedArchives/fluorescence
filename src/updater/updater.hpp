@@ -23,6 +23,8 @@
 #include <ClanLib/Core/Text/string8.h>
 #include <boost/thread/thread.hpp>
 
+#include <platform.hpp>
+
 namespace fluo {
 namespace updater {
 

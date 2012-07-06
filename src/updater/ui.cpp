@@ -23,7 +23,10 @@
 namespace fluo {
 namespace updater {
 
+#ifndef WIN32
+// gcc wants this here, too. visual studio complains...
 const unsigned int Ui::NOTIFY_COUNT;
+#endif
 
 Ui::Ui() : blinkTimer_(0), notificationCount_(0), notificationWriteIdx_(0) {
     CL_DisplayWindowDescription description;

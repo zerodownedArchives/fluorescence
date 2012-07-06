@@ -20,9 +20,9 @@
 
 #include "misc/log.hpp"
 
-#include <svncpp/status.hpp>
-#include <svncpp/wc.hpp>
-#include <svncpp/targets.hpp>
+#include "svncpp/status.hpp"
+#include "svncpp/wc.hpp"
+#include "svncpp/targets.hpp"
 
 namespace fluo {
 namespace updater {

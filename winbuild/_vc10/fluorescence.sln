@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fluorescence", "fluorescence.vcxproj", "{1903F0F0-C29F-616A-0AA7-9D7C64DB781E}"
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fluorescence", "fluorescence.vcxproj", "{4F02AF20-638F-E740-E61A-E5172D8DF076}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "updater", "updater.vcxproj", "{29B5232B-22F0-4F26-8706-3B7CF3FF50DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +11,14 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1903F0F0-C29F-616A-0AA7-9D7C64DB781E}.Debug|Win32.ActiveCfg = Debug|Win32
-		{1903F0F0-C29F-616A-0AA7-9D7C64DB781E}.Debug|Win32.Build.0 = Debug|Win32
-		{1903F0F0-C29F-616A-0AA7-9D7C64DB781E}.Release|Win32.ActiveCfg = Release|Win32
-		{1903F0F0-C29F-616A-0AA7-9D7C64DB781E}.Release|Win32.Build.0 = Release|Win32
+		{4F02AF20-638F-E740-E61A-E5172D8DF076}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4F02AF20-638F-E740-E61A-E5172D8DF076}.Debug|Win32.Build.0 = Debug|Win32
+		{4F02AF20-638F-E740-E61A-E5172D8DF076}.Release|Win32.ActiveCfg = Release|Win32
+		{4F02AF20-638F-E740-E61A-E5172D8DF076}.Release|Win32.Build.0 = Release|Win32
+		{29B5232B-22F0-4F26-8706-3B7CF3FF50DC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{29B5232B-22F0-4F26-8706-3B7CF3FF50DC}.Debug|Win32.Build.0 = Debug|Win32
+		{29B5232B-22F0-4F26-8706-3B7CF3FF50DC}.Release|Win32.ActiveCfg = Release|Win32
+		{29B5232B-22F0-4F26-8706-3B7CF3FF50DC}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

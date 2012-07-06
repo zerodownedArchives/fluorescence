@@ -20,9 +20,9 @@
 #ifndef FLUO_UPDATER_SVN_HPP
 #define FLUO_UPDATER_SVN_HPP
 
-#include <svncpp/context.hpp>
-#include <svncpp/client.hpp>
-#include <svncpp/context_listener.hpp>
+#include "svncpp/context.hpp"
+#include "svncpp/client.hpp"
+#include "svncpp/context_listener.hpp"
 
 #include "svnnotify.hpp"
 
