@@ -5,4 +5,8 @@ fluorescence.log
 screenshots/*
 shards/*
 packages/*
+fluorescence
+fluorescence_win32.exe
+updater
+updater.log
 
