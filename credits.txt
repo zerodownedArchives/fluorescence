@@ -12,3 +12,8 @@ fluorescence relies on the International Components for Unicode (http://site.icu
 Sound in fluorescence make possible by FMOD (www.fmod.org).
 
 The explosion.png and firesmoke.png effect textures were created by the Iris2 Team/BuD (www.iris2.de).
+
+The fluorescence updater is based on subversion (http://subversion.apache.org/), the win32svn build (http://sourceforge.net/projects/win32svn/) and svncpp (http://rapidsvn.tigris.org/svncpp.html). 
+Some code snippets for the updater are originally by the Iris2 Team (www.iris2.de).
+
+fluorescence uses zlib (www.zlib.org) to inflate compressed data.

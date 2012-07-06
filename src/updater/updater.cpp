@@ -113,7 +113,12 @@ int Updater::main(const std::vector<CL_String8>& args) {
 
     if (!hasRevertError_ && !hasUpdateError_ && !hasCheckoutError_ && !shouldExit_) {
         // start the client
+
+#ifdef WIN32
+		execl("fluorescence_win32.exe", "fluorescence_win32.exe", nullptr);
+#else
         execl("./fluorescence", "./fluorescence", nullptr);
+#endif
 
         // if we can execute this, something went wrong...
         ui_->setError("Unable to start fluorescence. Please restart!");

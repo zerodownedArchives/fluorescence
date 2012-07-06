@@ -37,7 +37,12 @@ Ui::Ui() : blinkTimer_(0), notificationCount_(0), notificationWriteIdx_(0) {
 
     slotCloseWindow_ = mainWindow_->sig_window_close().connect(Updater::getSingleton(), &Updater::close);
 
-    messageFont_ = CL_Font(mainWindow_->get_gc(), "Courier new", 12);
+#ifdef WIN32
+	unsigned int fontSize = 14;
+#else
+	unsigned int fontSize = 12;
+#endif
+    messageFont_ = CL_Font(mainWindow_->get_gc(), "Courier new", fontSize);
 }
 
 Ui::~Ui() {
