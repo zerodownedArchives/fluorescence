@@ -23,8 +23,6 @@
 #include <vector>
 #include <ClanLib/Core/Text/string8.h>
 
-#include <boost/program_options.hpp>
-
 #include <platform.hpp>
 #include <misc/config.hpp>
 
@@ -71,7 +69,7 @@ public:
     bool selectCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
     bool deleteCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
 
-    struct timeval getElapsedTime() const;
+    timeval getElapsedTime() const;
 
 private:
     static Client* singleton_;
@@ -96,7 +94,7 @@ private:
     void doStateLogin();
     void doStatePlaying(unsigned int elapsedMillis);
 
-    struct timeval startTime_;
+    timeval startTime_;
 };
 
 }

@@ -1,4 +1,27 @@
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2 -D_REENTRANT -DBOOST_FILESYSTEM_VERSION=2")
+
+set(ClanLib_VERSION_LIBNAME "23")
+set(ClanLib_VERSION_DIRNAME "2.3")
+find_package(ClanLib REQUIRED COMPONENTS App Core Display GL GUI)
+
+find_package(X11 REQUIRED COMPONENTS cursor)
+
+EXEC_PROGRAM(icu-config
+    ARGS "--ldflags" "--ldflags-icuio"
+    OUTPUT_VARIABLE ICU_LIBRARIES)
+
+include_directories(${ClanLib_INCLUDE_DIRS})
+
+set(Boost_USE_MULTITHREADED ON)
+find_package(Boost 1.46.0 REQUIRED COMPONENTS filesystem system thread program_options)
+
+set(FLUO_LIBRARIES ${ClanLib_LIBRARIES} ${Boost_LIBRARIES} ${ICU_LIBRARIES} -lXcursor -lcurl -lfmodex)
+
+
+include_directories(".")
+
+
 add_subdirectory(data)
 add_subdirectory(misc)
 add_subdirectory(ui)
