@@ -47,6 +47,7 @@
     <ClInclude Include="..\..\src\fluorescence\misc\exception.hpp" />
     <ClInclude Include="..\..\src\fluorescence\misc\interpolation.hpp" />
     <ClInclude Include="..\..\src\fluorescence\misc\log.hpp" />
+    <ClInclude Include="..\..\src\fluorescence\misc\patcherupdater.hpp" />
     <ClInclude Include="..\..\src\fluorescence\misc\pugixml\pugiconfig.hpp" />
     <ClInclude Include="..\..\src\fluorescence\misc\pugixml\pugixml.hpp" />
     <ClInclude Include="..\..\src\fluorescence\misc\random.hpp" />
@@ -285,6 +286,7 @@
     <ClCompile Include="..\..\src\fluorescence\misc\config.cpp" />
     <ClCompile Include="..\..\src\fluorescence\misc\interpolation.cpp" />
     <ClCompile Include="..\..\src\fluorescence\misc\log.cpp" />
+    <ClCompile Include="..\..\src\fluorescence\misc\patcherupdater.cpp" />
     <ClCompile Include="..\..\src\fluorescence\misc\pugixml\pugixml.cpp" />
     <ClCompile Include="..\..\src\fluorescence\misc\random.cpp" />
     <ClCompile Include="..\..\src\fluorescence\misc\string.cpp" />

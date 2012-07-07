@@ -44,7 +44,7 @@ int Updater::sMain(const std::vector<CL_String8>& args) {
 }
 
 Updater::Updater() : ui_(nullptr), svn_(nullptr), shouldExit_(false),
-    hasCheckoutError_(false), hasUpdateError_(false), hasRevertError_(false) {
+    hasCheckoutError_(false), hasUpdateError_(false), hasRevertError_(false), patcherUpdate_(false) {
     gettimeofday(&startTime_, NULL);
 }
 
@@ -114,10 +114,20 @@ int Updater::main(const std::vector<CL_String8>& args) {
     if (!hasRevertError_ && !hasUpdateError_ && !hasCheckoutError_ && !shouldExit_) {
         // start the client
 
+        LOG_INFO << "Starting the client. Patcher update: " << patcherUpdate_ << std::endl;
+
 #ifdef WIN32
-		execl("fluorescence_win32.exe", "fluorescence_win32.exe", nullptr);
+        if (patcherUpdate_) {
+            execl("fluorescence_win32.exe", "fluorescence_win32.exe", "updatepatcher", nullptr);
+        } else {
+            execl("fluorescence_win32.exe", "fluorescence_win32.exe", nullptr);
+        }
 #else
-        execl("./fluorescence", "./fluorescence", nullptr);
+        if (patcherUpdate_) {
+            execl("./fluorescence", "./fluorescence", "updatepatcher", nullptr);
+        } else {
+            execl("./fluorescence", "./fluorescence", nullptr);
+        }
 #endif
 
         // if we can execute this, something went wrong...
@@ -218,6 +228,10 @@ void Updater::close() {
 
 void Updater::setRPressed(bool value) {
     rPressed_ = value;
+}
+
+void Updater::patcherUpdate() {
+    patcherUpdate_ = true;
 }
 
 }

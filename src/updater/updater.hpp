@@ -43,6 +43,10 @@ public:
     void close();
     void setRPressed(bool value);
 
+    // notification that an update for the patcher was received via svn
+    // => start client with parameters for patcher update
+    void patcherUpdate();
+
 private:
     static Updater* singleton_;
 
@@ -67,6 +71,8 @@ private:
     bool hasRevertError_;
 
     bool rPressed_;
+
+    bool patcherUpdate_;
 };
 
 }

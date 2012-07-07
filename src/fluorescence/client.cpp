@@ -25,6 +25,7 @@
 
 #include <misc/config.hpp>
 #include <misc/log.hpp>
+#include <misc/patcherupdater.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/gumpmenus.hpp>
@@ -264,6 +265,14 @@ int Client::main(const std::vector<CL_String8>& args) {
     LOG_INFO << "Client::main" << std::endl;
     setlocale(LC_ALL, "");
     setlocale(LC_NUMERIC, "C");
+
+    // patcher can't update itself directly => make sure the new files are copied to the main folder
+    PatcherUpdater::copyPatcherUpdateFolder();
+
+    if (args[0] == "patcherupdate") {
+        // patcher downloaded something new. restart it?
+        // TODO: decide what to do here
+    }
 
     if (!initBase(args)) {
         cleanUp();

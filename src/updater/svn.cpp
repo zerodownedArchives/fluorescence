@@ -18,6 +18,7 @@
 
 #include "svn.hpp"
 
+#include "updater.hpp"
 #include "misc/log.hpp"
 
 #include "svncpp/status.hpp"
@@ -80,6 +81,11 @@ void SvnListener::contextNotify(const char *path, svn_wc_notify_action_t action,
 
         if (notify_) {
             notify_->notify(sstr.str());
+        }
+
+        if (strstr(path, "patcher_update") != nullptr) {
+            // notify application of an update to the patcher
+            Updater::getSingleton()->patcherUpdate();
         }
     }
 }

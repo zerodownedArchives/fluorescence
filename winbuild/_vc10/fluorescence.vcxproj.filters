@@ -774,6 +774,9 @@
     <ClInclude Include="..\..\src\fluorescence\ui\commands\property.hpp">
       <Filter>ui\commands</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\misc\patcherupdater.hpp">
+      <Filter>misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\fluorescence\data\animdataloader.cpp">
@@ -1429,6 +1432,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\fluorescence\ui\commands\property.cpp">
       <Filter>ui\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\misc\patcherupdater.cpp">
+      <Filter>misc</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
