@@ -8,6 +8,7 @@ set(MISC_HPP
     misc/random.hpp
     misc/interpolation.hpp
     misc/xmlloadexception.hpp
+    misc/patcherupdater.hpp
     )
 
 set(MISC_CPP
@@ -17,6 +18,7 @@ set(MISC_CPP
     misc/config.cpp
     misc/random.cpp
     misc/interpolation.cpp
+    misc/patcherupdater.cpp
     )
 
 set(PUGIXML

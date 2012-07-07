@@ -7,4 +7,5 @@ shards/*
 packages/*
 fluorescence_win32.exe
 updater.log
+geanyproj.geany
 
