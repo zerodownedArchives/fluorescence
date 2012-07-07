@@ -51,8 +51,8 @@ Updater::Updater() : ui_(nullptr), svn_(nullptr), shouldExit_(false),
 void Updater::init() {
     ui_ = new Ui();
 
-    const char* directory = "./tmp/";
-    const char* url = "http://pugixml.googlecode.com/svn/tags/latest/";
+    const char* directory = ".";
+    const char* url = "http://fluorescence-dist.googlecode.com/svn/branches/stable/";
     svn_ = new Svn(directory, url, ui_);
 }
 
