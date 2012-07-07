@@ -152,6 +152,7 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
     po::options_description consoleDesc;
     consoleDesc.add_options()
     ("help,h,?", "Receive this message")
+    ("patcherupdate", "Indicates that the patcher itself has just received an update")
     ("shard", po::value<std::string>(), "The shard you want to connect to. If empty, shard selection dialog is shown. Shard name can also be given without --shard prefix")
     ;
 

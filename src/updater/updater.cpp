@@ -118,13 +118,13 @@ int Updater::main(const std::vector<CL_String8>& args) {
 
 #ifdef WIN32
         if (patcherUpdate_) {
-            execl("fluorescence_win32.exe", "fluorescence_win32.exe", "updatepatcher", nullptr);
+            execl("fluorescence_win32.exe", "fluorescence_win32.exe", "--patcherupdate", nullptr);
         } else {
             execl("fluorescence_win32.exe", "fluorescence_win32.exe", nullptr);
         }
 #else
         if (patcherUpdate_) {
-            execl("./fluorescence", "./fluorescence", "updatepatcher", nullptr);
+            execl("./fluorescence", "./fluorescence", "--patcherupdate", nullptr);
         } else {
             execl("./fluorescence", "./fluorescence", nullptr);
         }

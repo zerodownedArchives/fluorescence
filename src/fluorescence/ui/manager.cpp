@@ -307,7 +307,7 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
     bfs::directory_iterator end;
 
     for (; iter != end; ++iter) {
-        if (bfs::is_directory(iter->status())) {
+        if (bfs::is_directory(iter->status()) && iter->path().leaf() != ".svn") {
             loadFontDirectory(iter->path());
         } else {
             if (iter->path().extension() != ".ttf") {

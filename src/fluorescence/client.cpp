@@ -269,9 +269,9 @@ int Client::main(const std::vector<CL_String8>& args) {
     // patcher can't update itself directly => make sure the new files are copied to the main folder
     PatcherUpdater::copyPatcherUpdateFolder();
 
-    if (args[0] == "patcherupdate") {
-        // patcher downloaded something new. restart it?
-        // TODO: decide what to do here
+    if (std::find(args.begin(), args.end(), "--patcherupdate") != args.end()) {
+        // patcher received an update. restart it? 
+        // => not really necessary now, maybe when it does some more complex stuff
     }
 
     if (!initBase(args)) {
