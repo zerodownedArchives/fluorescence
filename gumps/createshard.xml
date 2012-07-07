@@ -11,6 +11,8 @@
     <tlabel x="15" y="48" width="95" height="20" text="UO path:" />
     <tlineedit id="uopath" x="120" y="45" width="215" height="25"/>
 
+    <tcheckbox x="15" y="78" width="120" height="20" text="High Seas" id="highseas" />
+
     <tbutton x="30" y="115" width="130" height="25" text="Create shard" action="createshard" />
     <tbutton x="190" y="115" width="130" height="25" text="Close fluorescence" action="shutdown" />
 </gump>
