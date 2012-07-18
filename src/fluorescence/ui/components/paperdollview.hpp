@@ -24,7 +24,7 @@
 
 #include <list>
 
-#include <ui/gumpelement.hpp>
+#include <ui/gumpcomponent.hpp>
 
 namespace fluo {
 
@@ -39,7 +39,7 @@ class PaperdollRenderer;
 
 namespace components {
 
-class PaperdollView : public GumpElement {
+class PaperdollView : public GumpComponent {
 public:
     PaperdollView(CL_GUIComponent* parent, const CL_Rect& bounds);
     ~PaperdollView();

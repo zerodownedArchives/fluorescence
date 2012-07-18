@@ -17,8 +17,8 @@
  */
 
 
-#ifndef FLUO_UI_XMLPARSER_HPP
-#define FLUO_UI_XMLPARSER_HPP
+#ifndef FLUO_UI_XMLLOADER_HPP
+#define FLUO_UI_XMLLOADER_HPP
 
 #include <boost/shared_ptr.hpp>
 #include <boost/filesystem/path.hpp>
@@ -40,7 +40,7 @@ namespace components {
 class UoButton;
 }
 
-class XmlParser {
+class XmlLoader {
 public:
     struct RepeatContext {
         unsigned int repeatCount_;
@@ -57,7 +57,7 @@ public:
      * \param menu if the second parameter is NULL, a new gump is created, otherwise, the components are inserted in menu. \
             Top level attributes are not parsed then
      */
-    static GumpMenu* fromXmlFile(const UnicodeString& name, GumpMenu* menu = NULL);
+    static GumpMenu* fromXmlFile(const UnicodeString& name);
 
     /**
      * \brief Create a gump menu according to the description in the string
@@ -65,20 +65,38 @@ public:
      * \param menu if the second parameter is NULL, a new gump is created, otherwise, the components are inserted in menu. \
             Top level attributes are not parsed then
      */
-    static GumpMenu* fromXmlString(const UnicodeString& str, GumpMenu* menu = NULL);
+    static GumpMenu* fromXmlString(const UnicodeString& str);
+
+
+    static bool readTemplateFile(const UnicodeString& themeName);
 
 private:
-    static XmlParser* singleton_;
-    static XmlParser* getSingleton();
+    static XmlLoader* singleton_;
+    static XmlLoader* getSingleton();
 
-    XmlParser();
-    XmlParser(const XmlParser& factory) {};
-    XmlParser& operator=(const XmlParser& factory) { return *this; };
+    XmlLoader();
+    XmlLoader(const XmlLoader& copy) {};
+    XmlLoader& operator=(const XmlLoader& copy) { return *this; };
 
-    GumpMenu* fromXml(pugi::xml_document& doc, GumpMenu* menu);
+    GumpMenu* fromXml(pugi::xml_document& doc);
 
+
+    // template stuff
+    pugi::xml_document templateDocument_;
+    void setTemplates(); // templateDocument_ is set before this function is called
+    std::map<UnicodeString, pugi::xml_node> templateMap_;
+    pugi::xml_node getTemplate(const UnicodeString& templateName);
+
+    // helper functions
     CL_Rect getBoundsFromNode(pugi::xml_node& node);
     bool parseId(pugi::xml_node& node, CL_GUIComponent* component);
+    bool parseMultiTextureImage(pugi::xml_node& node, components::MultiTextureImage* button, unsigned int index);
+
+
+    // reworked ui-components
+    bool parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+
+
 
     // themed ui components
     bool parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent, GumpMenu* top);
@@ -107,8 +125,6 @@ private:
 
     bool parsePropertyLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
-    // supports both themed and uo images
-    bool parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
 
     // uo components
     bool parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
@@ -127,28 +143,6 @@ private:
     std::map<UnicodeString, XmlParseFunction> functionTable_;
     std::map<UnicodeString, RepeatContext> repeatContexts_;
 
-    template<int N>
-    bool parseMultiTextureImage(pugi::xml_node& node, components::MultiTextureImage<N>* button, unsigned int index) {
-        UnicodeString imgSource = StringConverter::fromUtf8(node.attribute("source").value());
-        UnicodeString imgId = StringConverter::fromUtf8(node.attribute("imgid").value());
-
-        boost::shared_ptr<ui::Texture> texture = data::Manager::getTexture(imgSource, imgId);
-
-        if (!texture) {
-            LOG_ERROR << "Unable to parse gump button image, source=" << imgSource << " imgid=" << imgId << std::endl;
-            return false;
-        }
-
-        unsigned int hue = node.attribute("hue").as_uint();
-        std::string rgba = node.attribute("rgba").value();
-        float alpha = node.attribute("alpha").as_float();
-
-        bool tiled = node.attribute("tiled").as_bool();
-
-        button->addTexture(index, texture, hue, rgba, alpha, tiled);
-
-        return true;
-    }
 };
 
 }

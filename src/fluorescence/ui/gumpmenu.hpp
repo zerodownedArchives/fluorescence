@@ -29,6 +29,7 @@
 
 #include "components/basebutton.hpp"
 #include "gumpmenus.hpp"
+#include "gumpcomponent.hpp"
 
 namespace fluo {
 namespace world {
@@ -37,21 +38,27 @@ namespace world {
 
 namespace ui {
 
+// TODO: change to inheritance from CL_GUIComponent ?
 class GumpMenu : public CL_Window {
 public:
     GumpMenu(const CL_GUITopLevelDescription& desc);
     ~GumpMenu();
 
-    void addPage(unsigned int pageId);
-
+    // add/remove components
+    // TODO: change header to gumpcomponent
     void removeFromPages(const CL_GUIComponent* component);
     void addToCurrentPage(CL_GUIComponent* component);
+
+    // page management
+    void addPage(unsigned int pageId);
 
     void activatePage(unsigned int pageId);
     void activateFirstPage();
 
     unsigned int getActivePageId();
 
+
+    // basic properties
     void setClosable(bool value);
     bool isClosable();
 
@@ -61,10 +68,40 @@ public:
     void setName(const UnicodeString& name);
     const UnicodeString& getName();
 
+    void setSerial(Serial serial);
+    void setTypeId(unsigned int typeId);
+
+
+    // mobile linking
+    void updateMobileProperties();
+    void setLinkedMobile(world::Mobile* mob);
+    world::Mobile* getLinkedMobile() const;
+
+
+    // event stuff
+    void onClose();
+    void setCloseCallback(boost::function<void()> cb);
+
     void setAction(const UnicodeString& action);
     void setCancelAction(const UnicodeString& action);
 
 
+    // auto-resize
+    void fitSizeToChildren();
+
+
+    void sendReply(unsigned int buttonId_);
+
+    void setCurrentRadioGroup(unsigned int groupId);
+    unsigned int getCurrentRadioGroup() const;
+
+    virtual bool has_pixel(const CL_Point& p) const;
+
+    void startDragging(const CL_Point& mousePos);
+
+
+
+    // TODO: rework template functions
     template<class ComponentClass>
     void setComponentTextFromConfig(const UnicodeString& componentName, const UnicodeString& configName, Config& config) {
         if (config.exists(configName) > 0) {
@@ -98,34 +135,17 @@ public:
         }
     }
 
-    void updateMobileProperties();
-    void setLinkedMobile(world::Mobile* mob);
-    world::Mobile* getLinkedMobile() const;
 
-    void onClose();
 
-    void startDragging(const CL_Point& mousePos);
 
-    void setupResizeHandler();
-    void fitSizeToChildren();
 
-    void setSerial(Serial serial);
-    void setTypeId(unsigned int typeId);
-
-    void sendReply(unsigned int buttonId_);
-
-    void setCurrentRadioGroup(unsigned int groupId);
-    unsigned int getCurrentRadioGroup() const;
-
-    virtual bool has_pixel(const CL_Point& p) const;
-
-    void setCloseCallback(boost::function<void()> cb);
 
 private:
     Serial serial_;
     unsigned int typeId_;
 
     unsigned int activePageId_;
+    // TODO: change to GumpComponent
     std::map<unsigned int, std::vector<CL_GUIComponent*> > pages_;
     unsigned int firstPageId_;
 
@@ -137,6 +157,7 @@ private:
     bool draggable_;
     bool isDragged_;
     CL_Point lastMousePos_;
+
     bool onInputPressed(const CL_InputEvent& msg);
     bool onInputReleased(const CL_InputEvent& msg);
     bool onPointerMoved(const CL_InputEvent& msg);
@@ -147,6 +168,7 @@ private:
     UnicodeString cancelAction_;
 
     world::Mobile* linkedMobile_;
+    // TODO: change to GumpComponent
     void updateMobilePropertiesRec(CL_GUIComponent* comp);
 
     unsigned int currentRadioGroup_;

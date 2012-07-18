@@ -47,7 +47,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-PaperdollView::PaperdollView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent) {
+PaperdollView::PaperdollView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpComponent(parent) {
     this->set_geometry(bounds);
     boost::shared_ptr<PaperdollRenderQueue> rq(new PaperdollRenderQueue());
     renderer_.reset(new PaperdollRenderer(rq, this));

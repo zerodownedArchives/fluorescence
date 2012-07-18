@@ -39,7 +39,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-ContainerView::ContainerView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpElement(parent), sizeAdjusted(false) {
+ContainerView::ContainerView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpComponent(parent), sizeAdjusted(false) {
     this->set_geometry(bounds);
     boost::shared_ptr<ContainerRenderQueue> rq(new ContainerRenderQueue());
     renderer_.reset(new ContainerRenderer(rq, this));

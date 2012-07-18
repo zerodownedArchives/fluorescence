@@ -34,7 +34,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-Image::Image(CL_GUIComponent* parent) : CL_GUIComponent(parent), 
+Image::Image(CL_GUIComponent* parent) : GumpComponent(parent),
         autoResize_(false), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white), tiled_(false) {
     func_render().set(this, &Image::render);
 }
@@ -53,7 +53,7 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
         geom.set_width(texture_->getWidth());
         geom.set_height(texture_->getHeight());
         request_repaint();
-        
+
         ui::Manager::getSingleton()->queueComponentResize(this, geom);
     } else if (!tiled_) {
         if (hueInfo_[1u] == 0) {
@@ -68,11 +68,11 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
             tileableTexture_ = texture_->extractSingleTexture();
             tileableTexture_.set_wrap_mode(cl_wrap_repeat , cl_wrap_repeat );
         }
-        
+
         if (hueInfo_[1u] == 0) {
-            CL_Draw::texture(gc, tileableTexture_, 
-                    CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), 
-                    colorRgba_, 
+            CL_Draw::texture(gc, tileableTexture_,
+                    CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())),
+                    colorRgba_,
                     CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight()));
         } else {
             renderShader(gc, clipRect);
@@ -115,12 +115,12 @@ void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     gc.set_texture(0, huesTexture);
     // set texture unit 1 active to avoid overriding the hue texture with newly loaded object textures
     gc.set_texture(1, huesTexture);
-    
+
     shader->set_uniform1i("HueTexture", 0);
     shader->set_uniform1i("ObjectTexture", 1);
-    
+
     CL_Rectf textureRect;
-    
+
     if (tiled_) {
         gc.set_texture(1, tileableTexture_);
         textureRect = CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight());
@@ -128,7 +128,7 @@ void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
         gc.set_texture(1, texture_->getTexture());
         textureRect = texture_->getNormalizedTextureCoords();
     }
-    
+
 	CL_Vec2f tex1_coords[6] = {
         CL_Vec2f(textureRect.left, textureRect.top),
         CL_Vec2f(textureRect.right, textureRect.top),
@@ -165,10 +165,10 @@ bool Image::has_pixel(const CL_Point& p) const {
     if (!texture_) {
         return false;
     }
-    
+
     int px = p.x;
     int py = p.y;
-    
+
     if (tiled_) {
         px %= tileableTexture_.get_width();
         py %= tileableTexture_.get_height();
@@ -178,7 +178,7 @@ bool Image::has_pixel(const CL_Point& p) const {
         px *= stretchHori;
         py *= stretchVert;
     }
-    
+
     return texture_->hasPixel(px, py);
 }
 

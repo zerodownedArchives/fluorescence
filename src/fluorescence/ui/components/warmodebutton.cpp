@@ -20,6 +20,7 @@
 
 #include <ClanLib/Display/Window/keys.h>
 
+#include <misc/log.hpp>
 #include <ui/gumpmenu.hpp>
 #include <world/mobile.hpp>
 
@@ -27,12 +28,12 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-WarModeButton::WarModeButton(CL_GUIComponent* parent) : MultiTextureImage<6>(parent), mouseOver_(false), mouseDown_(false), warmode_(false) {
+WarModeButton::WarModeButton(CL_GUIComponent* parent) : MultiTextureImage(parent, 6), mouseOver_(false), mouseDown_(false), warmode_(false) {
     func_input_pressed().set(this, &WarModeButton::onInputPressed);
     func_input_released().set(this, &WarModeButton::onInputReleased);
     func_pointer_enter().set(this, &WarModeButton::onPointerEnter);
     func_pointer_exit().set(this, &WarModeButton::onPointerExit);
-    
+
     set_double_click_enabled(false);
 }
 
@@ -40,14 +41,14 @@ bool WarModeButton::onInputReleased(const CL_InputEvent & e) {
     if (e.id == CL_MOUSE_LEFT) {
         mouseDown_ = false;
         updateTexture();
-        
+
         world::Mobile* linkedMobile = getTopLevelMenu()->getLinkedMobile();
         if (!linkedMobile) {
             LOG_ERROR << "WarModeButton in unlinked gump" << std::endl;
         } else {
             linkedMobile->setWarMode(!linkedMobile->isWarMode());
         }
-        
+
         return true;
     } else {
         return false;
@@ -72,7 +73,7 @@ GumpMenu* WarModeButton::getTopLevelMenu() {
 bool WarModeButton::onPointerEnter() {
     mouseOver_ = true;
     updateTexture();
-    
+
     return true;
 }
 
@@ -80,7 +81,7 @@ bool WarModeButton::onPointerExit() {
     mouseOver_ = false;
     mouseDown_ = false;
     updateTexture();
-    
+
     return true;
 }
 

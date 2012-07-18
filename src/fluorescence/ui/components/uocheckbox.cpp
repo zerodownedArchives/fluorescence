@@ -26,11 +26,11 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-UoCheckbox::UoCheckbox(CL_GUIComponent* parent) : MultiTextureImage<4>(parent), mouseOver_(false), checked_(false), switchId_(0) {
+UoCheckbox::UoCheckbox(CL_GUIComponent* parent) : MultiTextureImage(parent, 4), mouseOver_(false), checked_(false), switchId_(0) {
     func_input_pressed().set(this, &UoCheckbox::onInputPressed);
     func_pointer_enter().set(this, &UoCheckbox::onPointerEnter);
     func_pointer_exit().set(this, &UoCheckbox::onPointerExit);
-    
+
     set_double_click_enabled(false);
 }
 
@@ -46,14 +46,14 @@ bool UoCheckbox::onInputPressed(const CL_InputEvent & e) {
 bool UoCheckbox::onPointerEnter() {
     mouseOver_ = true;
     updateTexture();
-    
+
     return true;
 }
 
 bool UoCheckbox::onPointerExit() {
     mouseOver_ = false;
     updateTexture();
-    
+
     return true;
 }
 

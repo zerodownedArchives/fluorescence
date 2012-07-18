@@ -597,5 +597,21 @@ void Mobile::displayStatChange(unsigned int str, unsigned int dex, unsigned int 
     }
 }
 
+unsigned int Mobile::getMovementDuration() const {
+    if (isMounted()) {
+        if (isRunning_) {
+            return 95;
+        } else {
+            return 185;
+        }
+    } else {
+        if (isRunning_) {
+            return 175;
+        } else {
+            return 375;
+        }
+    }
+}
+
 }
 }

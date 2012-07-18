@@ -45,7 +45,7 @@
 #include <world/mobile.hpp>
 
 #include "gumpmenu.hpp"
-#include "xmlparser.hpp"
+#include "xmlloader.hpp"
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
 #include "components/basebutton.hpp"
@@ -54,7 +54,7 @@ namespace fluo {
 namespace ui {
 
 GumpMenu* GumpMenus::openMessageBox(const UnicodeString& message) {
-    GumpMenu* menu = XmlParser::fromXmlFile("messagebox");
+    GumpMenu* menu = XmlLoader::fromXmlFile("messagebox");
     if (menu) {
         menu->setComponentText<components::Label>("messagetext", message);
     }
@@ -70,7 +70,7 @@ GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int para
         return nullptr;
     }
 
-    GumpMenu* menu = XmlParser::fromXmlFile("yesnobox");
+    GumpMenu* menu = XmlLoader::fromXmlFile("yesnobox");
     if (menu) {
         menu->setComponentText<components::Label>("messagetext", parameters[0]);
 
@@ -92,7 +92,7 @@ GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int para
 }
 
 GumpMenu* GumpMenus::openLoginGump() {
-    GumpMenu* menu = XmlParser::fromXmlFile("login");
+    GumpMenu* menu = XmlLoader::fromXmlFile("login");
 
     if (menu) {
         Config& config = Client::getSingleton()->getConfig();
@@ -133,14 +133,14 @@ GumpMenu* GumpMenus::openShardSelectionGump() {
         }
     }
 
-    XmlParser::RepeatContext context;
+    XmlLoader::RepeatContext context;
     context.repeatCount_ = nameList.size();
     context.keywordReplacements_["shardname"] = nameList;
     context.keywordReplacements_["shardname"] = nameList;
 
-    XmlParser::addRepeatContext("shardlist", context);
-    GumpMenu* menu = XmlParser::fromXmlFile("shardselection");
-    XmlParser::removeRepeatContext("shardlist");
+    XmlLoader::addRepeatContext("shardlist", context);
+    GumpMenu* menu = XmlLoader::fromXmlFile("shardselection");
+    XmlLoader::removeRepeatContext("shardlist");
 
     return menu;
 }
@@ -159,14 +159,14 @@ GumpMenu* GumpMenus::openServerListGump(const net::packets::ServerList* list) {
         indexList.push_back(StringConverter::fromNumber(entryIter->index_));
     }
 
-    XmlParser::RepeatContext context;
+    XmlLoader::RepeatContext context;
     context.repeatCount_ = nameList.size();
     context.keywordReplacements_["serverindex"] = indexList;
     context.keywordReplacements_["servername"] = nameList;
 
-    XmlParser::addRepeatContext("serverlist", context);
-    GumpMenu* menu = XmlParser::fromXmlFile("serverlist");
-    XmlParser::removeRepeatContext("serverlist");
+    XmlLoader::addRepeatContext("serverlist", context);
+    GumpMenu* menu = XmlLoader::fromXmlFile("serverlist");
+    XmlLoader::removeRepeatContext("serverlist");
 
     return menu;
 }
@@ -182,15 +182,15 @@ GumpMenu* GumpMenus::openCharacterListGump(unsigned int charCount, const Unicode
         passwordList.push_back(charPasswords[i]);
     }
 
-    XmlParser::RepeatContext context;
+    XmlLoader::RepeatContext context;
     context.repeatCount_ = nameList.size();
     context.keywordReplacements_["characterindex"] = indexList;
     context.keywordReplacements_["charactername"] = nameList;
     context.keywordReplacements_["characterpassword"] = nameList;
 
-    XmlParser::addRepeatContext("characterlist", context);
-    GumpMenu* menu = XmlParser::fromXmlFile("characterlist");
-    XmlParser::removeRepeatContext("characterlist");
+    XmlLoader::addRepeatContext("characterlist", context);
+    GumpMenu* menu = XmlLoader::fromXmlFile("characterlist");
+    XmlLoader::removeRepeatContext("characterlist");
 
     return menu;
 }
@@ -210,15 +210,15 @@ GumpMenu* GumpMenus::openContextMenu(const net::packets::bf::OpenContextMenu* pk
         serialList.push_back(serialString);
     }
 
-    XmlParser::RepeatContext context;
+    XmlLoader::RepeatContext context;
     context.repeatCount_ = nameList.size();
     context.keywordReplacements_["entrytext"] = nameList;
     context.keywordReplacements_["serial"] = serialList;
     context.keywordReplacements_["entryindex"] = indexList;
 
-    XmlParser::addRepeatContext("contextmenu", context);
-    GumpMenu* menu = XmlParser::fromXmlFile("contextmenu");
-    XmlParser::removeRepeatContext("contextmenu");
+    XmlLoader::addRepeatContext("contextmenu", context);
+    GumpMenu* menu = XmlLoader::fromXmlFile("contextmenu");
+    XmlLoader::removeRepeatContext("contextmenu");
 
     return menu;
 }
@@ -229,7 +229,7 @@ GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
         return nullptr;
     }
 
-    XmlParser::RepeatContext indexContexts[8];
+    XmlLoader::RepeatContext indexContexts[8];
     std::vector<UnicodeString> circleIndexNamesTmp;
     std::vector<UnicodeString> circleIndexPagesTmp;
 
@@ -280,10 +280,10 @@ GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
         indexContexts[i].keywordReplacements_["spellname"] = circleIndexNamesTmp;
         indexContexts[i].keywordReplacements_["spellpage"] = circleIndexPagesTmp;
 
-        XmlParser::addRepeatContext(book->sections_[i].name_, indexContexts[i]);
+        XmlLoader::addRepeatContext(book->sections_[i].name_, indexContexts[i]);
     }
 
-    XmlParser::RepeatContext allSpellsContext;
+    XmlLoader::RepeatContext allSpellsContext;
     allSpellsContext.repeatCount_ = allSpellsNames.size();
     allSpellsContext.keywordReplacements_["previouspage"] = allSpellsPreviousPage;
     allSpellsContext.keywordReplacements_["currentpage"] = allSpellsCurrentPage;
@@ -295,10 +295,10 @@ GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
     allSpellsContext.keywordReplacements_["gumpid"] = allSpellsIcons;
     allSpellsContext.keywordReplacements_["spellid"] = allSpellsIds;
 
-    XmlParser::addRepeatContext("allspells", allSpellsContext);
+    XmlLoader::addRepeatContext("allspells", allSpellsContext);
 
-    GumpMenu* menu = XmlParser::fromXmlFile(book->gumpName_);
-    XmlParser::clearRepeatContexts();
+    GumpMenu* menu = XmlLoader::fromXmlFile(book->gumpName_);
+    XmlLoader::clearRepeatContexts();
 
     return menu;
 }
@@ -341,7 +341,7 @@ GumpMenu* GumpMenus::openSkills(const world::Mobile* mob) {
         idList.push_back(StringConverter::fromNumber(curInfo->skillId_));
     }
 
-    XmlParser::RepeatContext context;
+    XmlLoader::RepeatContext context;
     context.repeatCount_ = nameList.size();
     context.keywordReplacements_["skillname"] = nameList;
     context.keywordReplacements_["skillvalue"] = valueList;
@@ -350,9 +350,9 @@ GumpMenu* GumpMenus::openSkills(const world::Mobile* mob) {
     context.keywordReplacements_["skillusable"] = usableList;
     context.keywordReplacements_["skillid"] = idList;
 
-    XmlParser::addRepeatContext("skills", context);
-    GumpMenu* menu = XmlParser::fromXmlFile("skills");
-    XmlParser::removeRepeatContext("contextmenu");
+    XmlLoader::addRepeatContext("skills", context);
+    GumpMenu* menu = XmlLoader::fromXmlFile("skills");
+    XmlLoader::removeRepeatContext("skills");
 
     return menu;
 }

@@ -22,6 +22,8 @@
 
 #include <world/manager.hpp>
 #include <world/mobile.hpp>
+#include <world/smoothmovement.hpp>
+#include <world/smoothmovementmanager.hpp>
 
 #include <misc/log.hpp>
 
@@ -53,9 +55,24 @@ bool NakedMobile::read(const int8_t* buf, unsigned int len, unsigned int& index)
 void NakedMobile::onReceive() {
     boost::shared_ptr<world::Mobile> mob = world::Manager::getSingleton()->getMobile(serial_);
 
-    mob->setLocation(locX_, locY_, locZ_);
     mob->setBodyId(bodyId_);
     mob->setDirection(direction_);
+    int diffx = mob->getLocXGame();
+    diffx -= locX_;
+    diffx = abs(diffx);
+
+    int diffy = mob->getLocYGame();
+    diffy -= locY_;
+    diffy = abs(diffy);
+
+    if ((diffx == 0 && diffy == 0) || diffx > 1 || diffy > 1) {
+        // far teleport, or no teleport
+        mob->setLocation(locX_, locY_, locZ_);
+    } else {
+        world::SmoothMovement mov(mob, CL_Vec3f(locX_, locY_, locZ_), mob->getMovementDuration());
+        world::Manager::getSmoothMovementManager()->add(mob->getSerial(), mov);
+    }
+
     mob->setHue(hue_);
 
     mob->setStatusFlags(status_);

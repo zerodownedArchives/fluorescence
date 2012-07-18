@@ -26,12 +26,12 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-UoButton::UoButton(CL_GUIComponent* parent) : MultiTextureImage<3>(parent), mouseOver_(false), mouseDown_(false) {
+UoButton::UoButton(CL_GUIComponent* parent) : MultiTextureImage(parent, 3), mouseOver_(false), mouseDown_(false) {
     func_input_pressed().set(this, &UoButton::onInputPressed);
     func_input_released().set(this, &UoButton::onInputReleased);
     func_pointer_enter().set(this, &UoButton::onPointerEnter);
     func_pointer_exit().set(this, &UoButton::onPointerExit);
-    
+
     set_double_click_enabled(false);
 }
 
@@ -64,7 +64,7 @@ GumpMenu* UoButton::getTopLevelMenu() {
 bool UoButton::onPointerEnter() {
     mouseOver_ = true;
     updateTexture();
-    
+
     return true;
 }
 
@@ -72,7 +72,7 @@ bool UoButton::onPointerExit() {
     mouseOver_ = false;
     mouseDown_ = false;
     updateTexture();
-    
+
     return true;
 }
 

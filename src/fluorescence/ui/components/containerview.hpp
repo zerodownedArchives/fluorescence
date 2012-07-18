@@ -24,7 +24,7 @@
 
 #include <list>
 
-#include <ui/gumpelement.hpp>
+#include <ui/gumpcomponent.hpp>
 
 namespace fluo {
 
@@ -40,7 +40,7 @@ class Texture;
 
 namespace components {
 
-class ContainerView : public GumpElement {
+class ContainerView : public GumpComponent {
 public:
     ContainerView(CL_GUIComponent* parent, const CL_Rect& bounds);
     ~ContainerView();
@@ -57,10 +57,10 @@ public:
     void setContainerObject(boost::shared_ptr<world::DynamicItem> cont);
 
     boost::shared_ptr<ui::Texture> getBackgroundTexture();
-    
+
     bool onPointerEnter();
     bool onPointerExit();
-    
+
     virtual bool has_pixel(const CL_Point& p) const;
 
 private:

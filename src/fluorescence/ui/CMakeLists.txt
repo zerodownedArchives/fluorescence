@@ -43,10 +43,10 @@ set (UI_CPP
     )
 
 set (GUMPMENU_HPP
-    ui/xmlparser.hpp
+    ui/xmlloader.hpp
     ui/stringparser.hpp
     ui/gumpmenu.hpp
-    ui/gumpelement.hpp
+    ui/gumpcomponent.hpp
 
     ui/components/multitextureimage.hpp
     ui/components/basebutton.hpp
@@ -71,11 +71,12 @@ set (GUMPMENU_HPP
     )
 
 set (GUMPMENU_CPP
-    ui/xmlparser.cpp
+    ui/xmlloader.cpp
     ui/stringparser.cpp
     ui/gumpmenu.cpp
-    ui/gumpelement.cpp
+    ui/gumpcomponent.cpp
 
+    ui/components/multitextureimage.cpp
     ui/components/basebutton.cpp
     ui/components/templatebutton.cpp
     ui/components/uobutton.cpp

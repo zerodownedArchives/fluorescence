@@ -20,53 +20,54 @@
 #ifndef FLUO_UI_COMPONENTS_IMAGE_HPP
 #define FLUO_UI_COMPONENTS_IMAGE_HPP
 
-#include <ClanLib/GUI/gui_component.h>
 #include <ClanLib/Display/Render/graphic_context.h>
 #include <ClanLib/Display/Render/texture.h>
 #include <boost/shared_ptr.hpp>
+
+#include <ui/gumpcomponent.hpp>
 
 namespace fluo {
 namespace ui {
 
 class Texture;
 class XmlParser;
-    
+
 namespace components {
 
-class Image : public CL_GUIComponent {
+class Image : public GumpComponent {
 
 friend class ui::XmlParser;
 
-public: 
+public:
     Image(CL_GUIComponent* parent);
 
     void setTexture(boost::shared_ptr<ui::Texture> tex);
     void render(CL_GraphicContext& gc, const CL_Rect& clipRect);
-    
+
     virtual void setColorRGBA(const CL_Colorf& color);
     virtual void setHue(unsigned int hue);
     virtual void setAlpha(float alpha);
-    
+
     void setTiled(bool value);
     void setAutoResize(bool value);
-    
+
     virtual bool has_pixel(const CL_Point& p) const;
-    
+
 protected:
     void setHueInfo(const CL_Vec3f& hueInfo);
-    
+
 private:
     boost::shared_ptr<ui::Texture> texture_;
-    
+
     bool autoResize_;
-    
+
     CL_Vec3f hueInfo_;
     CL_Colorf colorRgba_;
-    
+
     void renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect);
-    
+
     bool tiled_;
-    
+
     CL_Texture tileableTexture_;
 };
 

@@ -54,9 +54,6 @@ GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
 }
 
 GumpMenu::~GumpMenu() {
-    if (closeCallback_) {
-        closeCallback_();
-    }
 }
 
 void GumpMenu::addPage(unsigned int pageId) {
@@ -85,6 +82,7 @@ void GumpMenu::removeFromPages(const CL_GUIComponent* component) {
 
 void GumpMenu::addToCurrentPage(CL_GUIComponent* component) {
     pages_[activePageId_].push_back(component);
+    component->func_resized().set(this, &GumpMenu::fitSizeToChildren);
 }
 
 void GumpMenu::activateFirstPage() {
@@ -307,6 +305,10 @@ void GumpMenu::onClose() {
     if (linkedMobile_) {
         linkedMobile_->removeLinkedGump(this);
     }
+
+    if (closeCallback_) {
+        closeCallback_();
+    }
 }
 
 void GumpMenu::startDragging(const CL_Point& mousePos) {
@@ -395,15 +397,6 @@ unsigned int GumpMenu::getCurrentRadioGroup() const {
 
 bool GumpMenu::has_pixel(const CL_Point& p) const {
     return false;
-}
-
-void GumpMenu::setupResizeHandler() {
-    std::vector<CL_GUIComponent *> children = get_child_components();
-    std::vector<CL_GUIComponent*>::const_iterator iter = children.begin();
-    std::vector<CL_GUIComponent*>::const_iterator end = children.end();
-    for (; iter != end; ++iter) {
-        (*iter)->func_resized().set(this, &GumpMenu::fitSizeToChildren);
-    }
 }
 
 void GumpMenu::setCloseCallback(boost::function<void()> cb) {

@@ -65,6 +65,7 @@ public:
     unsigned int getMoveAnim() const;
     unsigned int getIdleAnim() const;
     void updateIdleAnim();
+    unsigned int getMovementDuration() const;
 
     virtual bool isMirrored() const;
     void setDirection(unsigned int direction);

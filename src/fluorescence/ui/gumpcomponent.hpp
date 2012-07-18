@@ -17,19 +17,19 @@
  */
 
 
-#ifndef FLUO_UI_GUMPELEMENT_HPP
-#define FLUO_UI_GUMPELEMENT_HPP
+#ifndef FLUO_UI_GUMPCOMPONENT_HPP
+#define FLUO_UI_GUMPCOMPONENT_HPP
 
-#include <ClanLib/gui.h>
+#include <ClanLib/GUI/gui_component.h>
 
 namespace fluo {
 namespace ui {
 
 class GumpMenu;
 
-class GumpElement : public CL_GUIComponent {
+class GumpComponent : public CL_GUIComponent {
 public:
-    GumpElement(CL_GUIComponent* parent);
+    GumpComponent(CL_GUIComponent* parent);
 };
 
 }

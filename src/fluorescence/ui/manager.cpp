@@ -24,7 +24,7 @@
 
 #include "cursormanager.hpp"
 #include "gumpmenu.hpp"
-#include "xmlparser.hpp"
+#include "xmlloader.hpp"
 #include "gumpmenus.hpp"
 #include "gumpactions.hpp"
 #include "fontengine.hpp"
@@ -54,12 +54,12 @@ Manager* Manager::singleton_ = NULL;
 
 bool Manager::create() {
     if (!singleton_) {
-        try {
+        //try {
             singleton_ = new Manager();
-        } catch (const std::exception& ex) {
-            LOG_EMERGENCY << "Error initializing ui::Manager: " << ex.what() << std::endl;
-            return false;
-        }
+        //} catch (const std::exception& ex) {
+            //LOG_EMERGENCY << "Error initializing ui::Manager: " << ex.what() << std::endl;
+            //return false;
+        //}
     }
 
     return true;
@@ -97,7 +97,8 @@ Manager::Manager() : worldView_(nullptr) {
 
     boost::filesystem::path path = "themes";
     path = path / "default";
-    guiManager_.reset(new CL_GUIManager(*windowManager_, path.string()));
+    guiManager_.reset(new CL_GUIManager(*mainWindow_));
+    guiManager_->set_window_manager(*windowManager_);
 
     path = "fonts";
     loadFontDirectory(path);
@@ -108,18 +109,20 @@ Manager::Manager() : worldView_(nullptr) {
 bool Manager::setShardConfig(Config& config) {
     boost::filesystem::path path = config.getShardPath() / "themes" / config["/fluo/ui/theme@name"].asPath();
 
-    if (!boost::filesystem::exists(path)) {
-        path = "themes";
-        path = path / config["/fluo/ui/theme@name"].asPath();
+    //if (!boost::filesystem::exists(path)) {
+        //path = "themes";
+        //path = path / config["/fluo/ui/theme@name"].asPath();
 
-        if (!boost::filesystem::exists(path)) {
-            LOG_EMERGENCY << "Unable to load theme, directory does not exist: " << config["/fluo/ui/theme@name"].asPath() << std::endl;
-            return false;
-        }
-    }
+        //if (!boost::filesystem::exists(path)) {
+            //LOG_EMERGENCY << "Unable to load theme, directory does not exist: " << config["/fluo/ui/theme@name"].asPath() << std::endl;
+            //return false;
+        //}
+    //}
 
     guiManager_->exit_with_code(0);
-    guiManager_.reset(new CL_GUIManager(*windowManager_, path.string()));
+    //guiManager_.reset(new CL_GUIManager(*windowManager_, path.string()));
+    guiManager_.reset(new CL_GUIManager(*mainWindow_));
+    guiManager_->set_window_manager(*windowManager_);
 
     guiManager_->func_input_received_nowindow().set(this, &Manager::onInputOutsideWindows);
 
@@ -322,7 +325,7 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
 }
 
 GumpMenu* Manager::openXmlGump(const UnicodeString& name) {
-    return XmlParser::fromXmlFile(name);
+    return XmlLoader::fromXmlFile(name);
 }
 
 void Manager::registerGumpMenu(GumpMenu* menu) {

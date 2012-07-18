@@ -18,19 +18,14 @@
 
 
 
-#include "gumpelement.hpp"
-
-#include "gumpmenu.hpp"
-#include "manager.hpp"
-
-#include <misc/log.hpp>
+#include "gumpcomponent.hpp"
 
 namespace fluo {
 namespace ui {
 
-GumpElement::GumpElement(CL_GUIComponent* parent) :
+GumpComponent::GumpComponent(CL_GUIComponent* parent) :
     CL_GUIComponent(parent) {
-        
+
     set_double_click_enabled(false);
 }
 

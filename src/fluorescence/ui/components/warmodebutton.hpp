@@ -30,7 +30,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-class WarModeButton : public MultiTextureImage<6>, public BaseButton {
+class WarModeButton : public MultiTextureImage, public BaseButton {
 
 friend class ui::XmlParser;
 
@@ -39,32 +39,32 @@ public:
         TEX_INDEX_UP = 0,
         TEX_INDEX_MOUSEOVER = 1,
         TEX_INDEX_DOWN = 2,
-        
+
         WARMODE_TEX_INDEX_UP = 3,
         WARMODE_TEX_INDEX_MOUSEOVER = 4,
         WARMODE_TEX_INDEX_DOWN = 5,
     };
 
     WarModeButton(CL_GUIComponent* parent);
-    
+
     virtual GumpMenu* getTopLevelMenu();
-    
+
     void updateTexture();
-    
+
     void setWarMode(bool warmode);
-    
+
 private:
     bool onInputPressed(const CL_InputEvent & e);
     bool onInputReleased(const CL_InputEvent & e);
-    
+
     bool onPointerEnter();
     bool onPointerExit();
-    
+
     bool mouseOver_;
     bool mouseDown_;
-    
+
     unsigned int calcTextureId() const;
-    
+
     bool warmode_;
 };
 

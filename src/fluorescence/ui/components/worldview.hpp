@@ -24,7 +24,7 @@
 #include <list>
 
 #include <typedefs.hpp>
-#include <ui/gumpelement.hpp>
+#include <ui/gumpcomponent.hpp>
 
 namespace fluo {
 
@@ -40,7 +40,7 @@ class WorldRenderer;
 
 namespace components {
 
-class WorldView : public GumpElement {
+class WorldView : public GumpComponent {
 public:
     WorldView(CL_GUIComponent* parent, const CL_Rect& bounds);
     ~WorldView();

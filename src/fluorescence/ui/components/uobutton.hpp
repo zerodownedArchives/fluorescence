@@ -30,7 +30,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-class UoButton : public MultiTextureImage<3>, public BaseButton {
+class UoButton : public MultiTextureImage, public BaseButton {
 
 friend class ui::XmlParser;
 
@@ -42,21 +42,21 @@ public:
     };
 
     UoButton(CL_GUIComponent* parent);
-    
+
     virtual GumpMenu* getTopLevelMenu();
-    
+
     void updateTexture();
-    
+
 private:
     bool onInputPressed(const CL_InputEvent & e);
     bool onInputReleased(const CL_InputEvent & e);
-    
+
     bool onPointerEnter();
     bool onPointerExit();
-    
+
     bool mouseOver_;
     bool mouseDown_;
-    
+
     unsigned int calcTextureId() const;
 };
 

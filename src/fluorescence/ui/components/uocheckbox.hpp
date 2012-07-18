@@ -30,7 +30,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-class UoCheckbox : public MultiTextureImage<4> {
+class UoCheckbox : public MultiTextureImage {
 
 friend class ui::XmlParser;
 
@@ -41,28 +41,28 @@ public:
         TEX_INDEX_CHECKED = 2,
         TEX_INDEX_CHECKED_MOUSEOVER = 3,
     };
-    
+
     UoCheckbox(CL_GUIComponent* parent);
-    
+
     void updateTexture();
-    
+
     void setChecked(bool value);
     bool isChecked() const;
-    
+
     void setSwitchId(unsigned int id);
     unsigned int getSwitchId() const;
-    
+
 private:
     bool onInputPressed(const CL_InputEvent & e);
-    
+
     bool onPointerEnter();
     bool onPointerExit();
-    
+
     bool mouseOver_;
     bool checked_;
-    
+
     unsigned int switchId_;
-    
+
     unsigned int calcTextureId() const;
 };
 
