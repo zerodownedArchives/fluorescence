@@ -68,7 +68,7 @@ public:
     static GumpMenu* fromXmlString(const UnicodeString& str);
 
 
-    static bool readTemplateFile(const UnicodeString& themeName);
+    static bool readTemplateFile(const boost::filesystem::path& themePath);
 
 private:
     static XmlLoader* singleton_;
@@ -85,37 +85,40 @@ private:
     pugi::xml_document templateDocument_;
     void setTemplates(); // templateDocument_ is set before this function is called
     std::map<UnicodeString, pugi::xml_node> templateMap_;
+    std::map<UnicodeString, pugi::xml_node> defaultTemplateMap_;
     pugi::xml_node getTemplate(const UnicodeString& templateName);
+    pugi::xml_attribute getAttribute(const char* name, pugi::xml_node& node, pugi::xml_node& defaultNode);
+    pugi::xml_node getNode(const char* name, pugi::xml_node& node, pugi::xml_node& defaultNode);
 
     // helper functions
-    CL_Rect getBoundsFromNode(pugi::xml_node& node);
+    CL_Rect getBoundsFromNode(pugi::xml_node& node, pugi::xml_node& defaultNode);
     bool parseId(pugi::xml_node& node, CL_GUIComponent* component);
     bool parseMultiTextureImage(pugi::xml_node& node, components::MultiTextureImage* button, unsigned int index);
 
 
     // reworked ui-components
-    bool parseImage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseImage(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
 
 
 
     // themed ui components
     bool parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTCheckBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTRadioButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTLineEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTComboBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTGroupBox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTSpin(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTTabs(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTSlider(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTClickLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTTextEdit(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTScrollArea(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTCheckBox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTRadioButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTLineEdit(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTComboBox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTGroupBox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTSpin(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTTabs(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTSlider(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTClickLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTTextEdit(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseTBackground(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
 
-    bool parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseRepeat(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
     void insertRepeatNodes(pugi::xml_node::iterator begin, pugi::xml_node::iterator end, pugi::xml_node dst,
             const RepeatContext& context, unsigned int index,
             int xIncrease, int yIncrease, unsigned int xLimit, unsigned int yLimit);
@@ -123,23 +126,23 @@ private:
             int xIncrease, int yIncrease, unsigned int xLimit, unsigned int yLimit);
     void checkRepeatIf(pugi::xml_node& node, unsigned int index, unsigned int xLimit, unsigned int yLimit);
 
-    bool parsePropertyLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parsePropertyLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
 
 
     // uo components
-    bool parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseBackground(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseCheckbox(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parsePage(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseBackground(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseCheckbox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
 
-    bool parseWorldView(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parsePaperdoll(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseContainer(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseSysLogLabel(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseWarModeButton(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseWorldView(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parsePaperdoll(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseContainer(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseSysLogLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseWarModeButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
 
 
-    typedef boost::function<bool (pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> XmlParseFunction;
+    typedef boost::function<bool (pugi::xml_node&, pugi::xml_node&, CL_GUIComponent*, GumpMenu*)> XmlParseFunction;
     std::map<UnicodeString, XmlParseFunction> functionTable_;
     std::map<UnicodeString, RepeatContext> repeatContexts_;
 

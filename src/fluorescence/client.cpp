@@ -189,7 +189,13 @@ bool Client::initBase(const std::vector<CL_String8>& args) {
         return false;
     }
 
-    LOG_INFO << "Initializing ui" << std::endl;
+    LOG_INFO << "Initializing basic data loaders" << std::endl;
+    if (!data::Manager::create()) {
+        cleanUp();
+        return false;
+    }
+
+    LOG_INFO << "Initializing basic ui" << std::endl;
     if (!ui::Manager::create()) {
         cleanUp();
         return false;
@@ -208,8 +214,13 @@ bool Client::initFull() {
 
     //config_.dumpMap();
 
-    LOG_INFO << "Creating data loaders" << std::endl;
-    if (!data::Manager::create(config_)) {
+    LOG_INFO << "Setting up data loaders" << std::endl;
+    // TODO: change from try/catch to boolean return only
+    try {
+        if (!data::Manager::getSingleton()->setShardConfig(config_)) {
+            return false;
+        }
+    } catch (std::exception& e) {
         return false;
     }
 
@@ -270,7 +281,7 @@ int Client::main(const std::vector<CL_String8>& args) {
     PatcherUpdater::copyPatcherUpdateFolder();
 
     if (std::find(args.begin(), args.end(), "--patcherupdate") != args.end()) {
-        // patcher received an update. restart it? 
+        // patcher received an update. restart it?
         // => not really necessary now, maybe when it does some more complex stuff
     }
 

@@ -65,6 +65,7 @@ enum {
 	STATICART = 3,
 	GUMPART = 4,
     HTTP = 5,
+    THEME = 6,
 };
 };
 
@@ -79,10 +80,12 @@ enum {
 
 class Manager {
 public:
-    static bool create(Config& config);
+    static bool create();
     static void destroy();
     static Manager* getSingleton();
     ~Manager();
+
+    bool setShardConfig(Config& config);
 
     // return the path to the file inside the current shard directory, if the file exists there.
     // if not, return default path
@@ -130,7 +133,6 @@ private:
     unsigned int fileFormat_;
 
     Manager();
-    void init(Config& config);
     Manager(const Manager& copy) { }
     Manager& operator=(const Manager& copy) { return *this; }
 

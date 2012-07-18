@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <gump x="20" y="20" closable="0" draggable="1" inbackground="1">
     <page number="0">
         <tbackground x="0" y="0" width="810" height="610"  />

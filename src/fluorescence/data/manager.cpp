@@ -44,6 +44,7 @@
 
 #include <client.hpp>
 
+#include <ui/manager.hpp>
 #include <ui/singletextureprovider.hpp>
 #include <ui/animdatatextureprovider.hpp>
 
@@ -54,11 +55,10 @@ namespace data {
 
 Manager* Manager::singleton_= NULL;
 
-bool Manager::create(Config& config) {
+bool Manager::create() {
     if (!singleton_) {
         try {
             singleton_ = new Manager();
-            singleton_->init(config);
         } catch (const std::exception& ex) {
             LOG_EMERGENCY << "Error initializing data::Manager: " << ex.what() << std::endl;
             return false;
@@ -84,9 +84,14 @@ Manager* Manager::getSingleton() {
 }
 
 Manager::Manager() {
+    LOG_INFO << "Initializing http loader" << std::endl;
+    httpLoader_.reset(new HttpLoader());
+
+    LOG_INFO << "Initializing file path loader" << std::endl;
+    filePathLoader_.reset(new FilePathLoader());
 }
 
-void Manager::init(Config& config) {
+bool Manager::setShardConfig(Config& config) {
     if (config["/fluo/files@format"].asString() == "mul") {
         fileFormat_ = FileFormat::MUL;
     } else if (config["/fluo/files@format"].asString() == "mul-hs") {
@@ -94,10 +99,10 @@ void Manager::init(Config& config) {
     } else if (config["/fluo/files@format"].asString() == "uop") {
         fileFormat_ = FileFormat::UOP;
         LOG_ERROR << "UOP file format not qupported yet" << std::endl;
-        throw Exception("Unsupported file format");
+        return false;
     } else {
         LOG_ERROR << "Unsupported file format. Supported: \"mul\" for pre high seas files, \"mul-hs\" for high seas files" << std::endl;
-        throw Exception("Unsupported file format");
+        return false;
     }
 
     buildFilePathMap(config);
@@ -386,10 +391,7 @@ void Manager::init(Config& config) {
     }
 
 
-    LOG_INFO << "Initializing http loader" << std::endl;
-    httpLoader_.reset(new HttpLoader());
-
-    filePathLoader_.reset(new FilePathLoader());
+    return true;
 }
 
 Manager::~Manager() {
@@ -728,7 +730,8 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, unsigned
     switch (source) {
     case TextureSource::HTTP:
     case TextureSource::FILE:
-        LOG_ERROR << "Unable to handle getTexture(int, int) for file or http source" << std::endl;
+    case TextureSource::THEME:
+        LOG_ERROR << "Unable to handle getTexture(int, int) for file, http or theme source" << std::endl;
         return ret;
 
     case TextureSource::MAPART:
@@ -758,6 +761,11 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, const Un
     case TextureSource::HTTP:
         return getSingleton()->httpLoader_->getTexture(id);
 
+    case TextureSource::THEME: {
+        boost::filesystem::path idPath = ui::Manager::getSingleton()->getThemePath() / StringConverter::toUtf8String(id);
+        return getSingleton()->filePathLoader_->getTexture(idPath);
+    }
+
     case TextureSource::MAPART:
     case TextureSource::STATICART:
     case TextureSource::GUMPART: {
@@ -785,6 +793,8 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(const UnicodeString& source, 
         sourceId = TextureSource::GUMPART;
     } else if (lowerSource == "http") {
         sourceId = TextureSource::HTTP;
+    } else if (lowerSource == "theme") {
+        sourceId = TextureSource::THEME;
     }
 
     if (sourceId != 0) {

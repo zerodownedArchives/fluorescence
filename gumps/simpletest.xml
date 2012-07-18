@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <gump x="100" y="30" closable="1" draggable="true">
     <tbackground x="0" y="0" width="600" height="600"  />
     <tbutton x="30" y="30" width="120" height="25" text="wohoo!!" page="1" />

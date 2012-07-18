@@ -95,38 +95,20 @@ Manager::Manager() : worldView_(nullptr) {
 
     windowManager_.reset(new CL_GUIWindowManagerTexture(*mainWindow_));
 
-    boost::filesystem::path path = "themes";
-    path = path / "default";
     guiManager_.reset(new CL_GUIManager(*mainWindow_));
     guiManager_->set_window_manager(*windowManager_);
+    guiManager_->func_input_received_nowindow().set(this, &Manager::onInputOutsideWindows);
 
-    path = "fonts";
+    setTheme("default");
+
+    boost::filesystem::path path = "fonts";
     loadFontDirectory(path);
 
     LOG_DEBUG << "OpenGL extensions: " << getOpenGLExtensions() << std::endl;
 }
 
 bool Manager::setShardConfig(Config& config) {
-    boost::filesystem::path path = config.getShardPath() / "themes" / config["/fluo/ui/theme@name"].asPath();
-
-    //if (!boost::filesystem::exists(path)) {
-        //path = "themes";
-        //path = path / config["/fluo/ui/theme@name"].asPath();
-
-        //if (!boost::filesystem::exists(path)) {
-            //LOG_EMERGENCY << "Unable to load theme, directory does not exist: " << config["/fluo/ui/theme@name"].asPath() << std::endl;
-            //return false;
-        //}
-    //}
-
-    guiManager_->exit_with_code(0);
-    //guiManager_.reset(new CL_GUIManager(*windowManager_, path.string()));
-    guiManager_.reset(new CL_GUIManager(*mainWindow_));
-    guiManager_->set_window_manager(*windowManager_);
-
-    guiManager_->func_input_received_nowindow().set(this, &Manager::onInputOutsideWindows);
-
-    path = "fonts";
+    boost::filesystem::path path = "fonts";
     loadFontDirectory(path);
 
     path = config.getShardPath() / "fonts";
@@ -493,6 +475,24 @@ void Manager::setWorldView(components::WorldView* view) {
 
 components::WorldView* Manager::getWorldView() const {
     return worldView_;
+}
+
+void Manager::setTheme(const UnicodeString& themeName) {
+    boost::filesystem::path path("themes");
+    path = path / StringConverter::toUtf8String(themeName);
+
+    themePath_ = data::Manager::getShardFilePath(path);
+
+    if (!boost::filesystem::exists(themePath_)) {
+        LOG_ERROR << "Theme " << themeName << " was not found" << std::endl;
+        throw Exception("Unable to load theme");
+    }
+
+    XmlLoader::readTemplateFile(themePath_);
+}
+
+const boost::filesystem::path& Manager::getThemePath() const {
+    return themePath_;
 }
 
 }

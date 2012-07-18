@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <gump x="400" y="300" closable="0" draggable="1" action="selectshard-first" cancelaction="shutdown">
     <!--
     In case you want to redesign this gump, keep in mind that at this point, you can not
@@ -13,5 +14,5 @@
     <tbutton x="20" y="175" width="210" height="25" text="Create shard" action="opengump" param="createshard" />
     <tbutton x="20" y="203" width="210" height="25" text="Close fluorescence" action="shutdown" />
 
-<!--    <image source="file" imgid="/home/bernhard/desktophg_doppelt.jpg" x="0" y="0" width="200" height="200" /> -->
+    <image source="theme" imgid="Images/ButtonNormal.png" x="0" y="0" width="200" height="200" />
 </gump>

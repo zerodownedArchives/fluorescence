@@ -124,6 +124,9 @@ public:
     void setWorldView(components::WorldView* view);
     components::WorldView* getWorldView() const;
 
+    void setTheme(const UnicodeString& themeName);
+    const boost::filesystem::path& getThemePath() const;
+
 private:
     static Manager* singleton_;
 
@@ -183,6 +186,8 @@ private:
     std::vector<std::pair<CL_GUIComponent*, CL_Rectf> > componentResizeQueue_;
 
     components::WorldView* worldView_;
+
+    boost::filesystem::path themePath_;
 };
 
 }

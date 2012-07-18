@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <particleeffect>
     <emitters>
         <emitter capacity="20000" particlesmovewithemitter="false">

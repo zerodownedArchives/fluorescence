@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <gump x="337" y="289" closable="0" draggable="1" action="connect" cancelaction="shutdown" inbackground="true">
     <tbackground x="0" y="0" width="350" height="190"  />
     <tlabel x="15" y="18" width="95" height="20" text="IP/Hostname:" />

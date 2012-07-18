@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <gump x="400" y="300" closable="0" draggable="0" action="createshard">
     <!--
     In case you want to redesign this gump, keep in mind that at this point, you can not

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<templates>
+<template name="defaultimage" default="1">
+    <image source="theme" width="200" rgba="#ff9900" />
+</template>
+
+</templates>
