@@ -26,43 +26,42 @@
 #include <ClanLib/Display/Render/texture.h>
 #include <boost/shared_ptr.hpp>
 
+#include <ui/gumpcomponent.hpp>
+
 namespace fluo {
 namespace ui {
 
 class Texture;
-class GumpFactory;
-    
+
 namespace components {
 
-class Background : public CL_GUIComponent {
-
-friend class ui::GumpFactory;
+class Background : public GumpComponent {
 
 public:
     Background(CL_GUIComponent* parent);
 
     void setBaseId(unsigned int id);
     void render(CL_GraphicContext& gc, const CL_Rect& clipRect);
-    
+
     void setColorRGBA(const CL_Colorf& color);
     void setHue(unsigned int hue);
     void setAlpha(float alpha);
-    
+
 private:
     boost::shared_ptr<ui::Texture> textures_[9];
     CL_Texture extractedTextures_[9];
     CL_Vec2f vertexCoords_[9][6];
     CL_Vec2f textureCoords_[9][6];
-    
+
     CL_Vec3f hueInfo_;
     CL_Colorf colorRgba_;
-    
+
     void renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect);
-    
+
     void calculateVertexCoordinates();
     void setVertexCoordinates(unsigned int index, const CL_Rectf& rect);
     void setTextureCoordinates(unsigned int index, const CL_Rectf& rect);
-    
+
     void calculateQuadCoordinates();
     CL_Quadf quadCoords_[9];
     CL_Rectf quadTextureCoords_[9];

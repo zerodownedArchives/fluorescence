@@ -32,11 +32,11 @@
 #include "gumpmenu.hpp"
 #include "components/background.hpp"
 #include "components/image.hpp"
-#include "components/uobutton.hpp"
-#include "components/uocheckbox.hpp"
+#include "components/button.hpp"
+#include "components/checkbox.hpp"
 #include "components/textentry.hpp"
 #include "components/label.hpp"
-#include "components/uoradiobutton.hpp"
+#include "components/radiobutton.hpp"
 
 namespace fluo {
 namespace ui {
@@ -385,13 +385,13 @@ bool StringParser::parseButton(const UnicodeString& params, const std::vector<Un
             return true;
         }
 
-        components::UoButton* but = new components::UoButton(menu);
+        components::Button* but = new components::Button(menu);
         CL_Rectf bounds(x, y, CL_Sizef(upTex->getWidth(), upTex->getHeight()));
         but->set_geometry(bounds);
 
-        but->addTexture(components::UoButton::TEX_INDEX_UP, upTex);
-        but->addTexture(components::UoButton::TEX_INDEX_MOUSEOVER, upTex);
-        but->addTexture(components::UoButton::TEX_INDEX_DOWN, downTex);
+        but->addTexture(components::Button::TEX_INDEX_UP, upTex);
+        but->addTexture(components::Button::TEX_INDEX_MOUSEOVER, upTex);
+        but->addTexture(components::Button::TEX_INDEX_DOWN, downTex);
         but->updateTexture();
 
         if (type == 0) {
@@ -437,14 +437,14 @@ bool StringParser::parseCheckbox(const UnicodeString& params, const std::vector<
             return true;
         }
 
-        components::UoCheckbox* cb = new components::UoCheckbox(menu);
+        components::Checkbox* cb = new components::Checkbox(menu);
         CL_Rectf bounds(x, y, CL_Sizef(checkedTex->getWidth(), checkedTex->getHeight()));
         cb->set_geometry(bounds);
 
-        cb->addTexture(components::UoCheckbox::TEX_INDEX_UNCHECKED, uncheckedTex);
-        cb->addTexture(components::UoCheckbox::TEX_INDEX_UNCHECKED_MOUSEOVER, uncheckedTex);
-        cb->addTexture(components::UoCheckbox::TEX_INDEX_CHECKED, checkedTex);
-        cb->addTexture(components::UoCheckbox::TEX_INDEX_CHECKED_MOUSEOVER, checkedTex);
+        cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED, uncheckedTex);
+        cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED_MOUSEOVER, uncheckedTex);
+        cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED, checkedTex);
+        cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED_MOUSEOVER, checkedTex);
         cb->updateTexture();
         cb->setAutoResize(true);
 
@@ -742,14 +742,14 @@ bool StringParser::parseRadio(const UnicodeString& params, const std::vector<Uni
             return true;
         }
 
-        components::UoRadioButton* cb = new components::UoRadioButton(menu);
+        components::RadioButton* cb = new components::RadioButton(menu);
         CL_Rectf bounds(x, y, CL_Sizef(checkedTex->getWidth(), checkedTex->getHeight()));
         cb->set_geometry(bounds);
 
-        cb->addTexture(components::UoCheckbox::TEX_INDEX_UNCHECKED, uncheckedTex);
-        cb->addTexture(components::UoCheckbox::TEX_INDEX_UNCHECKED_MOUSEOVER, uncheckedTex);
-        cb->addTexture(components::UoCheckbox::TEX_INDEX_CHECKED, checkedTex);
-        cb->addTexture(components::UoCheckbox::TEX_INDEX_CHECKED_MOUSEOVER, checkedTex);
+        cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED, uncheckedTex);
+        cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED_MOUSEOVER, uncheckedTex);
+        cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED, checkedTex);
+        cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED_MOUSEOVER, checkedTex);
         cb->updateTexture();
         cb->setAutoResize(true);
 

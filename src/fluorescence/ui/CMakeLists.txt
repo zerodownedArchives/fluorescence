@@ -51,7 +51,7 @@ set (GUMPMENU_HPP
     ui/components/multitextureimage.hpp
     ui/components/basebutton.hpp
     ui/components/templatebutton.hpp
-    ui/components/uobutton.hpp
+    ui/components/button.hpp
     ui/components/scrollarea.hpp
     ui/components/lineedit.hpp
     ui/components/label.hpp
@@ -61,9 +61,9 @@ set (GUMPMENU_HPP
     ui/components/containerview.hpp
     ui/components/image.hpp
     ui/components/background.hpp
-    ui/components/uocheckbox.hpp
+    ui/components/checkbox.hpp
     ui/components/textentry.hpp
-    ui/components/uoradiobutton.hpp
+    ui/components/radiobutton.hpp
     ui/components/sysloglabel.hpp
     ui/components/tbackground.hpp
     ui/components/warmodebutton.hpp
@@ -79,7 +79,7 @@ set (GUMPMENU_CPP
     ui/components/multitextureimage.cpp
     ui/components/basebutton.cpp
     ui/components/templatebutton.cpp
-    ui/components/uobutton.cpp
+    ui/components/button.cpp
     ui/components/scrollarea.cpp
     ui/components/lineedit.cpp
     ui/components/label.cpp
@@ -89,9 +89,9 @@ set (GUMPMENU_CPP
     ui/components/containerview.cpp
     ui/components/image.cpp
     ui/components/background.cpp
-    ui/components/uocheckbox.cpp
+    ui/components/checkbox.cpp
     ui/components/textentry.cpp
-    ui/components/uoradiobutton.cpp
+    ui/components/radiobutton.cpp
     ui/components/sysloglabel.cpp
     ui/components/tbackground.cpp
     ui/components/warmodebutton.cpp

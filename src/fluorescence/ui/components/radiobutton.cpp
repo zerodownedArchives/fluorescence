@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "uoradiobutton.hpp"
+#include "radiobutton.hpp"
 
 #include <ClanLib/Display/Window/keys.h>
 
@@ -24,32 +24,32 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-UoRadioButton::UoRadioButton(CL_GUIComponent* parent) : UoCheckbox(parent) {
-    func_input_pressed().set(this, &UoRadioButton::onInputPressed);
+RadioButton::RadioButton(CL_GUIComponent* parent) : Checkbox(parent) {
+    func_input_pressed().set(this, &RadioButton::onInputPressed);
 }
 
-void UoRadioButton::setRadioGroupId(unsigned int groupId) {
+void RadioButton::setRadioGroupId(unsigned int groupId) {
     radioGroupId_ = groupId;
 }
 
-unsigned int UoRadioButton::getRadioGroupId() const {
+unsigned int RadioButton::getRadioGroupId() const {
     return radioGroupId_;
 }
 
-bool UoRadioButton::onInputPressed(const CL_InputEvent & e) {
+bool RadioButton::onInputPressed(const CL_InputEvent & e) {
     if (e.id == CL_MOUSE_LEFT) {
         setChecked(true);
-        
+
         std::vector<CL_GUIComponent*> children = get_top_level_component()->get_child_components();
         std::vector<CL_GUIComponent*>::const_iterator iter = children.begin();
         std::vector<CL_GUIComponent*>::const_iterator end = children.end();
         for (; iter != end; ++iter) {
-            components::UoRadioButton* cur = dynamic_cast<components::UoRadioButton*>(*iter);
+            components::RadioButton* cur = dynamic_cast<components::RadioButton*>(*iter);
             if (cur && cur != this && cur->getRadioGroupId() == radioGroupId_ && cur->isChecked()) {
                 cur->setChecked(false);
             }
         }
-        
+
         return true;
     } else {
         return false;

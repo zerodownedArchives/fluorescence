@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "uobutton.hpp"
+#include "checkbox.hpp"
 
 #include <ClanLib/Display/Window/keys.h>
 
@@ -26,71 +26,73 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-UoButton::UoButton(CL_GUIComponent* parent) : MultiTextureImage(parent, 3), mouseOver_(false), mouseDown_(false) {
-    func_input_pressed().set(this, &UoButton::onInputPressed);
-    func_input_released().set(this, &UoButton::onInputReleased);
-    func_pointer_enter().set(this, &UoButton::onPointerEnter);
-    func_pointer_exit().set(this, &UoButton::onPointerExit);
+Checkbox::Checkbox(CL_GUIComponent* parent) : MultiTextureImage(parent, 4), mouseOver_(false), checked_(false), switchId_(0) {
+    func_input_pressed().set(this, &Checkbox::onInputPressed);
+    func_pointer_enter().set(this, &Checkbox::onPointerEnter);
+    func_pointer_exit().set(this, &Checkbox::onPointerExit);
 
     set_double_click_enabled(false);
 }
 
-bool UoButton::onInputReleased(const CL_InputEvent & e) {
+bool Checkbox::onInputPressed(const CL_InputEvent & e) {
     if (e.id == CL_MOUSE_LEFT) {
-        mouseDown_ = false;
-        updateTexture();
-        handleClick();
+        setChecked(!checked_);
         return true;
     } else {
         return false;
     }
 }
 
-bool UoButton::onInputPressed(const CL_InputEvent & e) {
-    if (e.id == CL_MOUSE_LEFT) {
-        mouseDown_ = true;
-        updateTexture();
-        return true;
-    } else {
-        return false;
-    }
-}
-
-GumpMenu* UoButton::getTopLevelMenu() {
-    CL_GUIComponent* topLevel = get_top_level_component();
-    return dynamic_cast<GumpMenu*>(topLevel);
-}
-
-bool UoButton::onPointerEnter() {
+bool Checkbox::onPointerEnter() {
     mouseOver_ = true;
     updateTexture();
 
     return true;
 }
 
-bool UoButton::onPointerExit() {
+bool Checkbox::onPointerExit() {
     mouseOver_ = false;
-    mouseDown_ = false;
     updateTexture();
 
     return true;
 }
 
-void UoButton::updateTexture() {
+void Checkbox::updateTexture() {
     unsigned int idx = calcTextureId();
     activateTexture(idx);
 }
 
-unsigned int UoButton::calcTextureId() const {
-    if (mouseDown_) {
-        return UoButton::TEX_INDEX_DOWN;
+unsigned int Checkbox::calcTextureId() const {
+    if (checked_) {
+        if (mouseOver_) {
+            return TEX_INDEX_CHECKED_MOUSEOVER;
+        } else {
+            return TEX_INDEX_CHECKED;
+        }
     } else {
         if (mouseOver_) {
-            return UoButton::TEX_INDEX_MOUSEOVER;
+            return TEX_INDEX_UNCHECKED_MOUSEOVER;
         } else {
-            return UoButton::TEX_INDEX_UP;
+            return TEX_INDEX_UNCHECKED;
         }
     }
+}
+
+void Checkbox::setChecked(bool value) {
+    checked_ = value;
+    updateTexture();
+}
+
+bool Checkbox::isChecked() const {
+    return checked_;
+}
+
+void Checkbox::setSwitchId(unsigned int id) {
+    switchId_ = id;
+}
+
+unsigned int Checkbox::getSwitchId() const {
+    return switchId_;
 }
 
 }

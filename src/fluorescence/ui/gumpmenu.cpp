@@ -24,7 +24,7 @@
 #include "gumpactions.hpp"
 #include "cursormanager.hpp"
 #include "components/propertylabel.hpp"
-#include "components/uocheckbox.hpp"
+#include "components/checkbox.hpp"
 #include "components/textentry.hpp"
 #include "components/warmodebutton.hpp"
 
@@ -366,7 +366,7 @@ void GumpMenu::sendReply(unsigned int buttonId) {
     std::vector<CL_GUIComponent*>::const_iterator iter = children.begin();
     std::vector<CL_GUIComponent*>::const_iterator end = children.end();
     for (; iter != end; ++iter) {
-        components::UoCheckbox* cb = dynamic_cast<components::UoCheckbox*>(*iter);
+        components::Checkbox* cb = dynamic_cast<components::Checkbox*>(*iter);
         if (cb && cb->isChecked()) {
             switches.push_back(cb->getSwitchId());
             continue;

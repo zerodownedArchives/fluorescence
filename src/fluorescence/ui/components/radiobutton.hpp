@@ -17,25 +17,25 @@
  */
 
 
-#ifndef FLUO_UI_COMPONENTS_UORADIOBUTTON_HPP
-#define FLUO_UI_COMPONENTS_UORADIOBUTTON_HPP
+#ifndef FLUO_UI_COMPONENTS_RADIOBUTTON_HPP
+#define FLUO_UI_COMPONENTS_RADIOBUTTON_HPP
 
-#include "uocheckbox.hpp"
+#include "checkbox.hpp"
 
 namespace fluo {
 namespace ui {
 namespace components {
 
-class UoRadioButton : public UoCheckbox {
+class RadioButton : public Checkbox {
 public:
-    UoRadioButton(CL_GUIComponent* parent);
-    
+    RadioButton(CL_GUIComponent* parent);
+
     void setRadioGroupId(unsigned int groupId);
     unsigned int getRadioGroupId() const;
-    
+
 private:
     bool onInputPressed(const CL_InputEvent & e);
-    
+
     unsigned int radioGroupId_;
 };
 

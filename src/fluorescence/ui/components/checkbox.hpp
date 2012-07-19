@@ -17,45 +17,48 @@
  */
 
 
-#ifndef FLUO_UI_COMPONENTS_UOBUTTON_HPP
-#define FLUO_UI_COMPONENTS_UOBUTTON_HPP
+#ifndef FLUO_UI_COMPONENTS_CHECKBOX_HPP
+#define FLUO_UI_COMPONENTS_CHECKBOX_HPP
 
 #include <boost/shared_ptr.hpp>
 #include <ClanLib/Display/Window/input_event.h>
 
 #include "multitextureimage.hpp"
-#include "basebutton.hpp"
 
 namespace fluo {
 namespace ui {
 namespace components {
 
-class UoButton : public MultiTextureImage, public BaseButton {
-
-friend class ui::XmlParser;
+class Checkbox : public MultiTextureImage {
 
 public:
     enum TextureIndex {
-        TEX_INDEX_UP = 0,
-        TEX_INDEX_MOUSEOVER = 1,
-        TEX_INDEX_DOWN = 2,
+        TEX_INDEX_UNCHECKED = 0,
+        TEX_INDEX_UNCHECKED_MOUSEOVER = 1,
+        TEX_INDEX_CHECKED = 2,
+        TEX_INDEX_CHECKED_MOUSEOVER = 3,
     };
 
-    UoButton(CL_GUIComponent* parent);
-
-    virtual GumpMenu* getTopLevelMenu();
+    Checkbox(CL_GUIComponent* parent);
 
     void updateTexture();
 
+    void setChecked(bool value);
+    bool isChecked() const;
+
+    void setSwitchId(unsigned int id);
+    unsigned int getSwitchId() const;
+
 private:
     bool onInputPressed(const CL_InputEvent & e);
-    bool onInputReleased(const CL_InputEvent & e);
 
     bool onPointerEnter();
     bool onPointerExit();
 
     bool mouseOver_;
-    bool mouseDown_;
+    bool checked_;
+
+    unsigned int switchId_;
 
     unsigned int calcTextureId() const;
 };

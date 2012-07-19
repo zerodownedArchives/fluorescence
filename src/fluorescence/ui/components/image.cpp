@@ -37,6 +37,8 @@ namespace components {
 Image::Image(CL_GUIComponent* parent) : GumpComponent(parent),
         autoResize_(false), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white), tiled_(false) {
     func_render().set(this, &Image::render);
+
+    set_type_name("image");
 }
 
 void Image::setTexture(boost::shared_ptr<ui::Texture> tex) {
@@ -175,8 +177,8 @@ bool Image::has_pixel(const CL_Point& p) const {
     } else {
         float stretchHori = (float)get_width() / texture_->getWidth();
         float stretchVert = (float)get_height() / texture_->getHeight();
-        px *= stretchHori;
-        py *= stretchVert;
+        px /= stretchHori;
+        py /= stretchVert;
     }
 
     return texture_->hasPixel(px, py);

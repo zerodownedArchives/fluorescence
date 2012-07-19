@@ -1,7 +1,28 @@
 <?xml version="1.0"?>
 <templates>
 <template name="defaultimage" default="1">
-    <image source="theme" width="200" rgba="#ff9900" />
+    <image source="theme" width="400" rgba="#ff9900" />
+</template>
+
+<template name="otherimage">
+    <image source="theme" width="400" rgba="#00ff99" />
+</template>
+
+<template name="button" default="1">
+    <button>
+        <normal source="theme" id="Images/ButtonNormal.png" />
+        <mouseover source="theme" id="Images/ButtonHot.png" />
+        <mousedown source="theme" id="Images/ButtonPressed.png" />
+    </button>
+</template>
+
+<template name="checkbox" default="1">
+    <checkbox>
+        <unchecked source="gumpart" id="210" />
+        <unchecked-mouseover source="gumpart" id="210" />
+        <checked source="gumpart" id="211" />
+        <checked-mouseover source="gumpart" id="211" />
+    </checkbox>
 </template>
 
 </templates>
