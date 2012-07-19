@@ -31,7 +31,6 @@
 
 #include "manager.hpp"
 #include "texture.hpp"
-#include "components/templatebutton.hpp"
 #include "components/button.hpp"
 #include "components/scrollarea.hpp"
 #include "components/lineedit.hpp"
@@ -68,8 +67,7 @@ XmlLoader::XmlLoader() {
     functionTable_["background"] = boost::bind(&XmlLoader::parseBackground, this, _1, _2, _3, _4);
     functionTable_["checkbox"] = boost::bind(&XmlLoader::parseCheckbox, this, _1, _2, _3, _4);
 
-    functionTable_["tbutton"] = boost::bind(&XmlLoader::parseTButton, this, _1, _2, _3, _4);
-    functionTable_["tcheckbox"] = boost::bind(&XmlLoader::parseTCheckBox, this, _1, _2, _3, _4);
+
     functionTable_["tradiobutton"] = boost::bind(&XmlLoader::parseTRadioButton, this, _1, _2, _3, _4);
     functionTable_["tlineedit"] = boost::bind(&XmlLoader::parseTLineEdit, this, _1, _2, _3, _4);
     functionTable_["tcombobox"] = boost::bind(&XmlLoader::parseTComboBox, this, _1, _2, _3, _4);
@@ -572,62 +570,6 @@ bool XmlLoader::parseCheckbox(pugi::xml_node& node, pugi::xml_node& defaultNode,
 
 
 
-bool XmlLoader::parseTButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    UnicodeString text = StringConverter::fromUtf8(node.attribute("text").value());
-    unsigned int buttonId = node.attribute("buttonid").as_uint();
-    unsigned int pageId = node.attribute("page").as_uint();
-    UnicodeString action = StringConverter::fromUtf8(node.attribute("action").value());
-    UnicodeString param = StringConverter::fromUtf8(node.attribute("param").value());
-    UnicodeString param2 = StringConverter::fromUtf8(node.attribute("param2").value());
-    UnicodeString param3 = StringConverter::fromUtf8(node.attribute("param3").value());
-    UnicodeString param4 = StringConverter::fromUtf8(node.attribute("param4").value());
-    UnicodeString param5 = StringConverter::fromUtf8(node.attribute("param5").value());
-
-    components::TemplateButton* button = new components::TemplateButton(parent);
-    if (action.length() > 0) {
-        button->setLocalButton(action);
-        button->setParameter(param, 0);
-        button->setParameter(param2, 1);
-        button->setParameter(param3, 2);
-        button->setParameter(param4, 3);
-        button->setParameter(param5, 4);
-    } else if (!node.attribute("buttonid").empty()) {
-        button->setServerButton(buttonId);
-    } else if (!node.attribute("page").empty()) {
-        button->setPageButton(pageId);
-    } else {
-        LOG_WARN << "Button without action, id or page" << std::endl;
-        return false;
-    }
-
-    parseId(node, button);
-    button->set_geometry(bounds);
-    button->setText(text);
-
-    top->addToCurrentPage(button);
-    return true;
-}
-
-
-
-bool XmlLoader::parseTCheckBox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    std::string text = node.attribute("text").value();
-    int checked = node.attribute("checked").as_int();
-
-    CL_CheckBox* cb = new CL_CheckBox(parent);
-    parseId(node, cb);
-    cb->set_geometry(bounds);
-    cb->set_text(text);
-
-    if (checked) {
-        cb->set_checked(true);
-    }
-
-    top->addToCurrentPage(cb);
-    return true;
-}
 
 bool XmlLoader::parseTRadioButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
