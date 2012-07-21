@@ -46,6 +46,7 @@
 #include "components/sysloglabel.hpp"
 #include "components/tbackground.hpp"
 #include "components/warmodebutton.hpp"
+#include "components/radiobutton.hpp"
 
 namespace fluo {
 namespace ui {
@@ -66,6 +67,7 @@ XmlLoader::XmlLoader() {
     functionTable_["page"] = boost::bind(&XmlLoader::parsePage, this, _1, _2, _3, _4);
     functionTable_["background"] = boost::bind(&XmlLoader::parseBackground, this, _1, _2, _3, _4);
     functionTable_["checkbox"] = boost::bind(&XmlLoader::parseCheckbox, this, _1, _2, _3, _4);
+    functionTable_["radiobutton"] = boost::bind(&XmlLoader::parseRadioButton, this, _1, _2, _3, _4);
 
 
     functionTable_["tradiobutton"] = boost::bind(&XmlLoader::parseTRadioButton, this, _1, _2, _3, _4);
@@ -563,6 +565,57 @@ bool XmlLoader::parseCheckbox(pugi::xml_node& node, pugi::xml_node& defaultNode,
     cb->set_geometry(bounds);
 
     top->addToCurrentPage(cb);
+    return true;
+}
+
+bool XmlLoader::parseRadioButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    unsigned int switchId = getAttribute("switchid", node, defaultNode).as_uint();
+    bool isChecked = getAttribute("checked", node, defaultNode).as_bool();
+    unsigned int groupId = getAttribute("group", node, defaultNode).as_uint();
+
+    components::RadioButton* rb = new components::RadioButton(parent);
+    rb->setSwitchId(switchId);
+    rb->setRadioGroupId(groupId);
+
+    parseId(node, rb);
+
+    pugi::xml_node uncheckedNode = node.child("unchecked");
+    pugi::xml_node uncheckedMoNode = node.child("unchecked-mouseover");
+    pugi::xml_node checkedNode = node.child("checked");
+    pugi::xml_node checkedMoNode = node.child("checked-mouseover");
+
+    pugi::xml_node defUncheckedNode = defaultNode.child("unchecked");
+    pugi::xml_node defUncheckedMoNode = defaultNode.child("unchecked-mouseover");
+    pugi::xml_node defCheckedNode = defaultNode.child("checked");
+    pugi::xml_node defCheckedMoNode = defaultNode.child("checked-mouseover");
+
+    if ((checkedNode || defCheckedNode) && (uncheckedNode || defUncheckedNode)) {
+        parseMultiTextureImage(uncheckedNode, defUncheckedNode, rb, components::Checkbox::TEX_INDEX_UNCHECKED);
+        parseMultiTextureImage(checkedNode, defCheckedNode, rb, components::Checkbox::TEX_INDEX_CHECKED);
+    } else {
+        LOG_ERROR << "Checkbox needs to have checked and unchecked image node" << std::endl;
+        return false;
+    }
+
+    if (uncheckedMoNode || defUncheckedMoNode) {
+        parseMultiTextureImage(uncheckedMoNode, defUncheckedMoNode, rb, components::Checkbox::TEX_INDEX_UNCHECKED_MOUSEOVER);
+    }
+    if (checkedMoNode || defCheckedMoNode) {
+        parseMultiTextureImage(checkedMoNode, defCheckedMoNode, rb, components::Checkbox::TEX_INDEX_CHECKED_MOUSEOVER);
+    }
+
+    if (bounds.get_width() == 0 || bounds.get_height() == 0) {
+        rb->setAutoResize(true);
+        bounds.set_width(1);
+        bounds.set_height(1);
+    }
+
+    rb->setChecked(isChecked);
+
+    rb->set_geometry(bounds);
+
+    top->addToCurrentPage(rb);
     return true;
 }
 
