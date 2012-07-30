@@ -40,7 +40,7 @@
 </template>
 
 <template name="sysloglabel" default="1">
-    <sysloglabel font="unifont0" font-height="12" hue="2" align="left" color="#000000" />
+    <sysloglabel font="unifont1" font-height="12" hue="2" align="left" color="#000000" />
 </template>
 
 </templates>
