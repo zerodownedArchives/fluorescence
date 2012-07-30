@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <gump draggable="1" closable="1">
-    <image source="gumpart" imgid="2001" x="0" y="0" />
-    <paperdoll id="paperdoll" x="3" y="9" width="260" height="237" />
+    <image source="gumpart" id="2001" x="0" y="0" />
+    <paperdoll name="paperdoll" x="3" y="9" width="260" height="237" />
     <propertylabel x="20" y="270" width="180" height="20" link="paperdoll-name" />
-    
+
     <button x="20" y="195" action="openprofile">
-        <normal source="gumpart" imgid="2002" />
-        <mouseover source="gumpart" imgid="2002" />
-        <mousedown source="gumpart" imgid="2002" />
+        <normal source="gumpart" id="2002" />
+        <mouseover source="gumpart" id="2002" />
+        <mousedown source="gumpart" id="2002" />
     </button>
-    
+
     <button x="185" y="233" action="openstatus">
-        <normal source="gumpart" imgid="2027" />
-        <mouseover source="gumpart" imgid="2029" />
-        <mousedown source="gumpart" imgid="2028" />
+        <normal source="gumpart" id="2027" />
+        <mouseover source="gumpart" id="2029" />
+        <mousedown source="gumpart" id="2028" />
     </button>
 </gump>

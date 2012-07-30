@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <gump x="387" y="320" closable="1" draggable="1" action="close" cancelaction="close">
-    <tbackground x="0" y="0" width="250" height="125"  />
-    <tlabel name="messagetext" x="10" y="15" width="230" height="80" align="center" />
-    
-    <tbutton x="60" y="90" width="130" height="25" text="ok" action="close" />
+    <background x="0" y="0" width="250" height="125"  />
+    <label name="messagetext" x="10" y="15" width="230" height="80" align="center" />
+
+    <button x="60" y="90" width="130" height="25" text="ok" action="close" />
 </gump>

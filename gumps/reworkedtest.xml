@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <gump x="100" y="30" closable="1" draggable="true">
-    <background x="0" y="0" width="600" height="600" gumpid="2600" />
+    <background x="0" y="0" width="600" height="600" />
     <button x="30" y="30" width="120" height="25" text="wohoo!!" page="1" />
     <button x="170" y="30" width="120" height="25" text="alright" page="14" />
 
     <page number="1">
         <checkbox x="50" y="75" checked="1" />
-        <label x="80" y="75" width="100" height="30" text="awesome? this should WW be clipped out" hue="13" />
+        <label x="80" y="75" width="100" height="20" text="awesome?\nthis should WW be clipped out" hue="13" />
         <label x="80" y="125" width="150" height="25" text="other font" font="Devinne Swash" font-height="16" hue="13" align="right" />
 
         <radiobutton x="170" y="65" text="1" group="1" />
@@ -50,16 +50,17 @@
         <tspin x="330" y="120" width="100" height="25" type="float" min="0.0" max="1.0" value="0.3" stepsize="0.01" />
         <tspin x="330" y="150" width="100" height="25" type="int" min="0" max="100" value="85" stepsize="5" />
 
-        <tlabel x="0" y="400" width="600" height="25" align="center" text="Centered text" />
-        <tlabel x="0" y="425" width="600" height="25" align="right" text="Right aligned" />
-        <tlabel x="100" y="450" width="120" height="25" text="Big text" name="label-bigfont" />
+-->
+
+        <label x="0" y="400" width="600" height="30" align="center" text="Centered text\nMultiline" />
+        <label x="0" y="425" width="600" height="25" align="right" text="Right aligned" />
 
         <image x="5" y="480" source="file" id="themes/default/Images/CheckBoxIndeterminatedHot.png" />
         <image x="25" y="480" width="30" height="30" source="file" id="themes/default/Images/CheckBoxIndeterminatedHot.png" tiled="true" />
         <image x="65" y="480" source="staticart" id="16" hue="100" />
         <image x="120" y="480" source="mapart" width="100" height="100" id="16" tiled="1" />
         <image x="230" y="480" source="gumpart" id="230" />
-        <image x="300" y="480" width="50" height="10" source="gumpart" id="230" /> -->
+        <image x="300" y="480" width="50" height="10" source="gumpart" id="230" />
     </page>
 
     <page number="14">

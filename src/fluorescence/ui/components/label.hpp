@@ -56,12 +56,12 @@ public:
 
 protected:
     CL_SpanLayout span_;
+    CL_FontDescription fontDesc_;
+    CL_Colorf fontColor_;
 
 private:
     UnicodeString text_;
     unsigned int alignment_;
-    CL_FontDescription fontDesc_;
-    CL_Colorf fontColor_;
 
     bool spanInitialized_;
 

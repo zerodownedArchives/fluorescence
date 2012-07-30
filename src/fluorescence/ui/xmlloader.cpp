@@ -69,6 +69,8 @@ XmlLoader::XmlLoader() {
     functionTable_["checkbox"] = boost::bind(&XmlLoader::parseCheckbox, this, _1, _2, _3, _4);
     functionTable_["radiobutton"] = boost::bind(&XmlLoader::parseRadioButton, this, _1, _2, _3, _4);
     functionTable_["label"] = boost::bind(&XmlLoader::parseLabel, this, _1, _2, _3, _4);
+    functionTable_["propertylabel"] = boost::bind(&XmlLoader::parsePropertyLabel, this, _1, _2, _3, _4);
+    functionTable_["sysloglabel"] = boost::bind(&XmlLoader::parseSysLogLabel, this, _1, _2, _3, _4);
 
     functionTable_["worldview"] = boost::bind(&XmlLoader::parseWorldView, this, _1, _2, _3, _4);
     functionTable_["paperdoll"] = boost::bind(&XmlLoader::parsePaperdoll, this, _1, _2, _3, _4);
@@ -85,10 +87,8 @@ XmlLoader::XmlLoader() {
     functionTable_["ttextedit"] = boost::bind(&XmlLoader::parseTTextEdit, this, _1, _2, _3, _4);
     functionTable_["tscrollarea"] = boost::bind(&XmlLoader::parseTScrollArea, this, _1, _2, _3, _4);
     functionTable_["repeat"] = boost::bind(&XmlLoader::parseRepeat, this, _1, _2, _3, _4);
-    functionTable_["propertylabel"] = boost::bind(&XmlLoader::parsePropertyLabel, this, _1, _2, _3, _4);
     functionTable_["tbackground"] = boost::bind(&XmlLoader::parseTBackground, this, _1, _2, _3, _4);
 
-    functionTable_["sysloglabel"] = boost::bind(&XmlLoader::parseSysLogLabel, this, _1, _2, _3, _4);
     functionTable_["warmodebutton"] = boost::bind(&XmlLoader::parseWarModeButton, this, _1, _2, _3, _4);
 }
 
@@ -664,8 +664,73 @@ bool XmlLoader::parseLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL
     return true;
 }
 
+bool XmlLoader::parsePropertyLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    std::string align = getAttribute("align", node, defaultNode).value();
+    UnicodeString link = StringConverter::fromUtf8(node.attribute("link").value());
+    UnicodeString fontName = getAttribute("font", node, defaultNode).value();
+    unsigned int fontHeight = getAttribute("font-height", node, defaultNode).as_uint();
+    unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
+    std::string rgba = getAttribute("color", node, defaultNode).value();
+    CL_Colorf color(rgba);
 
+    if (link.length() == 0) {
+        LOG_WARN << "PropertyLabel without link" << std::endl;
+        return false;
+    }
 
+    components::PropertyLabel* label = new components::PropertyLabel(parent, link);
+    parseId(node, label);
+
+    label->setFontName(fontName);
+    label->setFontHeight(fontHeight);
+    label->set_geometry(bounds);
+
+    // if the node has its own color or hue property, don't use the template values
+    if (node.child("color")) {
+        label->setColor(color);
+    } else if (node.child("hue")) {
+        label->setHue(hue);
+    } else if (rgba.length() > 0) {
+        label->setColor(color);
+    } else {
+        label->setHue(hue);
+    }
+
+    top->addToCurrentPage(label);
+    return true;
+}
+
+bool XmlLoader::parseSysLogLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    std::string align = getAttribute("align", node, defaultNode).value();
+    UnicodeString fontName = getAttribute("font", node, defaultNode).value();
+    unsigned int fontHeight = getAttribute("font-height", node, defaultNode).as_uint();
+    unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
+    std::string rgba = getAttribute("color", node, defaultNode).value();
+    CL_Colorf color(rgba);
+
+    components::SysLogLabel* label = new components::SysLogLabel(top);
+    label->setMaxGeometry(bounds);
+    parseId(node, label);
+
+    label->setFontName(fontName);
+    label->setFontHeight(fontHeight);
+
+    // if the node has its own color or hue property, don't use the template values
+    if (node.child("color")) {
+        label->setColor(color);
+    } else if (node.child("hue")) {
+        label->setHue(hue);
+    } else if (rgba.length() > 0) {
+        label->setColor(color);
+    } else {
+        label->setHue(hue);
+    }
+
+    top->addToCurrentPage(label);
+    return true;
+}
 
 
 bool XmlLoader::parseWorldView(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
@@ -1016,36 +1081,6 @@ bool XmlLoader::parseTSlider(pugi::xml_node& node, pugi::xml_node& defaultNode, 
     return true;
 }
 
-bool XmlLoader::parsePropertyLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    std::string align = node.attribute("align").value();
-    UnicodeString link = StringConverter::fromUtf8(node.attribute("link").value());
-
-    if (link.length() == 0) {
-        LOG_WARN << "PropertyLabel without link" << std::endl;
-        return false;
-    }
-
-    components::PropertyLabel* label = new components::PropertyLabel(parent, link);
-    parseId(node, label);
-
-    if (align.length() == 0 || align == "left") {
-        label->setAlignment(components::Label::Alignment::LEFT);
-    } else if (align == "right") {
-        label->setAlignment(components::Label::Alignment::RIGHT);
-    } else if (align == "center") {
-        label->setAlignment(components::Label::Alignment::CENTER);
-    } else {
-        LOG_WARN << "Unknown label align: " << align << std::endl;
-        return false;
-    }
-
-    label->set_geometry(bounds);
-
-    top->addToCurrentPage(label);
-    return true;
-}
-
 bool XmlLoader::parseTTextEdit(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     // does not seem to work currently (clanlib problem)
 
@@ -1127,16 +1162,6 @@ bool XmlLoader::parseTScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNo
     return true;
 }
 
-
-bool XmlLoader::parseSysLogLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    components::SysLogLabel* sysLogLabel = new components::SysLogLabel(top);
-    sysLogLabel->setMaxGeometry(bounds);
-    parseId(node, sysLogLabel);
-    top->addToCurrentPage(sysLogLabel);
-
-    return true;
-}
 
 bool XmlLoader::parseTBackground(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);

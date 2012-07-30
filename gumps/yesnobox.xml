@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <gump x="387" y="320" closable="1" draggable="1" action="choiceyes" cancelaction="choiceno">
-    <tbackground x="0" y="0" width="250" height="125"  />
-    <tlabel id="messagetext" x="10" y="15" width="230" height="80" align="center" />
-    
-    <tbutton id="yes" x="20" y="90" width="80" height="25" text="Yes" action="placeholder" /> <!-- action and parameters are inserted automatically -->
-    <tbutton id="no" x="120" y="90" width="80" height="25" text="No" action="close" />
+    <background x="0" y="0" width="250" height="125"  />
+    <label name="messagetext" x="10" y="15" width="230" height="80" align="center" />
+
+    <button name="yes" x="20" y="90" width="80" height="25" text="Yes" action="placeholder" /> <!-- action and parameters are inserted automatically -->
+    <button name="no" x="120" y="90" width="80" height="25" text="No" action="close" />
 </gump>

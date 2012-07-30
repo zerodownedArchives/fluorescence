@@ -34,6 +34,7 @@ namespace components {
 
 SysLogLabel::SysLogLabel(CL_GUIComponent* parent) : Label(parent) {
     world::Manager::getSysLog()->registerNotify(this);
+    func_render().set(this, &SysLogLabel::onRender);
 }
 
 SysLogLabel::~SysLogLabel() {
@@ -45,23 +46,34 @@ void SysLogLabel::setMaxGeometry(const CL_Rectf& rect) {
 }
 
 void SysLogLabel::notify(std::list<world::SysLogEntry>::const_iterator iter, std::list<world::SysLogEntry>::const_iterator end) {
-    //span_ = CL_SpanLayout();
-    //for (; iter != end; ++iter) {
-        //unsigned int font = iter->font_;
+    span_ = CL_SpanLayout();
 
-        //// runuo always sends font id 3, but osi displays it as 0 (??)
-        //if (font == 3) {
-            //font = 0;
-        //}
+    // font property from packet is ignored
+    CL_Font font = ui::Manager::getSingleton()->getFont(fontDesc_);
 
-        //span_.add_text("\n", ui::Manager::getUnifont(font), CL_Colorf::blue);
-        //span_.add_text(StringConverter::toUtf8String(iter->text_), ui::Manager::getUnifont(font), data::Manager::getHuesLoader()->getFontClColor(iter->hue_));
-    //}
+    for (; iter != end; ++iter) {
+        span_.add_text("\n", font, CL_Colorf::white);
 
-    //span_.layout(ui::Manager::getGraphicContext(), maxGeometry_.get_width());
+        // 0x3B2 is the default font used by runuo. use the custom color instead
+        if (iter->hue_ == 0x3B2) {
+            span_.add_text(StringConverter::toUtf8String(iter->text_), font, fontColor_);
+        } else {
+            span_.add_text(StringConverter::toUtf8String(iter->text_), font, data::Manager::getHuesLoader()->getFontClColor(iter->hue_));
+        }
+    }
 
-    //CL_Rectf newGeom(maxGeometry_.left, maxGeometry_.bottom - span_.get_size().height, maxGeometry_.right, maxGeometry_.bottom);
-    //set_geometry(newGeom);
+    span_.layout(ui::Manager::getGraphicContext(), maxGeometry_.get_width());
+
+    CL_Rectf newGeom(maxGeometry_.left, maxGeometry_.bottom - span_.get_size().height, maxGeometry_.right, maxGeometry_.bottom);
+    set_geometry(newGeom);
+}
+
+void SysLogLabel::onRender(CL_GraphicContext& gc, const CL_Rect& update_rect) {
+    gc.push_cliprect(get_geometry());
+
+    span_.draw_layout(gc);
+
+    gc.pop_cliprect();
 }
 
 }

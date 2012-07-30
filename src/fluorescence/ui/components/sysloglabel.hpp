@@ -34,12 +34,14 @@ class SysLogLabel : public Label, public world::SysLogNotify {
 public:
     SysLogLabel(CL_GUIComponent* parent);
     ~SysLogLabel();
-    
+
     void setMaxGeometry(const CL_Rectf& rect);
-    
+
     void notify(std::list<world::SysLogEntry>::const_iterator iter, std::list<world::SysLogEntry>::const_iterator end);
 private:
     CL_Rectf maxGeometry_;
+
+    void onRender(CL_GraphicContext& gc, const CL_Rect& update_rect);
 };
 
 }

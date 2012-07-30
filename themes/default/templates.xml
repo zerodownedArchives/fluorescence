@@ -1,11 +1,8 @@
 <?xml version="1.0"?>
 <templates>
-<template name="defaultimage" default="1">
-    <image source="theme" width="400" rgba="#ff9900" />
-</template>
 
-<template name="otherimage">
-    <image source="theme" width="400" rgba="#00ff99" />
+<template name="background" default="1">
+    <background x="0" y="0" gumpid="2600"/>
 </template>
 
 <template name="button" default="1">
@@ -36,6 +33,14 @@
 
 <template name="label" default="1">
     <label font="unifont1" font-height="12" hue="2" align="left" color="#000000" />
+</template>
+
+<template name="propertylabel" default="1">
+    <propertylabel font="unifont1" font-height="12" hue="2" align="left" color="#000000" />
+</template>
+
+<template name="sysloglabel" default="1">
+    <sysloglabel font="unifont0" font-height="12" hue="2" align="left" color="#000000" />
 </template>
 
 </templates>

@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <gump x="337" y="289" closable="0" draggable="1" action="connect" cancelaction="shutdown" inbackground="true">
-    <tbackground x="0" y="0" width="350" height="190"  />
-    <tlabel x="15" y="18" width="95" height="20" text="IP/Hostname:" />
+    <background x="0" y="0" width="350" height="190"  />
+    <label x="15" y="18" width="95" height="20" text="IP/Hostname:" />
     <tlineedit name="loginhost" x="120" y="15" width="215" height="25" />
 
-    <tlabel x="15" y="48" width="95" height="20" text="Port:" />
+    <label x="15" y="48" width="95" height="20" text="Port:" />
     <tlineedit name="loginport" x="120" y="45" width="215" height="25" numeric="1" maxlength="5" />
 
-    <tlabel x="15" y="78" width="95" height="20" text="Account:" />
+    <label x="15" y="78" width="95" height="20" text="Account:" />
     <tlineedit name="loginaccount" x="120" y="75" width="215" height="25" />
 
-    <tlabel x="15" y="108" width="95" height="20" text="Password:" />
+    <label x="15" y="108" width="95" height="20" text="Password:" />
     <tlineedit name="loginpassword" x="120" y="105" width="215" height="25"  password="1" />
 
-    <tbutton x="30" y="150" width="130" height="25" text="Close fluorescence" action="shutdown" />
-    <tbutton x="190" y="150" width="130" height="25" text="Connect" action="connect" />
+    <button x="30" y="150" width="130" height="25" text="Close fluorescence" action="shutdown" />
+    <button x="190" y="150" width="130" height="25" text="Connect" action="connect" />
 </gump>
