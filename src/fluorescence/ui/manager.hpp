@@ -85,6 +85,7 @@ public:
     static boost::shared_ptr<CommandManager> getCommandManager();
     static boost::shared_ptr<MacroManager> getMacroManager();
 
+    static CL_Font getFont(const CL_FontDescription& desc);
     static UoFont& getUnifont(unsigned int index);
 
     static bool isMapIdIgnored(unsigned int id);

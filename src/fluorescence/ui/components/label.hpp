@@ -20,7 +20,10 @@
 #ifndef FLUO_UI_COMPONENTS_LABEL_HPP
 #define FLUO_UI_COMPONENTS_LABEL_HPP
 
-#include <ClanLib/GUI/Components/label.h>
+#include <ClanLib/GUI/gui_component.h>
+#include <ClanLib/Display/2D/span_layout.h>
+#include <ClanLib/Display/Font/font.h>
+#include <ClanLib/Display/Font/font_description.h>
 
 #include <misc/string.hpp>
 
@@ -28,14 +31,41 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-class Label : public CL_Label {
+class Label : public CL_GUIComponent {
 public:
+    struct Alignment {
+        enum {
+            LEFT = CL_SpanAlign::cl_left,
+            CENTER = CL_SpanAlign::cl_center,
+            RIGHT = CL_SpanAlign::cl_right,
+        };
+    };
+
     Label(CL_GUIComponent* parent);
 
     void setText(const UnicodeString& string);
     UnicodeString getText();
-    
+
+    void setAlignment(unsigned int align);
+    void setFontName(const UnicodeString& name);
+    void setFontHeight(unsigned int height);
+    void setColor(const CL_Colorf& color);
+    void setHue(unsigned int hue);
+
     void setHtmlText(const UnicodeString& string, const CL_Colorf& colorDefault = CL_Colorf::black);
+
+protected:
+    CL_SpanLayout span_;
+
+private:
+    UnicodeString text_;
+    unsigned int alignment_;
+    CL_FontDescription fontDesc_;
+    CL_Colorf fontColor_;
+
+    bool spanInitialized_;
+
+    void onRender(CL_GraphicContext& gc, const CL_Rect& update_rect);
 };
 
 }

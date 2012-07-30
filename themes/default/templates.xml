@@ -25,4 +25,17 @@
     </checkbox>
 </template>
 
+<template name="radiobutton" default="1">
+    <radiobutton>
+        <unchecked source="gumpart" id="210" />
+        <unchecked-mouseover source="gumpart" id="210" />
+        <checked source="gumpart" id="209" />
+        <checked-mouseover source="gumpart" id="209" />
+    </radiobutton>
+</template>
+
+<template name="label" default="1">
+    <label font="unifont1" font-height="12" hue="2" align="left" color="#000000" />
+</template>
+
 </templates>

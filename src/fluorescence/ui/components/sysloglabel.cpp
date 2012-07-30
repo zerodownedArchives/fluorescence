@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 
 #include "sysloglabel.hpp"
 
@@ -45,25 +45,23 @@ void SysLogLabel::setMaxGeometry(const CL_Rectf& rect) {
 }
 
 void SysLogLabel::notify(std::list<world::SysLogEntry>::const_iterator iter, std::list<world::SysLogEntry>::const_iterator end) {
-    CL_SpanLayout span;
-    
-    for (; iter != end; ++iter) {
-        unsigned int font = iter->font_;
-        
-        // runuo always sends font id 3, but osi displays it as 0 (??)
-        if (font == 3) {
-            font = 0;
-        }
-        
-        span.add_text("\n", ui::Manager::getUnifont(font), CL_Colorf::blue);
-        span.add_text(StringConverter::toUtf8String(iter->text_), ui::Manager::getUnifont(font), data::Manager::getHuesLoader()->getFontClColor(iter->hue_));
-    }
-    
-    span.layout(ui::Manager::getGraphicContext(), maxGeometry_.get_width());
-    set_span(span);
-    
-    CL_Rectf newGeom(maxGeometry_.left, maxGeometry_.bottom - span.get_size().height, maxGeometry_.right, maxGeometry_.bottom);
-    set_geometry(newGeom);
+    //span_ = CL_SpanLayout();
+    //for (; iter != end; ++iter) {
+        //unsigned int font = iter->font_;
+
+        //// runuo always sends font id 3, but osi displays it as 0 (??)
+        //if (font == 3) {
+            //font = 0;
+        //}
+
+        //span_.add_text("\n", ui::Manager::getUnifont(font), CL_Colorf::blue);
+        //span_.add_text(StringConverter::toUtf8String(iter->text_), ui::Manager::getUnifont(font), data::Manager::getHuesLoader()->getFontClColor(iter->hue_));
+    //}
+
+    //span_.layout(ui::Manager::getGraphicContext(), maxGeometry_.get_width());
+
+    //CL_Rectf newGeom(maxGeometry_.left, maxGeometry_.bottom - span_.get_size().height, maxGeometry_.right, maxGeometry_.bottom);
+    //set_geometry(newGeom);
 }
 
 }

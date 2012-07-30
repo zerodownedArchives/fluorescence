@@ -495,5 +495,15 @@ const boost::filesystem::path& Manager::getThemePath() const {
     return themePath_;
 }
 
+CL_Font Manager::getFont(const CL_FontDescription& desc) {
+    // check if this is a special UO font (unifont)
+    CL_Font ret = getSingleton()->guiManager_->get_registered_font(desc);
+    if (ret.is_null()) {
+        // return system font if unknown
+        ret = CL_Font_System(getSingleton()->getGraphicContext(), desc);
+    }
+    return ret;
+}
+
 }
 }

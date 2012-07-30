@@ -5,17 +5,19 @@
     <button x="170" y="30" width="120" height="25" text="alright" page="14" />
 
     <page number="1">
-        <tcheckbox x="50" y="75" width="100" height="25" text="awesome?" checked="1" />
+        <checkbox x="50" y="75" checked="1" />
+        <label x="80" y="75" width="100" height="30" text="awesome? this should WW be clipped out" hue="13" />
+        <label x="80" y="125" width="150" height="25" text="other font" font="Devinne Swash" font-height="16" hue="13" align="right" />
 
-        <tradiobutton x="170" y="65" width="40" height="25" text="1" group="first" />
-        <tradiobutton x="210" y="65" width="40" height="25" text="2" group="first" />
-        <tradiobutton x="250" y="65" width="40" height="25" text="3" group="first" />
+        <radiobutton x="170" y="65" text="1" group="1" />
+        <radiobutton x="210" y="65" text="2" group="1" />
+        <radiobutton x="250" y="65" text="3" group="1" />
 
-        <tradiobutton x="170" y="90" width="40" height="25" text="7" group="foo" />
-        <tradiobutton x="210" y="90" width="40" height="25" text="8" group="foo" selected="1" />
-        <tradiobutton x="250" y="90" width="40" height="25" text="9" group="foo" />
+        <radiobutton x="170" y="90" width="40" height="25" text="7" group="2" />
+        <radiobutton x="210" y="90" width="40" height="25" text="8" group="2" checked="1" />
+        <radiobutton x="250" y="90" width="40" height="25" text="9" group="2" />
 
-        <tgroupbox x="15" y="120" width="300" height="70">
+<!--        <tgroupbox x="15" y="120" width="300" height="70">
         <tlineedit x="5" y="5" width="250" height="25" text="edit me pls!" maxlength="12" />
         <tlineedit x="5" y="35" width="120" height="25" text="password" password="1" />
         <tlineedit x="135" y="35" width="120" height="25" text="3829" numeric="1" maxlength="6" />
@@ -57,7 +59,7 @@
         <image x="65" y="480" source="staticart" id="16" hue="100" />
         <image x="120" y="480" source="mapart" width="100" height="100" id="16" tiled="1" />
         <image x="230" y="480" source="gumpart" id="230" />
-        <image x="300" y="480" width="50" height="10" source="gumpart" id="230" />
+        <image x="300" y="480" width="50" height="10" source="gumpart" id="230" /> -->
     </page>
 
     <page number="14">

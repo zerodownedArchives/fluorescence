@@ -68,16 +68,19 @@ XmlLoader::XmlLoader() {
     functionTable_["background"] = boost::bind(&XmlLoader::parseBackground, this, _1, _2, _3, _4);
     functionTable_["checkbox"] = boost::bind(&XmlLoader::parseCheckbox, this, _1, _2, _3, _4);
     functionTable_["radiobutton"] = boost::bind(&XmlLoader::parseRadioButton, this, _1, _2, _3, _4);
+    functionTable_["label"] = boost::bind(&XmlLoader::parseLabel, this, _1, _2, _3, _4);
+
+    functionTable_["worldview"] = boost::bind(&XmlLoader::parseWorldView, this, _1, _2, _3, _4);
+    functionTable_["paperdoll"] = boost::bind(&XmlLoader::parsePaperdoll, this, _1, _2, _3, _4);
+    functionTable_["container"] = boost::bind(&XmlLoader::parseContainer, this, _1, _2, _3, _4);
 
 
-    functionTable_["tradiobutton"] = boost::bind(&XmlLoader::parseTRadioButton, this, _1, _2, _3, _4);
     functionTable_["tlineedit"] = boost::bind(&XmlLoader::parseTLineEdit, this, _1, _2, _3, _4);
     functionTable_["tcombobox"] = boost::bind(&XmlLoader::parseTComboBox, this, _1, _2, _3, _4);
     functionTable_["tgroupbox"] = boost::bind(&XmlLoader::parseTGroupBox, this, _1, _2, _3, _4);
     functionTable_["tspin"] = boost::bind(&XmlLoader::parseTSpin, this, _1, _2, _3, _4);
     functionTable_["ttabs"] = boost::bind(&XmlLoader::parseTTabs, this, _1, _2, _3, _4);
     functionTable_["tslider"] = boost::bind(&XmlLoader::parseTSlider, this, _1, _2, _3, _4);
-    functionTable_["tlabel"] = boost::bind(&XmlLoader::parseTLabel, this, _1, _2, _3, _4);
     functionTable_["tclicklabel"] = boost::bind(&XmlLoader::parseTClickLabel, this, _1, _2, _3, _4);
     functionTable_["ttextedit"] = boost::bind(&XmlLoader::parseTTextEdit, this, _1, _2, _3, _4);
     functionTable_["tscrollarea"] = boost::bind(&XmlLoader::parseTScrollArea, this, _1, _2, _3, _4);
@@ -85,9 +88,6 @@ XmlLoader::XmlLoader() {
     functionTable_["propertylabel"] = boost::bind(&XmlLoader::parsePropertyLabel, this, _1, _2, _3, _4);
     functionTable_["tbackground"] = boost::bind(&XmlLoader::parseTBackground, this, _1, _2, _3, _4);
 
-    functionTable_["worldview"] = boost::bind(&XmlLoader::parseWorldView, this, _1, _2, _3, _4);
-    functionTable_["paperdoll"] = boost::bind(&XmlLoader::parsePaperdoll, this, _1, _2, _3, _4);
-    functionTable_["container"] = boost::bind(&XmlLoader::parseContainer, this, _1, _2, _3, _4);
     functionTable_["sysloglabel"] = boost::bind(&XmlLoader::parseSysLogLabel, this, _1, _2, _3, _4);
     functionTable_["warmodebutton"] = boost::bind(&XmlLoader::parseWarModeButton, this, _1, _2, _3, _4);
 }
@@ -619,35 +619,222 @@ bool XmlLoader::parseRadioButton(pugi::xml_node& node, pugi::xml_node& defaultNo
     return true;
 }
 
-
-
-
-
-
-bool XmlLoader::parseTRadioButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlLoader::parseLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    std::string text = node.attribute("text").value();
-    std::string group = node.attribute("group").value();
-    int selected = node.attribute("selected").as_int();
+    std::string align = getAttribute("align", node, defaultNode).value();
+    UnicodeString text = getAttribute("text", node, defaultNode).value();
+    UnicodeString fontName = getAttribute("font", node, defaultNode).value();
+    unsigned int fontHeight = getAttribute("font-height", node, defaultNode).as_uint();
+    unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
+    std::string rgba = getAttribute("color", node, defaultNode).value();
+    CL_Colorf color(rgba);
 
-    if (group.length() == 0) {
-        LOG_ERROR << "Adding tradiobutton without group" << std::endl;
+
+    components::Label* label = new components::Label(parent);
+    parseId(node, label);
+
+    if (align.length() == 0 || align == "left") {
+        label->setAlignment(components::Label::Alignment::LEFT);
+    } else if (align == "right") {
+        label->setAlignment(components::Label::Alignment::RIGHT);
+    } else if (align == "center") {
+        label->setAlignment(components::Label::Alignment::CENTER);
+    } else {
+        LOG_WARN << "Unknown label align: " << align << std::endl;
         return false;
     }
 
-    CL_RadioButton* button = new CL_RadioButton(parent);
-    parseId(node, button);
-    button->set_geometry(bounds);
-    button->set_text(text);
-    button->set_group_name(group);
+    label->setText(text);
+    label->setFontName(fontName);
+    label->setFontHeight(fontHeight);
+    label->set_geometry(bounds);
 
-    if (selected) {
-        button->set_selected(true);
+    // if the node has its own color or hue property, don't use the template values
+    if (node.child("color")) {
+        label->setColor(color);
+    } else if (node.child("hue")) {
+        label->setHue(hue);
+    } else if (rgba.length() > 0) {
+        label->setColor(color);
+    } else {
+        label->setHue(hue);
     }
 
-    top->addToCurrentPage(button);
+    top->addToCurrentPage(label);
     return true;
 }
+
+
+
+
+
+bool XmlLoader::parseWorldView(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    ui::components::WorldView* worldView = new ui::components::WorldView(parent, bounds);
+    parseId(node, worldView);
+    top->addToCurrentPage(worldView);
+
+    return true;
+}
+
+bool XmlLoader::parsePaperdoll(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    ui::components::PaperdollView* pdView = new ui::components::PaperdollView(parent, bounds);
+    parseId(node, pdView);
+    top->addToCurrentPage(pdView);
+
+    return true;
+}
+
+bool XmlLoader::parseContainer(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    ui::components::ContainerView* contView = new ui::components::ContainerView(parent, bounds);
+    parseId(node, contView);
+    top->addToCurrentPage(contView);
+
+    return true;
+}
+
+
+
+bool XmlLoader::parseRepeat(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+    UnicodeString name(node.attribute("name").value());
+
+    if (repeatContexts_.count(name) == 0) {
+        LOG_ERROR << "Trying to access unknown repeat context " << name << std::endl;
+        return false;
+    }
+
+    const RepeatContext& context = repeatContexts_[name];
+
+    int xIncrease = node.attribute("xincrease").as_int();
+    int yIncrease = node.attribute("yincrease").as_int();
+    unsigned int xLimit = node.attribute("xlimit").as_uint();
+    unsigned int yLimit = node.attribute("ylimit").as_uint();
+
+    for (unsigned int index = 0; index < context.repeatCount_; ++index) {
+        insertRepeatNodes(node.begin(), node.end(), node.parent(), context, index,
+                xIncrease, yIncrease, xLimit, yLimit);
+    }
+
+    return true;
+}
+
+void XmlLoader::insertRepeatNodes(pugi::xml_node::iterator begin, pugi::xml_node::iterator end, pugi::xml_node dst,
+            const RepeatContext& context, unsigned int index,
+            int xIncrease, int yIncrease, unsigned int xLimit, unsigned int yLimit) {
+    for (pugi::xml_node::iterator iter = begin; iter != end; ++iter) {
+        pugi::xml_node newNode = dst.insert_copy_after(*iter, dst.last_child());
+
+        replaceRepeatKeywords(newNode, context, index,
+                xIncrease, yIncrease, xLimit, yLimit);
+
+        checkRepeatIf(newNode, index, xLimit, yLimit);
+    }
+}
+
+void XmlLoader::checkRepeatIf(pugi::xml_node& node, unsigned int index, unsigned int xLimit, unsigned int yLimit) {
+    unsigned int xIndex = xLimit > 0 ? index % xLimit : index;
+    unsigned int yIndex = yLimit > 0 ? index % yLimit : index;
+
+    bool removeNode = false;
+    if (strcmp(node.name(), "repeatif") == 0) {
+        pugi::xml_node::attribute_iterator attrIter = node.attributes_begin();
+        pugi::xml_node::attribute_iterator attrEnd = node.attributes_end();
+
+        for (; attrIter != attrEnd; ++attrIter) {
+            if (strcmp(attrIter->name(), "xindex") == 0) {
+                if (attrIter->as_uint() != xIndex) {
+                    removeNode = true;
+                    break;
+                }
+            } else if (strcmp(attrIter->name(), "yindex") == 0) {
+                if (attrIter->as_uint() != yIndex) {
+                    removeNode = true;
+                    break;
+                }
+            } else if (strcmp(attrIter->name(), "test") == 0) {
+                if (attrIter->as_uint() != 1) {
+                    removeNode = true;
+                    break;
+                }
+            }
+        }
+
+        if (!removeNode) {
+            // move children to parent node
+            pugi::xml_node childIter = node.last_child();
+            while (childIter) {
+                pugi::xml_node newChild = node.parent().insert_copy_after(childIter, node);
+                checkRepeatIf(newChild, index, xLimit, yLimit);
+                childIter = childIter.previous_sibling();
+            }
+        }
+
+        // remove repeatif node
+        node.parent().remove_child(node);
+    } else {
+        pugi::xml_node childIter = node.first_child();
+        while (childIter) {
+            checkRepeatIf(childIter, index, xLimit, yLimit);
+            childIter = childIter.next_sibling();
+        }
+    }
+}
+
+void XmlLoader::replaceRepeatKeywords(pugi::xml_node& node, const RepeatContext& context, unsigned int index,
+            int xIncrease, int yIncrease, unsigned int xLimit, unsigned int yLimit) {
+
+    static std::string attrNameX("x");
+    static std::string attrNameY("y");
+
+    pugi::xml_node::attribute_iterator attrIter = node.attributes_begin();
+    pugi::xml_node::attribute_iterator attrEnd = node.attributes_end();
+
+    for (; attrIter != attrEnd; ++attrIter) {
+        bool contextHit = false;
+
+        std::map<UnicodeString, std::vector<UnicodeString> >::const_iterator contextIter = context.keywordReplacements_.begin();
+        std::map<UnicodeString, std::vector<UnicodeString> >::const_iterator contextEnd = context.keywordReplacements_.end();
+
+        for (; contextIter != contextEnd; ++contextIter) {
+            if (contextIter->first == attrIter->value()) {
+                contextHit = true;
+
+                attrIter->set_value(StringConverter::toUtf8String(contextIter->second[index]).c_str());
+                break;
+            }
+        }
+
+        if (!contextHit) {
+            // increase and y values, if found
+            if (attrNameX == attrIter->name()) {
+                int baseX = attrIter->as_int();
+                unsigned int xIndex = xLimit > 0 ? index % xLimit : index;
+                int curXIncrease = xIncrease * xIndex;
+                int curX = baseX + curXIncrease;
+                attrIter->set_value(curX);
+            } else if (attrNameY == attrIter->name()) {
+                int baseY = attrIter->as_int();
+                unsigned int yIndex = yLimit > 0 ? index % yLimit : index;
+                int curYIncrease = yIncrease * yIndex;
+                int curY = baseY + curYIncrease;
+                attrIter->set_value(curY);
+            }
+        }
+    }
+
+    // also apply keyword replacements to child nodes
+    pugi::xml_node childIter = node.first_child();
+    while (childIter) {
+        replaceRepeatKeywords(childIter, context, index,
+                xIncrease, yIncrease, xLimit, yLimit);
+        childIter = childIter.next_sibling();
+    }
+}
+
+
+
 
 bool XmlLoader::parseTLineEdit(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
@@ -829,34 +1016,6 @@ bool XmlLoader::parseTSlider(pugi::xml_node& node, pugi::xml_node& defaultNode, 
     return true;
 }
 
-bool XmlLoader::parseTLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    std::string align = node.attribute("align").value();
-    UnicodeString text = node.attribute("text").value();
-
-    components::Label* label = new components::Label(parent);
-    parseId(node, label);
-
-    if (align.length() == 0 || align == "left") {
-        label->set_alignment(CL_Label::align_left);
-    } else if (align == "right") {
-        label->set_alignment(CL_Label::align_right);
-    } else if (align == "center") {
-        label->set_alignment(CL_Label::align_center);
-    } else if (align == "justify") {
-        label->set_alignment(CL_Label::align_justify);
-    } else {
-        LOG_WARN << "Unknown label align: " << align << std::endl;
-        return false;
-    }
-
-    label->setText(text);
-    label->set_geometry(bounds);
-
-    top->addToCurrentPage(label);
-    return true;
-}
-
 bool XmlLoader::parsePropertyLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     std::string align = node.attribute("align").value();
@@ -871,13 +1030,11 @@ bool XmlLoader::parsePropertyLabel(pugi::xml_node& node, pugi::xml_node& default
     parseId(node, label);
 
     if (align.length() == 0 || align == "left") {
-        label->set_alignment(CL_Label::align_left);
+        label->setAlignment(components::Label::Alignment::LEFT);
     } else if (align == "right") {
-        label->set_alignment(CL_Label::align_right);
+        label->setAlignment(components::Label::Alignment::RIGHT);
     } else if (align == "center") {
-        label->set_alignment(CL_Label::align_center);
-    } else if (align == "justify") {
-        label->set_alignment(CL_Label::align_justify);
+        label->setAlignment(components::Label::Alignment::CENTER);
     } else {
         LOG_WARN << "Unknown label align: " << align << std::endl;
         return false;
@@ -970,178 +1127,6 @@ bool XmlLoader::parseTScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNo
     return true;
 }
 
-bool XmlLoader::parseRepeat(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    UnicodeString name(node.attribute("name").value());
-
-    if (repeatContexts_.count(name) == 0) {
-        LOG_ERROR << "Trying to access unknown repeat context " << name << std::endl;
-        return false;
-    }
-
-    const RepeatContext& context = repeatContexts_[name];
-
-    int xIncrease = node.attribute("xincrease").as_int();
-    int yIncrease = node.attribute("yincrease").as_int();
-    unsigned int xLimit = node.attribute("xlimit").as_uint();
-    unsigned int yLimit = node.attribute("ylimit").as_uint();
-
-    for (unsigned int index = 0; index < context.repeatCount_; ++index) {
-        insertRepeatNodes(node.begin(), node.end(), node.parent(), context, index,
-                xIncrease, yIncrease, xLimit, yLimit);
-    }
-
-    return true;
-}
-
-void XmlLoader::insertRepeatNodes(pugi::xml_node::iterator begin, pugi::xml_node::iterator end, pugi::xml_node dst,
-            const RepeatContext& context, unsigned int index,
-            int xIncrease, int yIncrease, unsigned int xLimit, unsigned int yLimit) {
-    for (pugi::xml_node::iterator iter = begin; iter != end; ++iter) {
-        pugi::xml_node newNode = dst.insert_copy_after(*iter, dst.last_child());
-
-        replaceRepeatKeywords(newNode, context, index,
-                xIncrease, yIncrease, xLimit, yLimit);
-
-        checkRepeatIf(newNode, index, xLimit, yLimit);
-    }
-}
-
-void XmlLoader::checkRepeatIf(pugi::xml_node& node, unsigned int index, unsigned int xLimit, unsigned int yLimit) {
-    unsigned int xIndex = xLimit > 0 ? index % xLimit : index;
-    unsigned int yIndex = yLimit > 0 ? index % yLimit : index;
-
-    bool removeNode = false;
-    if (strcmp(node.name(), "repeatif") == 0) {
-        pugi::xml_node::attribute_iterator attrIter = node.attributes_begin();
-        pugi::xml_node::attribute_iterator attrEnd = node.attributes_end();
-
-        for (; attrIter != attrEnd; ++attrIter) {
-            if (strcmp(attrIter->name(), "xindex") == 0) {
-                if (attrIter->as_uint() != xIndex) {
-                    removeNode = true;
-                    break;
-                }
-            } else if (strcmp(attrIter->name(), "yindex") == 0) {
-                if (attrIter->as_uint() != yIndex) {
-                    removeNode = true;
-                    break;
-                }
-            } else if (strcmp(attrIter->name(), "test") == 0) {
-                if (attrIter->as_uint() != 1) {
-                    removeNode = true;
-                    break;
-                }
-            }
-        }
-
-        if (!removeNode) {
-            // move children to parent node
-            pugi::xml_node childIter = node.last_child();
-            while (childIter) {
-                pugi::xml_node newChild = node.parent().insert_copy_after(childIter, node);
-                checkRepeatIf(newChild, index, xLimit, yLimit);
-                childIter = childIter.previous_sibling();
-            }
-        }
-
-        // remove repeatif node
-        node.parent().remove_child(node);
-    } else {
-        pugi::xml_node childIter = node.first_child();
-        while (childIter) {
-            checkRepeatIf(childIter, index, xLimit, yLimit);
-            childIter = childIter.next_sibling();
-        }
-    }
-}
-
-void XmlLoader::replaceRepeatKeywords(pugi::xml_node& node, const RepeatContext& context, unsigned int index,
-            int xIncrease, int yIncrease, unsigned int xLimit, unsigned int yLimit) {
-
-    static std::string attrNameX("x");
-    static std::string attrNameY("y");
-
-    pugi::xml_node::attribute_iterator attrIter = node.attributes_begin();
-    pugi::xml_node::attribute_iterator attrEnd = node.attributes_end();
-
-    for (; attrIter != attrEnd; ++attrIter) {
-        bool contextHit = false;
-
-        std::map<UnicodeString, std::vector<UnicodeString> >::const_iterator contextIter = context.keywordReplacements_.begin();
-        std::map<UnicodeString, std::vector<UnicodeString> >::const_iterator contextEnd = context.keywordReplacements_.end();
-
-        for (; contextIter != contextEnd; ++contextIter) {
-            if (contextIter->first == attrIter->value()) {
-                contextHit = true;
-
-                attrIter->set_value(StringConverter::toUtf8String(contextIter->second[index]).c_str());
-                break;
-            }
-        }
-
-        if (!contextHit) {
-            // increase and y values, if found
-            if (attrNameX == attrIter->name()) {
-                int baseX = attrIter->as_int();
-                unsigned int xIndex = xLimit > 0 ? index % xLimit : index;
-                int curXIncrease = xIncrease * xIndex;
-                int curX = baseX + curXIncrease;
-                attrIter->set_value(curX);
-            } else if (attrNameY == attrIter->name()) {
-                int baseY = attrIter->as_int();
-                unsigned int yIndex = yLimit > 0 ? index % yLimit : index;
-                int curYIncrease = yIncrease * yIndex;
-                int curY = baseY + curYIncrease;
-                attrIter->set_value(curY);
-            }
-        }
-    }
-
-    // also apply keyword replacements to child nodes
-    pugi::xml_node childIter = node.first_child();
-    while (childIter) {
-        replaceRepeatKeywords(childIter, context, index,
-                xIncrease, yIncrease, xLimit, yLimit);
-        childIter = childIter.next_sibling();
-    }
-}
-
-bool XmlLoader::parseWorldView(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-
-    ui::components::WorldView* worldView = new ui::components::WorldView(parent, bounds);
-
-    parseId(node, worldView);
-
-    top->addToCurrentPage(worldView);
-
-    return true;
-}
-
-bool XmlLoader::parsePaperdoll(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-
-    ui::components::PaperdollView* pdView = new ui::components::PaperdollView(parent, bounds);
-
-    parseId(node, pdView);
-
-    top->addToCurrentPage(pdView);
-
-    return true;
-}
-
-bool XmlLoader::parseContainer(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-
-    ui::components::ContainerView* contView = new ui::components::ContainerView(parent, bounds);
-
-    parseId(node, contView);
-
-    top->addToCurrentPage(contView);
-
-    return true;
-}
-
 
 bool XmlLoader::parseSysLogLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
@@ -1220,7 +1205,7 @@ bool XmlLoader::parseWarModeButton(pugi::xml_node& node, pugi::xml_node& default
 bool XmlLoader::parseTClickLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     std::string align = node.attribute("align").value();
-    std::string text = node.attribute("text").value();
+    UnicodeString text = getAttribute("text", node, defaultNode).value();
 
     unsigned int buttonId = node.attribute("buttonid").as_uint();
     unsigned int pageId = node.attribute("page").as_uint();
@@ -1251,19 +1236,17 @@ bool XmlLoader::parseTClickLabel(pugi::xml_node& node, pugi::xml_node& defaultNo
     }
 
     if (align.length() == 0 || align == "left") {
-        label->set_alignment(CL_Label::align_left);
+        label->setAlignment(components::Label::Alignment::LEFT);
     } else if (align == "right") {
-        label->set_alignment(CL_Label::align_right);
+        label->setAlignment(components::Label::Alignment::RIGHT);
     } else if (align == "center") {
-        label->set_alignment(CL_Label::align_center);
-    } else if (align == "justify") {
-        label->set_alignment(CL_Label::align_justify);
+        label->setAlignment(components::Label::Alignment::CENTER);
     } else {
-        LOG_WARN << "Unknown clicklabellabel align: " << align << std::endl;
+        LOG_WARN << "Unknown label align: " << align << std::endl;
         return false;
     }
 
-    label->set_text(text);
+    label->setText(text);
     label->set_geometry(bounds);
 
     top->addToCurrentPage(label);
