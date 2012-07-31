@@ -257,7 +257,7 @@ bool GumpActions::createShard(GumpMenu* menu, const UnicodeString& action, unsig
 	CL_CheckBox* highSeasCheckBox = dynamic_cast<CL_CheckBox*>(menu->get_named_item("highseas"));
 
     UnicodeString name = nameEdit->getText();
-    boost::filesystem::path path(pathEdit->get_text());
+    boost::filesystem::path path(StringConverter::toUtf8String(pathEdit->getText()));
 
     boost::filesystem::path artPath = path / "client.exe";
     if (!boost::filesystem::exists(artPath)) {
@@ -266,7 +266,7 @@ bool GumpActions::createShard(GumpMenu* menu, const UnicodeString& action, unsig
         return false;
     }
 
-    boost::filesystem::path shardPath(nameEdit->get_text());
+    boost::filesystem::path shardPath(StringConverter::toUtf8String(nameEdit->getText()));
     shardPath = "shards" / shardPath;
     if (boost::filesystem::exists(shardPath)) {
         LOG_ERROR << "Shard already exists" << std::endl;

@@ -71,14 +71,14 @@ XmlLoader::XmlLoader() {
     functionTable_["label"] = boost::bind(&XmlLoader::parseLabel, this, _1, _2, _3, _4);
     functionTable_["propertylabel"] = boost::bind(&XmlLoader::parsePropertyLabel, this, _1, _2, _3, _4);
     functionTable_["sysloglabel"] = boost::bind(&XmlLoader::parseSysLogLabel, this, _1, _2, _3, _4);
-    functionTable_["tclicklabel"] = boost::bind(&XmlLoader::parseClickLabel, this, _1, _2, _3, _4);
+    functionTable_["clicklabel"] = boost::bind(&XmlLoader::parseClickLabel, this, _1, _2, _3, _4);
+    functionTable_["lineedit"] = boost::bind(&XmlLoader::parseLineEdit, this, _1, _2, _3, _4);
 
     functionTable_["worldview"] = boost::bind(&XmlLoader::parseWorldView, this, _1, _2, _3, _4);
     functionTable_["paperdoll"] = boost::bind(&XmlLoader::parsePaperdoll, this, _1, _2, _3, _4);
     functionTable_["container"] = boost::bind(&XmlLoader::parseContainer, this, _1, _2, _3, _4);
 
 
-    functionTable_["tlineedit"] = boost::bind(&XmlLoader::parseTLineEdit, this, _1, _2, _3, _4);
     functionTable_["tcombobox"] = boost::bind(&XmlLoader::parseTComboBox, this, _1, _2, _3, _4);
     functionTable_["tgroupbox"] = boost::bind(&XmlLoader::parseTGroupBox, this, _1, _2, _3, _4);
     functionTable_["tspin"] = boost::bind(&XmlLoader::parseTSpin, this, _1, _2, _3, _4);
@@ -796,6 +796,42 @@ bool XmlLoader::parseClickLabel(pugi::xml_node& node, pugi::xml_node& defaultNod
     return true;
 }
 
+bool XmlLoader::parseLineEdit(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    UnicodeString text = StringConverter::fromUtf8(getAttribute("text", node, defaultNode).value());
+    int numeric = getAttribute("numeric", node, defaultNode).as_int();
+    int password = getAttribute("password", node, defaultNode).as_int();
+    unsigned int maxlength = getAttribute("maxlength", node, defaultNode).as_uint();
+    UnicodeString action = StringConverter::fromUtf8(getAttribute("action", node, defaultNode).value());
+    UnicodeString fontName = StringConverter::fromUtf8(getAttribute("font", node, defaultNode).value());
+    unsigned int fontHeight = getAttribute("font-height", node, defaultNode).as_uint();
+
+    components::LineEdit* edit = new components::LineEdit(parent);
+    parseId(node, edit);
+    edit->setFont(fontName, fontHeight);
+    edit->setText(text);
+    edit->set_geometry(bounds);
+
+    if (password) {
+        edit->setPasswordMode(true);
+    }
+
+    if (numeric) {
+        edit->setNumericMode(true);
+    }
+
+    if (maxlength) {
+        edit->setMaxLength(maxlength);
+    }
+
+    if (action.length() > 0) {
+        edit->setAction(action);
+    }
+
+    top->addToCurrentPage(edit);
+    return true;
+}
+
 
 bool XmlLoader::parseWorldView(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
@@ -965,39 +1001,6 @@ void XmlLoader::replaceRepeatKeywords(pugi::xml_node& node, const RepeatContext&
 
 
 
-bool XmlLoader::parseTLineEdit(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    UnicodeString text = StringConverter::fromUtf8(node.attribute("text").value());
-    int numeric = node.attribute("numeric").as_int();
-    int password = node.attribute("password").as_int();
-    unsigned int maxlength = node.attribute("maxlength").as_uint();
-    UnicodeString action = StringConverter::fromUtf8(node.attribute("action").value());
-
-    components::LineEdit* edit = new components::LineEdit(parent);
-    parseId(node, edit);
-    edit->setText(text);
-    edit->set_geometry(bounds);
-    edit->set_select_all_on_focus_gain(false);
-
-    if (password) {
-        edit->set_password_mode(true);
-    }
-
-    if (numeric) {
-        edit->set_numeric_mode(true);
-    }
-
-    if (maxlength) {
-        edit->set_max_length(maxlength);
-    }
-
-    if (action.length() > 0) {
-        edit->setAction(action);
-    }
-
-    top->addToCurrentPage(edit);
-    return true;
-}
 
 bool XmlLoader::parseTComboBox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);

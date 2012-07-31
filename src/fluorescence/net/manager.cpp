@@ -194,7 +194,7 @@ bool Manager::connect(ui::GumpMenu* menu, const UnicodeString& action, unsigned 
         return false;
     }
 
-    int port = line->get_text_int();
+    int port = line->getTextInt();
     if (port <= 0) {
         ui::GumpMenus::openMessageBox("Unable to parse port number");
         return false;

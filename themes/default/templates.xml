@@ -47,4 +47,8 @@
     <clicklabel font="unifont1" font-height="12" align="left" color="#000000" />
 </template>
 
+<template name="lineedit" default="1">
+    <lineedit font="unifont1" font-height="12" color="#000000" />
+</template>
+
 </templates>

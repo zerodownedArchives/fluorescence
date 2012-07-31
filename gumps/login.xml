@@ -2,19 +2,17 @@
 <gump x="337" y="289" closable="0" draggable="1" action="connect" cancelaction="shutdown" inbackground="true">
     <background x="0" y="0" width="350" height="190"  />
     <label x="15" y="18" width="95" height="20" text="IP/Hostname:" />
-    <tlineedit name="loginhost" x="120" y="15" width="215" height="25" />
+    <lineedit name="loginhost" x="120" y="15" width="215" height="25" />
 
     <label x="15" y="48" width="95" height="20" text="Port:" />
-    <tlineedit name="loginport" x="120" y="45" width="215" height="25" numeric="1" maxlength="5" />
+    <lineedit name="loginport" x="120" y="45" width="215" height="25" numeric="1" maxlength="5" />
 
     <label x="15" y="78" width="95" height="20" text="Account:" />
-    <tlineedit name="loginaccount" x="120" y="75" width="215" height="25" />
+    <lineedit name="loginaccount" x="120" y="75" width="215" height="25" />
 
     <label x="15" y="108" width="95" height="20" text="Password:" />
-    <tlineedit name="loginpassword" x="120" y="105" width="215" height="25"  password="1" />
+    <lineedit name="loginpassword" x="120" y="105" width="215" height="25"  password="1" />
 
     <button x="30" y="150" width="130" height="25" text="Close fluorescence" action="shutdown" />
-    <button x="190" y="150" width="130" height="25" text="Connect" action="connect">
-        <mouseover text="foo" font-hue="13" />
-    </button>
+    <button x="190" y="150" width="130" height="25" text="Connect" action="connect" />
 </gump>
