@@ -14,5 +14,7 @@
     <tlineedit name="loginpassword" x="120" y="105" width="215" height="25"  password="1" />
 
     <button x="30" y="150" width="130" height="25" text="Close fluorescence" action="shutdown" />
-    <button x="190" y="150" width="130" height="25" text="Connect" action="connect" />
+    <button x="190" y="150" width="130" height="25" text="Connect" action="connect">
+        <mouseover text="foo" font-hue="13" />
+    </button>
 </gump>

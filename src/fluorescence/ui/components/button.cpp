@@ -20,7 +20,10 @@
 
 #include <ClanLib/Display/Window/keys.h>
 
+#include <data/manager.hpp>
+#include <data/huesloader.hpp>
 #include <ui/gumpmenu.hpp>
+#include <ui/manager.hpp>
 
 namespace fluo {
 namespace ui {
@@ -31,6 +34,7 @@ Button::Button(CL_GUIComponent* parent) : MultiTextureImage(parent, 3), mouseOve
     func_input_released().set(this, &Button::onInputReleased);
     func_pointer_enter().set(this, &Button::onPointerEnter);
     func_pointer_exit().set(this, &Button::onPointerExit);
+    func_render().set(this, &Button::render);
 
     set_double_click_enabled(false);
 
@@ -81,6 +85,7 @@ bool Button::onPointerExit() {
 void Button::updateTexture() {
     unsigned int idx = calcTextureId();
     activateTexture(idx);
+    activateText(idx);
 }
 
 unsigned int Button::calcTextureId() const {
@@ -93,6 +98,58 @@ unsigned int Button::calcTextureId() const {
             return Button::TEX_INDEX_UP;
         }
     }
+}
+
+void Button::activateText(unsigned int index) {
+    if (texts_[index].length() > 0) {
+        span_ = CL_SpanLayout();
+
+        CL_Font font = ui::Manager::getSingleton()->getFont(fontDesc_);
+        span_.add_text(StringConverter::toUtf8String(texts_[index]), font, fontColors_[index]);
+
+        span_.set_align((CL_SpanAlign)alignment_);
+
+        displayText_ = true;
+    } else {
+        displayText_ = false;
+    }
+}
+
+void Button::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
+    // render base image
+    MultiTextureImage::render(gc, clipRect);
+
+    if (displayText_) {
+        gc.push_cliprect(get_geometry());
+        span_.layout(gc, get_geometry().get_width());
+        CL_Size spanSize = span_.get_size();
+        // span aligns only horizontally. vertical alignment needs to be done manually
+        span_.set_position(CL_Point(0, (get_height() - spanSize.height) / 2));
+        span_.draw_layout(gc);
+        span_.set_component_geometry();
+        gc.pop_cliprect();
+    }
+}
+
+void Button::setText(unsigned int index, const UnicodeString& text) {
+    texts_[index] = text;
+}
+
+void Button::setFontColor(unsigned int index, const CL_Colorf& color) {
+    fontColors_[index] = color;
+}
+
+void Button::setFontHue(unsigned int index, unsigned int hue) {
+    fontColors_[index] = data::Manager::getHuesLoader()->getFontClColor(hue);;
+}
+
+void Button::setFont(const UnicodeString& name, unsigned int height) {
+    fontDesc_.set_typeface_name(StringConverter::toUtf8String(name));
+    fontDesc_.set_height(12);
+}
+
+void Button::setFontAlignment(unsigned int align) {
+    alignment_ = align;
 }
 
 }

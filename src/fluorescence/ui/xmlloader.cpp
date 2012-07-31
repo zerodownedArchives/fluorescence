@@ -336,12 +336,36 @@ bool XmlLoader::parseMultiTextureImage(pugi::xml_node& node, pugi::xml_node& def
     }
 
     unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
-    std::string rgba = getAttribute("rgba", node, defaultNode).value();
+    std::string rgba = getAttribute("color", node, defaultNode).value();
     float alpha = getAttribute("alpha", node, defaultNode).as_float();
 
     bool tiled = getAttribute("tiled", node, defaultNode).as_bool();
 
     img->addTexture(index, texture, hue, rgba, alpha, tiled);
+
+    return true;
+}
+
+bool XmlLoader::parseButtonText(pugi::xml_node& node, pugi::xml_node& defaultNode, components::Button* button, unsigned int index) {
+    unsigned int hue = getAttribute("font-hue", node, defaultNode).as_uint();
+    std::string rgba = getAttribute("font-color", node, defaultNode).value();
+    UnicodeString text = getAttribute("text", node, defaultNode).value();
+    CL_Colorf color(rgba);
+
+    if (text.length() > 0) {
+        button->setText(index, text);
+    }
+
+    // if the node has its own color or hue property, don't use the template values
+    if (node.attribute("font-color")) {
+        button->setFontColor(index, color);
+    } else if (node.attribute("font-hue")) {
+        button->setFontHue(index, hue);
+    } else if (rgba.length() > 0) {
+        button->setFontColor(index, color);
+    } else {
+        button->setFontHue(index, hue);
+    }
 
     return true;
 }
@@ -354,7 +378,7 @@ bool XmlLoader::parseImage(pugi::xml_node& node, pugi::xml_node& defaultNode, CL
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
 
     unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
-    std::string rgba = getAttribute("rgba", node, defaultNode).value();
+    std::string rgba = getAttribute("color", node, defaultNode).value();
     float alpha = getAttribute("alpha", node, defaultNode).as_float();
 
     bool tiled = getAttribute("tiled", node, defaultNode).as_bool();
@@ -410,6 +434,11 @@ bool XmlLoader::parseButton(pugi::xml_node& node, pugi::xml_node& defaultNode, C
     UnicodeString param4 = StringConverter::fromUtf8(getAttribute("param4", node, defaultNode).value());
     UnicodeString param5 = StringConverter::fromUtf8(getAttribute("param5", node, defaultNode).value());
 
+    std::string align = getAttribute("font-align", node, defaultNode).value();
+    UnicodeString fontName = getAttribute("font", node, defaultNode).value();
+    unsigned int fontHeight = getAttribute("font-height", node, defaultNode).as_uint();
+    UnicodeString text = getAttribute("text", node, defaultNode).value();
+
     components::Button* button = new components::Button(parent);
     if (action.length() > 0) {
         button->setLocalButton(action);
@@ -427,6 +456,24 @@ bool XmlLoader::parseButton(pugi::xml_node& node, pugi::xml_node& defaultNode, C
         return false;
     }
 
+    if (align == "left") {
+        button->setFontAlignment(components::Label::Alignment::LEFT);
+    } else if (align == "right") {
+        button->setFontAlignment(components::Label::Alignment::RIGHT);
+    } else if (align.length() == 0 || align == "center") {
+        button->setFontAlignment(components::Label::Alignment::CENTER);
+    } else {
+        LOG_WARN << "Unknown button align: " << align << std::endl;
+        return false;
+    }
+    button->setFont(fontName, fontHeight);
+
+    if (text.length() > 0) {
+        button->setText(0, text);
+        button->setText(1, text);
+        button->setText(2, text);
+    }
+
     parseId(node, button);
 
     pugi::xml_node normalNode = node.child("normal");
@@ -439,6 +486,7 @@ bool XmlLoader::parseButton(pugi::xml_node& node, pugi::xml_node& defaultNode, C
 
     if (normalNode || defaultNormalNode) {
         parseMultiTextureImage(normalNode, defaultNormalNode, button, components::Button::TEX_INDEX_UP);
+        parseButtonText(normalNode, defaultNormalNode, button, components::Button::TEX_INDEX_UP);
     } else {
         LOG_ERROR << "Normal image for uo button not defined" << std::endl;
         node.print(std::cout);
@@ -447,9 +495,11 @@ bool XmlLoader::parseButton(pugi::xml_node& node, pugi::xml_node& defaultNode, C
 
     if (mouseOverNode || defaultMouseOverNode) {
         parseMultiTextureImage(mouseOverNode, defaultMouseOverNode, button, components::Button::TEX_INDEX_MOUSEOVER);
+        parseButtonText(mouseOverNode, defaultMouseOverNode, button, components::Button::TEX_INDEX_MOUSEOVER);
     }
     if (mouseDownNode || defaultMouseDownNode) {
         parseMultiTextureImage(mouseDownNode, defaultMouseDownNode, button, components::Button::TEX_INDEX_DOWN);
+        parseButtonText(mouseDownNode, defaultMouseDownNode, button, components::Button::TEX_INDEX_DOWN);
     }
 
     if (bounds.get_width() == 0 || bounds.get_height() == 0) {
@@ -463,6 +513,7 @@ bool XmlLoader::parseButton(pugi::xml_node& node, pugi::xml_node& defaultNode, C
     button->set_geometry(bounds);
 
     top->addToCurrentPage(button);
+
     return true;
 }
 
@@ -470,7 +521,7 @@ bool XmlLoader::parseBackground(pugi::xml_node& node, pugi::xml_node& defaultNod
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
 
     unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
-    std::string rgba = getAttribute("rgba", node, defaultNode).value();
+    std::string rgba = getAttribute("color", node, defaultNode).value();
     float alpha = getAttribute("alpha", node, defaultNode).as_float();
 
     unsigned int gumpId = getAttribute("gumpid", node, defaultNode).as_uint();
@@ -644,9 +695,9 @@ bool XmlLoader::parseLabelHelper(components::Label* label, pugi::xml_node& node,
     label->setFontHeight(fontHeight);
 
     // if the node has its own color or hue property, don't use the template values
-    if (node.child("color")) {
+    if (node.attribute("color")) {
         label->setColor(color);
-    } else if (node.child("hue")) {
+    } else if (node.attribute("hue")) {
         label->setHue(hue);
     } else if (rgba.length() > 0) {
         label->setColor(color);

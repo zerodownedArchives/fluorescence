@@ -37,7 +37,7 @@ namespace fluo {
 namespace ui {
 
 namespace components {
-class UoButton;
+class Button;
 class Label;
 }
 
@@ -96,6 +96,7 @@ private:
     CL_Rect getBoundsFromNode(pugi::xml_node& node, pugi::xml_node& defaultNode);
     bool parseId(pugi::xml_node& node, CL_GUIComponent* component);
     bool parseMultiTextureImage(pugi::xml_node& node, pugi::xml_node& defaultNode, components::MultiTextureImage* button, unsigned int index);
+    bool parseButtonText(pugi::xml_node& node, pugi::xml_node& defaultNode, components::Button* button, unsigned int index);
     bool parseLabelHelper(components::Label* label, pugi::xml_node& node, pugi::xml_node& defaultNode);
 
 

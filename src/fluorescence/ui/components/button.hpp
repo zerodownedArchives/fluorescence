@@ -22,6 +22,9 @@
 
 #include <boost/shared_ptr.hpp>
 #include <ClanLib/Display/Window/input_event.h>
+#include <ClanLib/Display/2D/span_layout.h>
+#include <ClanLib/Display/Font/font.h>
+#include <ClanLib/Display/Font/font_description.h>
 
 #include "multitextureimage.hpp"
 #include "basebutton.hpp"
@@ -47,6 +50,12 @@ public:
 
     void updateTexture();
 
+    void setFont(const UnicodeString& name, unsigned int height);
+    void setFontAlignment(unsigned int align);
+    void setText(unsigned int index, const UnicodeString& text);
+    void setFontColor(unsigned int index, const CL_Colorf& color);
+    void setFontHue(unsigned int index, unsigned int hue);
+
 private:
     bool onInputPressed(const CL_InputEvent & e);
     bool onInputReleased(const CL_InputEvent & e);
@@ -58,6 +67,16 @@ private:
     bool mouseDown_;
 
     unsigned int calcTextureId() const;
+
+    bool displayText_;
+    CL_SpanLayout span_;
+    CL_FontDescription fontDesc_;
+    unsigned int alignment_;
+    CL_Colorf fontColors_[3];
+    UnicodeString texts_[3];
+    void activateText(unsigned int index);
+
+    void render(CL_GraphicContext& gc, const CL_Rect& clipRect);
 };
 
 }

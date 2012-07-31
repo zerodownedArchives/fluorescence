@@ -34,8 +34,10 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-Label::Label(CL_GUIComponent* parent) : CL_GUIComponent(parent), spanInitialized_(false) {
+Label::Label(CL_GUIComponent* parent) : CL_GUIComponent(parent), fontColor_(CL_Colorf::black), alignment_(Alignment::LEFT), spanInitialized_(false) {
     func_render().set(this, &Label::onRender);
+
+    fontDesc_.set_height(12);
 }
 
 UnicodeString Label::getText() {

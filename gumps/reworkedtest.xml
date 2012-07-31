@@ -71,22 +71,22 @@
             <button x="200" y="500" page="1">
                 <normal source="gumpart" id="16" hue="13" />
                 <mouseover source="gumpart" id="18" hue="13" alpha="0.5" />
-                <mousedown source="gumpart" id="17" rgba="#ff5555" />
+                <mousedown source="gumpart" id="17" color="#ff5555" />
             </button>
         </tscrollarea>
-        <background x="10" y="280" width="300" height="200" gumpid="1010" rgba="#88ff88ff" />
+        <background x="10" y="280" width="300" height="200" gumpid="1010" color="#88ff88ff" />
         <image x="30" y="290" source="http" id="http://wiseheartdesign.com/page_attachments/0000/0062/default-avatar.png" hue="13" />
-        <image x="280" y="230" source="http" id="http://avatar.hq-picture.com/avatars/img25/sully_monsters_inc_avatar_picture_96245.jpg" rgba="#1188ee22" />
+        <image x="280" y="230" source="http" id="http://avatar.hq-picture.com/avatars/img25/sully_monsters_inc_avatar_picture_96245.jpg" color="#1188ee22" />
 
         <button x="200" y="500" page="1">
             <normal source="gumpart" id="16" hue="13" />
             <mouseover source="gumpart" id="18" hue="13" alpha="0.5" />
-            <mousedown source="gumpart" id="17" rgba="#ff5555" />
+            <mousedown source="gumpart" id="17" color="#ff5555" />
         </button>
 
         <checkbox x="200" y="530" switchid="4" checked="1">
             <unchecked-mouseover hue="13" />
-            <checked-mouseover rgba="#997700" />
+            <checked-mouseover color="#997700" />
         </checkbox>
     </page>
 </gump>

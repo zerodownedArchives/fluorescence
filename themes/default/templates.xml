@@ -5,11 +5,11 @@
     <background x="0" y="0" gumpid="2600"/>
 </template>
 
-<template name="button" default="1">
+<template name="button" font="unifont0" font-size="12" default="1" font-align="center">
     <button>
-        <normal source="theme" id="Images/ButtonNormal.png" />
-        <mouseover source="theme" id="Images/ButtonHot.png" />
-        <mousedown source="theme" id="Images/ButtonPressed.png" />
+        <normal source="theme" id="Images/ButtonNormal.png" font-color="#000000" />
+        <mouseover source="theme" id="Images/ButtonHot.png" font-color="#000000" />
+        <mousedown source="theme" id="Images/ButtonPressed.png" font-color="#000000" />
     </button>
 </template>
 
