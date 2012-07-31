@@ -38,6 +38,7 @@ namespace ui {
 
 namespace components {
 class UoButton;
+class Label;
 }
 
 class XmlLoader {
@@ -95,6 +96,7 @@ private:
     CL_Rect getBoundsFromNode(pugi::xml_node& node, pugi::xml_node& defaultNode);
     bool parseId(pugi::xml_node& node, CL_GUIComponent* component);
     bool parseMultiTextureImage(pugi::xml_node& node, pugi::xml_node& defaultNode, components::MultiTextureImage* button, unsigned int index);
+    bool parseLabelHelper(components::Label* label, pugi::xml_node& node, pugi::xml_node& defaultNode);
 
 
     // reworked ui-components
@@ -105,6 +107,9 @@ private:
     bool parseCheckbox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
     bool parseRadioButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
     bool parseLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseSysLogLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parsePropertyLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseClickLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
 
     bool parseWorldView(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
     bool parsePaperdoll(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
@@ -128,15 +133,12 @@ private:
     bool parseTSpin(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
     bool parseTTabs(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
     bool parseTSlider(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
-    bool parseTClickLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
     bool parseTTextEdit(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
     bool parseTScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
     bool parseTBackground(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
-    bool parsePropertyLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
 
 
     // uo components
-    bool parseSysLogLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
     bool parseWarModeButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
 
 

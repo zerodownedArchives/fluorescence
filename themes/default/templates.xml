@@ -32,15 +32,19 @@
 </template>
 
 <template name="label" default="1">
-    <label font="unifont1" font-height="12" hue="2" align="left" color="#000000" />
+    <label font="unifont1" font-height="12" align="left" color="#000000" />
 </template>
 
 <template name="propertylabel" default="1">
-    <propertylabel font="unifont1" font-height="12" hue="2" align="left" color="#000000" />
+    <propertylabel font="unifont1" font-height="12" align="left" color="#000000" />
 </template>
 
 <template name="sysloglabel" default="1">
-    <sysloglabel font="unifont1" font-height="12" hue="2" align="left" color="#000000" />
+    <sysloglabel font="unifont1" font-height="12" align="left" hue="946" />
+</template>
+
+<template name="clicklabel" default="1">
+    <clicklabel font="unifont1" font-height="12" align="left" color="#000000" />
 </template>
 
 </templates>
