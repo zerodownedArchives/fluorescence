@@ -35,9 +35,9 @@
 namespace fluo {
 namespace ui {
 
-UoFontProvider::UoFontProvider(unsigned int unifontId) : unifontId_(unifontId), historyIndex_(0), historySize_(0) {
+UoFontProvider::UoFontProvider(unsigned int unifontId) : unifontId_(unifontId) {
     fontLoader_ = data::Manager::getUniFontLoader(unifontId);
-    
+
     initFontMetrics();
 }
 
@@ -51,24 +51,24 @@ void UoFontProvider::destroy() {
 
 void UoFontProvider::draw_text(CL_GraphicContext& gc, float x, float y, const CL_StringRef& text, const CL_Colorf& color) {
     boost::shared_ptr<ui::Texture> tex = getTexture(gc, text, color);
-    
-    CL_Rectf rect(x, y - tex->getHeight(), CL_Sizef(tex->getWidth(), tex->getHeight()));    
+
+    CL_Rectf rect(x, y - tex->getHeight(), CL_Sizef(tex->getWidth(), tex->getHeight()));
     //LOG_DEBUG << "draw_text: at " << rect << ": " << text.c_str() << std::endl;
-    
+
     CL_Draw::texture(gc, tex->getTexture(), CL_Quadf(rect), CL_Colorf::white, tex->getNormalizedTextureCoords());
 }
 
 CL_Size UoFontProvider::get_text_size(CL_GraphicContext& gc, const CL_StringRef& text) {
     // calculate size
     unsigned int width = borderWidth_ * 2;
-    
+
     UnicodeString uniStr = StringConverter::fromUtf8(text.c_str());
     StringCharacterIterator iter(uniStr);
 
     while (iter.hasNext()) {
         unsigned int charCode = iter.nextPostInc();
         boost::shared_ptr<data::UnicodeCharacter> curChar = fontLoader_->getCharacter(charCode);
-        
+
         if (!curChar) {
             LOG_DEBUG << "Trying to render invalid char code " << charCode << std::endl;
             continue;
@@ -80,15 +80,15 @@ CL_Size UoFontProvider::get_text_size(CL_GraphicContext& gc, const CL_StringRef&
     }
 
     unsigned int height = fontLoader_->getMaxHeight() + borderWidth_*2;
-    
+
     //LOG_DEBUG << "uofontprovider calc size: width=" << width << " height=" << height << " loader height=" << fontLoader_->getMaxHeight() << std::endl;
-    
+
     return CL_Size(width, height);
 }
 
 int UoFontProvider::get_character_index(CL_GraphicContext& gc, const CL_String& text, const CL_Point& point) {
     //LOG_DEBUG << "get_char_index: " << point.x << "/" << point.y << std::endl;
-    
+
     int curX = 0;
 	int curY = 0;
 
@@ -98,7 +98,7 @@ int UoFontProvider::get_character_index(CL_GraphicContext& gc, const CL_String& 
     int lineIdx = point.y / lineHeight; // char should be in this line
     int targetYMin = lineHeight * lineIdx;
     int targetYMax = targetYMin + lineHeight;
-    
+
     UnicodeString uniStr = StringConverter::fromUtf8(text.c_str());
     StringCharacterIterator iter(uniStr);
 
@@ -121,41 +121,44 @@ int UoFontProvider::get_character_index(CL_GraphicContext& gc, const CL_String& 
             // target was the last character on the previous line
             return (p-1);
         }
-        
+
         ++p;
     }
-    
+
 	return -1;	// Not found
 }
 
 void UoFontProvider::initFontMetrics() {
     unsigned int height, ascent, descent, avgWidth, maxWidth;
     height = ascent = descent = avgWidth = maxWidth = 0;
-    
+
     boost::shared_ptr<data::UnicodeCharacter> charM = fontLoader_->getCharacter('M');
     if (charM) {
-        height = charM->getTotalHeight() + borderWidth_ * 2;
+        height = charM->getTotalHeight();
     }
-    
+
     boost::shared_ptr<data::UnicodeCharacter> charARing = fontLoader_->getCharacter(0xc5); // Å
     if (charARing) {
-        ascent = charARing->getTotalHeight() + borderWidth_ * 2;
+        ascent = charARing->getTotalHeight();
+    } else {
+        ascent = height + 1;
     }
-    
+
     boost::shared_ptr<data::UnicodeCharacter> charg = fontLoader_->getCharacter('g');
     if (charg) {
-        descent = borderWidth_ + charg->getTotalHeight() - charM->getTotalHeight();
-        avgWidth = charg->getTotalWidth() + borderWidth_ * 2;
+        //descent = charg->getTotalHeight() - charM->getTotalHeight();
+        avgWidth = charg->getTotalWidth();
     }
-    
+    descent = 0;
+
     boost::shared_ptr<data::UnicodeCharacter> charW = fontLoader_->getCharacter('W');
     if (charW) {
-        maxWidth = charW->getTotalWidth() + borderWidth_ * 2;
+        maxWidth = charW->getTotalWidth();
     }
-    
-    // LOG_DEBUG << "font metrics: height=" << height << " ascent=" << ascent << " descent=" << descent << std::endl;
-    
-    
+
+     LOG_DEBUG << "font metrics: height=" << height << " ascent=" << ascent << " descent=" << descent << std::endl;
+
+
     fontMetrics_ = CL_FontMetrics(
 		height,		// height
 		ascent,		// ascent
@@ -177,12 +180,12 @@ void UoFontProvider::initFontMetrics() {
 void UoFontProvider::applyBorder(CL_PixelBuffer pxBuf, const CL_Colorf& clcolor, unsigned int borderWidth, const CL_Colorf& clborderColor) {
     uint32_t color = clToUintColor(clcolor);
     uint32_t borderColor = clToUintColor(clborderColor);
-    
-    // dirty fix to avoid a filled rectangle... 
+
+    // dirty fix to avoid a filled rectangle...
     if (color == borderColor) {
         borderColor = color - 1;
     }
-    
+
     unsigned int width = pxBuf.get_width();
     unsigned int height = pxBuf.get_height();
 
@@ -208,21 +211,14 @@ void UoFontProvider::applyBorder(CL_PixelBuffer pxBuf, const CL_Colorf& clcolor,
 
 boost::shared_ptr<ui::Texture> UoFontProvider::getTexture(CL_GraphicContext& gc, const CL_StringRef& cltext, const CL_Colorf& clcolor, unsigned int borderWidth, const CL_Colorf& clborderColor) {
     UnicodeString text(cltext.c_str());
-    // check history first!
-    boost::shared_ptr<ui::Texture> tex = findInHistory(text);
-    if (tex) {
-        return tex;
-    }
-    
-    //LOG_DEBUG << "Texture not found in history" << std::endl;
-    
+
     uint32_t color = clToUintColor(clcolor);
-    
+
     CL_Size texSize = get_text_size(gc, cltext);
     unsigned int width = texSize.width;
     unsigned int height = texSize.height;
 
-    tex.reset(new ui::Texture(ui::Texture::USAGE_FONT));
+    boost::shared_ptr<ui::Texture> tex(new ui::Texture(ui::Texture::USAGE_FONT));
     tex->initPixelBuffer(width, height);
     uint32_t* pixBufPtr = tex->getPixelBufferData();
 
@@ -257,40 +253,8 @@ boost::shared_ptr<ui::Texture> UoFontProvider::getTexture(CL_GraphicContext& gc,
     }
 
     tex->setReadComplete();
-    
-    addToHistory(text, tex);
 
     return tex;
-}
-
-boost::shared_ptr<ui::Texture> UoFontProvider::findInHistory(const UnicodeString& str) {
-    int32_t hash = str.hashCode();
-    boost::shared_ptr<ui::Texture> ret;
-    
-    boost::mutex::scoped_lock myLock(historyMutex_);
-    
-    for (unsigned int i = 0; i < historySize_; ++i) {
-        if (textureHistory_[i].first == hash) {
-            ret = textureHistory_[i].second;
-            break;
-        }
-    }
-    
-    return ret;
-}
-
-void UoFontProvider::addToHistory(const UnicodeString& str, boost::shared_ptr<ui::Texture> tex) {
-    boost::mutex::scoped_lock myLock(historyMutex_);
-    
-    textureHistory_[historyIndex_].first = str.hashCode();
-    textureHistory_[historyIndex_].second = tex;
-    
-    ++historyIndex_;
-    historyIndex_ %= HISTORY_SIZE;
-    
-    if (historySize_ < HISTORY_SIZE) {
-        ++historySize_;
-    }
 }
 
 uint32_t UoFontProvider::clToUintColor(const CL_Colorf& clcolor) const {
@@ -298,7 +262,7 @@ uint32_t UoFontProvider::clToUintColor(const CL_Colorf& clcolor) const {
     unsigned int g = (clcolor.get_green()) * 255;
     unsigned int b = (clcolor.get_blue()) * 255;
     unsigned int a = (clcolor.get_alpha()) * 255;
-    
+
     uint32_t ret = (r & 0xFF) << 24;
     ret |= (g & 0xFF) << 16;
     ret |= (b & 0xFF) << 8;

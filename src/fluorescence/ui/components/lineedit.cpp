@@ -61,10 +61,6 @@
 #include <ClanLib/GUI/gui_message_input.h>
 #include <ClanLib/GUI/gui_message_pointer.h>
 #include <ClanLib/GUI/gui_message_focus_change.h>
-#include <ClanLib/GUI/gui_theme_part.h>
-#include <ClanLib/GUI/gui_theme_part_property.h>
-#include <ClanLib/GUI/gui_component_description.h>
-#include <ClanLib/GUI/Components/lineedit.h>
 #include <ClanLib/Core/Math/cl_math.h>
 #include <ClanLib/Core/System/timer.h>
 #include <ClanLib/Core/Text/string_help.h>
@@ -72,13 +68,14 @@
 #include <ClanLib/Display/Window/keys.h>
 #include <ClanLib/Display/Font/font_metrics.h>
 #include <ClanLib/Display/2D/draw.h>
-#include <ClanLib/Display/Render/blend_mode.h>
-#include <ClanLib/Display/Window/display_window.h>
 
 #ifndef WIN32
 #include "stdlib.h"
 #endif
 
+#include <data/manager.hpp>
+#include <data/huesloader.hpp>
+#include <misc/log.hpp>
 #include <ui/manager.hpp>
 #include <ui/gumpmenu.hpp>
 #include <ui/gumpactions.hpp>
@@ -90,6 +87,7 @@ namespace components {
 LineEdit::LineEdit(CL_GUIComponent* parent) :
         GumpComponent(parent),
         entryId_(0xFFFFFFFFu),
+        fontColor_(CL_Colorf::black),
 
         cursor_pos(0),
 		max_length(-1),
@@ -155,6 +153,16 @@ void LineEdit::setFont(const UnicodeString& fontName, unsigned int fontHeight) {
     desc.set_height(fontHeight);
 
     font_ = ui::Manager::getSingleton()->getFont(desc);
+
+    isUoFont_ = fontName.indexOf("unifont") != -1;
+}
+
+void LineEdit::setFontColor(const CL_Colorf& color) {
+    fontColor_ = color;
+}
+
+void LineEdit::setFontHue(unsigned int hue) {
+    fontColor_ = data::Manager::getHuesLoader()->getFontClColor(hue);
 }
 
 
@@ -768,17 +776,23 @@ CL_Rect LineEdit::get_cursor_rect() {
 
     CL_Size text_size_before_cursor = font_.get_text_size(gc, clipped_text);
 
+
+    // hack. uo fonts always add 2 for border size. border is not drawn when color is not black (gnarf!)
+    if (isUoFont_) {
+        // only parts of border required for the other two parts
+        if (text_size_before_cursor.width > 0) {
+            text_size_before_cursor.width -= 1;
+        }
+    }
+
     cursor_rect.left = text_size_before_cursor.width;
     cursor_rect.right = cursor_rect.left + 1;
 
 
     CL_FontMetrics metrics = font_.get_font_metrics();
 	float align_height = metrics.get_ascent() - metrics.get_internal_leading();
-	float content_height = get_height();
-	float baseline = (content_height + align_height) / 2.0f;
-
-    cursor_rect.top = baseline - metrics.get_ascent();
-    cursor_rect.bottom = baseline + metrics.get_descent();
+    cursor_rect.top = ((get_height() - align_height) / 2.0f) - metrics.get_internal_leading();
+    cursor_rect.bottom = cursor_rect.top + metrics.get_ascent() + metrics.get_descent();
 
     return cursor_rect;
 }
@@ -794,17 +808,26 @@ CL_Rect LineEdit::get_selection_rect() {
     CL_String txt_selected = get_visible_selected_text();
     CL_Size text_size_selection = font_.get_text_size(gc, txt_selected);
 
+    // hack. uo fonts always add 2 for border size. border is not drawn when color is not black (gnarf!)
+    if (isUoFont_) {
+        // no extra border required for selected part
+        if (text_size_selection.width > 0) {
+            text_size_selection.width -= 2;
+        }
+        // only parts of border required for the other two parts
+        if (text_size_before_selection.width > 0) {
+            text_size_before_selection.width -= 1;
+        }
+    }
+
     CL_Rect selection_rect;
     selection_rect.left = text_size_before_selection.width;
     selection_rect.right = selection_rect.left + text_size_selection.width;
 
     CL_FontMetrics metrics = font_.get_font_metrics();
 	float align_height = metrics.get_ascent() - metrics.get_internal_leading();
-	float content_height = get_height();
-	float baseline = (content_height + align_height) / 2.0f;
-
-    selection_rect.top = baseline - metrics.get_ascent();
-    selection_rect.bottom = baseline + metrics.get_descent();
+    selection_rect.top = ((get_height() - align_height) / 2.0f) - metrics.get_internal_leading();
+    selection_rect.bottom = selection_rect.top + metrics.get_ascent() + metrics.get_descent();
 
     return selection_rect;
 }
@@ -930,60 +953,74 @@ CL_String LineEdit::get_visible_text_after_selection() {
 }
 
 void LineEdit::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
-    font_.draw_text(gc, 0, 20, text, CL_Colorf::black);
-    //CL_Rect g = get_size();
-    //part_component.render_box(gc, g, update_rect);
+    CL_String txt_before = get_visible_text_before_selection();
+    CL_String txt_selected = get_visible_selected_text();
+    CL_String txt_after = get_visible_text_after_selection();
 
-    //CL_Font font = part_component.get_font();
+    if (txt_before.empty() && txt_selected.empty() && txt_after.empty()) {
+        txt_after = text.substr(clip_start_offset, clip_end_offset - clip_start_offset);
 
-    //CL_String txt_before = get_visible_text_before_selection();
-    //CL_String txt_selected = get_visible_selected_text();
-    //CL_String txt_after = get_visible_text_after_selection();
+        // If we are in password mode, we gonna return the right characters
+        if ( password_mode )
+            txt_after = create_password(txt_after.utf8_length());
+    }
 
-    //if (txt_before.empty() && txt_selected.empty() && txt_after.empty()) {
-        //txt_after = text.substr(clip_start_offset, clip_end_offset - clip_start_offset);
+    CL_Size size_before = font_.get_text_size(gc, txt_before);
+    CL_Size size_selected = font_.get_text_size(gc, txt_selected);
 
-        //// If we are in password mode, we gonna return the right characters
-        //if ( password_mode )
-            //txt_after = create_password(txt_after.utf8_length());
-    //}
+    // hack. uo fonts always add 2 for border size. border is not drawn when color is not black (gnarf!)
+    if (isUoFont_) {
+        if (size_selected.width > 0) {
+            size_selected.width -= 2;
+        }
+        if (size_before.width > 0) {
+            size_before.width -= 2;
+        }
+    }
 
-    //CL_Size size_before = font.get_text_size(gc, txt_before);
-    //CL_Size size_selected = font.get_text_size(gc, txt_selected);
+    CL_FontMetrics metrics = font_.get_font_metrics();
+	float align_height = metrics.get_ascent() - metrics.get_internal_leading();
+    int y = align_height + ((get_height() - align_height) / 2.0f);
 
-    //// Draw text before selection
-    //if (!txt_before.empty()) {
+
+    // Draw text before selection
+    if (!txt_before.empty()) {
+        font_.draw_text(gc, 0, y, txt_before, fontColor_);
         //CL_Rect text_rect = content_rect;
         //text_rect.top = g.top;
         //text_rect.bottom = g.bottom;
         //part_component.render_text(gc, txt_before, text_rect, update_rect);
-    //}
-    //if (!txt_selected.empty()) {
-        //// Draw selection box.
-        //CL_Rect selection_rect = get_selection_rect();
+    }
+    if (!txt_selected.empty()) {
+        // Draw selection box.
+        CL_Rect selection_rect = get_selection_rect();
+        CL_Draw::fill(gc, selection_rect, CL_Colorf::grey);
         //part_selection.render_box(gc, selection_rect, update_rect);
+
+        font_.draw_text(gc, size_before.width, y, txt_selected, fontColor_);
 
         //CL_Rect text_rect = content_rect;
         //text_rect.left += (size_before.width);
         //text_rect.top = g.top;
         //text_rect.bottom = g.bottom;
         //part_selection.render_text(gc, txt_selected, text_rect, update_rect);
-    //}
-    //if (!txt_after.empty()) {
+    }
+    if (!txt_after.empty()) {
+        font_.draw_text(gc, size_before.width + size_selected.width, y, txt_after, fontColor_);
         //CL_Rect text_rect = content_rect;
         //text_rect.left += (size_before.width + size_selected.width);
         //text_rect.top = g.top;
         //text_rect.bottom = g.bottom;
         //part_component.render_text(gc, txt_after, text_rect, update_rect);
-    //}
+    }
 
     //// draw cursor
-    //if (has_focus() || (get_focus_policy() == CL_GUIComponent::focus_parent && cursor_drawing_enabled_when_parent_focused)) {
-        //if (cursor_blink_visible) {
-            //CL_Rect cursor_rect = get_cursor_rect();
-            //part_cursor.render_box(gc, cursor_rect, update_rect);
-        //}
-    //}
+    if (has_focus() || (get_focus_policy() == CL_GUIComponent::focus_parent && cursor_drawing_enabled_when_parent_focused)) {
+        if (cursor_blink_visible) {
+            CL_Rect cursor_rect = get_cursor_rect();
+            CL_Draw::fill(gc, cursor_rect, fontColor_);
+        }
+    }
 }
 
 void LineEdit::on_scroll_timer_expired() {

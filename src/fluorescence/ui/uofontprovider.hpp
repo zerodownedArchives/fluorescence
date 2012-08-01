@@ -38,13 +38,13 @@ class UniFontLoader;
 }
 
 namespace ui {
-    
+
 class Texture;
-    
+
 class UoFontProvider : public CL_FontProvider {
 public:
     UoFontProvider(unsigned int unifontId);
-    
+
     virtual CL_FontMetrics get_font_metrics();
 
 public:
@@ -52,32 +52,24 @@ public:
 	virtual void draw_text(CL_GraphicContext &gc, float x, float y, const CL_StringRef &text, const CL_Colorf &color);
 	virtual CL_Size get_text_size(CL_GraphicContext &gc, const CL_StringRef &text);
 	virtual int get_character_index(CL_GraphicContext &gc, const CL_String &text, const CL_Point &point);
-    
+
 private:
     unsigned int unifontId_;
     static const unsigned int spaceWidth_ = 1;
     static const unsigned int borderWidth_ = 1;
-    
+
     boost::shared_ptr<data::UniFontLoader> fontLoader_;
-    
+
     void initFontMetrics();
     CL_FontMetrics fontMetrics_;
-    
-    
+
+
     boost::shared_ptr<ui::Texture> getTexture(CL_GraphicContext& gc, const CL_StringRef& text, const CL_Colorf& clcolor, unsigned int borderWidth = 1, const CL_Colorf& clborderColor = CL_Colorf::black);
     void applyBorder(CL_PixelBuffer pxBuf, const CL_Colorf& clcolor, unsigned int borderWidth, const CL_Colorf& clborderColor);
-    
-    
-    // keep the last HISTORY SIZE textures here in a ringbuffer to avoid rendering the fonts anew over and over again
-    boost::mutex historyMutex_;
-    static const unsigned int HISTORY_SIZE = 30;
-    unsigned int historyIndex_;
-    unsigned int historySize_;
-    std::pair<int32_t, boost::shared_ptr<ui::Texture> > textureHistory_[HISTORY_SIZE];
-    
+
     boost::shared_ptr<ui::Texture> findInHistory(const UnicodeString& str);
     void addToHistory(const UnicodeString& str, boost::shared_ptr<ui::Texture> tex);
-    
+
     uint32_t clToUintColor(const CL_Colorf& clcolor) const;
 };
 

@@ -805,6 +805,9 @@ bool XmlLoader::parseLineEdit(pugi::xml_node& node, pugi::xml_node& defaultNode,
     UnicodeString action = StringConverter::fromUtf8(getAttribute("action", node, defaultNode).value());
     UnicodeString fontName = StringConverter::fromUtf8(getAttribute("font", node, defaultNode).value());
     unsigned int fontHeight = getAttribute("font-height", node, defaultNode).as_uint();
+    std::string rgba = getAttribute("color", node, defaultNode).value();
+    unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
+    CL_Colorf color(rgba);
 
     components::LineEdit* edit = new components::LineEdit(parent);
     parseId(node, edit);
@@ -815,17 +818,26 @@ bool XmlLoader::parseLineEdit(pugi::xml_node& node, pugi::xml_node& defaultNode,
     if (password) {
         edit->setPasswordMode(true);
     }
-
     if (numeric) {
         edit->setNumericMode(true);
     }
-
     if (maxlength) {
         edit->setMaxLength(maxlength);
     }
 
     if (action.length() > 0) {
         edit->setAction(action);
+    }
+
+    // if the node has its own color or hue property, don't use the template values
+    if (node.attribute("color")) {
+        edit->setFontColor(color);
+    } else if (node.attribute("hue")) {
+        edit->setFontHue(hue);
+    } else if (rgba.length() > 0) {
+        edit->setFontColor(color);
+    } else {
+        edit->setFontHue(hue);
     }
 
     top->addToCurrentPage(edit);

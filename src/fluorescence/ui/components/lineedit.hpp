@@ -37,6 +37,8 @@ public:
     ~LineEdit();
 
     void setFont(const UnicodeString& fontName, unsigned int fontHeight);
+    void setFontColor(const CL_Colorf& color);
+    void setFontHue(unsigned int hue);
 
     void setText(const UnicodeString& string);
     UnicodeString getText();
@@ -58,6 +60,8 @@ private:
     unsigned int entryId_;
 
     CL_Font font_;
+    bool isUoFont_;
+    CL_Colorf fontColor_;
 
 
     // clanlib stuff
