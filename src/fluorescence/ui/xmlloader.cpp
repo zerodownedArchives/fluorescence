@@ -33,6 +33,7 @@
 #include "texture.hpp"
 #include "components/button.hpp"
 #include "components/scrollarea.hpp"
+#include "components/scrollbar.hpp"
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
 #include "components/clicklabel.hpp"
@@ -73,10 +74,13 @@ XmlLoader::XmlLoader() {
     functionTable_["sysloglabel"] = boost::bind(&XmlLoader::parseSysLogLabel, this, _1, _2, _3, _4);
     functionTable_["clicklabel"] = boost::bind(&XmlLoader::parseClickLabel, this, _1, _2, _3, _4);
     functionTable_["lineedit"] = boost::bind(&XmlLoader::parseLineEdit, this, _1, _2, _3, _4);
+    functionTable_["scrollarea"] = boost::bind(&XmlLoader::parseScrollArea, this, _1, _2, _3, _4);
+    functionTable_["repeat"] = boost::bind(&XmlLoader::parseRepeat, this, _1, _2, _3, _4);
 
     functionTable_["worldview"] = boost::bind(&XmlLoader::parseWorldView, this, _1, _2, _3, _4);
     functionTable_["paperdoll"] = boost::bind(&XmlLoader::parsePaperdoll, this, _1, _2, _3, _4);
     functionTable_["container"] = boost::bind(&XmlLoader::parseContainer, this, _1, _2, _3, _4);
+    functionTable_["warmodebutton"] = boost::bind(&XmlLoader::parseWarModeButton, this, _1, _2, _3, _4);
 
 
     functionTable_["tcombobox"] = boost::bind(&XmlLoader::parseTComboBox, this, _1, _2, _3, _4);
@@ -85,11 +89,7 @@ XmlLoader::XmlLoader() {
     functionTable_["ttabs"] = boost::bind(&XmlLoader::parseTTabs, this, _1, _2, _3, _4);
     functionTable_["tslider"] = boost::bind(&XmlLoader::parseTSlider, this, _1, _2, _3, _4);
     functionTable_["ttextedit"] = boost::bind(&XmlLoader::parseTTextEdit, this, _1, _2, _3, _4);
-    functionTable_["tscrollarea"] = boost::bind(&XmlLoader::parseTScrollArea, this, _1, _2, _3, _4);
-    functionTable_["repeat"] = boost::bind(&XmlLoader::parseRepeat, this, _1, _2, _3, _4);
     functionTable_["tbackground"] = boost::bind(&XmlLoader::parseTBackground, this, _1, _2, _3, _4);
-
-    functionTable_["warmodebutton"] = boost::bind(&XmlLoader::parseWarModeButton, this, _1, _2, _3, _4);
 }
 
 
@@ -323,15 +323,21 @@ bool XmlLoader::parseId(pugi::xml_node& node, CL_GUIComponent* component) {
     return true;
 }
 
-bool XmlLoader::parseMultiTextureImage(pugi::xml_node& node, pugi::xml_node& defaultNode, components::MultiTextureImage* img, unsigned int index) {
+boost::shared_ptr<ui::Texture> XmlLoader::parseTexture(pugi::xml_node& node, pugi::xml_node& defaultNode) {
     UnicodeString imgSource = StringConverter::fromUtf8(getAttribute("source", node, defaultNode).value());
     UnicodeString imgId = StringConverter::fromUtf8(getAttribute("id", node, defaultNode).value());
 
     boost::shared_ptr<ui::Texture> texture = data::Manager::getTexture(imgSource, imgId);
     texture->setUsage(ui::Texture::USAGE_GUMP);
 
+    return texture;
+}
+
+bool XmlLoader::parseMultiTextureImage(pugi::xml_node& node, pugi::xml_node& defaultNode, components::MultiTextureImage* img, unsigned int index) {
+    boost::shared_ptr<ui::Texture> texture = parseTexture(node, defaultNode);
+
     if (!texture) {
-        LOG_ERROR << "Unable to parse gump image, source=" << imgSource << " id=" << imgId << std::endl;
+        LOG_ERROR << "Unable to parse gump image, source=" << getAttribute("source", node, defaultNode) << " id=" << getAttribute("id", node, defaultNode) << std::endl;
         return false;
     }
 
@@ -370,11 +376,147 @@ bool XmlLoader::parseButtonText(pugi::xml_node& node, pugi::xml_node& defaultNod
     return true;
 }
 
+bool XmlLoader::parseScrollBarTextures(boost::shared_ptr<ui::Texture>* textures, CL_Colorf* colors, CL_Vec3f* hueInfos, pugi::xml_node& node, pugi::xml_node& defaultNode) {
+    pugi::xml_node normalNode = node.child("normal");
+    pugi::xml_node mouseOverNode = node.child("mouseover");
+    pugi::xml_node mouseDownNode = node.child("mousedown");
+
+    pugi::xml_node defaultNormalNode = defaultNode.child("normal");
+    pugi::xml_node defaultMouseOverNode = defaultNode.child("mouseover");
+    pugi::xml_node defaultMouseDownNode = defaultNode.child("mousedown");
+
+    if ((normalNode || defaultNormalNode) && (mouseOverNode || defaultMouseOverNode) && (mouseDownNode || defaultMouseDownNode)) {
+        textures[components::ScrollBar::TEX_INDEX_UP] = parseTexture(normalNode, defaultNormalNode);
+        hueInfos[components::ScrollBar::TEX_INDEX_UP][1u] = getAttribute("hue", normalNode, defaultNormalNode).as_uint();
+        std::string rgba = getAttribute("color", normalNode, defaultNormalNode).value();
+        if (rgba.length() > 0) {
+            colors[components::ScrollBar::TEX_INDEX_UP] = CL_Colorf(rgba);
+        }
+
+        textures[components::ScrollBar::TEX_INDEX_MOUSEOVER] = parseTexture(mouseOverNode, defaultMouseOverNode);
+        hueInfos[components::ScrollBar::TEX_INDEX_MOUSEOVER][1u] = getAttribute("hue", mouseOverNode, defaultMouseOverNode).as_uint();
+        rgba = getAttribute("color", mouseOverNode, defaultMouseOverNode).value();
+        if (rgba.length() > 0) {
+            colors[components::ScrollBar::TEX_INDEX_MOUSEOVER] = CL_Colorf(rgba);
+        }
+
+        textures[components::ScrollBar::TEX_INDEX_DOWN] = parseTexture(mouseDownNode, defaultMouseDownNode);
+        hueInfos[components::ScrollBar::TEX_INDEX_DOWN][1u] = getAttribute("hue", mouseDownNode, defaultMouseDownNode).as_uint();
+        rgba = getAttribute("color", mouseDownNode, defaultMouseDownNode).value();
+        if (rgba.length() > 0) {
+            colors[components::ScrollBar::TEX_INDEX_DOWN] = CL_Colorf(rgba);
+        }
+    } else {
+        LOG_ERROR << "Scrollbar needs definitions for normal, mouseover and mousedown textures for all components" << std::endl;
+        return false;
+    }
+
+    if (!textures[components::ScrollBar::TEX_INDEX_UP] || !textures[components::ScrollBar::TEX_INDEX_MOUSEOVER] || !textures[components::ScrollBar::TEX_INDEX_DOWN]) {
+        LOG_ERROR << "Invalid scrollbar texture (texture not found)" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool XmlLoader::parseScrollBar(components::ScrollBar* bar, components::ScrollArea* parent, bool vertical, pugi::xml_node node, pugi::xml_node defaultNode) {
+    static std::string visibilityAlways("always");
+    static std::string visibilityNever("never");
+    static std::string visibilityOnDemand("ondemand");
+
+    std::string visibility = getAttribute("visible", node, defaultNode).value();
+    if (visibility.length() > 0) {
+        if (visibility == visibilityAlways) {
+            bar->setVisibility(components::ScrollBar::VISIBLE_ALWAYS);
+        } else if (visibility == visibilityNever) {
+            bar->setVisibility(components::ScrollBar::VISIBLE_NEVER);
+        } else if (visibility == visibilityOnDemand) {
+            bar->setVisibility(components::ScrollBar::VISIBLE_ON_DEMAND);
+        } else {
+            LOG_ERROR << "Unknown scrollbar visibility: " << visibility << ". Possible values: always/never/ondemand" << std::endl;
+            return false;
+        }
+    }
+
+    // don't bother parsing if it is not visible anyway
+    if (bar->getVisibility() == components::ScrollBar::VISIBLE_NEVER) {
+        return true;
+    }
+
+    if (vertical) {
+        unsigned int width = getAttribute("width", node, defaultNode).as_uint();
+        if (width == 0) {
+            LOG_ERROR << "Vertical scrollbar without width is not possible" << std::endl;
+            return false;
+        }
+        // only need to set the final width here, position and height is calculated in scrollarea
+        bar->set_geometry(CL_Rectf(0, 0, CL_Sizef(width, 1)));
+    } else {
+        unsigned int height = getAttribute("height", node, defaultNode).as_uint();
+        if (height == 0) {
+            LOG_ERROR << "Horizontal scrollbar without height is not possible" << std::endl;
+            return false;
+        }
+        // only need to set the final height here, position and width is calculated in scrollarea
+        bar->set_geometry(CL_Rectf(0, 0, CL_Sizef(1, height)));
+    }
+
+    pugi::xml_node thumbNode = node.child("thumb");
+    pugi::xml_node defaultThumbNode = defaultNode.child("thumb");
+    if (thumbNode || defaultThumbNode) {
+        if (!parseScrollBarTextures(bar->thumbTextures_, bar->thumbColors_, bar->thumbHueInfos_, thumbNode, defaultThumbNode)) {
+            LOG_ERROR << "Error parsing scrollbar thumb" << std::endl;
+            return false;
+        }
+    } else {
+        LOG_ERROR << "No thumb node given for scrollbar" << std::endl;
+        return false;
+    }
+
+    pugi::xml_node incNode = node.child("increment");
+    pugi::xml_node defaultIncNode = defaultNode.child("increment");
+    if (incNode || defaultIncNode) {
+        if (!parseScrollBarTextures(bar->incrementTextures_, bar->incrementColors_, bar->incrementHueInfos_, incNode, defaultIncNode)) {
+            LOG_ERROR << "Error parsing scrollbar increment" << std::endl;
+            return false;
+        }
+    } else {
+        LOG_ERROR << "No increment node given for scrollbar" << std::endl;
+        return false;
+    }
+
+    pugi::xml_node decNode = node.child("decrement");
+    pugi::xml_node defaultDecNode = defaultNode.child("decrement");
+    if (decNode || defaultDecNode) {
+        if (!parseScrollBarTextures(bar->decrementTextures_, bar->decrementColors_, bar->decrementHueInfos_, decNode, defaultDecNode)) {
+            LOG_ERROR << "Error parsing scrollbar decrement" << std::endl;
+            return false;
+        }
+    } else {
+        LOG_ERROR << "No decrement node given for scrollbar" << std::endl;
+        return false;
+    }
+
+    pugi::xml_node trackNode = node.child("track");
+    pugi::xml_node defaultTrackNode = defaultNode.child("track");
+    if (trackNode || defaultTrackNode) {
+        bar->trackTexture_ = parseTexture(trackNode, defaultTrackNode);
+        bar->trackHueInfo_[1u] = getAttribute("hue", trackNode, defaultTrackNode).as_uint();
+        std::string rgba = getAttribute("color", trackNode, defaultTrackNode).value();
+        if (rgba.length() > 0) {
+            bar->trackColor_ = CL_Colorf(rgba);
+        }
+    } else {
+        LOG_ERROR << "No track node given for scrollbar" << std::endl;
+        return false;
+    }
+
+
+    return true;
+}
+
 
 bool XmlLoader::parseImage(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    UnicodeString imgSource = StringConverter::fromUtf8(getAttribute("source", node, defaultNode).value());
-    UnicodeString imgId = StringConverter::fromUtf8(getAttribute("id", node, defaultNode).value());
-
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
 
     unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
@@ -386,11 +528,9 @@ bool XmlLoader::parseImage(pugi::xml_node& node, pugi::xml_node& defaultNode, CL
     components::Image* img = new components::Image(parent);
     parseId(node, img);
 
-    boost::shared_ptr<ui::Texture> texture = data::Manager::getTexture(imgSource, imgId);
-    texture->setUsage(ui::Texture::USAGE_GUMP);
-
+    boost::shared_ptr<ui::Texture> texture = parseTexture(node, defaultNode);
     if (!texture) {
-        LOG_ERROR << "Unable to parse gump image, source=" << imgSource << " imgid=" << imgId << std::endl;
+        LOG_ERROR << "Unable to parse gump image, source=" << getAttribute("source", node, defaultNode) << " id=" << getAttribute("id", node, defaultNode) << std::endl;
         return false;
     }
 
@@ -844,6 +984,39 @@ bool XmlLoader::parseLineEdit(pugi::xml_node& node, pugi::xml_node& defaultNode,
     return true;
 }
 
+bool XmlLoader::parseScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+
+    components::ScrollArea* area = new components::ScrollArea(parent);
+    parseId(node, area);
+    area->set_geometry(bounds);
+
+    parseScrollBar(area->getVerticalScrollBar(), area, true, node.child("vscroll"), defaultNode.child("vscroll"));
+    parseScrollBar(area->getHorizontalScrollBar(), area, false, node.child("hscroll"), defaultNode.child("hscroll"));
+
+    unsigned int hLineStep = node.attribute("hstep").as_uint();
+    unsigned int hPageStep = node.attribute("hpage").as_uint();
+    unsigned int vLineStep = node.attribute("vstep").as_uint();
+    unsigned int vPageStep = node.attribute("vpage").as_uint();
+    unsigned int marginLeft = node.attribute("marginleft").as_uint();
+    unsigned int marginBottom = node.attribute("marginbottom").as_uint();
+
+    top->addToCurrentPage(area);
+
+    pugi::xml_node contentNode = node.child("content");
+    if (contentNode) {
+        parseChildren(contentNode, area->getClientArea(), top);
+    } else {
+        LOG_ERROR << "No content node in scrollarea" << std::endl;
+    }
+
+    area->updateScrollbars(area->getVerticalScrollBar()->getVisibility(), area->getHorizontalScrollBar()->getVisibility(),
+            vPageStep, hPageStep, vLineStep, hLineStep, marginLeft, marginBottom);
+    area->setupResizeHandler();
+
+    return true;
+}
+
 
 bool XmlLoader::parseWorldView(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
@@ -871,6 +1044,68 @@ bool XmlLoader::parseContainer(pugi::xml_node& node, pugi::xml_node& defaultNode
 
     return true;
 }
+
+bool XmlLoader::parseWarModeButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+
+    components::WarModeButton* button = new components::WarModeButton(parent);
+    parseId(node, button);
+
+    pugi::xml_node normalNode = node.child("normal");
+    pugi::xml_node mouseOverNode = node.child("mouseover");
+    pugi::xml_node mouseDownNode = node.child("mousedown");
+
+    pugi::xml_node defaultNormalNode = defaultNode.child("normal");
+    pugi::xml_node defaultMouseOverNode = defaultNode.child("mouseover");
+    pugi::xml_node defaultMouseDownNode = defaultNode.child("mousedown");
+
+    if (normalNode || defaultNormalNode) {
+        parseMultiTextureImage(normalNode, defaultNormalNode, button, components::WarModeButton::TEX_INDEX_UP);
+    } else {
+        LOG_ERROR << "Normal image for warmode button not defined" << std::endl;
+        return false;
+    }
+
+    if (mouseOverNode || defaultMouseOverNode) {
+        parseMultiTextureImage(mouseOverNode, defaultMouseOverNode, button, components::WarModeButton::TEX_INDEX_MOUSEOVER);
+    }
+    if (mouseDownNode || defaultMouseDownNode) {
+        parseMultiTextureImage(mouseDownNode, defaultMouseDownNode, button, components::WarModeButton::TEX_INDEX_DOWN);
+    }
+
+
+    pugi::xml_node warmodeNormalNode = node.child("warmode-normal");
+    pugi::xml_node warmodeMouseOverNode = node.child("warmode-mouseover");
+    pugi::xml_node warmodeMouseDownNode = node.child("warmode-mousedown");
+
+    pugi::xml_node warmodeDefaultNormalNode = defaultNode.child("warmode-normal");
+    pugi::xml_node warmodeDefaultMouseOverNode = defaultNode.child("warmode-mouseover");
+    pugi::xml_node warmodeDefaultMouseDownNode = defaultNode.child("warmode-mousedown");
+
+    if (warmodeNormalNode || warmodeDefaultNormalNode) {
+        parseMultiTextureImage(warmodeNormalNode, warmodeDefaultNormalNode, button, components::WarModeButton::WARMODE_TEX_INDEX_UP);
+    }
+    if (warmodeMouseOverNode || warmodeDefaultMouseOverNode) {
+        parseMultiTextureImage(warmodeMouseOverNode, warmodeDefaultMouseOverNode, button, components::WarModeButton::WARMODE_TEX_INDEX_MOUSEOVER);
+    }
+    if (warmodeMouseDownNode || warmodeDefaultMouseDownNode) {
+        parseMultiTextureImage(warmodeMouseDownNode, warmodeDefaultMouseDownNode, button, components::WarModeButton::WARMODE_TEX_INDEX_DOWN);
+    }
+
+    if (bounds.get_width() == 0 || bounds.get_height() == 0) {
+        button->setAutoResize(true);
+        bounds.set_width(1);
+        bounds.set_height(1);
+    }
+
+    button->updateTexture();
+
+    button->set_geometry(bounds);
+
+    top->addToCurrentPage(button);
+    return true;
+}
+
 
 
 
@@ -1181,67 +1416,6 @@ bool XmlLoader::parseTTextEdit(pugi::xml_node& node, pugi::xml_node& defaultNode
     return false;
 }
 
-
-bool XmlLoader::parseTScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    std::string hVisibilityStr = node.attribute("hvisible").value();
-    std::string vVisibilityStr = node.attribute("vvisible").value();
-
-    static std::string visibilityAlways("always");
-    static std::string visibilityNever("never");
-    static std::string visibilityOnDemand("ondemand");
-
-    unsigned int hVisibility = components::ScrollArea::VISIBLE_ON_DEMAND;
-    if (hVisibilityStr.length() > 0) {
-        if (hVisibilityStr == visibilityAlways) {
-            hVisibility = components::ScrollArea::VISIBLE_ALWAYS;
-        } else if (hVisibilityStr == visibilityNever) {
-            hVisibility = components::ScrollArea::VISIBLE_NEVER;
-        } else if (hVisibilityStr == visibilityOnDemand) {
-            hVisibility = components::ScrollArea::VISIBLE_ON_DEMAND;
-        } else {
-            LOG_ERROR << "Unknown scrollbar hvisibility: " << hVisibilityStr << ". Possible values: always/never/ondemand" << std::endl;
-            return false;
-        }
-    }
-
-    unsigned int vVisibility = components::ScrollArea::VISIBLE_ON_DEMAND;
-    if (vVisibilityStr.length() > 0) {
-        if (vVisibilityStr == visibilityAlways) {
-            vVisibility = components::ScrollArea::VISIBLE_ALWAYS;
-        } else if (vVisibilityStr == visibilityNever) {
-            vVisibility = components::ScrollArea::VISIBLE_NEVER;
-        } else if (vVisibilityStr == visibilityOnDemand) {
-            vVisibility = components::ScrollArea::VISIBLE_ON_DEMAND;
-        } else {
-            LOG_ERROR << "Unknown scrollbar vvisibility: " << vVisibilityStr << ". Possible values: always/never/ondemand" << std::endl;
-            return false;
-        }
-    }
-
-
-    components::ScrollArea* area = new components::ScrollArea(parent);
-    parseId(node, area);
-    area->set_geometry(bounds);
-
-    unsigned int hLineStep = node.attribute("hstep").as_uint();
-    unsigned int hPageStep = node.attribute("hpage").as_uint();
-    unsigned int vLineStep = node.attribute("vstep").as_uint();
-    unsigned int vPageStep = node.attribute("vpage").as_uint();
-    unsigned int marginLeft = node.attribute("marginleft").as_uint();
-    unsigned int marginBottom = node.attribute("marginbottom").as_uint();
-
-    top->addToCurrentPage(area);
-
-    parseChildren(node, area->getClientArea(), top);
-
-    area->updateScrollbars(vVisibility, hVisibility, vPageStep, hPageStep, vLineStep, hLineStep, marginLeft, marginBottom);
-    area->setupResizeHandler();
-
-    return true;
-}
-
-
 bool XmlLoader::parseTBackground(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
 
@@ -1252,60 +1426,6 @@ bool XmlLoader::parseTBackground(pugi::xml_node& node, pugi::xml_node& defaultNo
     top->addToCurrentPage(bg);
     return true;
 }
-
-bool XmlLoader::parseWarModeButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-
-    components::WarModeButton* button = new components::WarModeButton(parent);
-    parseId(node, button);
-
-    pugi::xml_node normalNode = node.child("normal");
-    pugi::xml_node mouseOverNode = node.child("mouseover");
-    pugi::xml_node mouseDownNode = node.child("mousedown");
-
-    if (normalNode) {
-        parseMultiTextureImage(normalNode, normalNode, button, components::WarModeButton::TEX_INDEX_UP);
-    } else {
-        LOG_ERROR << "Normal image for warmode button not defined" << std::endl;
-        return false;
-    }
-
-    if (mouseOverNode) {
-        parseMultiTextureImage(mouseOverNode, mouseOverNode, button, components::WarModeButton::TEX_INDEX_MOUSEOVER);
-    }
-    if (mouseDownNode) {
-        parseMultiTextureImage(mouseDownNode, mouseDownNode, button, components::WarModeButton::TEX_INDEX_DOWN);
-    }
-
-
-    pugi::xml_node warmodeNormalNode = node.child("warmode-normal");
-    pugi::xml_node warmodeMouseOverNode = node.child("warmode-mouseover");
-    pugi::xml_node warmodeMouseDownNode = node.child("warmode-mousedown");
-
-    if (warmodeNormalNode) {
-        parseMultiTextureImage(warmodeNormalNode, warmodeNormalNode, button, components::WarModeButton::WARMODE_TEX_INDEX_UP);
-    }
-    if (warmodeMouseOverNode) {
-        parseMultiTextureImage(warmodeMouseOverNode, warmodeNormalNode, button, components::WarModeButton::WARMODE_TEX_INDEX_MOUSEOVER);
-    }
-    if (warmodeMouseDownNode) {
-        parseMultiTextureImage(warmodeMouseDownNode, warmodeMouseDownNode, button, components::WarModeButton::WARMODE_TEX_INDEX_DOWN);
-    }
-
-    if (bounds.get_width() == 0 || bounds.get_height() == 0) {
-        button->setAutoResize(true);
-        bounds.set_width(1);
-        bounds.set_height(1);
-    }
-
-    button->updateTexture();
-
-    button->set_geometry(bounds);
-
-    top->addToCurrentPage(button);
-    return true;
-}
-
 
 }
 }

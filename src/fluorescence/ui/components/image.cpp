@@ -172,8 +172,12 @@ bool Image::has_pixel(const CL_Point& p) const {
     int py = p.y;
 
     if (tiled_) {
-        px %= tileableTexture_.get_width();
-        py %= tileableTexture_.get_height();
+        if (tileableTexture_.is_null()) {
+            return false;
+        } else {
+            px %= tileableTexture_.get_width();
+            py %= tileableTexture_.get_height();
+        }
     } else {
         float stretchHori = (float)get_width() / texture_->getWidth();
         float stretchVert = (float)get_height() / texture_->getHeight();

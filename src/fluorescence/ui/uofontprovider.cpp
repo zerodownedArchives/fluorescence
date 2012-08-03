@@ -90,10 +90,10 @@ int UoFontProvider::get_character_index(CL_GraphicContext& gc, const CL_String& 
     //LOG_DEBUG << "get_char_index: " << point.x << "/" << point.y << std::endl;
 
     int curX = 0;
-	int curY = 0;
+    int curY = 0;
 
-	CL_FontMetrics fm = get_font_metrics();
-	int lineHeight = fontLoader_->getMaxHeight() + fm.get_external_leading();
+    CL_FontMetrics fm = get_font_metrics();
+    int lineHeight = fontLoader_->getMaxHeight() + fm.get_external_leading();
 
     int lineIdx = point.y / lineHeight; // char should be in this line
     int targetYMin = lineHeight * lineIdx;
@@ -125,7 +125,7 @@ int UoFontProvider::get_character_index(CL_GraphicContext& gc, const CL_String& 
         ++p;
     }
 
-	return -1;	// Not found
+    return -1; // Not found
 }
 
 void UoFontProvider::initFontMetrics() {

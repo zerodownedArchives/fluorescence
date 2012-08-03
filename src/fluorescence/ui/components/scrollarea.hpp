@@ -20,23 +20,21 @@
 #ifndef FLUO_UI_SCROLLAREA_HPP
 #define FLUO_UI_SCROLLAREA_HPP
 
-#include <ClanLib/gui.h>
+#include <ui/gumpcomponent.hpp>
 
 namespace fluo {
 namespace ui {
 namespace components {
 
-class ScrollArea : public CL_GUIComponent {
-public:
-    static const unsigned int VISIBLE_ON_DEMAND = 0;
-    static const unsigned int VISIBLE_ALWAYS = 1;
-    static const unsigned int VISIBLE_NEVER = 2;
+class ScrollBar;
 
+class ScrollArea : public GumpComponent {
+public:
     ScrollArea(CL_GUIComponent* parent);
 
-    CL_GUIComponent* getClientArea();
-    CL_ScrollBar* getVerticalScrollBar();
-    CL_ScrollBar* getHorizontalScrollBar();
+    GumpComponent* getClientArea();
+    ScrollBar* getVerticalScrollBar();
+    ScrollBar* getHorizontalScrollBar();
 
     /**
      * \brief Calculate scroll bar visibility and parameters
@@ -47,24 +45,24 @@ public:
             unsigned int verticalPageStep, unsigned int horizontalPageStep,
             unsigned int verticalLineStep, unsigned int horizontalLineStep,
             unsigned int marginLeft, unsigned int marginBottom);
-            
+
     // update scrollbars again, using the same parameters as the last call
     void updateScrollbars();
-    
+
     // whenever a child component is resized, the scroll area has to be notified (and possibly change scrollbars)
     void setupResizeHandler();
     void onChildComponentResized();
 
 private:
-    CL_ScrollBar* verticalScrollBar_;
-    CL_ScrollBar* horizontalScrollBar_;
+    ScrollBar* verticalScrollBar_;
+    ScrollBar* horizontalScrollBar_;
 
-    CL_GUIComponent* clientArea_;
+    GumpComponent* clientArea_;
 
     int lastScrollVertical_;
     int lastScrollHorizontal_;
     void onScroll();
-    
+
     unsigned int verticalVisibility_;
     unsigned int horizontalVisibility_;
     unsigned int verticalPageStep_;

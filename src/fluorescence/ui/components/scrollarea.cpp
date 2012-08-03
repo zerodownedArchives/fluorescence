@@ -20,35 +20,37 @@
 
 #include "scrollarea.hpp"
 
+#include "scrollbar.hpp"
+
 #include <misc/log.hpp>
 
 namespace fluo {
 namespace ui {
 namespace components {
 
-ScrollArea::ScrollArea(CL_GUIComponent* parent) : CL_GUIComponent(parent), lastScrollVertical_(0), lastScrollHorizontal_(0) {
-    horizontalScrollBar_ = new CL_ScrollBar(this);
+ScrollArea::ScrollArea(CL_GUIComponent* parent) : GumpComponent(parent), lastScrollVertical_(0), lastScrollHorizontal_(0) {
+    horizontalScrollBar_ = new ScrollBar(this);
     horizontalScrollBar_->set_horizontal();
     horizontalScrollBar_->set_position(0);
     horizontalScrollBar_->func_scroll().set(this, &ScrollArea::onScroll);
 
-    verticalScrollBar_ = new CL_ScrollBar(this);
+    verticalScrollBar_ = new ScrollBar(this);
     verticalScrollBar_->set_vertical();
     verticalScrollBar_->set_position(0);
     verticalScrollBar_->func_scroll().set(this, &ScrollArea::onScroll);
 
-    clientArea_ = new CL_GUIComponent(this);
+    clientArea_ = new GumpComponent(this);
 }
 
-CL_ScrollBar* ScrollArea::getVerticalScrollBar() {
+ScrollBar* ScrollArea::getVerticalScrollBar() {
     return verticalScrollBar_;
 }
 
-CL_ScrollBar* ScrollArea::getHorizontalScrollBar() {
+ScrollBar* ScrollArea::getHorizontalScrollBar() {
     return horizontalScrollBar_;
 }
 
-CL_GUIComponent* ScrollArea::getClientArea() {
+GumpComponent* ScrollArea::getClientArea() {
     return clientArea_;
 }
 
@@ -101,34 +103,34 @@ void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int 
     // this has to run twice, because the visibility of one scrollbar affects the other
     for (unsigned int i = 0; i < 2; ++i) {
         switch (verticalVisibility) {
-        case VISIBLE_ALWAYS:
+        case ScrollBar::VISIBLE_ALWAYS:
             vVisible = true;
             break;
-        case VISIBLE_NEVER:
+        case ScrollBar::VISIBLE_NEVER:
             vVisible = false;
             break;
-        case VISIBLE_ON_DEMAND:
+        case ScrollBar::VISIBLE_ON_DEMAND:
             vVisible = viewSizeHeight < childHeight;
             break;
         }
 
         switch (horizontalVisibility) {
-        case VISIBLE_ALWAYS:
+        case ScrollBar::VISIBLE_ALWAYS:
             hVisible = true;
             break;
-        case VISIBLE_NEVER:
+        case ScrollBar::VISIBLE_NEVER:
             hVisible = false;
             break;
-        case VISIBLE_ON_DEMAND:
+        case ScrollBar::VISIBLE_ON_DEMAND:
             hVisible = viewSizeWidth < childWidth;
             break;
         }
 
         if (vVisible) {
-            unsigned int vWidth = verticalScrollBar_->get_preferred_width();
+            unsigned int vWidth = verticalScrollBar_->get_width();
             unsigned int vHeight = get_height();
             if (hVisible) {
-                vHeight -= horizontalScrollBar_->get_preferred_height();
+                vHeight -= horizontalScrollBar_->get_height();
             }
             unsigned int vX = get_width() - vWidth;
             unsigned int vY = 0;
@@ -141,9 +143,9 @@ void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int 
         if (hVisible) {
             unsigned int hWidth = get_width();
             if (vVisible) {
-                hWidth -= verticalScrollBar_->get_preferred_width();
+                hWidth -= verticalScrollBar_->get_width();
             }
-            unsigned int hHeight = horizontalScrollBar_->get_preferred_height();
+            unsigned int hHeight = horizontalScrollBar_->get_height();
             unsigned int hX = 0;
             unsigned int hY = get_height() - hHeight;
 
@@ -204,7 +206,7 @@ void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int 
             verticalScrollBar_->set_enabled(true);
         }
     }
-    
+
     // save parameters for next call
     verticalVisibility_ = verticalVisibility;
     horizontalVisibility_ = horizontalVisibility;

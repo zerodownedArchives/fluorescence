@@ -51,4 +51,40 @@
     <lineedit font="unifont1" font-height="12" color="#000000" />
 </template>
 
+<template name="warmodebutton" default="1">
+    <warmodebutton>
+        <normal source="gumpart" id="2021" />
+        <mouseover source="gumpart" id="2023" />
+        <mousedown source="gumpart" id="2022" />
+
+        <warmode-normal source="gumpart" id="2024" />
+        <warmode-mouseover source="gumpart" id="2026" />
+        <warmode-mousedown source="gumpart" id="2025" />
+    </warmodebutton>
+</template>
+
+<template name="scrollarea" default="1">
+    <scrollarea>
+        <vscroll width="15" visible="ondemand">
+            <thumb>
+                <normal source="gumpart" id="254" />
+                <mouseover source="gumpart" id="254" />
+                <mousedown source="gumpart" id="254" />
+            </thumb>
+            <increment>
+                <normal source="gumpart" id="250" />
+                <mouseover source="gumpart" id="250" />
+                <mousedown source="gumpart" id="251" />
+            </increment>
+            <decrement>
+                <normal source="gumpart" id="252" />
+                <mouseover source="gumpart" id="252" />
+                <mousedown source="gumpart" id="253" />
+            </decrement>
+            <track source="gumpart" id="255" />
+        </vscroll>
+        <hscroll visible="never" />
+    </scrollarea>
+</template>
+
 </templates>
