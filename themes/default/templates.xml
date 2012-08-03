@@ -72,14 +72,14 @@
                 <mousedown source="gumpart" id="254" />
             </thumb>
             <increment>
-                <normal source="gumpart" id="250" />
-                <mouseover source="gumpart" id="250" />
-                <mousedown source="gumpart" id="251" />
+                <normal source="gumpart" id="253" />
+                <mouseover source="gumpart" id="253" />
+                <mousedown source="gumpart" id="252" />
             </increment>
             <decrement>
-                <normal source="gumpart" id="252" />
-                <mouseover source="gumpart" id="252" />
-                <mousedown source="gumpart" id="253" />
+                <normal source="gumpart" id="251" />
+                <mouseover source="gumpart" id="251" />
+                <mousedown source="gumpart" id="250" />
             </decrement>
             <track source="gumpart" id="255" />
         </vscroll>
