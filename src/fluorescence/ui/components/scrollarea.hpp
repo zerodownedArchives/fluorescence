@@ -41,10 +41,7 @@ public:
      * \param verticalPageStep 0 for auto, value to control vertical page step size directly
      * \param horizontalPageStep 0 for auto, value to control horizontal page step size directly
      */
-    void updateScrollbars(unsigned int verticalVisibility, unsigned int horizontalVisibility,
-            unsigned int verticalPageStep, unsigned int horizontalPageStep,
-            unsigned int verticalLineStep, unsigned int horizontalLineStep,
-            unsigned int marginLeft, unsigned int marginBottom);
+    void updateScrollbars(unsigned int marginLeft, unsigned int marginBottom);
 
     // update scrollbars again, using the same parameters as the last call
     void updateScrollbars();
@@ -63,12 +60,6 @@ private:
     int lastScrollHorizontal_;
     void onScroll();
 
-    unsigned int verticalVisibility_;
-    unsigned int horizontalVisibility_;
-    unsigned int verticalPageStep_;
-    unsigned int horizontalPageStep_;
-    unsigned int verticalLineStep_;
-    unsigned int horizontalLineStep_;
     unsigned int marginLeft_;
     unsigned int marginBottom_;
 };

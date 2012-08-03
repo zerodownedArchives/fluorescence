@@ -511,6 +511,15 @@ bool XmlLoader::parseScrollBar(components::ScrollBar* bar, components::ScrollAre
         return false;
     }
 
+    //unsigned int lineStep = node.attribute("linestep").as_uint();
+    //unsigned int pageStep = node.attribute("pagestep").as_uint();
+
+    //if (lineStep > 0) {
+        //bar->set_line_step(lineStep);
+    //}
+    //if (pageStep > 0) {
+        //bar->set_page_step(pageStep);
+    //}
 
     return true;
 }
@@ -994,10 +1003,6 @@ bool XmlLoader::parseScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNod
     parseScrollBar(area->getVerticalScrollBar(), area, true, node.child("vscroll"), defaultNode.child("vscroll"));
     parseScrollBar(area->getHorizontalScrollBar(), area, false, node.child("hscroll"), defaultNode.child("hscroll"));
 
-    unsigned int hLineStep = node.attribute("hstep").as_uint();
-    unsigned int hPageStep = node.attribute("hpage").as_uint();
-    unsigned int vLineStep = node.attribute("vstep").as_uint();
-    unsigned int vPageStep = node.attribute("vpage").as_uint();
     unsigned int marginLeft = node.attribute("marginleft").as_uint();
     unsigned int marginBottom = node.attribute("marginbottom").as_uint();
 
@@ -1010,8 +1015,7 @@ bool XmlLoader::parseScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNod
         LOG_ERROR << "No content node in scrollarea" << std::endl;
     }
 
-    area->updateScrollbars(area->getVerticalScrollBar()->getVisibility(), area->getHorizontalScrollBar()->getVisibility(),
-            vPageStep, hPageStep, vLineStep, hLineStep, marginLeft, marginBottom);
+    area->updateScrollbars(marginLeft, marginBottom);
     area->setupResizeHandler();
 
     return true;

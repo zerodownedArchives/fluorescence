@@ -1,8 +1,16 @@
 <?xml version="1.0"?>
 <templates>
 
-<template name="background" default="1">
+<template name="greybackground" default="1">
     <background x="0" y="0" gumpid="2600"/>
+</template>
+
+<template name="blackbackground">
+    <background x="0" y="0" gumpid="2620" />
+</template>
+
+<template name="thingreybackground">
+    <background x="0" y="0" gumpid="3000" />
 </template>
 
 <template name="button" font="unifont0" font-size="12" default="1" font-align="center">
@@ -83,7 +91,6 @@
             </decrement>
             <track source="gumpart" id="255" />
         </vscroll>
-        <hscroll visible="never" />
     </scrollarea>
 </template>
 

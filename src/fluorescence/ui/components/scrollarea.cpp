@@ -55,19 +55,10 @@ GumpComponent* ScrollArea::getClientArea() {
 }
 
 void ScrollArea::updateScrollbars() {
-    updateScrollbars(
-            verticalVisibility_, horizontalVisibility_,
-            verticalPageStep_, horizontalPageStep_,
-            verticalLineStep_, horizontalLineStep_,
-            marginLeft_, marginBottom_
-    );
+    updateScrollbars(marginLeft_, marginBottom_);
 }
 
-void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int horizontalVisibility,
-        unsigned int verticalPageStep, unsigned int horizontalPageStep,
-        unsigned int verticalLineStep, unsigned int horizontalLineStep,
-        unsigned int marginLeft, unsigned int marginBottom) {
-
+void ScrollArea::updateScrollbars(unsigned int marginLeft, unsigned int marginBottom) {
     horizontalScrollBar_->set_min(0);
     verticalScrollBar_->set_min(0);
 
@@ -102,7 +93,7 @@ void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int 
 
     // this has to run twice, because the visibility of one scrollbar affects the other
     for (unsigned int i = 0; i < 2; ++i) {
-        switch (verticalVisibility) {
+        switch (verticalScrollBar_->getVisibility()) {
         case ScrollBar::VISIBLE_ALWAYS:
             vVisible = true;
             break;
@@ -114,7 +105,7 @@ void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int 
             break;
         }
 
-        switch (horizontalVisibility) {
+        switch (horizontalScrollBar_->getVisibility()) {
         case ScrollBar::VISIBLE_ALWAYS:
             hVisible = true;
             break;
@@ -160,60 +151,11 @@ void ScrollArea::updateScrollbars(unsigned int verticalVisibility, unsigned int 
     horizontalScrollBar_->calculate_ranges(viewSizeWidth, childWidth);
     verticalScrollBar_->calculate_ranges(viewSizeHeight, childHeight);
 
-
-    // overwrite values if parameter was given
-    if (verticalPageStep) {
-        verticalScrollBar_->set_page_step(verticalPageStep);
-    }
-
-    if (horizontalPageStep) {
-        horizontalScrollBar_->set_page_step(horizontalPageStep);
-    }
-
-    if (verticalLineStep) {
-        verticalScrollBar_->set_line_step(verticalLineStep);
-    } else {
-        int lineStep = verticalScrollBar_->get_page_step() / 10;
-        lineStep = (std::max)(1, lineStep);
-        verticalScrollBar_->set_line_step(lineStep);
-    }
-
-    if (horizontalLineStep) {
-        horizontalScrollBar_->set_line_step(horizontalLineStep);
-    } else {
-        int lineStep = horizontalScrollBar_->get_page_step() / 10;
-        lineStep = (std::max)(1, lineStep);
-        horizontalScrollBar_->set_line_step(lineStep);
-    }
-
     clientArea_->set_clip_children(true);
     verticalScrollBar_->set_visible(vVisible);
     horizontalScrollBar_->set_visible(hVisible);
 
-    // if scrollbar is visible but not needed, disable
-    if (hVisible) {
-        if (childWidth <= viewSizeWidth) {
-            horizontalScrollBar_->set_enabled(false);
-        } else {
-            horizontalScrollBar_->set_enabled(true);
-        }
-    }
-
-    if (vVisible) {
-        if (childHeight <= viewSizeHeight) {
-            verticalScrollBar_->set_enabled(false);
-        } else {
-            verticalScrollBar_->set_enabled(true);
-        }
-    }
-
     // save parameters for next call
-    verticalVisibility_ = verticalVisibility;
-    horizontalVisibility_ = horizontalVisibility;
-    verticalPageStep_ = verticalPageStep;
-    horizontalPageStep_ = horizontalPageStep;
-    verticalLineStep_ = verticalLineStep;
-    horizontalLineStep_ = horizontalLineStep;
     marginLeft_ = marginLeft;
     marginBottom_ = marginBottom;
 }

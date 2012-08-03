@@ -57,14 +57,18 @@
 #include <ClanLib/Display/2D/draw.h>
 #include <ClanLib/Display/Render/texture.h>
 
+#include <data/manager.hpp>
+#include <data/huesloader.hpp>
 #include <misc/log.hpp>
+#include <ui/manager.hpp>
+#include <ui/render/shadermanager.hpp>
 
 namespace fluo {
 namespace ui {
 namespace components {
 
 ScrollBar::ScrollBar(CL_GUIComponent* parent) : GumpComponent(parent),
-    incrementIndex_(0), decrementIndex_(0), thumbIndex_(0), visibility_(VISIBLE_ON_DEMAND),
+    incrementIndex_(0), decrementIndex_(0), thumbIndex_(0), shaderInitialized_(false), visibility_(VISIBLE_ON_DEMAND),
     vertical(false), scroll_min(0), scroll_max(1), line_step(1),
     page_step(10), position(0), mouse_down_mode(mouse_down_none),
     thumb_start_position(0), thumb_start_pixel_position(0) {
@@ -110,6 +114,132 @@ void ScrollBar::setVisibility(unsigned int vis) {
 
 unsigned int ScrollBar::getVisibility() const {
     return visibility_;
+}
+
+void ScrollBar::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
+    if (!incrementTextures_[incrementIndex_]->isReadComplete() ||
+            !decrementTextures_[decrementIndex_]->isReadComplete() ||
+            !thumbTextures_[thumbIndex_]->isReadComplete() ||
+            !trackTexture_->isReadComplete()) {
+        request_repaint();
+        return;
+    }
+
+    CL_Rectf centeredTrack(
+            (get_width() - trackTexture_->getWidth()) / 2, rect_track_decrement.top,
+            CL_Sizef(trackTexture_->getWidth(), trackTexture_->getHeight())
+    );
+    CL_Rectf trackTexCoords = trackTexture_->getNormalizedTextureCoords();
+    if (trackHueInfo_[1u] == 0) {
+        if (vertical) {
+            while (centeredTrack.bottom <= rect_button_increment.top) {
+                renderTexture(gc, trackTexture_.get(), centeredTrack,
+                        trackColor_, trackHueInfo_);
+                centeredTrack.translate(0, trackTexture_->getHeight() - 1);
+            }
+
+            // draw rest
+            int heightLeft = centeredTrack.bottom - rect_button_increment.top;
+            float factor = heightLeft / centeredTrack.get_height();
+            centeredTrack.bottom = (centeredTrack.top + centeredTrack.get_height()) * factor;
+            trackTexCoords.bottom = (trackTexCoords.top + trackTexCoords.get_height()) * factor;
+            renderTexture(gc, trackTexture_.get(), centeredTrack,
+                        trackColor_, trackHueInfo_);
+        } else {
+            while (centeredTrack.right <= rect_button_increment.left) {
+                renderTexture(gc, trackTexture_.get(), centeredTrack,
+                        trackColor_, trackHueInfo_);
+                centeredTrack.translate(trackTexture_->getWidth() - 1, 0);
+            }
+
+            // draw rest
+            int widthLeft = centeredTrack.right - rect_button_increment.left;
+            float factor = widthLeft / centeredTrack.get_width();
+            centeredTrack.left = (centeredTrack.right + centeredTrack.get_width()) * factor;
+            trackTexCoords.left = (trackTexCoords.right + trackTexCoords.get_width()) * factor;
+            renderTexture(gc, trackTexture_.get(), centeredTrack,
+                        trackColor_, trackHueInfo_);
+        }
+    }
+
+    CL_Rectf centeredDec(
+            (get_width() - decrementTextures_[decrementIndex_]->getWidth()) / 2, rect_button_decrement.top,
+            CL_Sizef(decrementTextures_[decrementIndex_]->getWidth(), decrementTextures_[decrementIndex_]->getHeight())
+    );
+    renderTexture(gc, decrementTextures_[decrementIndex_].get(), centeredDec,
+            decrementColors_[decrementIndex_], decrementHueInfos_[decrementIndex_]);
+
+    CL_Rectf centeredInc(
+            (get_width() - incrementTextures_[incrementIndex_]->getWidth()) / 2, rect_button_increment.top,
+            CL_Sizef(incrementTextures_[incrementIndex_]->getWidth(), incrementTextures_[incrementIndex_]->getHeight())
+    );
+    renderTexture(gc, incrementTextures_[incrementIndex_].get(), centeredInc,
+            incrementColors_[incrementIndex_], incrementHueInfos_[incrementIndex_]);
+
+    CL_Rectf centeredThumb(
+            (get_width() - thumbTextures_[thumbIndex_]->getWidth()) / 2, rect_thumb.top,
+            CL_Sizef(thumbTextures_[thumbIndex_]->getWidth(), thumbTextures_[thumbIndex_]->getHeight())
+    );
+    renderTexture(gc, thumbTextures_[thumbIndex_].get(), centeredThumb,
+            thumbColors_[thumbIndex_], thumbHueInfos_[thumbIndex_]);
+
+    // clean up renderer if necessary
+    if (shaderInitialized_) {
+        gc.reset_textures();
+        gc.reset_program_object();
+        shaderInitialized_ = false;
+    }
+}
+
+void ScrollBar::renderTexture(CL_GraphicContext& gc, ui::Texture* tex, const CL_Rect& vertexRect, const CL_Colorf& color, const CL_Vec3f& hueInfo) {
+    if (hueInfo[1u] == 0) {
+        // no need for the shader
+        CL_Draw::texture(gc, tex->getTexture(), CL_Quadf(vertexRect), color, tex->getNormalizedTextureCoords());
+        return;
+    }
+
+    if (!shaderInitialized_) {
+        boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getGumpShader();
+        gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
+
+        CL_Texture huesTexture = data::Manager::getHuesLoader()->getHuesTexture();
+        gc.set_texture(0, huesTexture);
+        // set texture unit 1 active to avoid overriding the hue texture with newly loaded object textures
+        gc.set_texture(1, huesTexture);
+
+        shader->set_uniform1i("HueTexture", 0);
+        shader->set_uniform1i("ObjectTexture", 1);
+
+        shaderInitialized_ = true;
+    }
+
+    CL_Rectf textureRect = tex->getNormalizedTextureCoords();
+    gc.set_texture(1, tex->getTexture());
+
+	CL_Vec2f tex1_coords[6] = {
+        CL_Vec2f(textureRect.left, textureRect.top),
+        CL_Vec2f(textureRect.right, textureRect.top),
+        CL_Vec2f(textureRect.left, textureRect.bottom),
+        CL_Vec2f(textureRect.right, textureRect.top),
+        CL_Vec2f(textureRect.left, textureRect.bottom),
+        CL_Vec2f(textureRect.right, textureRect.bottom)
+	};
+
+    CL_Vec2f vertexCoords[6];
+    vertexCoords[0] = CL_Vec2f(vertexRect.left, vertexRect.top);
+    vertexCoords[1] = CL_Vec2f(vertexRect.right, vertexRect.top);
+    vertexCoords[2] = CL_Vec2f(vertexRect.left, vertexRect.bottom);
+    vertexCoords[3] = CL_Vec2f(vertexRect.right, vertexRect.top);
+    vertexCoords[4] = CL_Vec2f(vertexRect.left, vertexRect.bottom);
+    vertexCoords[5] = CL_Vec2f(vertexRect.right, vertexRect.bottom);
+
+    CL_PrimitivesArray primarray(gc);
+    primarray.set_attributes(0, vertexCoords);
+    primarray.set_attributes(1, tex1_coords);
+
+    primarray.set_attribute(2, hueInfo);
+
+    gc.draw_primitives(cl_triangles, 6, primarray);
 }
 
 
@@ -193,7 +323,7 @@ void ScrollBar::calculate_ranges(int view_size, int total_size) {
     } else {
         int scroll_max = cl_max(1, total_size - view_size + 1);
         int page_step = cl_max(1, view_size);
-        set_ranges(0, scroll_max, 1, page_step);
+        set_ranges(0, scroll_max, page_step / 10, page_step);
     }
 }
 
@@ -364,75 +494,6 @@ void ScrollBar::on_mouse_lbutton_up(CL_GUIMessage_Input &input, CL_InputEvent &i
 void ScrollBar::on_mouse_leave() {
     updateTextureIndices(CL_Point(-1, -1));
     request_repaint();
-}
-
-void ScrollBar::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
-    if (!incrementTextures_[incrementIndex_]->isReadComplete() ||
-            !decrementTextures_[decrementIndex_]->isReadComplete() ||
-            !thumbTextures_[thumbIndex_]->isReadComplete() ||
-            !trackTexture_->isReadComplete()) {
-        request_repaint();
-        return;
-    }
-
-    CL_Draw::fill(gc, CL_Rect(0, 0, get_geometry().get_size()), CL_Colorf::green);
-
-    CL_Rectf centeredTrack(
-            (get_width() - trackTexture_->getWidth()) / 2, rect_track_decrement.top,
-            CL_Sizef(trackTexture_->getWidth(), trackTexture_->getHeight())
-    );
-    CL_Rectf trackTexCoords = trackTexture_->getNormalizedTextureCoords();
-    if (trackHueInfo_[1u] == 0) {
-        while (centeredTrack.bottom <= rect_button_increment.top) {
-            CL_Draw::texture(gc, trackTexture_->getTexture(), CL_Quadf(centeredTrack),
-                    trackColor_, trackTexCoords);
-            centeredTrack.translate(0, trackTexture_->getHeight() - 1);
-        }
-
-        // draw rest
-        int heightLeft = centeredTrack.bottom - rect_button_increment.top;
-        float factor = heightLeft / centeredTrack.get_height();
-        centeredTrack.bottom = (centeredTrack.top + centeredTrack.get_height()) * factor;
-        trackTexCoords.bottom = (trackTexCoords.top + trackTexCoords.get_height()) * factor;
-        CL_Draw::texture(gc, trackTexture_->getTexture(), CL_Quadf(centeredTrack),
-                    trackColor_, trackTexCoords);
-    }
-
-    CL_Quadf centeredDec(CL_Rectf(
-            (get_width() - decrementTextures_[decrementIndex_]->getWidth()) / 2, rect_button_decrement.top,
-            CL_Sizef(decrementTextures_[decrementIndex_]->getWidth(), decrementTextures_[decrementIndex_]->getHeight())
-    ));
-    if (decrementHueInfos_[decrementIndex_][1u] == 0) {
-        CL_Draw::texture(gc, decrementTextures_[decrementIndex_]->getTexture(), centeredDec,
-                decrementColors_[decrementIndex_], decrementTextures_[decrementIndex_]->getNormalizedTextureCoords());
-    }
-
-    CL_Quadf centeredInc(CL_Rectf(
-            (get_width() - incrementTextures_[incrementIndex_]->getWidth()) / 2, rect_button_increment.top,
-            CL_Sizef(incrementTextures_[incrementIndex_]->getWidth(), incrementTextures_[incrementIndex_]->getHeight())
-    ));
-    if (incrementHueInfos_[incrementIndex_][1u] == 0) {
-        CL_Draw::texture(gc, incrementTextures_[incrementIndex_]->getTexture(), centeredInc,
-                incrementColors_[incrementIndex_], incrementTextures_[incrementIndex_]->getNormalizedTextureCoords());
-    }
-
-    CL_Quadf centeredThumb(CL_Rectf(
-            (get_width() - thumbTextures_[thumbIndex_]->getWidth()) / 2, rect_thumb.top,
-            CL_Sizef(thumbTextures_[thumbIndex_]->getWidth(), thumbTextures_[thumbIndex_]->getHeight())
-    ));
-    if (thumbHueInfos_[thumbIndex_][1u] == 0) {
-        CL_Draw::texture(gc, thumbTextures_[thumbIndex_]->getTexture(), centeredThumb,
-                thumbColors_[thumbIndex_], thumbTextures_[thumbIndex_]->getNormalizedTextureCoords());
-    }
-
-    //CL_Rect rect = get_geometry();
-    //part_component.render_box(gc, rect.get_size(), update_rect);
-    //part_button_decrement.render_box(gc, rect_button_decrement, update_rect);
-    //part_track_decrement.render_box(gc, rect_track_decrement, update_rect);
-    //part_thumb.render_box(gc, rect_thumb, update_rect);
-    //part_thumb_gripper.render_box(gc, rect_thumb, update_rect);
-    //part_track_increment.render_box(gc, rect_track_increment, update_rect);
-    //part_button_increment.render_box(gc, rect_button_increment, update_rect);
 }
 
 // Calculates positions of all parts. Returns true if thumb position was changed compared to previously, false otherwise.

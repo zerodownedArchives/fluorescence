@@ -144,6 +144,8 @@ private:
     CL_Vec3f trackHueInfo_;
 
     void updateTextureIndices(const CL_Point& pos);
+    bool shaderInitialized_;
+    void renderTexture(CL_GraphicContext& gc, ui::Texture* tex, const CL_Rect& vertexRect, const CL_Colorf& color, const CL_Vec3f& hueInfo);
 
     unsigned int visibility_;
 

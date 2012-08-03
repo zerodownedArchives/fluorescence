@@ -66,6 +66,14 @@
     <page number="14">
         <scrollarea x="5" y="80" width="200" height="200"
                 marginleft="20" marginbottom="5">
+            <vscroll>
+                <thumb>
+                    <mouseover color="#ff0000" />
+                </thumb>
+                <decrement>
+                    <mousedown hue="13" />
+                </decrement>
+            </vscroll>
             <content>
                 <image x="30" y="30" source="gumpart" id="10" />
                 <button x="200" y="500" page="1">
