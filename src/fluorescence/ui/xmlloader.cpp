@@ -28,6 +28,8 @@
 #include <platform.hpp>
 #include <misc/log.hpp>
 #include <client.hpp>
+#include <data/manager.hpp>
+#include <data/clilocloader.hpp>
 
 #include "manager.hpp"
 #include "texture.hpp"
@@ -860,6 +862,13 @@ bool XmlLoader::parseLabelHelper(components::Label* label, pugi::xml_node& node,
 bool XmlLoader::parseLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     UnicodeString text = getAttribute("text", node, defaultNode).value();
+
+    unsigned int cliloc = getAttribute("cliloc", node, defaultNode).as_uint();
+    if (cliloc) {
+        UnicodeString args = getAttribute("text", node, defaultNode).value();
+        args.findAndReplace("\\t", "\t");
+        text = data::Manager::getClilocLoader()->get(cliloc, args);
+    }
 
     components::Label* label = new components::Label(parent);
     if (!parseLabelHelper(label, node, defaultNode)) {
