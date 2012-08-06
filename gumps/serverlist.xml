@@ -5,6 +5,11 @@
         <vscroll visible="always" />
         <content>
             <repeat name="serverlist" yincrease="28" xlimit="1">
+                <!--
+                Each entry represents a server. Properties:
+                - serverindex: An ID number, used to identify the selected server in selection packet
+                - servername: The name of the server, as given in the server list packet
+                -->
                 <button x="0" y="0" width="190" height="25" name="selectserver" action="selectserver" param="serverindex" text="servername" />
             </repeat>
         </content>

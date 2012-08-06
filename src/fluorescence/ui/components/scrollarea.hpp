@@ -36,12 +36,7 @@ public:
     ScrollBar* getVerticalScrollBar();
     ScrollBar* getHorizontalScrollBar();
 
-    /**
-     * \brief Calculate scroll bar visibility and parameters
-     * \param verticalPageStep 0 for auto, value to control vertical page step size directly
-     * \param horizontalPageStep 0 for auto, value to control horizontal page step size directly
-     */
-    void updateScrollbars(unsigned int marginLeft, unsigned int marginBottom);
+    void updateScrollbars(unsigned int marginRight, unsigned int marginBottom);
 
     // update scrollbars again, using the same parameters as the last call
     void updateScrollbars();
@@ -60,7 +55,7 @@ private:
     int lastScrollHorizontal_;
     void onScroll();
 
-    unsigned int marginLeft_;
+    unsigned int marginRight_;
     unsigned int marginBottom_;
 };
 

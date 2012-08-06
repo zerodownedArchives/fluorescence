@@ -55,10 +55,10 @@ GumpComponent* ScrollArea::getClientArea() {
 }
 
 void ScrollArea::updateScrollbars() {
-    updateScrollbars(marginLeft_, marginBottom_);
+    updateScrollbars(marginRight_, marginBottom_);
 }
 
-void ScrollArea::updateScrollbars(unsigned int marginLeft, unsigned int marginBottom) {
+void ScrollArea::updateScrollbars(unsigned int marginRight, unsigned int marginBottom) {
     horizontalScrollBar_->set_min(0);
     verticalScrollBar_->set_min(0);
 
@@ -85,7 +85,7 @@ void ScrollArea::updateScrollbars(unsigned int marginLeft, unsigned int marginBo
         }
     }
 
-    childWidth += marginLeft;
+    childWidth += marginRight;
     childHeight += marginBottom;
 
     bool vVisible = true;
@@ -156,7 +156,7 @@ void ScrollArea::updateScrollbars(unsigned int marginLeft, unsigned int marginBo
     horizontalScrollBar_->set_visible(hVisible);
 
     // save parameters for next call
-    marginLeft_ = marginLeft;
+    marginRight_ = marginRight;
     marginBottom_ = marginBottom;
 }
 

@@ -1,21 +1,23 @@
 <?xml version="1.0"?>
 <gump x="100" y="30" closable="1" draggable="true">
-    <tbackground x="0" y="0" width="600" height="600"  />
-    <tbutton x="30" y="30" width="120" height="25" text="wohoo!!" page="1" />
-    <tbutton x="170" y="30" width="120" height="25" text="alright" page="14" />
+    <background x="0" y="0" width="600" height="600" />
+    <button x="30" y="30" width="120" height="25" text="wohoo!!" page="1" />
+    <button x="170" y="30" width="120" height="25" text="alright" page="14" />
 
     <page number="1">
-        <tcheckbox x="50" y="75" width="100" height="25" text="awesome?" checked="1" />
+        <checkbox x="50" y="75" checked="1" />
+        <label x="80" y="75" width="100" height="20" text="awesome?\nthis should WW be clipped out" hue="13" />
+        <label x="80" y="125" width="150" height="25" text="other font" font="Devinne Swash" font-height="16" hue="13" align="right" />
 
-        <tradiobutton x="170" y="65" width="40" height="25" text="1" group="first" />
-        <tradiobutton x="210" y="65" width="40" height="25" text="2" group="first" />
-        <tradiobutton x="250" y="65" width="40" height="25" text="3" group="first" />
+        <radiobutton x="170" y="65" group="1" />
+        <radiobutton x="210" y="65" group="1" />
+        <radiobutton x="250" y="65" group="1" />
 
-        <tradiobutton x="170" y="90" width="40" height="25" text="7" group="foo" />
-        <tradiobutton x="210" y="90" width="40" height="25" text="8" group="foo" selected="1" />
-        <tradiobutton x="250" y="90" width="40" height="25" text="9" group="foo" />
+        <radiobutton x="170" y="90" width="40" height="25" group="2" />
+        <radiobutton x="210" y="90" width="40" height="25" group="2" checked="1" />
+        <radiobutton x="250" y="90" width="40" height="25" group="2" />
 
-        <tgroupbox x="15" y="120" width="300" height="70">
+<!--        <tgroupbox x="15" y="120" width="300" height="70">
         <tlineedit x="5" y="5" width="250" height="25" text="edit me pls!" maxlength="12" />
         <tlineedit x="5" y="35" width="120" height="25" text="password" password="1" />
         <tlineedit x="135" y="35" width="120" height="25" text="3829" numeric="1" maxlength="6" />
@@ -48,44 +50,52 @@
         <tspin x="330" y="120" width="100" height="25" type="float" min="0.0" max="1.0" value="0.3" stepsize="0.01" />
         <tspin x="330" y="150" width="100" height="25" type="int" min="0" max="100" value="85" stepsize="5" />
 
-        <tlabel x="0" y="400" width="600" height="25" align="center" text="Centered text" />
-        <tlabel x="0" y="425" width="600" height="25" align="right" text="Right aligned" />
-        <tlabel x="100" y="450" width="120" height="25" text="Big text" id="label-bigfont" />
+-->
 
-        <image x="5" y="480" source="file" imgid="themes/default/Images/CheckBoxIndeterminatedHot.png" />
-        <image x="25" y="480" width="30" height="30" source="file" imgid="themes/default/Images/CheckBoxIndeterminatedHot.png" tiled="true" />
-        <image x="65" y="480" source="staticart" imgid="16" hue="100" />
-        <image x="120" y="480" source="mapart" width="100" height="100" imgid="16" tiled="1" />
-        <image x="230" y="480" source="gumpart" imgid="230" />
-        <image x="300" y="480" width="50" height="10" source="gumpart" imgid="230" />
+        <label x="0" y="400" width="600" height="30" align="center" text="Centered text\nMultiline" />
+        <label x="0" y="425" width="600" height="25" align="right" text="Right aligned" />
+
+        <image x="5" y="480" source="file" id="themes/default/Images/CheckBoxIndeterminatedHot.png" />
+        <image x="25" y="480" width="30" height="30" source="file" id="themes/default/Images/CheckBoxIndeterminatedHot.png" tiled="true" />
+        <image x="65" y="480" source="staticart" id="16" hue="100" />
+        <image x="120" y="480" source="mapart" width="100" height="100" id="16" tiled="1" />
+        <image x="230" y="480" source="gumpart" id="230" />
+        <image x="300" y="480" width="50" height="10" source="gumpart" id="230" />
     </page>
 
     <page number="14">
-        <tscrollarea x="5" y="80" width="200" height="200"
-                hvisible="ondemand" vvisible="always"
+        <scrollarea x="5" y="80" width="200" height="200"
                 marginleft="20" marginbottom="5">
-            <image x="30" y="30" source="gumpart" imgid="10" />
-            <button x="200" y="500" page="1">
-                <normal source="gumpart" imgid="16" hue="13" />
-                <mouseover source="gumpart" imgid="18" hue="13" alpha="0.5" />
-                <mousedown source="gumpart" imgid="17" color="#ff5555" />
-            </button>
-        </tscrollarea>
+            <vscroll>
+                <thumb>
+                    <mouseover color="#ff0000" />
+                </thumb>
+                <decrement>
+                    <mousedown hue="13" />
+                </decrement>
+            </vscroll>
+            <content>
+                <image x="30" y="30" source="gumpart" id="10" />
+                <button x="200" y="500" page="1">
+                    <normal source="gumpart" id="16" hue="13" />
+                    <mouseover source="gumpart" id="18" hue="13" alpha="0.5" />
+                    <mousedown source="gumpart" id="17" color="#ff5555" />
+                </button>
+            </content>
+        </scrollarea>
         <background x="10" y="280" width="300" height="200" gumpid="1010" color="#88ff88ff" />
-        <image x="30" y="290" source="http" imgid="http://wiseheartdesign.com/page_attachments/0000/0062/default-avatar.png" hue="13" />
-        <image x="280" y="230" source="http" imgid="http://avatar.hq-picture.com/avatars/img25/sully_monsters_inc_avatar_picture_96245.jpg" color="#1188ee22" />
+        <image x="30" y="290" source="http" id="http://wiseheartdesign.com/page_attachments/0000/0062/default-avatar.png" hue="13" />
+        <image x="280" y="230" source="http" id="http://avatar.hq-picture.com/avatars/img25/sully_monsters_inc_avatar_picture_96245.jpg" color="#1188ee22" />
 
         <button x="200" y="500" page="1">
-            <normal source="gumpart" imgid="16" hue="13" />
-            <mouseover source="gumpart" imgid="18" hue="13" alpha="0.5" />
-            <mousedown source="gumpart" imgid="17" color="#ff5555" />
+            <normal source="gumpart" id="16" hue="13" />
+            <mouseover source="gumpart" id="18" hue="13" alpha="0.5" />
+            <mousedown source="gumpart" id="17" color="#ff5555" />
         </button>
 
         <checkbox x="200" y="530" switchid="4" checked="1">
-            <unchecked source="gumpart" imgid="210" />
-            <unchecked-mouseover source="gumpart" imgid="210" hue="13" />
-            <checked source="gumpart" imgid="211" />
-            <checked-mouseover source="gumpart" imgid="211" color="#997700" />
+            <unchecked-mouseover hue="13" />
+            <checked-mouseover color="#997700" />
         </checkbox>
     </page>
 </gump>

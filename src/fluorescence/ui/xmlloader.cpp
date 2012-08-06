@@ -917,6 +917,13 @@ bool XmlLoader::parseClickLabel(pugi::xml_node& node, pugi::xml_node& defaultNod
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     UnicodeString text = getAttribute("text", node, defaultNode).value();
 
+    unsigned int cliloc = getAttribute("cliloc", node, defaultNode).as_uint();
+    if (cliloc) {
+        UnicodeString args = getAttribute("text", node, defaultNode).value();
+        args.findAndReplace("\\t", "\t");
+        text = data::Manager::getClilocLoader()->get(cliloc, args);
+    }
+
     unsigned int buttonId = node.attribute("buttonid").as_uint();
     unsigned int pageId = node.attribute("page").as_uint();
     UnicodeString action = StringConverter::fromUtf8(node.attribute("action").value());
@@ -960,6 +967,7 @@ bool XmlLoader::parseLineEdit(pugi::xml_node& node, pugi::xml_node& defaultNode,
     int numeric = getAttribute("numeric", node, defaultNode).as_int();
     int password = getAttribute("password", node, defaultNode).as_int();
     unsigned int maxlength = getAttribute("maxlength", node, defaultNode).as_uint();
+    unsigned int entryId = getAttribute("entryid", node, defaultNode).as_uint();
     UnicodeString action = StringConverter::fromUtf8(getAttribute("action", node, defaultNode).value());
     UnicodeString fontName = StringConverter::fromUtf8(getAttribute("font", node, defaultNode).value());
     unsigned int fontHeight = getAttribute("font-height", node, defaultNode).as_uint();
@@ -998,6 +1006,8 @@ bool XmlLoader::parseLineEdit(pugi::xml_node& node, pugi::xml_node& defaultNode,
         edit->setFontHue(hue);
     }
 
+    edit->setEntryId(entryId);
+
     top->addToCurrentPage(edit);
     return true;
 }
@@ -1012,7 +1022,7 @@ bool XmlLoader::parseScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNod
     parseScrollBar(area->getVerticalScrollBar(), area, true, node.child("vscroll"), defaultNode.child("vscroll"));
     parseScrollBar(area->getHorizontalScrollBar(), area, false, node.child("hscroll"), defaultNode.child("hscroll"));
 
-    unsigned int marginLeft = node.attribute("marginleft").as_uint();
+    unsigned int marginRight = node.attribute("marginright").as_uint();
     unsigned int marginBottom = node.attribute("marginbottom").as_uint();
 
     top->addToCurrentPage(area);
@@ -1024,7 +1034,7 @@ bool XmlLoader::parseScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNod
         LOG_ERROR << "No content node in scrollarea" << std::endl;
     }
 
-    area->updateScrollbars(marginLeft, marginBottom);
+    area->updateScrollbars(marginRight, marginBottom);
     area->setupResizeHandler();
 
     return true;
