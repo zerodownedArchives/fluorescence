@@ -29,6 +29,7 @@ namespace fluo {
 namespace ui {
 
 ShaderManager::ShaderManager(CL_GraphicContext& gc) {
+    LOG_DEBUG << "Loading world shader" << std::endl;
     worldShader_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/world_vertex.glsl", "shader/world_fragment.glsl")));
     worldShader_->bind_attribute_location(0, "gl_Vertex");
     worldShader_->bind_attribute_location(1, "TexCoord0");
@@ -42,6 +43,7 @@ ShaderManager::ShaderManager(CL_GraphicContext& gc) {
     }
 
 
+    LOG_DEBUG << "Loading gump shader" << std::endl;
     gumpShader_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/gump_vertex.glsl", "shader/gump_fragment.glsl")));
     gumpShader_->bind_attribute_location(0, "gl_Vertex");
     gumpShader_->bind_attribute_location(1, "TexCoord0");
@@ -53,6 +55,7 @@ ShaderManager::ShaderManager(CL_GraphicContext& gc) {
     }
 
 
+    LOG_DEBUG << "Loading particle shader" << std::endl;
     particleShader_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/particles_vertex.glsl", "shader/particles_fragment.glsl")));
     particleShader_->bind_attribute_location(0, "LocationStart");
     particleShader_->bind_attribute_location(1, "VelocityStart");

@@ -92,11 +92,12 @@ Manager::Manager() {
 }
 
 bool Manager::setShardConfig(Config& config) {
-    if (config["/fluo/files@format"].asString() == "mul") {
+    UnicodeString fileFormatStr = config["/fluo/files@format"].asString();
+    if (fileFormatStr == "mul") {
         fileFormat_ = FileFormat::MUL;
-    } else if (config["/fluo/files@format"].asString() == "mul-hs") {
+    } else if (fileFormatStr == "mul-hs") {
         fileFormat_ = FileFormat::MUL_HIGH_SEAS;
-    } else if (config["/fluo/files@format"].asString() == "uop") {
+    } else if (fileFormatStr == "uop") {
         fileFormat_ = FileFormat::UOP;
         LOG_ERROR << "UOP file format not qupported yet" << std::endl;
         return false;
@@ -104,6 +105,8 @@ bool Manager::setShardConfig(Config& config) {
         LOG_ERROR << "Unsupported file format. Supported: \"mul\" for pre high seas files, \"mul-hs\" for high seas files" << std::endl;
         return false;
     }
+
+    LOG_DEBUG << "Data file format: " << fileFormatStr << std::endl;
 
     buildFilePathMap(config);
 

@@ -116,10 +116,13 @@ bool Manager::setShardConfig(Config& config) {
 
     loadUnifonts();
 
+    LOG_DEBUG << "Initializing font renderer" << std::endl;
     fontEngine_.reset(new FontEngine(config, getGraphicContext()));
 
+    LOG_DEBUG << "Initializing cursor manager" << std::endl;
     cursorManager_.reset(new CursorManager(config, mainWindow_));
 
+    LOG_DEBUG << "Initializing shaders" << std::endl;
     shaderManager_.reset(new ShaderManager(getGraphicContext()));
 
     clipRectManager_.reset(new ClipRectManager());
