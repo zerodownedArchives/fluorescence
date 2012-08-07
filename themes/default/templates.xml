@@ -1,7 +1,15 @@
 <?xml version="1.0"?>
 <templates>
 
-<template name="themebutton" default="1">
+<template name="button">
+    <button font="Devinne Swash" font-height="18" height="25">
+        <normal font-color="#000000" />
+        <mouseover font-color="#000000" />
+        <mousedown font-color="#000000" />
+    </button>
+</template>
+
+<template name="themebutton">
     <button font="Devinne Swash" font-height="18" height="25">
         <normal source="theme" id="images/button.png" font-color="#000000" />
         <mouseover source="theme" id="images/button.png" font-color="#000000" color="#cceecc" />
@@ -17,7 +25,7 @@
     </button>
 </template>
 
-<template name="themescrollarea" default="1">
+<template name="themescrollarea">
     <scrollarea>
         <vscroll width="15" visible="always">
             <thumb>
@@ -53,7 +61,7 @@
     <image source="theme" id="images/lineedit_back.png" width="220" height="22" />
 </template>
 
-<template name="themecheckbox" default="1">
+<template name="themecheckbox">
     <checkbox>
         <unchecked source="theme" id="images/checkbox.png" />
         <unchecked-mouseover source="theme" id="images/checkbox.png" color="#cceecc" />
@@ -67,7 +75,7 @@
 </template>
 
 
-<template name="greybackground" default="1">
+<template name="greybackground">
     <background x="0" y="0" gumpid="2600"/>
 </template>
 
@@ -79,7 +87,7 @@
     <background x="0" y="0" gumpid="3000" />
 </template>
 
-<template name="radiobutton" default="1">
+<template name="radiobutton">
     <radiobutton>
         <unchecked source="gumpart" id="210" />
         <unchecked-mouseover source="gumpart" id="210" />

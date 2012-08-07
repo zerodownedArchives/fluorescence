@@ -122,6 +122,7 @@ bool XmlLoader::readTemplateFile(const boost::filesystem::path& themePath) {
 
 void XmlLoader::setTemplates() {
     templateMap_.clear();
+    defaultTemplateMap_.clear();
 
     pugi::xml_node rootNode = templateDocument_.child("templates");
 
@@ -160,7 +161,7 @@ pugi::xml_node XmlLoader::getTemplate(const UnicodeString& templateName) {
 
 pugi::xml_attribute XmlLoader::getAttribute(const char* name, pugi::xml_node& node, pugi::xml_node& defaultNode) {
     pugi::xml_attribute ret = node.attribute(name);
-    if (!ret) {
+    if (!ret && defaultNode) {
         ret = defaultNode.attribute(name);
     }
     return ret;
@@ -168,7 +169,7 @@ pugi::xml_attribute XmlLoader::getAttribute(const char* name, pugi::xml_node& no
 
 pugi::xml_node XmlLoader::getNode(const char* name, pugi::xml_node& node, pugi::xml_node& defaultNode) {
     pugi::xml_node ret = node.child(name);
-    if (!ret) {
+    if (!ret && defaultNode) {
         ret = defaultNode.child(name);
     }
     return ret;
@@ -188,7 +189,6 @@ GumpMenu* XmlLoader::fromXmlFile(const UnicodeString& name) {
     }
 
     LOG_DEBUG << "Parsing xml gump file: " << path << std::endl;
-
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(path.string().c_str());
 
