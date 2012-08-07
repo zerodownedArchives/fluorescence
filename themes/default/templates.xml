@@ -89,7 +89,7 @@
 </template>
 
 <template name="propertylabel" default="1">
-    <propertylabel font="unifont1" font-height="12" align="left" color="#000000" />
+    <propertylabel font="Devinne Swash" font-height="16" align="left" color="#000000" height="20" />
 </template>
 
 <template name="sysloglabel" default="1">
@@ -133,6 +133,26 @@
             <track source="gumpart" id="255" />
         </vscroll>
     </scrollarea>
+</template>
+
+<template name="blueknob">
+    <button>
+        <normal source="gumpart" id="2103" />
+        <mouseover source="gumpart" id="2103" />
+        <mousedown source="gumpart" id="2104" />
+    </button>
+</template>
+
+<template name="spellbookindex">
+    <clicklabel font="Devinne Swash" font-height="16" color="#5a4a31" />
+</template>
+
+<template name="spellbooktext">
+    <label font="Devinne Swash" font-height="16" color="#5a4a31" />
+</template>
+
+<template name="spellbooktitle">
+    <label font="Devinne Swash" font-height="16" color="#001052" />
 </template>
 
 </templates>

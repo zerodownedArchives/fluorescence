@@ -253,6 +253,10 @@ void Mobile::onPropertyUpdate() {
 }
 
 void Mobile::addLinkedGump(ui::GumpMenu* menu) {
+    if (!menu) {
+        return;
+    }
+
     linkedGumps_.push_back(menu);
     menu->setLinkedMobile(this);
 }

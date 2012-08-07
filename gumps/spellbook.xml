@@ -27,27 +27,43 @@ allspells: Detailed information on all spells. Properties:
         <!-- circle numbers -->
         <button x="58" y="175" page="1">
             <normal source="gumpart" id="2225" />
+            <mouseover source="gumpart" id="2225" />
+            <mousedown source="gumpart" id="2225" />
         </button>
         <button x="92" y="175" page="1">
             <normal source="gumpart" id="2226" />
+            <mouseover source="gumpart" id="2226" />
+            <mousedown source="gumpart" id="2226" />
         </button>
         <button x="129" y="175" page="2">
             <normal source="gumpart" id="2227" />
+            <mouseover source="gumpart" id="2227" />
+            <mousedown source="gumpart" id="2227" />
         </button>
         <button x="164" y="175" page="2">
             <normal source="gumpart" id="2228" />
+            <mouseover source="gumpart" id="2228" />
+            <mousedown source="gumpart" id="2228" />
         </button>
         <button x="227" y="175" page="3">
             <normal source="gumpart" id="2229" />
+            <mouseover source="gumpart" id="2229" />
+            <mousedown source="gumpart" id="2229" />
         </button>
         <button x="260" y="175" page="3">
             <normal source="gumpart" id="2230" />
+            <mouseover source="gumpart" id="2230" />
+            <mousedown source="gumpart" id="2230" />
         </button>
         <button x="297" y="175" page="4">
             <normal source="gumpart" id="2231" />
+            <mouseover source="gumpart" id="2231" />
+            <mousedown source="gumpart" id="2231" />
         </button>
         <button x="332" y="175" page="4">
             <normal source="gumpart" id="2232" />
+            <mouseover source="gumpart" id="2232" />
+            <mousedown source="gumpart" id="2232" />
         </button>
     </page>
 
@@ -55,18 +71,20 @@ allspells: Detailed information on all spells. Properties:
         <!-- turn page -->
         <button x="321" y="8" page="2">
             <normal source="gumpart" id="2236" />
+            <mouseover source="gumpart" id="2236" />
+            <mousedown source="gumpart" id="2236" />
         </button>
 
-        <tlabel id="spellbooktitle" x="100" y="14" width="40" height="15" text="INDEX" />
-        <tlabel id="spellbooktitle" x="55" y="34" width="150" height="15" text="First Circle" />
+        <label template="spellbooktitle" x="100" y="14" width="40" height="15" text="INDEX" />
+        <label template="spellbooktitle" x="55" y="34" width="150" height="15" text="First Circle" />
         <repeat name="First Circle" yincrease="15" xlimit="1">
-            <tclicklabel id="spellbooktext" x="55" y="50" width="150" height="15" text="spellname" page="spellpage" />
+            <clicklabel template="spellbookindex" x="55" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
 
-        <tlabel id="spellbooktitle" x="267" y="14" width="40" height="16" text="INDEX" />
-        <tlabel id="spellbooktitle" x="223" y="34" width="150" height="15" text="Second circle" />
+        <label template="spellbooktitle" x="267" y="14" width="40" height="16" text="INDEX" />
+        <label template="spellbooktitle" x="223" y="34" width="150" height="15" text="Second circle" />
         <repeat name="Second Circle" yincrease="15" xlimit="1">
-            <tclicklabel id="spellbooktext" x="223" y="50" width="150" height="15" text="spellname" page="spellpage" />
+            <clicklabel template="spellbookindex" x="223" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
     </page>
 
@@ -74,22 +92,26 @@ allspells: Detailed information on all spells. Properties:
         <!-- turn pages -->
         <button x="50" y="8" page="1">
             <normal source="gumpart" id="2235" />
+            <mouseover source="gumpart" id="2235" />
+            <mousedown source="gumpart" id="2235" />
         </button>
 
-        <tlabel id="spellbooktitle" x="100" y="14" width="40" height="15" text="INDEX" />
-        <tlabel id="spellbooktitle" x="55" y="34" width="150" height="15" text="Third Circle" />
+        <label template="spellbooktitle" x="100" y="14" width="40" height="15" text="INDEX" />
+        <label template="spellbooktitle" x="55" y="34" width="150" height="15" text="Third Circle" />
         <repeat name="Third Circle" yincrease="15" xlimit="1">
-            <tclicklabel id="spellbooktext" x="55" y="50" width="150" height="15" text="spellname" page="spellpage" />
+            <clicklabel template="spellbookindex" x="55" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
 
-        <tlabel id="spellbooktitle" x="267" y="14" width="40" height="16" text="INDEX" />
-        <tlabel id="spellbooktitle" x="223" y="34" width="150" height="15" text="Fourth circle" />
+        <label template="spellbooktitle" x="267" y="14" width="40" height="16" text="INDEX" />
+        <label template="spellbooktitle" x="223" y="34" width="150" height="15" text="Fourth circle" />
         <repeat name="Fourth Circle" yincrease="15" xlimit="1">
-            <tclicklabel id="spellbooktext" x="223" y="50" width="150" height="15" text="spellname" page="spellpage" />
+            <clicklabel template="spellbookindex" x="223" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
 
         <button x="321" y="8" page="3">
             <normal source="gumpart" id="2236" />
+            <mouseover source="gumpart" id="2236" />
+            <mousedown source="gumpart" id="2236" />
         </button>
     </page>
 
@@ -97,22 +119,26 @@ allspells: Detailed information on all spells. Properties:
         <!-- turn pages -->
         <button x="50" y="8" page="2">
             <normal source="gumpart" id="2235" />
+            <mouseover source="gumpart" id="2235" />
+            <mousedown source="gumpart" id="2235" />
         </button>
 
-        <tlabel id="spellbooktitle" x="100" y="14" width="40" height="15" text="INDEX" />
-        <tlabel id="spellbooktitle" x="55" y="34" width="150" height="15" text="Fifth Circle" />
+        <label template="spellbooktitle" x="100" y="14" width="40" height="15" text="INDEX" />
+        <label template="spellbooktitle" x="55" y="34" width="150" height="15" text="Fifth Circle" />
         <repeat name="Fifth Circle" yincrease="15" xlimit="1">
-            <tclicklabel id="spellbooktext" x="55" y="50" width="150" height="15" text="spellname" page="spellpage" />
+            <clicklabel template="spellbookindex" x="55" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
 
-        <tlabel id="spellbooktitle" x="267" y="14" width="40" height="16" text="INDEX" />
-        <tlabel id="spellbooktitle" x="223" y="34" width="150" height="15" text="Sixth circle" />
+        <label template="spellbooktitle" x="267" y="14" width="40" height="16" text="INDEX" />
+        <label template="spellbooktitle" x="223" y="34" width="150" height="15" text="Sixth circle" />
         <repeat name="Sixth Circle" yincrease="15" xlimit="1">
-            <tclicklabel id="spellbooktext" x="223" y="50" width="150" height="15" text="spellname" page="spellpage" />
+            <clicklabel template="spellbookindex" x="223" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
 
         <button x="321" y="8" page="4">
             <normal source="gumpart" id="2236" />
+            <mouseover source="gumpart" id="2236" />
+            <mousedown source="gumpart" id="2236" />
         </button>
     </page>
 
@@ -120,22 +146,26 @@ allspells: Detailed information on all spells. Properties:
         <!-- turn pages -->
         <button x="50" y="8" page="3">
             <normal source="gumpart" id="2235" />
+            <mouseover source="gumpart" id="2235" />
+            <mousedown source="gumpart" id="2235" />
         </button>
 
-        <tlabel id="spellbooktitle" x="100" y="14" width="40" height="15" text="INDEX" />
-        <tlabel id="spellbooktitle" x="55" y="34" width="150" height="15" text="Seventh Circle" />
+        <label template="spellbooktitle" x="100" y="14" width="40" height="15" text="INDEX" />
+        <label template="spellbooktitle" x="55" y="34" width="150" height="15" text="Seventh Circle" />
         <repeat name="Seventh Circle" yincrease="15" xlimit="1">
-            <tclicklabel id="spellbooktext" x="55" y="50" width="150" height="15" text="spellname" page="spellpage" />
+            <clicklabel template="spellbookindex" x="55" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
 
-        <tlabel id="spellbooktitle" x="267" y="16" width="40" height="16" text="INDEX" />
-        <tlabel id="spellbooktitle" x="223" y="35" width="150" height="15" text="Eighth circle" />
+        <label template="spellbooktitle" x="267" y="16" width="40" height="16" text="INDEX" />
+        <label template="spellbooktitle" x="223" y="35" width="150" height="15" text="Eighth circle" />
         <repeat name="Eighth Circle" yincrease="15" xlimit="1">
-            <tclicklabel id="spellbooktext" x="223" y="50" width="150" height="15" text="spellname" page="spellpage" />
+            <clicklabel template="spellbookindex" x="223" y="50" width="150" height="15" text="spellname" page="spellpage" />
         </repeat>
 
         <button x="321" y="8" page="5">
             <normal source="gumpart" id="2236" />
+            <mouseover source="gumpart" id="2236" />
+            <mousedown source="gumpart" id="2236" />
         </button>
     </page>
 
@@ -144,24 +174,27 @@ allspells: Detailed information on all spells. Properties:
             <repeatif xindex="0">
                 <button x="50" y="8" page="previouspage">
                     <normal source="gumpart" id="2235" />
+                    <mouseover source="gumpart" id="2235" />
+                    <mousedown source="gumpart" id="2235" />
                 </button>
-                <tlabel id="spellbooktitle" x="85" y="14" width="100" height="15" text="sectionname" />
+                <label template="spellbooktitle" x="85" y="14" width="100" height="15" text="sectionname" />
             </repeatif>
             <repeatif xindex="1">
-                <tlabel id="spellbooktitle" x="65" y="14" width="100" height="15" text="sectionname" />
+                <label template="spellbooktitle" x="65" y="14" width="100" height="15" text="sectionname" />
             </repeatif>
 
             <button x="55" y="40" action="castspell" param="spellid">
                 <normal source="gumpart" id="gumpid" />
             </button>
-            <tlabel id="spellbooktitle" x="105" y="38" width="90" height="35" text="spellname" />
-            <tlabel id="spellbooktitle" x="55" y="95" width="150" height="15" text="descriptionheader" />
-            <tlabel id="spellbooktext" x="55" y="110" width="150" height="55" text="description" />
-
+            <label template="spellbooktitle" x="105" y="38" width="90" height="35" text="spellname" />
+            <label template="spellbooktitle" x="55" y="95" width="150" height="15" text="descriptionheader" />
+            <label template="spellbooktext" x="55" y="110" width="150" height="55" text="description" />
 
             <repeatif xindex="0">
                 <button x="321" y="8" page="nextpage">
                     <normal source="gumpart" id="2236" />
+                    <mouseover source="gumpart" id="2236" />
+                    <mousedown source="gumpart" id="2236" />
                 </button>
             </repeatif>
         </page>
