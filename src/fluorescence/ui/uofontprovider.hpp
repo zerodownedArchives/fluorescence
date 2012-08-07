@@ -67,10 +67,24 @@ private:
     boost::shared_ptr<ui::Texture> getTexture(CL_GraphicContext& gc, const CL_StringRef& text, const CL_Colorf& clcolor, unsigned int borderWidth = 1, const CL_Colorf& clborderColor = CL_Colorf::black);
     void applyBorder(CL_PixelBuffer pxBuf, const CL_Colorf& clcolor, unsigned int borderWidth, const CL_Colorf& clborderColor);
 
-    boost::shared_ptr<ui::Texture> findInHistory(const UnicodeString& str);
-    void addToHistory(const UnicodeString& str, boost::shared_ptr<ui::Texture> tex);
-
     uint32_t clToUintColor(const CL_Colorf& clcolor) const;
+
+
+	// history stuff
+	struct HistoryEntry {
+		int32_t hash_;
+		CL_Colorf color_;
+		boost::shared_ptr<ui::Texture> texture_;
+	};
+
+	boost::mutex historyMutex_;
+	static const unsigned int HISTORY_SIZE = 30;
+	unsigned int historyIndex_;
+	unsigned int historySize_;
+	HistoryEntry textureHistory_[HISTORY_SIZE];
+
+	boost::shared_ptr<ui::Texture> findInHistory(const UnicodeString& str, const CL_Colorf& color);
+    void addToHistory(const UnicodeString& str, const CL_Colorf& color, boost::shared_ptr<ui::Texture> tex);
 };
 
 }

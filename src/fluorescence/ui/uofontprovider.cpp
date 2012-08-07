@@ -35,7 +35,8 @@
 namespace fluo {
 namespace ui {
 
-UoFontProvider::UoFontProvider(unsigned int unifontId) : unifontId_(unifontId) {
+UoFontProvider::UoFontProvider(unsigned int unifontId) : unifontId_(unifontId),
+        historyIndex_(0), historySize_(0) {
     fontLoader_ = data::Manager::getUniFontLoader(unifontId);
 
     initFontMetrics();
@@ -209,13 +210,21 @@ void UoFontProvider::applyBorder(CL_PixelBuffer pxBuf, const CL_Colorf& clcolor,
 boost::shared_ptr<ui::Texture> UoFontProvider::getTexture(CL_GraphicContext& gc, const CL_StringRef& cltext, const CL_Colorf& clcolor, unsigned int borderWidth, const CL_Colorf& clborderColor) {
     UnicodeString text(cltext.c_str());
 
+    // check history first!
+    boost::shared_ptr<ui::Texture> tex = findInHistory(text, clcolor);
+    if (tex) {
+        return tex;
+    }
+
+    //LOG_DEBUG << "Texture not found in history" << std::endl;
+
     uint32_t color = clToUintColor(clcolor);
 
     CL_Size texSize = get_text_size(gc, cltext);
     unsigned int width = texSize.width;
     unsigned int height = texSize.height;
 
-    boost::shared_ptr<ui::Texture> tex(new ui::Texture(ui::Texture::USAGE_FONT));
+    tex.reset(new ui::Texture(ui::Texture::USAGE_FONT));
     tex->initPixelBuffer(width, height);
     uint32_t* pixBufPtr = tex->getPixelBufferData();
 
@@ -251,6 +260,8 @@ boost::shared_ptr<ui::Texture> UoFontProvider::getTexture(CL_GraphicContext& gc,
 
     tex->setReadComplete();
 
+    addToHistory(text, clcolor, tex);
+
     return tex;
 }
 
@@ -265,6 +276,38 @@ uint32_t UoFontProvider::clToUintColor(const CL_Colorf& clcolor) const {
     ret |= (b & 0xFF) << 8;
     ret |= (a & 0xFF);
     return ret;
+}
+
+boost::shared_ptr<ui::Texture> UoFontProvider::findInHistory(const UnicodeString& str, const CL_Colorf& color) {
+    int32_t hash = str.hashCode();
+    boost::shared_ptr<ui::Texture> ret;
+
+    boost::mutex::scoped_lock myLock(historyMutex_);
+
+    for (unsigned int i = 0; i < historySize_; ++i) {
+        if (textureHistory_[i].hash_ == hash && textureHistory_[i].color_ == color) {
+            ret = textureHistory_[i].texture_;
+            break;
+        }
+    }
+
+    return ret;
+}
+
+void UoFontProvider::addToHistory(const UnicodeString& str, const CL_Colorf& color, boost::shared_ptr<ui::Texture> tex) {
+    int32_t hash = str.hashCode();
+    boost::mutex::scoped_lock myLock(historyMutex_);
+
+    textureHistory_[historyIndex_].hash_ = hash;
+    textureHistory_[historyIndex_].color_ = color;
+    textureHistory_[historyIndex_].texture_ = tex;
+
+    ++historyIndex_;
+    historyIndex_ %= HISTORY_SIZE;
+
+    if (historySize_ < HISTORY_SIZE) {
+        ++historySize_;
+    }
 }
 
 }
