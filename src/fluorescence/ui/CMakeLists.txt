@@ -64,7 +64,6 @@ set (GUMPMENU_HPP
     ui/components/textentry.hpp
     ui/components/radiobutton.hpp
     ui/components/sysloglabel.hpp
-    ui/components/tbackground.hpp
     ui/components/warmodebutton.hpp
     ui/components/clicklabel.hpp
     ui/components/scrollbar.hpp
@@ -92,7 +91,6 @@ set (GUMPMENU_CPP
     ui/components/textentry.cpp
     ui/components/radiobutton.cpp
     ui/components/sysloglabel.cpp
-    ui/components/tbackground.cpp
     ui/components/warmodebutton.cpp
     ui/components/clicklabel.cpp
     ui/components/scrollbar.cpp

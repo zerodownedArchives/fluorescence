@@ -47,7 +47,6 @@
 #include "components/background.hpp"
 #include "components/checkbox.hpp"
 #include "components/sysloglabel.hpp"
-#include "components/tbackground.hpp"
 #include "components/warmodebutton.hpp"
 #include "components/radiobutton.hpp"
 
@@ -83,15 +82,6 @@ XmlLoader::XmlLoader() {
     functionTable_["paperdoll"] = boost::bind(&XmlLoader::parsePaperdoll, this, _1, _2, _3, _4);
     functionTable_["container"] = boost::bind(&XmlLoader::parseContainer, this, _1, _2, _3, _4);
     functionTable_["warmodebutton"] = boost::bind(&XmlLoader::parseWarModeButton, this, _1, _2, _3, _4);
-
-
-    functionTable_["tcombobox"] = boost::bind(&XmlLoader::parseTComboBox, this, _1, _2, _3, _4);
-    functionTable_["tgroupbox"] = boost::bind(&XmlLoader::parseTGroupBox, this, _1, _2, _3, _4);
-    functionTable_["tspin"] = boost::bind(&XmlLoader::parseTSpin, this, _1, _2, _3, _4);
-    functionTable_["ttabs"] = boost::bind(&XmlLoader::parseTTabs, this, _1, _2, _3, _4);
-    functionTable_["tslider"] = boost::bind(&XmlLoader::parseTSlider, this, _1, _2, _3, _4);
-    functionTable_["ttextedit"] = boost::bind(&XmlLoader::parseTTextEdit, this, _1, _2, _3, _4);
-    functionTable_["tbackground"] = boost::bind(&XmlLoader::parseTBackground, this, _1, _2, _3, _4);
 }
 
 
@@ -284,7 +274,7 @@ bool XmlLoader::parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent,
     for (; iter != iterEnd && ret; ++iter) {
         std::map<UnicodeString, XmlParseFunction>::iterator function = functionTable_.find(iter->name());
 
-        LOG_DEBUG << "Gump Component: " << iter->name() << std::endl;
+        //LOG_DEBUG << "Gump Component: " << iter->name() << std::endl;
 
         if (function != functionTable_.end()) {
             pugi::xml_node defaultNode;
@@ -1266,188 +1256,6 @@ void XmlLoader::replaceRepeatKeywords(pugi::xml_node& node, const RepeatContext&
                 xIncrease, yIncrease, xLimit, yLimit);
         childIter = childIter.next_sibling();
     }
-}
-
-
-
-
-
-bool XmlLoader::parseTComboBox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-
-    CL_ComboBox* box = new CL_ComboBox(parent);
-    parseId(node, box);
-    box->set_geometry(bounds);
-
-    CL_PopupMenu menu;
-
-    pugi::xml_node_iterator iter = node.begin();
-    pugi::xml_node_iterator iterEnd = node.end();
-
-    unsigned int selected = 0;
-
-    for (unsigned int index = 0; iter != iterEnd; ++iter, ++index) {
-        if (strcmp(iter->name(), "option") != 0) {
-            LOG_WARN << "Something different than option in combobox: " << iter->name() << std::endl;
-            return false;
-        } else {
-            std::string text = iter->attribute("text").value();
-            int isSelected = iter->attribute("selected").as_int();
-
-            menu.insert_item(text);
-            if (isSelected) {
-                selected = index;
-            }
-        }
-    }
-
-    box->set_popup_menu(menu);
-    box->set_selected_item(selected);
-
-    top->addToCurrentPage(box);
-    return true;
-}
-
-bool XmlLoader::parseTGroupBox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-
-    CL_GroupBox* box = new CL_GroupBox(parent);
-    parseId(node, box);
-    box->set_geometry(bounds);
-
-    parseChildren(node, box, top);
-
-    top->addToCurrentPage(box);
-    return true;
-}
-
-bool XmlLoader::parseTSpin(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    std::string type = node.attribute("type").value();
-
-    CL_Spin* spin = new CL_Spin(parent);
-    parseId(node, spin);
-
-    if (type == "int") {
-        int min = node.attribute("min").as_int();
-        int max = node.attribute("max").as_int();
-        unsigned int stepsize = node.attribute("stepsize").as_uint();
-        int value = node.attribute("value").as_int();
-
-        spin->set_floating_point_mode(false);
-        spin->set_ranges(min, max);
-        spin->set_step_size(stepsize);
-        spin->set_value(value);
-    } else if (type == "float") {
-        float min = node.attribute("min").as_float();
-        float max = node.attribute("max").as_float();
-        float stepsize = node.attribute("stepsize").as_float();
-        float value = node.attribute("value").as_float();
-
-        spin->set_floating_point_mode(true);
-        spin->set_ranges_float(min, max);
-        spin->set_step_size_float(stepsize);
-        spin->set_value_float(value);
-    } else {
-        LOG_WARN << "Unknown spin type: " << type << std::endl;
-        return false;
-    }
-
-    spin->set_geometry(bounds);
-
-    top->addToCurrentPage(spin);
-    return true;
-}
-
-bool XmlLoader::parseTTabs(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-
-    CL_Tab* tabs = new CL_Tab(parent);
-    parseId(node, tabs);
-    tabs->set_geometry(bounds);
-
-    pugi::xml_node_iterator iter = node.begin();
-    pugi::xml_node_iterator iterEnd = node.end();
-
-    for (; iter != iterEnd; ++iter) {
-        if (strcmp(iter->name(), "ttabpage") != 0) {
-            LOG_WARN << "Something different than ttabpage in ttabs: " << iter->name() << std::endl;
-            return false;
-        } else {
-            std::string tabTitle = iter->attribute("text").value();
-            CL_TabPage* newpage = tabs->add_page(tabTitle);
-            parseId(*iter, newpage);
-
-            parseChildren(*iter, newpage, top);
-        }
-    }
-
-    top->addToCurrentPage(tabs);
-    return true;
-}
-
-bool XmlLoader::parseTSlider(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    std::string type = node.attribute("type").value();
-    int min = node.attribute("min").as_int();
-    int max = node.attribute("max").as_int();
-    unsigned int pagestep = node.attribute("pagestep").as_uint();
-    int value = node.attribute("value").as_int();
-
-
-    CL_Slider* slider = new CL_Slider(parent);
-    parseId(node, slider);
-
-    if (type == "vertical") {
-        slider->set_vertical(true);
-    } else if (type == "horizontal") {
-        slider->set_horizontal(true);
-    } else {
-        LOG_WARN << "Unknown slider type: " << type << std::endl;
-        return false;
-    }
-
-    slider->set_min(min);
-    slider->set_max(max);
-    slider->set_page_step(pagestep);
-    slider->set_position(value);
-    slider->set_lock_to_ticks(false);
-    slider->set_geometry(bounds);
-
-    top->addToCurrentPage(slider);
-    return true;
-}
-
-bool XmlLoader::parseTTextEdit(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    // does not seem to work currently (clanlib problem)
-
-    //CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    //std::string text = node.attribute("text").value();
-
-    //CL_GUIComponentDescription desc;
-    //std::string cssid = node.attribute("cssid").value();
-    //desc.set_type_name("TextEdit");
-    //if (cssid.length() > 0) {
-        //desc.set_id_name(cssid);
-    //}
-    //CL_TextEdit* edit = new CL_TextEdit(desc, parent);
-    //edit->set_geometry(bounds);
-
-    //return true;
-
-    LOG_WARN << "TextEdit is currently not supported, sorry!" << std::endl;
-    return false;
-}
-
-bool XmlLoader::parseTBackground(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-
-    components::TBackground* bg = new components::TBackground(parent);
-    parseId(node, bg);
-    bg->set_geometry(bounds);
-
-    top->addToCurrentPage(bg);
-    return true;
 }
 
 }
