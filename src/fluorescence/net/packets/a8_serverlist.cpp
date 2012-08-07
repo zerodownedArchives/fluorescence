@@ -25,6 +25,9 @@
 #include <ui/manager.hpp>
 #include <ui/gumpmenus.hpp>
 
+#include <net/manager.hpp>
+#include "a0_gameserverselect.hpp"
+
 namespace fluo {
 namespace net {
 namespace packets {
@@ -56,7 +59,16 @@ bool ServerList::read(const int8_t* buf, unsigned int len, unsigned int& index) 
 
 void ServerList::onReceive() {
     ui::Manager::getSingleton()->closeGumpMenu("login");
-    ui::GumpMenus::openServerListGump(this);
+
+    if (listEntries_.size() == 1) {
+        // only one server to select => go for it
+        LOG_DEBUG << "Automatically selecting game server " << listEntries_.front().name_ << " (only one available)" << std::endl;
+        net::packets::GameServerSelect pkt(listEntries_.front().index_);
+        net::Manager::getSingleton()->send(pkt);
+    } else {
+        // let the user decide
+        ui::GumpMenus::openServerListGump(this);
+    }
 }
 
 }
