@@ -133,6 +133,8 @@ GumpMenu* GumpMenus::openShardSelectionGump() {
         }
     }
 
+    std::sort(nameList.begin(), nameList.end());
+
     XmlLoader::RepeatContext context;
     context.repeatCount_ = nameList.size();
     context.keywordReplacements_["shardname"] = nameList;
