@@ -9,7 +9,7 @@
     <page number="1" /> <!-- empty page to prevent the line from popping up at startup :) -->
 
     <page number="2">
-        <image template="lineeditbackground" x="5" y="581" width="608" />
-        <lineedit x="7" y="583" width="600" name="speechtext" action="sendspeech" />
+        <image template="solid" x="5" y="581" width="608" height="22" color="#dddddd33" />
+        <lineedit x="7" y="583" width="600" name="speechtext" action="sendspeech" font="unifont1" />
     </page>
 </gump>

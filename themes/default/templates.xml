@@ -2,7 +2,6 @@
 <templates>
 
 <template name="themebutton" default="1">
-    <!-- Should also be applicable to the shard selection gump (without stuff from the muls) -->
     <button font="Devinne Swash" font-height="18" height="25">
         <normal source="theme" id="images/button.png" font-color="#000000" />
         <mouseover source="theme" id="images/button.png" font-color="#000000" color="#cceecc" />
@@ -19,7 +18,6 @@
 </template>
 
 <template name="themescrollarea" default="1">
-    <!-- Should also be applicable to the shard selection gump (without stuff from the muls) -->
     <scrollarea>
         <vscroll width="15" visible="always">
             <thumb>
@@ -56,13 +54,16 @@
 </template>
 
 <template name="themecheckbox" default="1">
-    <!-- Should also be applicable to the shard selection gump (without stuff from the muls) -->
     <checkbox>
         <unchecked source="theme" id="images/checkbox.png" />
         <unchecked-mouseover source="theme" id="images/checkbox.png" color="#cceecc" />
         <checked source="theme" id="images/checkbox_checked.png" />
         <checked-mouseover source="theme" id="images/checkbox_checked.png" color="#cceecc" />
     </checkbox>
+</template>
+
+<template name="solid">
+    <image source="theme" id="images/solid.png" />
 </template>
 
 

@@ -324,7 +324,9 @@ void LineEdit::on_process_message(CL_GUIMessage &msg) {
         CL_InputEvent e = input_msg.get_event();
 
         if (e.device.get_type() == CL_InputDevice::keyboard) {
-            if (action_.length() > 0) {
+            if (e.type == CL_InputEvent::pressed &&
+                    (e.id == CL_KEY_ENTER || e.id == CL_KEY_RETURN || e.id == CL_KEY_NUMPAD_ENTER) &&
+                    action_.length() > 0) {
                 onEnterPressed();
                 msg.set_consumed();
                 return;

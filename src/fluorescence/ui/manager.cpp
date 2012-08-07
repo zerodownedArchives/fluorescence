@@ -91,6 +91,8 @@ Manager::Manager() : worldView_(nullptr) {
     description.set_version(2, 1, true);
     mainWindow_.reset(new CL_DisplayWindow(description));
 
+    LOG_DEBUG << "OpenGL extensions: " << getOpenGLExtensions() << std::endl;
+
     slotCloseWindow = mainWindow_->sig_window_close().connect(Client::getSingleton(), &Client::shutdown);
 
     windowManager_.reset(new CL_GUIWindowManagerTexture(*mainWindow_));
@@ -99,12 +101,10 @@ Manager::Manager() : worldView_(nullptr) {
     guiManager_->set_window_manager(*windowManager_);
     guiManager_->func_input_received_nowindow().set(this, &Manager::onInputOutsideWindows);
 
-    setTheme("default");
-
     boost::filesystem::path path = "fonts";
     loadFontDirectory(path);
 
-    LOG_DEBUG << "OpenGL extensions: " << getOpenGLExtensions() << std::endl;
+    setTheme("preshard");
 }
 
 bool Manager::setShardConfig(Config& config) {
@@ -142,6 +142,8 @@ bool Manager::setShardConfig(Config& config) {
     std::sort(staticIgnoreIds_.begin(), staticIgnoreIds_.end());
     std::sort(mapWaterIds_.begin(), mapWaterIds_.end());
     std::sort(staticWaterIds_.begin(), staticWaterIds_.end());
+
+    setTheme(config["/fluo/ui/theme@name"].asString());
 
     return true;
 }
@@ -481,6 +483,7 @@ components::WorldView* Manager::getWorldView() const {
 }
 
 void Manager::setTheme(const UnicodeString& themeName) {
+    LOG_DEBUG << "Setting theme: " << themeName << std::endl;
     boost::filesystem::path path("themes");
     path = path / StringConverter::toUtf8String(themeName);
 

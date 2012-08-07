@@ -46,7 +46,7 @@ void FilePathLoader::readTextureCallback(const boost::filesystem::path& path, bo
         return;
     }
 
-    LOG_DEBUG << "Opening image from file " << path << std::endl;
+    //LOG_DEBUG << "Opening image from file " << path << std::endl;
 
     try {
         CL_PixelBuffer pxBuf(path.string());
