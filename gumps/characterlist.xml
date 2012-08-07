@@ -1,13 +1,22 @@
 <?xml version="1.0"?>
 <gump x="387" y="259" closable="0" draggable="0" action="selectcharacter-first" cancelaction="disconnect" inbackground="true">
     <background x="0" y="0" width="250" height="250"  />
-    <!--tscrollarea x="20" y="20" width="210" height="137" hvisible="never" vvisible="always" vstep="28" vpage="112" -->
-        <repeat name="characterlist" yincrease="28" xlimit="1">
-            <button x="0" y="0" width="160" height="25" name="selectcharacter" action="selectcharacter" param="characterindex" param2="characterpassword" param3="charactername" text="charactername" />
-            <button x="165" y="0" width="25" height="25" text="X" action="yesnogump" param="Do you really want to delete this character?" param2="deletecharacter" param3="characterindex" param4="characterpassword" />
-        </repeat>
-    <!--/tscrollarea-->
+    <image x="0" y="0" source="theme" id="images/background_250x250.png" />
+    <scrollarea x="20" y="20" width="210" height="137">
+        <content>
+            <repeat name="characterlist" yincrease="28" xlimit="1">
+                <!--
+                Each entry represents one of the account's characters. Properties:
+                - characterindex: ID used to identify the character on the server
+                - charactername: Name of the character
+                - characterpassword: Password for the character. Only used internally, but important to successfully login
+                -->
+                <button x="0" y="0" width="160" name="selectcharacter" action="selectcharacter" param="characterindex" param2="characterpassword" param3="charactername" text="charactername" />
+                <button template="themebuttonsmall" x="165" y="0" width="25" text="X" action="yesnogump" param="Do you really want to delete this character?" param2="deletecharacter" param3="characterindex" param4="characterpassword" />
+            </repeat>
+        </content>
+    </scrollarea>
 
-    <button x="10" y="175" width="210" height="25" text="Create dummy" action="createdummychar" />
-    <button x="10" y="203" width="210" height="25" text="Disconnect" action="disconnect" />
+    <button x="20" y="175" width="210" text="Create dummy" action="createdummychar" />
+    <button x="20" y="203" width="210" text="Disconnect" action="disconnect" />
 </gump>

@@ -1,4 +1,25 @@
 <?xml version="1.0"?>
+
+
+<!--
+The repeat contexts used in this gump are:
+First/Second/* Circle: Provides an index to the book. Properties:
+- spellname: Name of the spell
+- spellpage: On which page of the gump the spell description is located
+
+
+allspells: Detailed information on all spells. Properties:
+- previouspage: Index of the previous gump page
+- currentpage: Index of the gump page the spell is on
+- nextpage: Index of the next gump page
+- sectionname: Name of the section the spell is in (e.g. "First Circle")
+- spellid: Numerical ID used to identify the spell on the server
+- gumpid: ID of the gumpart texture of the spell
+- spellname: Name of the spell
+- descriptionheader: Header of the spell description (e.g. "Reagents")
+- description: Detailed description of the spell, e.g. reagent list
+-->
+
 <gump x="100" y="100" draggable="1" closable="1" resizable="1">
     <page number ="0">
         <image source="gumpart" id="2220" />

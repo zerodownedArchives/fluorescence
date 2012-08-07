@@ -39,7 +39,7 @@ namespace data {
 class UnicodeCharacter {
 public:
     UnicodeCharacter();
-    UnicodeCharacter(unsigned int charCode, int xOffset, int yOffset, unsigned int width, unsigned int height);
+    UnicodeCharacter(unsigned int charCode, int xOffset, int yOffset, int width, int height);
 
     ~UnicodeCharacter();
 

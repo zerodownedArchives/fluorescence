@@ -294,7 +294,7 @@ bool Manager::setShardConfig(Config& config) {
     mobTypesLoader_.reset(new DefFileLoader<MobTypeDef>(path, "isi", &MobTypesLoader::parseType));
 
 
-    const char* unifontNames[] = { "unifont", "unifont1", "unifont2", "unifont3", "unifont4", "unifont4", "unifont5", "unifont6", "unifont7", "unifont8", "unifont9", "unifont10", "unifont11", "unifont12" };
+    const char* unifontNames[] = { "unifont", "unifont1", "unifont2", "unifont3", "unifont4", "unifont5", "unifont6", "unifont7", "unifont8", "unifont9", "unifont10", "unifont11", "unifont12" };
 
     for (unsigned int index = 0; index <= 12; ++index) {
         ss.str(""); ss.clear();

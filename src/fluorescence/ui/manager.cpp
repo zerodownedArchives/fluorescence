@@ -83,7 +83,7 @@ Manager* Manager::getSingleton() {
 
 Manager::Manager() : worldView_(nullptr) {
     CL_OpenGLWindowDescription description;
-    description.set_size(CL_Size(1024, 768), true);
+    description.set_position(CL_Rect(50, 50, CL_Size(1024, 768)), true);
     description.set_title("fluorescence");
     description.set_allow_resize(true);
     description.set_depth_size(24);

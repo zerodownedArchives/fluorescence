@@ -2,18 +2,21 @@
 <gump x="400" y="300" closable="0" draggable="0" action="createshard">
     <!--
     In case you want to redesign this gump, keep in mind that at this point, you can not
-    access any uo data (e.g. art.mul graphics), as the mul files are not loaded yet.
+    access any uo data (e.g. art.mul graphics, hues), as the mul files are not loaded yet.
     -->
-    <tbackground x="0" y="0" width="350" height="150"  />
+    <image x="0" y="0" source="theme" id="images/background_350x190.png" />
 
-    <tlabel x="15" y="18" width="95" height="20" text="Name:" />
-    <tlineedit name="shardname" x="120" y="15" width="215" height="25" />
+    <label x="15" y="16" width="95" text="Name:" />
+    <image template="lineeditbackground" x="115" y="13" />
+    <lineedit name="shardname" x="120" y="15" width="215" />
 
-    <tlabel x="15" y="48" width="95" height="20" text="UO path:" />
-    <tlineedit name="uopath" x="120" y="45" width="215" height="25"/>
+    <label x="15" y="46" width="95" text="UO path:" />
+    <image template="lineeditbackground" x="115" y="43" />
+    <lineedit name="uopath" x="120" y="45" width="215"/>
 
-    <tcheckbox x="15" y="78" width="120" height="20" text="High Seas" name="highseas" />
+    <checkbox x="15" y="80" name="highseas" />
+    <label x="35" y="80" width="80" text="High seas" />
 
-    <tbutton x="30" y="115" width="130" height="25" text="Create shard" action="createshard" />
-    <tbutton x="190" y="115" width="130" height="25" text="Close fluorescence" action="shutdown" />
+    <button x="30" y="150" width="130" text="Create shard" action="createshard" />
+    <button x="190" y="150" width="130" text="Exit fluorescence" action="shutdown" />
 </gump>

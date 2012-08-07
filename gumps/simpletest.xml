@@ -55,8 +55,8 @@
         <label x="0" y="400" width="600" height="30" align="center" text="Centered text\nMultiline" />
         <label x="0" y="425" width="600" height="25" align="right" text="Right aligned" />
 
-        <image x="5" y="480" source="file" id="themes/default/Images/CheckBoxIndeterminatedHot.png" />
-        <image x="25" y="480" width="30" height="30" source="file" id="themes/default/Images/CheckBoxIndeterminatedHot.png" tiled="true" />
+        <image x="5" y="480" source="theme" id="images/checkbox_checked.png" />
+        <image x="25" y="480" width="30" height="30" source="theme" id="images/checkbox_checked.png" tiled="true" />
         <image x="65" y="480" source="staticart" id="16" hue="100" />
         <image x="120" y="480" source="mapart" width="100" height="100" id="16" tiled="1" />
         <image x="230" y="480" source="gumpart" id="230" />

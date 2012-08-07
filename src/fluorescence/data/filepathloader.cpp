@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #include "filepathloader.hpp"
 
 #include <boost/bind.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <ClanLib/Core/System/exception.h>
 #include <ClanLib/Display/Image/pixel_buffer.h>
 
@@ -29,7 +30,7 @@
 
 namespace fluo {
 namespace data {
- 
+
 FilePathLoader::FilePathLoader() {
     boost::shared_ptr<OnDemandUrlLoader<boost::filesystem::path, ui::Texture> > threadedLoader(new OnDemandUrlLoader<boost::filesystem::path, ui::Texture>(boost::bind(&FilePathLoader::readTextureCallback, this, _1, _2)));
     cache_.init(threadedLoader);
@@ -40,8 +41,13 @@ boost::shared_ptr<ui::Texture> FilePathLoader::getTexture(const boost::filesyste
 }
 
 void FilePathLoader::readTextureCallback(const boost::filesystem::path& path, boost::shared_ptr<ui::Texture> tex) {
+    if (!boost::filesystem::exists(path) || !boost::filesystem::is_regular_file(path)) {
+        LOG_ERROR << "Image file not found: " << path << std::endl;
+        return;
+    }
+
     LOG_DEBUG << "Opening image from file " << path << std::endl;
-    
+
     try {
         CL_PixelBuffer pxBuf(path.string());
         if (pxBuf.get_format() != cl_rgba8) {
@@ -50,7 +56,7 @@ void FilePathLoader::readTextureCallback(const boost::filesystem::path& path, bo
         }
         tex->setTexture(pxBuf);
     } catch (CL_Exception& ex) {
-        LOG_ERROR << "Provided URL can not be interpreted as a picture: " << path.string() << std::endl;
+        LOG_ERROR << "Provided file can not be interpreted as a picture: " << path.string() << std::endl;
     }
 }
 

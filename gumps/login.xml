@@ -1,18 +1,22 @@
 <?xml version="1.0"?>
 <gump x="337" y="289" closable="0" draggable="1" action="connect" cancelaction="shutdown" inbackground="true">
-    <background x="0" y="0" width="350" height="190"  />
-    <label x="15" y="18" width="95" height="20" text="IP/Hostname:" />
-    <lineedit name="loginhost" x="120" y="15" width="215" height="25" />
+    <image source="theme" id="images/background_350x190.png" />
+    <label template="themelabel" x="15" y="16" width="95" text="IP/Hostname:" />
+    <image template="lineeditbackground" x="115" y="13" />
+    <lineedit name="loginhost" x="120" y="15" width="215" />
 
-    <label x="15" y="48" width="95" height="20" text="Port:" />
-    <lineedit name="loginport" x="120" y="45" width="215" height="25" numeric="1" maxlength="5" />
+    <label template="themelabel" x="15" y="46" width="95" text="Port:" />
+    <image template="lineeditbackground" x="115" y="43" />
+    <lineedit name="loginport" x="120" y="45" width="215" numeric="1" maxlength="5" />
 
-    <label x="15" y="78" width="95" height="20" text="Account:" />
-    <lineedit name="loginaccount" x="120" y="75" width="215" height="25" />
+    <label template="themelabel" x="15" y="76" width="95" text="Account:" />
+    <image template="lineeditbackground" x="115" y="73" />
+    <lineedit name="loginaccount" x="120" y="75" width="215" />
 
-    <label x="15" y="108" width="95" height="20" text="Password:" />
-    <lineedit name="loginpassword" x="120" y="105" width="215" height="25"  password="1" />
+    <label template="themelabel" x="15" y="106" width="95" text="Password:" />
+    <image template="lineeditbackground" x="115" y="103" />
+    <lineedit name="loginpassword" x="120" y="105" width="215"  password="1" />
 
-    <button x="30" y="150" width="130" height="25" text="Close fluorescence" action="shutdown" />
-    <button x="190" y="150" width="130" height="25" text="Connect" action="connect" />
+    <button template="themebutton" x="30" y="150" width="130" text="Exit fluorescence" action="shutdown" />
+    <button template="themebutton" x="190" y="150" width="130" text="Connect" action="connect" />
 </gump>

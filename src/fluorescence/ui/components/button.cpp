@@ -120,14 +120,12 @@ void Button::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     MultiTextureImage::render(gc, clipRect);
 
     if (displayText_) {
-        gc.push_cliprect(get_geometry());
         span_.layout(gc, get_geometry().get_width());
         CL_Size spanSize = span_.get_size();
         // span aligns only horizontally. vertical alignment needs to be done manually
         span_.set_position(CL_Point(0, (get_height() - spanSize.height) / 2));
         span_.draw_layout(gc);
         span_.set_component_geometry();
-        gc.pop_cliprect();
     }
 }
 
@@ -145,7 +143,7 @@ void Button::setFontHue(unsigned int index, unsigned int hue) {
 
 void Button::setFont(const UnicodeString& name, unsigned int height) {
     fontDesc_.set_typeface_name(StringConverter::toUtf8String(name));
-    fontDesc_.set_height(12);
+    fontDesc_.set_height(height);
 }
 
 void Button::setFontAlignment(unsigned int align) {

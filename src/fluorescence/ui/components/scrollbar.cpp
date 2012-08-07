@@ -125,41 +125,45 @@ void ScrollBar::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
         return;
     }
 
+    // if the increment button is at the top left, the part positions were not set yet
+    // => textures are fully loaded for the first time
+    if (rect_button_increment.top == 0 && rect_button_increment.left == 0) {
+        update_part_positions();
+    }
+
     CL_Rectf centeredTrack(
             (get_width() - trackTexture_->getWidth()) / 2, rect_track_decrement.top,
             CL_Sizef(trackTexture_->getWidth(), trackTexture_->getHeight())
     );
     CL_Rectf trackTexCoords = trackTexture_->getNormalizedTextureCoords();
-    if (trackHueInfo_[1u] == 0) {
-        if (vertical) {
-            while (centeredTrack.bottom <= rect_button_increment.top) {
-                renderTexture(gc, trackTexture_.get(), centeredTrack,
-                        trackColor_, trackHueInfo_);
-                centeredTrack.translate(0, trackTexture_->getHeight() - 1);
-            }
-
-            // draw rest
-            int heightLeft = centeredTrack.bottom - rect_button_increment.top;
-            float factor = heightLeft / centeredTrack.get_height();
-            centeredTrack.bottom = (centeredTrack.top + centeredTrack.get_height()) * factor;
-            trackTexCoords.bottom = (trackTexCoords.top + trackTexCoords.get_height()) * factor;
+    if (vertical) {
+        while (centeredTrack.bottom <= rect_button_increment.top) {
             renderTexture(gc, trackTexture_.get(), centeredTrack,
-                        trackColor_, trackHueInfo_);
-        } else {
-            while (centeredTrack.right <= rect_button_increment.left) {
-                renderTexture(gc, trackTexture_.get(), centeredTrack,
-                        trackColor_, trackHueInfo_);
-                centeredTrack.translate(trackTexture_->getWidth() - 1, 0);
-            }
-
-            // draw rest
-            int widthLeft = centeredTrack.right - rect_button_increment.left;
-            float factor = widthLeft / centeredTrack.get_width();
-            centeredTrack.left = (centeredTrack.right + centeredTrack.get_width()) * factor;
-            trackTexCoords.left = (trackTexCoords.right + trackTexCoords.get_width()) * factor;
-            renderTexture(gc, trackTexture_.get(), centeredTrack,
-                        trackColor_, trackHueInfo_);
+                    trackColor_, trackHueInfo_);
+            centeredTrack.translate(0, trackTexture_->getHeight() - 1);
         }
+
+        // draw rest
+        int heightLeft = centeredTrack.bottom - rect_button_increment.top;
+        float factor = heightLeft / centeredTrack.get_height();
+        centeredTrack.bottom = centeredTrack.top + (centeredTrack.get_height() * factor);
+        trackTexCoords.bottom = trackTexCoords.top + (trackTexCoords.get_height() * factor);
+        renderTexture(gc, trackTexture_.get(), centeredTrack,
+                    trackColor_, trackHueInfo_);
+    } else {
+        while (centeredTrack.right <= rect_button_increment.left) {
+            renderTexture(gc, trackTexture_.get(), centeredTrack,
+                    trackColor_, trackHueInfo_);
+            centeredTrack.translate(trackTexture_->getWidth() - 1, 0);
+        }
+
+        // draw rest
+        int widthLeft = centeredTrack.right - rect_button_increment.left;
+        float factor = widthLeft / centeredTrack.get_width();
+        centeredTrack.left = centeredTrack.right + (centeredTrack.get_width() * factor);
+        trackTexCoords.left = trackTexCoords.right + (trackTexCoords.get_width() * factor);
+        renderTexture(gc, trackTexture_.get(), centeredTrack,
+                    trackColor_, trackHueInfo_);
     }
 
     CL_Rectf centeredDec(
@@ -498,8 +502,12 @@ void ScrollBar::on_mouse_leave() {
 
 // Calculates positions of all parts. Returns true if thumb position was changed compared to previously, false otherwise.
 bool ScrollBar::update_part_positions() {
-    // textures not set yet
-    if (!trackTexture_) {
+    // textures not set yet, or not fully loaded (size information might not be available)
+    if (!trackTexture_ ||
+            !incrementTextures_[incrementIndex_]->isReadComplete() ||
+            !decrementTextures_[decrementIndex_]->isReadComplete() ||
+            !thumbTextures_[thumbIndex_]->isReadComplete() ||
+            !trackTexture_->isReadComplete()) {
         return false;
     }
 

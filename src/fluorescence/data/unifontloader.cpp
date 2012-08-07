@@ -40,12 +40,18 @@ UnicodeCharacter::UnicodeCharacter() :
         charCode_(0), xOffset_(0), yOffset_(0), width_(0), height_(0), data_(NULL) {
 }
 
-UnicodeCharacter::UnicodeCharacter(unsigned int charCode, int xOffset, int yOffset, unsigned int width, unsigned int height) :
+UnicodeCharacter::UnicodeCharacter(unsigned int charCode, int xOffset, int yOffset, int width, int height) :
         charCode_(charCode), xOffset_(xOffset), yOffset_(yOffset), width_(width), height_(height) {
 
-    data_ = reinterpret_cast<uint8_t*>(malloc(width_ * height_));
+    if (width <= 0 || height <= 0) {
+        height = 0;
+        width = 0;
+        data_ = nullptr;
+    } else {
+        data_ = reinterpret_cast<uint8_t*>(malloc(width_ * height_));
 
-    memset(data_, 0, width_ * height_);
+        memset(data_, 0, width_ * height_);
+    }
 }
 
 UnicodeCharacter::~UnicodeCharacter() {

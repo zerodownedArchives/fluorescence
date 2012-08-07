@@ -156,9 +156,6 @@ void UoFontProvider::initFontMetrics() {
         maxWidth = charW->getTotalWidth();
     }
 
-     LOG_DEBUG << "font metrics: height=" << height << " ascent=" << ascent << " descent=" << descent << std::endl;
-
-
     fontMetrics_ = CL_FontMetrics(
 		height,		// height
 		ascent,		// ascent

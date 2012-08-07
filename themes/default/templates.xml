@@ -1,6 +1,71 @@
 <?xml version="1.0"?>
 <templates>
 
+<template name="themebutton" default="1">
+    <!-- Should also be applicable to the shard selection gump (without stuff from the muls) -->
+    <button font="Devinne Swash" font-height="18" height="25">
+        <normal source="theme" id="images/button.png" font-color="#000000" />
+        <mouseover source="theme" id="images/button.png" font-color="#000000" color="#cceecc" />
+        <mousedown source="theme" id="images/button.png" font-color="#000000" color="#ccffcc" />
+    </button>
+</template>
+
+<template name="themebuttonsmall">
+    <button font="Devinne Swash" font-height="18" height="25">
+        <normal source="theme" id="images/button_small.png" font-color="#000000" />
+        <mouseover source="theme" id="images/button_small.png" font-color="#000000" color="#cceecc" />
+        <mousedown source="theme" id="images/button_small.png" font-color="#000000" color="#ccffcc" />
+    </button>
+</template>
+
+<template name="themescrollarea" default="1">
+    <!-- Should also be applicable to the shard selection gump (without stuff from the muls) -->
+    <scrollarea>
+        <vscroll width="15" visible="always">
+            <thumb>
+                <normal source="theme" id="images/scroll_thumb.png" />
+                <mouseover source="theme" id="images/scroll_thumb.png" color="#cceecc" />
+                <mousedown source="theme" id="images/scroll_thumb.png" color="#ccffcc" />
+            </thumb>
+            <increment>
+                <normal source="theme" id="images/scroll_increment.png" />
+                <mouseover source="theme" id="images/scroll_increment.png" color="#cceecc" />
+                <mousedown source="theme" id="images/scroll_increment.png" color="#ccffcc" />
+            </increment>
+            <decrement>
+                <normal source="theme" id="images/scroll_decrement.png" />
+                <mouseover source="theme" id="images/scroll_decrement.png" color="#cceecc" />
+                <mousedown source="theme" id="images/scroll_decrement.png" color="#ccffcc" />
+            </decrement>
+            <track source="theme" id="images/scroll_track.png" />
+        </vscroll>
+        <hscroll visible="never" />
+    </scrollarea>
+</template>
+
+<template name="themelabel" default="1">
+    <label font="Devinne Swash" font-height="16" color="#000000" height="20" />
+</template>
+
+<template name="themelineedit" default="1">
+    <lineedit font="Devinne Swash" font-height="16" color="#000000" height="20" />
+</template>
+
+<template name="lineeditbackground">
+    <image source="theme" id="images/lineedit_back.png" width="220" height="22" />
+</template>
+
+<template name="themecheckbox" default="1">
+    <!-- Should also be applicable to the shard selection gump (without stuff from the muls) -->
+    <checkbox>
+        <unchecked source="theme" id="images/checkbox.png" />
+        <unchecked-mouseover source="theme" id="images/checkbox.png" color="#cceecc" />
+        <checked source="theme" id="images/checkbox_checked.png" />
+        <checked-mouseover source="theme" id="images/checkbox_checked.png" color="#cceecc" />
+    </checkbox>
+</template>
+
+
 <template name="greybackground" default="1">
     <background x="0" y="0" gumpid="2600"/>
 </template>
@@ -13,23 +78,6 @@
     <background x="0" y="0" gumpid="3000" />
 </template>
 
-<template name="button" font="unifont0" font-size="12" default="1" font-align="center">
-    <button>
-        <normal source="theme" id="Images/ButtonNormal.png" font-color="#000000" />
-        <mouseover source="theme" id="Images/ButtonHot.png" font-color="#000000" />
-        <mousedown source="theme" id="Images/ButtonPressed.png" font-color="#000000" />
-    </button>
-</template>
-
-<template name="checkbox" default="1">
-    <checkbox>
-        <unchecked source="gumpart" id="210" />
-        <unchecked-mouseover source="gumpart" id="210" />
-        <checked source="gumpart" id="211" />
-        <checked-mouseover source="gumpart" id="211" />
-    </checkbox>
-</template>
-
 <template name="radiobutton" default="1">
     <radiobutton>
         <unchecked source="gumpart" id="210" />
@@ -37,10 +85,6 @@
         <checked source="gumpart" id="209" />
         <checked-mouseover source="gumpart" id="209" />
     </radiobutton>
-</template>
-
-<template name="label" default="1">
-    <label font="unifont1" font-height="12" align="left" color="#000000" />
 </template>
 
 <template name="propertylabel" default="1">
@@ -55,10 +99,6 @@
     <clicklabel font="unifont1" font-height="12" align="left" color="#000000" />
 </template>
 
-<template name="lineedit" default="1">
-    <lineedit font="unifont1" font-height="12" color="#000000" />
-</template>
-
 <template name="warmodebutton" default="1">
     <warmodebutton>
         <normal source="gumpart" id="2021" />
@@ -71,7 +111,7 @@
     </warmodebutton>
 </template>
 
-<template name="scrollarea" default="1">
+<template name="uoscrollarea">
     <scrollarea>
         <vscroll width="15" visible="ondemand">
             <thumb>

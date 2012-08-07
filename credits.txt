@@ -17,3 +17,5 @@ The fluorescence updater is based on subversion (http://subversion.apache.org/),
 Some code snippets for the updater are originally by the Iris2 Team (www.iris2.de).
 
 fluorescence uses zlib (www.zlib.org) to inflate compressed data.
+
+The button textures used in the default theme were created by Blarumyrran (http://opengameart.org/content/pixelart-menu-naturery-hand-shooting-some-green-stuff).
