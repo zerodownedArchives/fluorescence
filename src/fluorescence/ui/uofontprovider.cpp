@@ -113,7 +113,7 @@ int UoFontProvider::get_character_index(CL_GraphicContext& gc, const CL_String& 
         if (curY >= targetYMin && curY < targetYMax) {
             // this is the line we really need to look at
             boost::shared_ptr<data::UnicodeCharacter> curChar = fontLoader_->getCharacter(charCode);
-            if (point.x >= curX && point.x < (curX + curChar->getTotalWidth())) {
+            if (point.x >= curX && point.x < (curX + (int)curChar->getTotalWidth())) {
                 return p;
             } else {
                 curX += curChar->getTotalWidth();

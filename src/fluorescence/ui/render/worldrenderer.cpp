@@ -137,7 +137,7 @@ void WorldRenderer::renderPreviousTexture(CL_GraphicContext& gc, float pixelX, f
 
     // ceilfs are to check if the pixel value is even. only then does the clipping stuff work correctly.
     // pixelX and pixelY can have fractional parts due to zoom
-    if (forceRepaint_ || ceilf(pixelX) != pixelX || ceilf(pixelY) != pixelY || abs(pixelX) >= textureWidth_ || abs(pixelY) >= textureHeight_) {
+    if (forceRepaint_ || ceilf(pixelX) != pixelX || ceilf(pixelY) != pixelY || (unsigned int)abs(pixelX) >= textureWidth_ || (unsigned int)abs(pixelY) >= textureHeight_) {
         // need to paint everything from scratch
         ui::Manager::getClipRectManager()->add(CL_Rectf(0, 0, CL_Sizef(drawWidth, drawHeight)).translate(worldView_->getTopLeftPixel()));
         forceRepaint_ = false;
