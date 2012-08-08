@@ -50,6 +50,11 @@ boost::shared_ptr<ui::Texture> AnimDataTextureProvider::getTexture() const {
 }
 
 bool AnimDataTextureProvider::update(unsigned int elapsedMillis) {
+    // check for faulty muls
+    if (info_.frameCount_ == 0 || info_.frameIntervalMillis_ == 0) {
+        return false;
+    }
+
     unsigned int lastIdx = currentIdx_;
 
     unsigned int newMillis = millis_ + elapsedMillis;
