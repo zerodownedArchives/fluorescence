@@ -30,6 +30,8 @@
 #include <ui/manager.hpp>
 #include <misc/log.hpp>
 
+#include "scrollarea.hpp"
+
 namespace fluo {
 namespace ui {
 namespace components {
@@ -38,6 +40,16 @@ Label::Label(CL_GUIComponent* parent) : GumpComponent(parent), fontColor_(CL_Col
     func_render().set(this, &Label::onRender);
 
     fontDesc_.set_height(12);
+
+    hasScrollareaParent_ = false;
+    CL_GUIComponent* comp = parent;
+    while (comp) {
+        if (dynamic_cast<components::ScrollArea*>(comp)) {
+            hasScrollareaParent_ = true;
+            break;
+        }
+        comp = comp->get_parent_component();
+    }
 }
 
 UnicodeString Label::getText() {
@@ -102,9 +114,15 @@ void Label::adjustSize() {
 }
 
 void Label::onRender(CL_GraphicContext& gc, const CL_Rect& update_rect) {
-    gc.push_cliprect(get_geometry());
-    span_.draw_layout(gc);
-    gc.pop_cliprect();
+    // clipping the text inside the scrollareas is rather complicated :/
+    // quick hack: if there is a scrollbar, don't clip (will affect mostly html gumps)
+    if (!hasScrollareaParent_) {
+        gc.push_cliprect(get_geometry());
+        span_.draw_layout(gc);
+        gc.pop_cliprect();
+    } else {
+        span_.draw_layout(gc);
+    }
 }
 
 

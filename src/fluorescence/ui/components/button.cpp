@@ -25,6 +25,8 @@
 #include <ui/gumpmenu.hpp>
 #include <ui/manager.hpp>
 
+#include "scrollarea.hpp"
+
 namespace fluo {
 namespace ui {
 namespace components {
@@ -39,6 +41,16 @@ Button::Button(CL_GUIComponent* parent) : MultiTextureImage(parent, 3), mouseOve
     set_double_click_enabled(false);
 
     set_type_name("button");
+
+    hasScrollareaParent_ = false;
+    CL_GUIComponent* comp = parent;
+    while (comp) {
+        if (dynamic_cast<components::ScrollArea*>(comp)) {
+            hasScrollareaParent_ = true;
+            break;
+        }
+        comp = comp->get_parent_component();
+    }
 }
 
 bool Button::onInputReleased(const CL_InputEvent & e) {
@@ -120,12 +132,20 @@ void Button::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     MultiTextureImage::render(gc, clipRect);
 
     if (displayText_) {
+        if (!hasScrollareaParent_) {
+            gc.push_cliprect(get_geometry());
+        }
+
         span_.layout(gc, get_geometry().get_width());
         CL_Size spanSize = span_.get_size();
         // span aligns only horizontally. vertical alignment needs to be done manually
         span_.set_position(CL_Point(0, (get_height() - spanSize.height) / 2));
         span_.draw_layout(gc);
         span_.set_component_geometry();
+
+        if (!hasScrollareaParent_) {
+            gc.pop_cliprect();
+        }
     }
 }
 

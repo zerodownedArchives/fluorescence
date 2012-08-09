@@ -77,6 +77,8 @@ private:
     void activateText(unsigned int index);
 
     void render(CL_GraphicContext& gc, const CL_Rect& clipRect);
+
+    bool hasScrollareaParent_;
 };
 
 }

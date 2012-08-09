@@ -67,6 +67,8 @@ private:
     void adjustSize();
 
     void onRender(CL_GraphicContext& gc, const CL_Rect& update_rect);
+
+    bool hasScrollareaParent_;
 };
 
 }
