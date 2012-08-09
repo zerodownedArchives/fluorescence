@@ -622,7 +622,8 @@ bool StringParser::parseXmfHtmlGumpColor(const UnicodeString& params, const std:
 
         components::Label* label = new components::Label(menu);
         label->set_geometry(bounds);
-        label->setHtmlText(text, colorDef);
+        label->setColor(colorDef);
+        label->setHtmlText(text);
         menu->addToCurrentPage(label);
 
         return true;
@@ -670,7 +671,8 @@ bool StringParser::parseXmfHtmlTok(const UnicodeString& params, const std::vecto
 
         components::Label* label = new components::Label(menu);
         label->set_geometry(bounds);
-        label->setHtmlText(text, colorDef);
+        label->setColor(colorDef);
+        label->setHtmlText(text);
         menu->addToCurrentPage(label);
 
         return true;

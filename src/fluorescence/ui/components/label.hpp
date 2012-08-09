@@ -47,23 +47,23 @@ public:
     UnicodeString getText();
 
     void setAlignment(unsigned int align);
-    void setFontName(const UnicodeString& name);
-    void setFontHeight(unsigned int height);
+    void setFont(const UnicodeString& name, unsigned int height);
     void setColor(const CL_Colorf& color);
     void setHue(unsigned int hue);
 
-    void setHtmlText(const UnicodeString& string, const CL_Colorf& colorDefault = CL_Colorf::black);
+    void setHtmlText(const UnicodeString& string);
 
 protected:
     CL_SpanLayout span_;
     CL_FontDescription fontDesc_;
+    CL_Font cachedFont_;
     CL_Colorf fontColor_;
 
 private:
     UnicodeString text_;
     unsigned int alignment_;
 
-    bool spanInitialized_;
+    void adjustSize();
 
     void onRender(CL_GraphicContext& gc, const CL_Rect& update_rect);
 };

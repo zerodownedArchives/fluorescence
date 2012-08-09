@@ -66,6 +66,8 @@ void SysLogLabel::notify(std::list<world::SysLogEntry>::const_iterator iter, std
 
     CL_Rectf newGeom(maxGeometry_.left, maxGeometry_.bottom - span_.get_size().height, maxGeometry_.right, maxGeometry_.bottom);
     set_geometry(newGeom);
+    span_.set_position(CL_Point(0, 0));
+    span_.set_component_geometry();
 }
 
 void SysLogLabel::onRender(CL_GraphicContext& gc, const CL_Rect& update_rect) {

@@ -3,7 +3,7 @@ fluorescence makes extensive use of ClanLib (www.ClanLib.org).
 The "Devinne Swash" font was created by Dieter Steffmann (http://www.steffmann.de/). It is available at http://www.fontspace.com/dieter-steffmann/devinne-swash
 
 fluorescence is based on pugixml library (http://pugixml.org)
-pugixml is Copyright (C) 2006-2010 Arseny Kapoulkine.
+pugixml is Copyright (C) 2006-2012, by Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
 
 fluorescence makes extensive use of several boost libraries (www.boost.org). 
 

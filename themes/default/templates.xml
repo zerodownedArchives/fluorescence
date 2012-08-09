@@ -140,6 +140,7 @@
             </decrement>
             <track source="gumpart" id="255" />
         </vscroll>
+        <hscroll visible="never" />
     </scrollarea>
 </template>
 
@@ -161,6 +162,10 @@
 
 <template name="spellbooktitle">
     <label font="Devinne Swash" font-height="16" color="#001052" />
+</template>
+
+<template name="htmllabel" default="1">
+    <htmllabel scrollbar-template="uoscrollarea" background-template="thingreybackground" font="Devinne Swash" font-height="14" color="#000000" />
 </template>
 
 </templates>

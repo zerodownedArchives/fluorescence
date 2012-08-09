@@ -189,7 +189,7 @@ void MapTile::onClick() {
             getLocZGame() << ") name=" << tileDataInfo_->name_ << " flat=" << isFlat_ << std::endl;
 
     LOG_INFO << "z value: self=" << getLocZGame() << " right=" << zRight_ << " bottom=" << zBottom_ << " left=" << zLeft_ << std::endl;
-    
+
     //LOG_INFO << "Tex coords: " << getIngameTexture()->getTextureCoords() << std::endl;
     //LOG_INFO << "Normalized:" << getIngameTexture()->getNormalizedTextureCoords() << std::endl;
 
