@@ -34,7 +34,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-Label::Label(CL_GUIComponent* parent) : CL_GUIComponent(parent), fontColor_(CL_Colorf::black), alignment_(Alignment::LEFT) {
+Label::Label(CL_GUIComponent* parent) : GumpComponent(parent), fontColor_(CL_Colorf::black), alignment_(Alignment::LEFT) {
     func_render().set(this, &Label::onRender);
 
     fontDesc_.set_height(12);

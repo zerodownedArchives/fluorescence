@@ -76,7 +76,7 @@ XmlLoader::XmlLoader() {
     functionTable_["clicklabel"] = boost::bind(&XmlLoader::parseClickLabel, this, _1, _2, _3, _4);
     functionTable_["lineedit"] = boost::bind(&XmlLoader::parseLineEdit, this, _1, _2, _3, _4);
     functionTable_["scrollarea"] = boost::bind(&XmlLoader::parseScrollArea, this, _1, _2, _3, _4);
-    functionTable_["repeat"] = boost::bind(&XmlLoader::parseRepeat, this, _1, _2, _3, _4);
+    //functionTable_["repeat"] = boost::bind(&XmlLoader::parseRepeat, this, _1, _2, _3, _4);
     functionTable_["htmllabel"] = boost::bind(&XmlLoader::parseHtmlLabel, this, _1, _2, _3, _4);
 
     functionTable_["worldview"] = boost::bind(&XmlLoader::parseWorldView, this, _1, _2, _3, _4);
@@ -266,18 +266,15 @@ GumpMenu* XmlLoader::fromXml(pugi::xml_document& doc) {
     return ret;
 }
 
-bool XmlLoader::parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent, GumpMenu* top) {
     pugi::xml_node_iterator iter = rootNode.begin();
     pugi::xml_node_iterator iterEnd = rootNode.end();
 
-    bool ret = true;
+    bool success = true;
+    GumpComponent* lastComponent;
 
-    for (; iter != iterEnd && ret; ++iter) {
-        std::map<UnicodeString, XmlParseFunction>::iterator function = functionTable_.find(iter->name());
-
-        //LOG_DEBUG << "Gump Component: " << iter->name() << std::endl;
-
-        if (function != functionTable_.end()) {
+    for (; iter != iterEnd && success; ++iter) {
+        if (strcmp(iter->name(), "repeat") == 0) {
             pugi::xml_node defaultNode;
             if (iter->attribute("template")) {
                 defaultNode = getTemplate(iter->attribute("template").value());
@@ -287,13 +284,31 @@ bool XmlLoader::parseChildren(pugi::xml_node& rootNode, CL_GUIComponent* parent,
                 defaultNode = defaultTemplateMap_[iter->name()];
             }
 
-            ret = (function->second)(*iter, defaultNode, parent, top);
+            success = parseRepeat(*iter, defaultNode, parent, top);
         } else {
-            LOG_WARN << "Unknown gump tag " << iter->name() << std::endl;
+            std::map<UnicodeString, XmlParseFunction>::iterator function = functionTable_.find(iter->name());
+
+            //LOG_DEBUG << "Gump Component: " << iter->name() << std::endl;
+
+            if (function != functionTable_.end()) {
+                pugi::xml_node defaultNode;
+                if (iter->attribute("template")) {
+                    defaultNode = getTemplate(iter->attribute("template").value());
+                }
+
+                if (!defaultNode) {
+                    defaultNode = defaultTemplateMap_[iter->name()];
+                }
+
+                lastComponent = (function->second)(*iter, defaultNode, parent, top);
+                success = lastComponent != nullptr;
+            } else {
+                LOG_WARN << "Unknown gump tag " << iter->name() << std::endl;
+            }
         }
     }
 
-    return ret;
+    return lastComponent;
 }
 
 
@@ -555,7 +570,7 @@ bool XmlLoader::parseScrollBar(components::ScrollBar* bar, components::ScrollAre
 }
 
 
-bool XmlLoader::parseImage(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseImage(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
 
     unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
@@ -570,7 +585,7 @@ bool XmlLoader::parseImage(pugi::xml_node& node, pugi::xml_node& defaultNode, CL
     boost::shared_ptr<ui::Texture> texture = parseTexture(node, defaultNode);
     if (!texture) {
         LOG_ERROR << "Unable to parse gump image, source=" << getAttribute("source", node, defaultNode) << " id=" << getAttribute("id", node, defaultNode) << std::endl;
-        return false;
+        return nullptr;
     }
 
     if (bounds.get_width() == 0 || bounds.get_height() == 0) {
@@ -599,10 +614,10 @@ bool XmlLoader::parseImage(pugi::xml_node& node, pugi::xml_node& defaultNode, CL
     }
 
     top->addToCurrentPage(img);
-    return true;
+    return img;
 }
 
-bool XmlLoader::parseButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     unsigned int buttonId = getAttribute("buttonid", node, defaultNode).as_uint();
     unsigned int pageId = getAttribute("page", node, defaultNode).as_uint();
@@ -632,7 +647,7 @@ bool XmlLoader::parseButton(pugi::xml_node& node, pugi::xml_node& defaultNode, C
         button->setPageButton(pageId);
     } else {
         LOG_WARN << "Button without action, id or page" << std::endl;
-        return false;
+        return nullptr;
     }
 
     if (align == "left") {
@@ -643,7 +658,7 @@ bool XmlLoader::parseButton(pugi::xml_node& node, pugi::xml_node& defaultNode, C
         button->setFontAlignment(components::Label::Alignment::CENTER);
     } else {
         LOG_WARN << "Unknown button align: " << align << std::endl;
-        return false;
+        return nullptr;
     }
     button->setFont(fontName, fontHeight);
 
@@ -669,7 +684,7 @@ bool XmlLoader::parseButton(pugi::xml_node& node, pugi::xml_node& defaultNode, C
     } else {
         LOG_ERROR << "Normal image for uo button not defined" << std::endl;
         node.print(std::cout);
-        return false;
+        return nullptr;
     }
 
     if (mouseOverNode || defaultMouseOverNode) {
@@ -693,10 +708,10 @@ bool XmlLoader::parseButton(pugi::xml_node& node, pugi::xml_node& defaultNode, C
 
     top->addToCurrentPage(button);
 
-    return true;
+    return button;
 }
 
-bool XmlLoader::parseBackground(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseBackground(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
 
     unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
@@ -707,7 +722,7 @@ bool XmlLoader::parseBackground(pugi::xml_node& node, pugi::xml_node& defaultNod
 
     if (!gumpId) {
         LOG_ERROR << "Unable to parse background, gumpid not found, not a number or zero" << std::endl;
-        return false;
+        return nullptr;
     }
 
     components::Background* img = new components::Background(parent);
@@ -727,29 +742,29 @@ bool XmlLoader::parseBackground(pugi::xml_node& node, pugi::xml_node& defaultNod
     }
 
     top->addToCurrentPage(img);
-    return true;
+    return img;
 }
 
-bool XmlLoader::parsePage(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parsePage(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     unsigned int number = getAttribute("number", node, defaultNode).as_uint();
 
     if (top->getActivePageId() != 0) {
         // check that we add pages only at the top level hierarchy
         // adding a page inside another page
         LOG_ERROR << "Adding page " << top->getActivePageId() << " inside of page " << number << std::endl;
-        return false;
+        return nullptr;
     }
 
     top->addPage(number);
 
-    bool ret = parseChildren(node, parent, top);
+    GumpComponent* lastComponent = parseChildren(node, parent, top);
 
     top->activatePage(0);
 
-    return ret;
+    return lastComponent;
 }
 
-bool XmlLoader::parseCheckbox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseCheckbox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     unsigned int switchId = getAttribute("switchid", node, defaultNode).as_uint();
     bool isChecked = getAttribute("checked", node, defaultNode).as_bool();
@@ -774,7 +789,7 @@ bool XmlLoader::parseCheckbox(pugi::xml_node& node, pugi::xml_node& defaultNode,
         parseMultiTextureImage(checkedNode, defCheckedNode, cb, components::Checkbox::TEX_INDEX_CHECKED);
     } else {
         LOG_ERROR << "Checkbox needs to have checked and unchecked image node" << std::endl;
-        return false;
+        return nullptr;
     }
 
     if (uncheckedMoNode || defUncheckedMoNode) {
@@ -795,10 +810,10 @@ bool XmlLoader::parseCheckbox(pugi::xml_node& node, pugi::xml_node& defaultNode,
     cb->set_geometry(bounds);
 
     top->addToCurrentPage(cb);
-    return true;
+    return cb;
 }
 
-bool XmlLoader::parseRadioButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseRadioButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     unsigned int switchId = getAttribute("switchid", node, defaultNode).as_uint();
     bool isChecked = getAttribute("checked", node, defaultNode).as_bool();
@@ -825,7 +840,7 @@ bool XmlLoader::parseRadioButton(pugi::xml_node& node, pugi::xml_node& defaultNo
         parseMultiTextureImage(checkedNode, defCheckedNode, rb, components::Checkbox::TEX_INDEX_CHECKED);
     } else {
         LOG_ERROR << "radiobutton needs to have checked and unchecked image node" << std::endl;
-        return false;
+        return nullptr;
     }
 
     if (uncheckedMoNode || defUncheckedMoNode) {
@@ -846,10 +861,10 @@ bool XmlLoader::parseRadioButton(pugi::xml_node& node, pugi::xml_node& defaultNo
     rb->set_geometry(bounds);
 
     top->addToCurrentPage(rb);
-    return true;
+    return rb;
 }
 
-bool XmlLoader::parseLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     UnicodeString text = getAttribute("text", node, defaultNode).value();
 
@@ -863,47 +878,47 @@ bool XmlLoader::parseLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL
     components::Label* label = new components::Label(parent);
     label->set_geometry(bounds);
     if (!parseLabelHelper(label, node, defaultNode)) {
-        return false;
+        return nullptr;
     }
     label->setText(text);
 
     top->addToCurrentPage(label);
-    return true;
+    return label;
 }
 
-bool XmlLoader::parsePropertyLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parsePropertyLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     UnicodeString link = StringConverter::fromUtf8(node.attribute("link").value());
 
     if (link.length() == 0) {
         LOG_WARN << "PropertyLabel without link" << std::endl;
-        return false;
+        return nullptr;
     }
 
     components::PropertyLabel* label = new components::PropertyLabel(parent, link);
     label->set_geometry(bounds);
     if (!parseLabelHelper(label, node, defaultNode)) {
-        return false;
+        return nullptr;
     }
 
     top->addToCurrentPage(label);
-    return true;
+    return label;
 }
 
-bool XmlLoader::parseSysLogLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseSysLogLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
 
     components::SysLogLabel* label = new components::SysLogLabel(top);
     label->setMaxGeometry(bounds);
     if (!parseLabelHelper(label, node, defaultNode)) {
-        return false;
+        return nullptr;
     }
 
     top->addToCurrentPage(label);
-    return true;
+    return label;
 }
 
-bool XmlLoader::parseClickLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseClickLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     UnicodeString text = getAttribute("text", node, defaultNode).value();
 
@@ -916,17 +931,17 @@ bool XmlLoader::parseClickLabel(pugi::xml_node& node, pugi::xml_node& defaultNod
 
     unsigned int buttonId = node.attribute("buttonid").as_uint();
     unsigned int pageId = node.attribute("page").as_uint();
-    UnicodeString action = StringConverter::fromUtf8(node.attribute("action").value());
-    UnicodeString param = StringConverter::fromUtf8(node.attribute("param").value());
-    UnicodeString param2 = StringConverter::fromUtf8(node.attribute("param2").value());
-    UnicodeString param3 = StringConverter::fromUtf8(node.attribute("param3").value());
-    UnicodeString param4 = StringConverter::fromUtf8(node.attribute("param4").value());
-    UnicodeString param5 = StringConverter::fromUtf8(node.attribute("param5").value());
+    UnicodeString action = StringConverter::fromUtf8(getAttribute("action", node, defaultNode).value());
+    UnicodeString param = StringConverter::fromUtf8(getAttribute("param", node, defaultNode).value());
+    UnicodeString param2 = StringConverter::fromUtf8(getAttribute("param2", node, defaultNode).value());
+    UnicodeString param3 = StringConverter::fromUtf8(getAttribute("param3", node, defaultNode).value());
+    UnicodeString param4 = StringConverter::fromUtf8(getAttribute("param4", node, defaultNode).value());
+    UnicodeString param5 = StringConverter::fromUtf8(getAttribute("param5", node, defaultNode).value());
 
     components::ClickLabel* label = new components::ClickLabel(parent);
     label->set_geometry(bounds);
     if (!parseLabelHelper(label, node, defaultNode)) {
-        return false;
+        return nullptr;
     }
 
     if (action.length() > 0) {
@@ -942,19 +957,24 @@ bool XmlLoader::parseClickLabel(pugi::xml_node& node, pugi::xml_node& defaultNod
         label->setPageButton(pageId);
     } else {
         LOG_WARN << "ClickLabel without action, id or page" << std::endl;
-        return false;
+        return nullptr;
     }
 
     label->setText(text);
 
     top->addToCurrentPage(label);
-    return true;
+    return label;
 }
 
-bool XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     pugi::xml_text textNode = node.text();
     UnicodeString text(textNode.get());
+
+    UnicodeString scrollbarTemplate = StringConverter::fromUtf8(getAttribute("scrollbar-template", node, defaultNode).value());
+    UnicodeString backgroundTemplate = StringConverter::fromUtf8(getAttribute("background-template", node, defaultNode).value());
+    bool useBackground = getAttribute("background", node, defaultNode).as_bool();
+    bool useScrollbar = getAttribute("scrollbar", node, defaultNode).as_bool();
 
     unsigned int cliloc = getAttribute("cliloc", node, defaultNode).as_uint();
     if (cliloc) {
@@ -967,18 +987,66 @@ bool XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& defaultNode
         LOG_WARN << "htmllabel with empty text" << std::endl;
     }
 
-    components::Label* label = new components::Label(parent);
-    label->set_geometry(bounds);
-    if (!parseLabelHelper(label, node, defaultNode)) {
-        return false;
+    if (useBackground) {
+        pugi::xml_node dummy;
+        pugi::xml_node bgNode = getTemplate(backgroundTemplate);
+        if (!bgNode) {
+            LOG_ERROR << "htmllabel background requested, but unable to find given template: " << backgroundTemplate << std::endl;
+            return nullptr;
+        }
+
+        GumpComponent* bg = parseBackground(dummy, bgNode, parent, top);
+        if (!bg) {
+            LOG_ERROR << "Unable to get htmllabel background from template " << backgroundTemplate << std::endl;
+            return nullptr;
+        }
+        bg->set_geometry(bounds);
     }
+
+    components::ScrollArea* scrollarea = nullptr;
+    if (useScrollbar) {
+        pugi::xml_node dummy;
+        pugi::xml_node scrollNode = getTemplate(scrollbarTemplate);
+        if (!scrollNode) {
+            LOG_ERROR << "htmllabel scrollbar requested, but unable to find given template: " << scrollbarTemplate << std::endl;
+            return nullptr;
+        }
+
+        scrollarea = dynamic_cast<components::ScrollArea*>(parseScrollArea(dummy, scrollNode, parent, top));
+        if (!scrollarea) {
+            LOG_ERROR << "Unable to get htmllabel scrollbar from template " << scrollbarTemplate << std::endl;
+            return nullptr;
+        }
+        scrollarea->set_geometry(bounds);
+    }
+
+
+    components::Label* label;
+    if (scrollarea) {
+        label = new components::Label(scrollarea->getClientArea());
+        CL_Rectf geom(0, 0, CL_Sizef(bounds.get_width() - scrollarea->getVerticalScrollBar()->get_width(), 0)); // auto height
+        label->set_geometry(geom);
+    } else {
+        label = new components::Label(parent);
+        label->set_geometry(bounds);
+    }
+
+    if (!parseLabelHelper(label, node, defaultNode)) {
+        return nullptr;
+    }
+
     label->setHtmlText(text);
 
+    if (scrollarea) {
+        scrollarea->updateScrollbars(0, 0);
+        scrollarea->setupResizeHandler();
+    }
+
     top->addToCurrentPage(label);
-    return true;
+    return label;
 }
 
-bool XmlLoader::parseLineEdit(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseLineEdit(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     UnicodeString text = StringConverter::fromUtf8(getAttribute("text", node, defaultNode).value());
     int numeric = getAttribute("numeric", node, defaultNode).as_int();
@@ -1026,10 +1094,10 @@ bool XmlLoader::parseLineEdit(pugi::xml_node& node, pugi::xml_node& defaultNode,
     edit->setEntryId(entryId);
 
     top->addToCurrentPage(edit);
-    return true;
+    return edit;
 }
 
-bool XmlLoader::parseScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
 
     components::ScrollArea* area = new components::ScrollArea(parent);
@@ -1048,43 +1116,43 @@ bool XmlLoader::parseScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNod
     if (contentNode) {
         parseChildren(contentNode, area->getClientArea(), top);
     } else {
-        LOG_ERROR << "No content node in scrollarea" << std::endl;
+        //LOG_ERROR << "No content node in scrollarea" << std::endl;
     }
 
     area->updateScrollbars(marginRight, marginBottom);
     area->setupResizeHandler();
 
-    return true;
+    return area;
 }
 
-bool XmlLoader::parseWorldView(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseWorldView(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     ui::components::WorldView* worldView = new ui::components::WorldView(parent, bounds);
     parseId(node, worldView);
     top->addToCurrentPage(worldView);
 
-    return true;
+    return worldView;
 }
 
-bool XmlLoader::parsePaperdoll(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parsePaperdoll(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     ui::components::PaperdollView* pdView = new ui::components::PaperdollView(parent, bounds);
     parseId(node, pdView);
     top->addToCurrentPage(pdView);
 
-    return true;
+    return pdView;
 }
 
-bool XmlLoader::parseContainer(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseContainer(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     ui::components::ContainerView* contView = new ui::components::ContainerView(parent, bounds);
     parseId(node, contView);
     top->addToCurrentPage(contView);
 
-    return true;
+    return contView;
 }
 
-bool XmlLoader::parseWarModeButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+GumpComponent* XmlLoader::parseWarModeButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
 
     components::WarModeButton* button = new components::WarModeButton(parent);
@@ -1142,7 +1210,7 @@ bool XmlLoader::parseWarModeButton(pugi::xml_node& node, pugi::xml_node& default
     button->set_geometry(bounds);
 
     top->addToCurrentPage(button);
-    return true;
+    return button;
 }
 
 
@@ -1168,6 +1236,7 @@ bool XmlLoader::parseRepeat(pugi::xml_node& node, pugi::xml_node& defaultNode, C
                 xIncrease, yIncrease, xLimit, yLimit);
     }
 
+    // TODO: what to do here?
     return true;
 }
 

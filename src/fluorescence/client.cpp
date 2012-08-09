@@ -135,7 +135,7 @@ bool Client::handleStateChange() {
     switch(requestedState_) {
     case STATE_PRE_LOGIN:
         ui::GumpMenus::openLoginGump();
-        //ui::Manager::getSingleton()->openXmlGump("simpletest");
+        ui::Manager::getSingleton()->openXmlGump("simpletest");
 
         break;
 

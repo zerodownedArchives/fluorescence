@@ -20,7 +20,8 @@
 #ifndef FLUO_UI_COMPONENTS_LABEL_HPP
 #define FLUO_UI_COMPONENTS_LABEL_HPP
 
-#include <ClanLib/GUI/gui_component.h>
+#include <ui/gumpcomponent.hpp>
+
 #include <ClanLib/Display/2D/span_layout.h>
 #include <ClanLib/Display/Font/font.h>
 #include <ClanLib/Display/Font/font_description.h>
@@ -31,7 +32,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-class Label : public CL_GUIComponent {
+class Label : public GumpComponent {
 public:
     struct Alignment {
         enum {

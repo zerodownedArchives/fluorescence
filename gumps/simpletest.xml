@@ -25,9 +25,30 @@
         <lineedit template="themelineedit" x="135" y="145" width="120" text="3829" numeric="1" maxlength="6" />
 
 
-        <htmllabel x="5" y="200" width="300" height="180">
+        <htmllabel x="5" y="200" width="300" height="180" background="1" scrollbar="1">
             <![CDATA[
 This is some long text <br>with line <br /><basefont color="#ff0000">breaks</basefont>
+breaks<br />
+breaks<br />
+breaks<br />
+breaks<br />
+breaks<br />
+yippie<br />
+breaks<br />
+breaks<br />
+breaks<br />
+breaks<br />
+breaks<br />
+bar<br />
+breaks<br />
+breaks<br />
+breaks<br />
+foo<br />
+breaks<br />
+breaks<br />
+breaks<br />
+breaks<br />
+breaks<br />
             ]]>
         </htmllabel>
 

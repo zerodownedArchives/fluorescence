@@ -122,7 +122,7 @@
 
 <template name="uoscrollarea">
     <scrollarea>
-        <vscroll width="15" visible="ondemand">
+        <vscroll width="15" visible="always">
             <thumb>
                 <normal source="gumpart" id="254" />
                 <mouseover source="gumpart" id="254" />

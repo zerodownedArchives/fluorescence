@@ -45,9 +45,8 @@ public:
     ~GumpMenu();
 
     // add/remove components
-    // TODO: change header to gumpcomponent
-    void removeFromPages(const CL_GUIComponent* component);
-    void addToCurrentPage(CL_GUIComponent* component);
+    void removeFromPages(const GumpComponent* component);
+    void addToCurrentPage(GumpComponent* component);
 
     // page management
     void addPage(unsigned int pageId);
@@ -145,8 +144,7 @@ private:
     unsigned int typeId_;
 
     unsigned int activePageId_;
-    // TODO: change to GumpComponent
-    std::map<unsigned int, std::vector<CL_GUIComponent*> > pages_;
+    std::map<unsigned int, std::vector<GumpComponent*> > pages_;
     unsigned int firstPageId_;
 
     void internalActivatePage(unsigned int pageId);
@@ -168,7 +166,6 @@ private:
     UnicodeString cancelAction_;
 
     world::Mobile* linkedMobile_;
-    // TODO: change to GumpComponent
     void updateMobilePropertiesRec(CL_GUIComponent* comp);
 
     unsigned int currentRadioGroup_;

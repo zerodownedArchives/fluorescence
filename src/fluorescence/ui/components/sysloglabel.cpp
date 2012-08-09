@@ -34,7 +34,6 @@ namespace components {
 
 SysLogLabel::SysLogLabel(CL_GUIComponent* parent) : Label(parent) {
     world::Manager::getSysLog()->registerNotify(this);
-    func_render().set(this, &SysLogLabel::onRender);
 }
 
 SysLogLabel::~SysLogLabel() {
@@ -68,14 +67,6 @@ void SysLogLabel::notify(std::list<world::SysLogEntry>::const_iterator iter, std
     set_geometry(newGeom);
     span_.set_position(CL_Point(0, 0));
     span_.set_component_geometry();
-}
-
-void SysLogLabel::onRender(CL_GraphicContext& gc, const CL_Rect& update_rect) {
-    gc.push_cliprect(get_geometry());
-
-    span_.draw_layout(gc);
-
-    gc.pop_cliprect();
 }
 
 }

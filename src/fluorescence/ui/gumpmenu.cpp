@@ -57,11 +57,11 @@ GumpMenu::~GumpMenu() {
 }
 
 void GumpMenu::addPage(unsigned int pageId) {
-    std::map<unsigned int, std::vector<CL_GUIComponent*> >::iterator it = pages_.find(pageId);
+    std::map<unsigned int, std::vector<GumpComponent*> >::iterator it = pages_.find(pageId);
 
     if (it == pages_.end()) {
         // page does not exist yet
-        pages_[pageId] = std::vector<CL_GUIComponent*>();
+        pages_[pageId] = std::vector<GumpComponent*>();
     }
 
     activatePage(pageId);
@@ -71,16 +71,16 @@ void GumpMenu::addPage(unsigned int pageId) {
     }
 }
 
-void GumpMenu::removeFromPages(const CL_GUIComponent* component) {
-    std::map<unsigned int, std::vector<CL_GUIComponent*> >::iterator iter = pages_.begin();
-    std::map<unsigned int, std::vector<CL_GUIComponent*> >::iterator end = pages_.end();
+void GumpMenu::removeFromPages(const GumpComponent* component) {
+    std::map<unsigned int, std::vector<GumpComponent*> >::iterator iter = pages_.begin();
+    std::map<unsigned int, std::vector<GumpComponent*> >::iterator end = pages_.end();
 
     for (; iter != end; ++iter) {
         std::remove(iter->second.begin(), iter->second.end(), component);
     }
 }
 
-void GumpMenu::addToCurrentPage(CL_GUIComponent* component) {
+void GumpMenu::addToCurrentPage(GumpComponent* component) {
     pages_[activePageId_].push_back(component);
     component->func_resized().set(this, &GumpMenu::fitSizeToChildren);
 }
@@ -90,8 +90,8 @@ void GumpMenu::activateFirstPage() {
         return;
     }
 
-    std::map<unsigned int, std::vector<CL_GUIComponent*> >::iterator iter = pages_.begin();
-    std::map<unsigned int, std::vector<CL_GUIComponent*> >::iterator end = pages_.end();
+    std::map<unsigned int, std::vector<GumpComponent*> >::iterator iter = pages_.begin();
+    std::map<unsigned int, std::vector<GumpComponent*> >::iterator end = pages_.end();
 
     for (; iter != end; ++iter) {
         if (iter->first != 0 && iter->first != firstPageId_) {
@@ -122,8 +122,8 @@ unsigned int GumpMenu::getActivePageId() {
 }
 
 void GumpMenu::internalActivatePage(unsigned int pageId) {
-    std::vector<CL_GUIComponent*>::iterator iter = pages_[pageId].begin();
-    std::vector<CL_GUIComponent*>::iterator end = pages_[pageId].end();
+    std::vector<GumpComponent*>::iterator iter = pages_[pageId].begin();
+    std::vector<GumpComponent*>::iterator end = pages_[pageId].end();
 
     for (; iter != end; ++iter) {
         (*iter)->set_visible(true);
@@ -133,8 +133,8 @@ void GumpMenu::internalActivatePage(unsigned int pageId) {
 }
 
 void GumpMenu::internalDeactivatePage(unsigned int pageId) {
-    std::vector<CL_GUIComponent*>::iterator iter = pages_[pageId].begin();
-    std::vector<CL_GUIComponent*>::iterator end = pages_[pageId].end();
+    std::vector<GumpComponent*>::iterator iter = pages_[pageId].begin();
+    std::vector<GumpComponent*>::iterator end = pages_[pageId].end();
 
     for (; iter != end; ++iter) {
         (*iter)->set_visible(false);
