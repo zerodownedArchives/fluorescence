@@ -36,7 +36,7 @@ public:
     ScrollBar* getVerticalScrollBar();
     ScrollBar* getHorizontalScrollBar();
 
-    void updateScrollbars(unsigned int marginRight, unsigned int marginBottom);
+    void setMargins(unsigned int marginLeft, unsigned int marginTop, unsigned int marginRight, unsigned int marginBottom);
 
     // update scrollbars again, using the same parameters as the last call
     void updateScrollbars();
@@ -55,6 +55,8 @@ private:
     int lastScrollHorizontal_;
     void onScroll();
 
+    unsigned int marginLeft_;
+    unsigned int marginTop_;
     unsigned int marginRight_;
     unsigned int marginBottom_;
 };

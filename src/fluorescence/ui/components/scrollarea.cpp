@@ -54,16 +54,19 @@ GumpComponent* ScrollArea::getClientArea() {
     return clientArea_;
 }
 
-void ScrollArea::updateScrollbars() {
-    updateScrollbars(marginRight_, marginBottom_);
+void ScrollArea::setMargins(unsigned int marginLeft, unsigned int marginTop, unsigned int marginRight, unsigned int marginBottom) {
+    marginLeft_ = marginLeft;
+    marginTop_ = marginTop;
+    marginRight_ = marginRight;
+    marginBottom_ = marginBottom;
 }
 
-void ScrollArea::updateScrollbars(unsigned int marginRight, unsigned int marginBottom) {
+void ScrollArea::updateScrollbars() {
     horizontalScrollBar_->set_min(0);
     verticalScrollBar_->set_min(0);
 
-    int viewSizeWidth = get_width();
-    int viewSizeHeight = get_height();
+    int viewSizeWidth = get_width() - (marginLeft_ + marginRight_);
+    int viewSizeHeight = get_height() - (marginTop_ + marginBottom_);
 
     // first, calculate values for page step and line step
     int childWidth = 0;
@@ -74,8 +77,6 @@ void ScrollArea::updateScrollbars(unsigned int marginRight, unsigned int marginB
     std::vector<CL_GUIComponent*>::const_iterator end = children.end();
     for (; iter != end; ++iter) {
         CL_Pointx<int> cur = (*iter)->get_geometry().get_bottom_right();
-        cur.x += lastScrollHorizontal_;
-        cur.y += lastScrollVertical_;
         if (cur.x > childWidth) {
             childWidth = cur.x;
         }
@@ -84,9 +85,6 @@ void ScrollArea::updateScrollbars(unsigned int marginRight, unsigned int marginB
             childHeight = cur.y;
         }
     }
-
-    childWidth += marginRight;
-    childHeight += marginBottom;
 
     bool vVisible = verticalScrollBar_->is_visible();
     bool hVisible = horizontalScrollBar_->is_visible();
@@ -102,7 +100,7 @@ void ScrollArea::updateScrollbars(unsigned int marginRight, unsigned int marginB
 
         verticalScrollBar_->set_geometry(CL_Rect(vX, vY, CL_Size(vWidth, vHeight)));
 
-        viewSizeWidth = get_width() - verticalScrollBar_->get_width();
+        viewSizeWidth -= verticalScrollBar_->get_width();
     }
 
     if (hVisible) {
@@ -116,19 +114,15 @@ void ScrollArea::updateScrollbars(unsigned int marginRight, unsigned int marginB
 
         horizontalScrollBar_->set_geometry(CL_Rect(hX, hY, CL_Size(hWidth, hHeight)));
 
-        viewSizeHeight = get_height() - horizontalScrollBar_->get_height();
+        viewSizeHeight -= horizontalScrollBar_->get_height();
     }
 
-    clientArea_->set_geometry(CL_Rect(0, 0, CL_Size(viewSizeWidth, viewSizeHeight)));
+    clientArea_->set_geometry(CL_Rect(marginLeft_, marginTop_, CL_Size(viewSizeWidth, viewSizeHeight)));
 
     horizontalScrollBar_->calculate_ranges(viewSizeWidth, childWidth);
     verticalScrollBar_->calculate_ranges(viewSizeHeight, childHeight);
 
     clientArea_->set_clip_children(true);
-
-    // save parameters for next call
-    marginRight_ = marginRight;
-    marginBottom_ = marginBottom;
 }
 
 void ScrollArea::onScroll() {

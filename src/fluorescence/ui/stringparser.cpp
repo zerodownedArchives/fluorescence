@@ -495,7 +495,12 @@ bool StringParser::parseTextEntry(const UnicodeString& params, const std::vector
         int entryId = StringConverter::toInt(matcher.group(6, status));
         int textIdx = StringConverter::toInt(matcher.group(7, status));
 
-        components::LineEdit* entry = new components::LineEdit(menu);
+        components::LineEdit* entry = dynamic_cast<components::LineEdit*>(XmlLoader::getServerGumpComponent("ssglineedit", menu));
+        if (!entry) {
+            LOG_ERROR << "Error reading template ssglineedit from theme" << std::endl;
+            return false;
+        }
+
         CL_Rectf bounds(x, y, CL_Sizef(width, height));
         entry->set_geometry(bounds);
 

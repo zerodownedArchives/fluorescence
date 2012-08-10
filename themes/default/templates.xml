@@ -10,6 +10,11 @@
     <htmllabel font="unifont1" font-height="12" color="#000000" background-template="thingreybackground" scrollarea-template="uoscrollarea" />
 </template>
 
+<template name="ssglineedit">
+    <lineedit font="unifont1" font-height="12" color="#000000" />
+</template>
+
+
 <template name="button">
     <button font="Devinne Swash" font-height="18" height="25">
         <normal font-color="#000000" />
@@ -130,7 +135,7 @@
 </template>
 
 <template name="uoscrollarea">
-    <scrollarea>
+    <scrollarea marginleft="3" margintop="3" marginright="3" marginbottom="3">
         <vscroll width="15" visible="1">
             <thumb>
                 <normal source="gumpart" id="254" />

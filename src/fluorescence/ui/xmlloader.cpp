@@ -992,6 +992,7 @@ GumpComponent* XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& d
             return nullptr;
         }
         scrollarea->set_geometry(bounds);
+        scrollarea->updateScrollbars(); // to set client area size correctly
 
         // adjust background size
         if (background) {
@@ -1007,7 +1008,7 @@ GumpComponent* XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& d
     components::Label* label;
     if (scrollarea) {
         label = new components::Label(scrollarea->getClientArea());
-        CL_Rectf geom(0, 0, CL_Sizef(bounds.get_width() - scrollarea->getVerticalScrollBar()->get_width(), 0)); // auto height
+        CL_Rectf geom(0, 0, CL_Sizef(scrollarea->getClientArea()->get_width(), 0)); // auto height
         label->set_geometry(geom);
     } else {
         label = new components::Label(parent);
@@ -1021,7 +1022,7 @@ GumpComponent* XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& d
     label->setHtmlText(text);
 
     if (scrollarea) {
-        scrollarea->updateScrollbars(0, 0);
+        scrollarea->updateScrollbars();
         scrollarea->setupResizeHandler();
 
         top->addToCurrentPage(scrollarea);
@@ -1093,8 +1094,10 @@ GumpComponent* XmlLoader::parseScrollArea(pugi::xml_node& node, pugi::xml_node& 
     parseScrollBar(area->getVerticalScrollBar(), area, true, node.child("vscroll"), defaultNode.child("vscroll"));
     parseScrollBar(area->getHorizontalScrollBar(), area, false, node.child("hscroll"), defaultNode.child("hscroll"));
 
-    unsigned int marginRight = node.attribute("marginright").as_uint();
-    unsigned int marginBottom = node.attribute("marginbottom").as_uint();
+    unsigned int marginLeft = getAttribute("marginleft", node, defaultNode).as_uint();
+    unsigned int marginTop = getAttribute("margintop", node, defaultNode).as_uint();
+    unsigned int marginRight = getAttribute("marginright", node, defaultNode).as_uint();
+    unsigned int marginBottom = getAttribute("marginbottom", node, defaultNode).as_uint();
 
     top->addToCurrentPage(area);
 
@@ -1105,7 +1108,8 @@ GumpComponent* XmlLoader::parseScrollArea(pugi::xml_node& node, pugi::xml_node& 
         //LOG_ERROR << "No content node in scrollarea" << std::endl;
     }
 
-    area->updateScrollbars(marginRight, marginBottom);
+    area->setMargins(marginLeft, marginTop, marginRight, marginBottom);
+    area->updateScrollbars();
     area->setupResizeHandler();
 
     return area;
