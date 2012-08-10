@@ -68,6 +68,13 @@ bool CompressedGumpMenu::read(const int8_t* buf, unsigned int len, unsigned int&
 
     uint32_t textLineCount;
     ret &= PacketReader::read(buf, len, index, textLineCount);
+
+    // check if there are any strings
+    if (textLineCount == 0) {
+        index += 4; // jump compressed length
+        return ret;
+    }
+
     textLines_.resize(textLineCount);
 
     ret &= PacketReader::read(buf, len, index, compressedLength);

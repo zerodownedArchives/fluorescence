@@ -61,7 +61,6 @@ set (GUMPMENU_HPP
     ui/components/image.hpp
     ui/components/background.hpp
     ui/components/checkbox.hpp
-    ui/components/textentry.hpp
     ui/components/radiobutton.hpp
     ui/components/sysloglabel.hpp
     ui/components/warmodebutton.hpp
@@ -88,7 +87,6 @@ set (GUMPMENU_CPP
     ui/components/image.cpp
     ui/components/background.cpp
     ui/components/checkbox.cpp
-    ui/components/textentry.cpp
     ui/components/radiobutton.cpp
     ui/components/sysloglabel.cpp
     ui/components/warmodebutton.cpp

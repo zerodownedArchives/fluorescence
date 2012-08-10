@@ -28,13 +28,13 @@
 #include <data/clilocloader.hpp>
 
 #include "manager.hpp"
-#include "fontengine.hpp"
+#include "xmlloader.hpp"
 #include "gumpmenu.hpp"
 #include "components/background.hpp"
 #include "components/image.hpp"
 #include "components/button.hpp"
 #include "components/checkbox.hpp"
-#include "components/textentry.hpp"
+#include "components/lineedit.hpp"
 #include "components/label.hpp"
 #include "components/radiobutton.hpp"
 
@@ -90,8 +90,6 @@ GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std
     ret->setClosable(true);
     // TODO: defaults for resizable, disposable
 
-    ret->set_id_name("nobackground");
-
     UErrorCode status = U_ZERO_ERROR;
     bool parseSuccess = true;
 
@@ -135,14 +133,14 @@ GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std
 }
 
 bool StringParser::parsePage(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
-    // { page {0} }
+    // { page {id} }
     int pageId = StringConverter::toInt(params);
     menu->addPage(pageId);
     return true;
 }
 
 bool StringParser::parseResizepic(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
-    // { resizepic {0} {1} {2} {3} {4} }
+    // { resizepic {x} {y} {gumpid} {width} {height} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -167,6 +165,7 @@ bool StringParser::parseResizepic(const UnicodeString& params, const std::vector
 }
 
 bool StringParser::parseGumpPicTiled(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { gumppictiled {x} {y} {width} {height} {gumpid} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -198,6 +197,7 @@ bool StringParser::parseGumpPicTiled(const UnicodeString& params, const std::vec
 }
 
 bool StringParser::parseCroppedText(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { croppedtext {x} {y} {width} {height} {hue} {textId} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -209,20 +209,17 @@ bool StringParser::parseCroppedText(const UnicodeString& params, const std::vect
         int hue = StringConverter::toInt(matcher.group(5, status));
         int textId = StringConverter::toInt(matcher.group(6, status));
 
-        boost::shared_ptr<ui::Texture> tex = ui::Manager::getFontEngine()->getUniFontTexture(1, strings[textId], 99999, hue, false, 0);
-        if (width > tex->getWidth()) {
-            width = tex->getWidth();
-        }
-        if (height > tex->getHeight()) {
-            height = tex->getHeight();
+        components::Label* label = dynamic_cast<components::Label*>(XmlLoader::getServerGumpComponent("ssglabel", menu));
+        if (!label) {
+            LOG_ERROR << "Error reading template ssglabel from theme" << std::endl;
+            return false;
         }
 
-        components::Image* img = new components::Image(menu);
         CL_Rectf bounds(x, y, CL_Sizef(width, height));
-        img->set_geometry(bounds);
-        img->setTiled(true);
-        img->setTexture(tex);
-        menu->addToCurrentPage(img);
+        label->set_geometry(bounds);
+        label->setHue(hue);
+        label->setText(strings[textId]);
+        menu->addToCurrentPage(label);
 
         return true;
     } else {
@@ -232,6 +229,7 @@ bool StringParser::parseCroppedText(const UnicodeString& params, const std::vect
 }
 
 bool StringParser::parseText(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    //{ text {x} {y} {hue} {textId} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -241,14 +239,17 @@ bool StringParser::parseText(const UnicodeString& params, const std::vector<Unic
         int hue = StringConverter::toInt(matcher.group(3, status));
         int textId = StringConverter::toInt(matcher.group(4, status));
 
-        boost::shared_ptr<ui::Texture> tex = ui::Manager::getFontEngine()->getUniFontTexture(1, strings[textId], 99999, hue, false, 0);
+        components::Label* label = dynamic_cast<components::Label*>(XmlLoader::getServerGumpComponent("ssglabel", menu));
+        if (!label) {
+            LOG_ERROR << "Error reading template ssglabel from theme" << std::endl;
+            return false;
+        }
 
-        components::Image* img = new components::Image(menu);
-        CL_Rectf bounds(x, y, CL_Sizef(tex->getWidth(), tex->getHeight()));
-        img->set_geometry(bounds);
-        img->setTiled(true);
-        img->setTexture(tex);
-        menu->addToCurrentPage(img);
+        CL_Rectf bounds(x, y, CL_Sizef(0, 0)); // auto resize
+        label->set_geometry(bounds);
+        label->setHue(hue);
+        label->setText(strings[textId]);
+        menu->addToCurrentPage(label);
 
         return true;
     } else {
@@ -258,6 +259,8 @@ bool StringParser::parseText(const UnicodeString& params, const std::vector<Unic
 }
 
 bool StringParser::parseGumpPic(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { gumppic {x} {y} {gumpId} }
+    // or { gumppic {x} {y} {gumpId} hue={hue} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     static RegexMatcher matcherHue("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*hue=(\\w+)\\s*", 0, status);
@@ -298,6 +301,7 @@ bool StringParser::parseGumpPic(const UnicodeString& params, const std::vector<U
 }
 
 bool StringParser::parseTilePic(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { tilepic {x} {y} {artId} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -327,6 +331,7 @@ bool StringParser::parseTilePic(const UnicodeString& params, const std::vector<U
 }
 
 bool StringParser::parseTilePicHue(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { tilepichue {x} {y} {artId} {hue} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -359,6 +364,7 @@ bool StringParser::parseTilePicHue(const UnicodeString& params, const std::vecto
 }
 
 bool StringParser::parseButton(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { button {x} {y} {upId} {downId} {type} {pageId} {buttonId} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -412,6 +418,7 @@ bool StringParser::parseButton(const UnicodeString& params, const std::vector<Un
 }
 
 bool StringParser::parseCheckbox(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { checkbox {x} {y} {uncheckedId} {checkedId} {checked} {switchId} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -474,6 +481,7 @@ bool StringParser::setNoClose(const UnicodeString& params, const std::vector<Uni
 }
 
 bool StringParser::parseTextEntry(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { textentry {x} {y} {width} {height} {hue} {entryId} {textId} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -487,18 +495,13 @@ bool StringParser::parseTextEntry(const UnicodeString& params, const std::vector
         int entryId = StringConverter::toInt(matcher.group(6, status));
         int textIdx = StringConverter::toInt(matcher.group(7, status));
 
-        components::TextEntry* entry = new components::TextEntry(menu);
+        components::LineEdit* entry = new components::LineEdit(menu);
         CL_Rectf bounds(x, y, CL_Sizef(width, height));
         entry->set_geometry(bounds);
 
         entry->setEntryId(entryId);
+        entry->setHue(hue);
         entry->setText(strings[textIdx]);
-
-        entry->setTextHue(hue);
-
-        CL_FontDescription defaultFontDesc;
-        defaultFontDesc.set_typeface_name("unifont1");
-        entry->setFont(defaultFontDesc);
 
         menu->addToCurrentPage(entry);
 
@@ -510,6 +513,7 @@ bool StringParser::parseTextEntry(const UnicodeString& params, const std::vector
 }
 
 bool StringParser::parseHtmlGump(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { htmlgump {x} {y} {width} {height} {textId} {background} {scroll} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -523,19 +527,12 @@ bool StringParser::parseHtmlGump(const UnicodeString& params, const std::vector<
         int scroll = StringConverter::toInt(matcher.group(7, status));
 
         CL_Rectf bounds(x, y, CL_Sizef(width, height));
-        if (background == 1) {
-            components::Background* bg = new components::Background(menu);
-            bg->set_geometry(bounds);
-            bg->setBaseId(3000);
-            menu->addToCurrentPage(bg);
-        }
 
-        if (scroll == 1) {
-            LOG_INFO << "Scrollbars for html gumps are not implemented yet" << std::endl;
+        components::Label* label = dynamic_cast<components::Label*>(XmlLoader::getServerGumpHtmlLabel("ssghtmllabel", menu, bounds, scroll, background));
+        if (!label) {
+            LOG_ERROR << "Error reading template ssghtmllabel from theme" << std::endl;
+            return false;
         }
-
-        components::Label* label = new components::Label(menu);
-        label->set_geometry(bounds);
         label->setHtmlText(strings[stringId]);
         menu->addToCurrentPage(label);
 
@@ -560,21 +557,14 @@ bool StringParser::parseXmfHtmlGump(const UnicodeString& params, const std::vect
         int scroll = StringConverter::toInt(matcher.group(7, status));
 
         CL_Rectf bounds(x, y, CL_Sizef(width, height));
-        if (background == 1) {
-            components::Background* bg = new components::Background(menu);
-            bg->set_geometry(bounds);
-            bg->setBaseId(3000);
-            menu->addToCurrentPage(bg);
-        }
-
-        if (scroll == 1) {
-            LOG_INFO << "Scrollbars for html gumps are not implemented yet" << std::endl;
-        }
-
         UnicodeString text = data::Manager::getClilocLoader()->get(clilocId);
 
-        components::Label* label = new components::Label(menu);
-        label->set_geometry(bounds);
+        components::Label* label = dynamic_cast<components::Label*>(XmlLoader::getServerGumpHtmlLabel("ssghtmllabel", menu, bounds, scroll, background));
+        if (!label) {
+            LOG_ERROR << "Error reading template ssghtmllabel from theme" << std::endl;
+            return false;
+        }
+
         label->setHtmlText(text);
         menu->addToCurrentPage(label);
 
@@ -600,17 +590,6 @@ bool StringParser::parseXmfHtmlGumpColor(const UnicodeString& params, const std:
         int color = StringConverter::toInt(matcher.group(8, status));
 
         CL_Rectf bounds(x, y, CL_Sizef(width, height));
-        if (background == 1) {
-            components::Background* bg = new components::Background(menu);
-            bg->set_geometry(bounds);
-            bg->setBaseId(3000);
-            menu->addToCurrentPage(bg);
-        }
-
-        if (scroll == 1) {
-            LOG_INFO << "Scrollbars for html gumps are not implemented yet" << std::endl;
-        }
-
         // hue is sent as 16 bit rgb. 5 bit each. same as format in hues.mul.
         uint16_t color16 = color & 0xFFFF;
         int r = data::Util::getColorR(color16);
@@ -620,10 +599,14 @@ bool StringParser::parseXmfHtmlGumpColor(const UnicodeString& params, const std:
 
         UnicodeString text = data::Manager::getClilocLoader()->get(clilocId);
 
-        components::Label* label = new components::Label(menu);
-        label->set_geometry(bounds);
+        components::Label* label = dynamic_cast<components::Label*>(XmlLoader::getServerGumpHtmlLabel("ssghtmllabel", menu, bounds, scroll, background));
+        if (!label) {
+            LOG_ERROR << "Error reading template ssghtmllabel from theme" << std::endl;
+            return false;
+        }
+
         label->setColor(colorDef);
-        label->setHtmlText(text);
+        label->setText(text);
         menu->addToCurrentPage(label);
 
         return true;
@@ -649,17 +632,6 @@ bool StringParser::parseXmfHtmlTok(const UnicodeString& params, const std::vecto
         UnicodeString args = matcher.group(9, status);
 
         CL_Rectf bounds(x, y, CL_Sizef(width, height));
-        if (background == 1) {
-            components::Background* bg = new components::Background(menu);
-            bg->set_geometry(bounds);
-            bg->setBaseId(3000);
-            menu->addToCurrentPage(bg);
-        }
-
-        if (scroll == 1) {
-            LOG_INFO << "Scrollbars for html gumps are not implemented yet" << std::endl;
-        }
-
         // hue is sent as 16 bit rgb. 5 bit each. same as format in hues.mul.
         uint16_t color16 = color & 0xFFFF;
         int r = data::Util::getColorR(color16);
@@ -669,8 +641,11 @@ bool StringParser::parseXmfHtmlTok(const UnicodeString& params, const std::vecto
 
         UnicodeString text = data::Manager::getClilocLoader()->get(clilocId, args);
 
-        components::Label* label = new components::Label(menu);
-        label->set_geometry(bounds);
+        components::Label* label = dynamic_cast<components::Label*>(XmlLoader::getServerGumpHtmlLabel("ssghtmllabel", menu, bounds, scroll, background));
+        if (!label) {
+            LOG_ERROR << "Error reading template ssghtmllabel from theme" << std::endl;
+            return false;
+        }
         label->setColor(colorDef);
         label->setHtmlText(text);
         menu->addToCurrentPage(label);
@@ -719,6 +694,7 @@ bool StringParser::parseCheckerTrans(const UnicodeString& params, const std::vec
 }
 
 bool StringParser::parseRadio(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { radio {x} {y} {uncheckedId} {checkedId} {checked} {switchId} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -772,6 +748,7 @@ bool StringParser::parseRadio(const UnicodeString& params, const std::vector<Uni
 }
 
 bool StringParser::parseGroup(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { group {id} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -787,6 +764,9 @@ bool StringParser::parseGroup(const UnicodeString& params, const std::vector<Uni
         return false;
     }
 }
+
+// TODO: buttontileart
+// TODO: tooltip
 
 }
 }

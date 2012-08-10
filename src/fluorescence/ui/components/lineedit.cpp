@@ -157,11 +157,11 @@ void LineEdit::setFont(const UnicodeString& fontName, unsigned int fontHeight) {
     isUoFont_ = fontName.indexOf("unifont") != -1;
 }
 
-void LineEdit::setFontColor(const CL_Colorf& color) {
+void LineEdit::setColor(const CL_Colorf& color) {
     fontColor_ = color;
 }
 
-void LineEdit::setFontHue(unsigned int hue) {
+void LineEdit::setHue(unsigned int hue) {
     fontColor_ = data::Manager::getHuesLoader()->getFontClColor(hue);
 }
 

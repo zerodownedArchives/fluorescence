@@ -76,7 +76,6 @@ XmlLoader::XmlLoader() {
     functionTable_["clicklabel"] = boost::bind(&XmlLoader::parseClickLabel, this, _1, _2, _3, _4);
     functionTable_["lineedit"] = boost::bind(&XmlLoader::parseLineEdit, this, _1, _2, _3, _4);
     functionTable_["scrollarea"] = boost::bind(&XmlLoader::parseScrollArea, this, _1, _2, _3, _4);
-    //functionTable_["repeat"] = boost::bind(&XmlLoader::parseRepeat, this, _1, _2, _3, _4);
     functionTable_["htmllabel"] = boost::bind(&XmlLoader::parseHtmlLabel, this, _1, _2, _3, _4);
 
     functionTable_["worldview"] = boost::bind(&XmlLoader::parseWorldView, this, _1, _2, _3, _4);
@@ -275,16 +274,7 @@ GumpComponent* XmlLoader::parseChildren(pugi::xml_node& rootNode, CL_GUIComponen
 
     for (; iter != iterEnd && success; ++iter) {
         if (strcmp(iter->name(), "repeat") == 0) {
-            pugi::xml_node defaultNode;
-            if (iter->attribute("template")) {
-                defaultNode = getTemplate(iter->attribute("template").value());
-            }
-
-            if (!defaultNode) {
-                defaultNode = defaultTemplateMap_[iter->name()];
-            }
-
-            success = parseRepeat(*iter, defaultNode, parent, top);
+            success = parseRepeat(*iter, parent, top);
         } else {
             std::map<UnicodeString, XmlParseFunction>::iterator function = functionTable_.find(iter->name());
 
@@ -414,7 +404,7 @@ bool XmlLoader::parseLabelHelper(components::Label* label, pugi::xml_node& node,
         label->setHue(hue);
     } else if (rgba.length() > 0) {
         label->setColor(color);
-    } else {
+    } else if (getAttribute("hue", node, defaultNode)) { // does it even have a hue attribute?
         label->setHue(hue);
     }
 
@@ -971,7 +961,7 @@ GumpComponent* XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& d
     pugi::xml_text textNode = node.text();
     UnicodeString text(textNode.get());
 
-    UnicodeString scrollbarTemplate = StringConverter::fromUtf8(getAttribute("scrollbar-template", node, defaultNode).value());
+    UnicodeString scrollbarTemplate = StringConverter::fromUtf8(getAttribute("scrollarea-template", node, defaultNode).value());
     UnicodeString backgroundTemplate = StringConverter::fromUtf8(getAttribute("background-template", node, defaultNode).value());
     bool useBackground = getAttribute("background", node, defaultNode).as_bool();
     bool useScrollbar = getAttribute("scrollbar", node, defaultNode).as_bool();
@@ -981,10 +971,6 @@ GumpComponent* XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& d
         UnicodeString args = getAttribute("args", node, defaultNode).value();
         args.findAndReplace("\\t", "\t");
         text = data::Manager::getClilocLoader()->get(cliloc, args);
-    }
-
-    if (text.length() == 0) {
-        LOG_WARN << "htmllabel with empty text" << std::endl;
     }
 
     if (useBackground) {
@@ -1001,6 +987,7 @@ GumpComponent* XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& d
             return nullptr;
         }
         bg->set_geometry(bounds);
+        top->addToCurrentPage(bg);
     }
 
     components::ScrollArea* scrollarea = nullptr;
@@ -1040,9 +1027,12 @@ GumpComponent* XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& d
     if (scrollarea) {
         scrollarea->updateScrollbars(0, 0);
         scrollarea->setupResizeHandler();
+
+        top->addToCurrentPage(scrollarea);
+    } else {
+        top->addToCurrentPage(label);
     }
 
-    top->addToCurrentPage(label);
     return label;
 }
 
@@ -1081,13 +1071,13 @@ GumpComponent* XmlLoader::parseLineEdit(pugi::xml_node& node, pugi::xml_node& de
 
     // if the node has its own color or hue property, don't use the template values
     if (node.attribute("color")) {
-        edit->setFontColor(color);
+        edit->setColor(color);
     } else if (node.attribute("hue")) {
-        edit->setFontHue(hue);
+        edit->setHue(hue);
     } else if (rgba.length() > 0) {
-        edit->setFontColor(color);
-    } else {
-        edit->setFontHue(hue);
+        edit->setColor(color);
+    } else if (getAttribute("hue", node, defaultNode)) {
+        edit->setHue(hue);
     }
 
     edit->setText(text);
@@ -1216,7 +1206,7 @@ GumpComponent* XmlLoader::parseWarModeButton(pugi::xml_node& node, pugi::xml_nod
 
 
 
-bool XmlLoader::parseRepeat(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+bool XmlLoader::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     UnicodeString name(node.attribute("name").value());
 
     if (repeatContexts_.count(name) == 0) {
@@ -1351,6 +1341,63 @@ void XmlLoader::replaceRepeatKeywords(pugi::xml_node& node, const RepeatContext&
                 xIncrease, yIncrease, xLimit, yLimit);
         childIter = childIter.next_sibling();
     }
+}
+
+
+GumpComponent* XmlLoader::getServerGumpComponent(const UnicodeString& templateName, GumpMenu* menu) {
+    XmlLoader* sing = getSingleton();
+
+    pugi::xml_node dummy;
+    pugi::xml_node templateNode = sing->getTemplate(templateName);
+
+    if (!templateNode) {
+        LOG_ERROR << "Could not find template " << templateName << " required for server side gumps" << std::endl;
+        return nullptr;
+    }
+
+    std::map<UnicodeString, XmlParseFunction>::iterator function = sing->functionTable_.find(templateNode.name());
+
+    if (function != sing->functionTable_.end()) {
+        return (function->second)(dummy, templateNode, menu, menu);
+    } else {
+        LOG_ERROR << "Unknown tag " << templateNode.name() << " in server side gump template " << templateName << std::endl;
+        return nullptr;
+    }
+}
+
+GumpComponent* XmlLoader::getServerGumpHtmlLabel(const UnicodeString& templateName, GumpMenu* menu, const CL_Rectf& bounds, bool scrollbar, bool background) {
+    // needed to create a new node on the fly
+    static pugi::xml_document doc;
+    static pugi::xml_node htmlLabelNode;
+
+    if (!htmlLabelNode) {
+        htmlLabelNode = doc.append_child("htmllabel");
+        htmlLabelNode.append_attribute("scrollbar").set_value(scrollbar);
+        htmlLabelNode.append_attribute("background").set_value(background);
+        htmlLabelNode.append_attribute("x").set_value(bounds.left);
+        htmlLabelNode.append_attribute("y").set_value(bounds.top);
+        htmlLabelNode.append_attribute("width").set_value(bounds.get_width());
+        htmlLabelNode.append_attribute("height").set_value(bounds.get_height());
+    } else {
+        htmlLabelNode.attribute("scrollbar").set_value(scrollbar);
+        htmlLabelNode.attribute("background").set_value(background);
+        htmlLabelNode.attribute("x").set_value(bounds.left);
+        htmlLabelNode.attribute("y").set_value(bounds.top);
+        htmlLabelNode.attribute("width").set_value(bounds.get_width());
+        htmlLabelNode.attribute("height").set_value(bounds.get_height());
+    }
+
+
+    XmlLoader* sing = getSingleton();
+
+    pugi::xml_node templateNode = sing->getTemplate(templateName);
+
+    if (!templateNode) {
+        LOG_ERROR << "Could not find template " << templateName << " required for server side gumps" << std::endl;
+        return nullptr;
+    }
+
+    return sing->parseHtmlLabel(htmlLabelNode, templateNode, menu, menu);
 }
 
 }

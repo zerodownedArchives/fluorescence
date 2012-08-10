@@ -73,6 +73,11 @@ public:
 
     static bool readTemplateFile(const boost::filesystem::path& themePath);
 
+
+    // server side gumps also access some templates, e.g. for fonts, auto scrollbars on html gumps etc
+    static GumpComponent* getServerGumpComponent(const UnicodeString& templateName, GumpMenu* top);
+    static GumpComponent* getServerGumpHtmlLabel(const UnicodeString& templateName, GumpMenu* top, const CL_Rectf& bounds, bool scrollbar, bool background);
+
 private:
     static XmlLoader* singleton_;
     static XmlLoader* getSingleton();
@@ -126,7 +131,7 @@ private:
 
 
     // repeat-related stuff
-    bool parseRepeat(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    bool parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);
     void insertRepeatNodes(pugi::xml_node::iterator begin, pugi::xml_node::iterator end, pugi::xml_node dst,
             const RepeatContext& context, unsigned int index,
             int xIncrease, int yIncrease, unsigned int xLimit, unsigned int yLimit);

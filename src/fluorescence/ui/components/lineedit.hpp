@@ -70,8 +70,8 @@ public:
     ~LineEdit();
 
     void setFont(const UnicodeString& fontName, unsigned int fontHeight);
-    void setFontColor(const CL_Colorf& color);
-    void setFontHue(unsigned int hue);
+    void setColor(const CL_Colorf& color);
+    void setHue(unsigned int hue);
 
     void setText(const UnicodeString& string);
     UnicodeString getText();

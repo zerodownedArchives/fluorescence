@@ -23,9 +23,9 @@
 #include "manager.hpp"
 #include "gumpactions.hpp"
 #include "cursormanager.hpp"
+#include "components/lineedit.hpp"
 #include "components/propertylabel.hpp"
 #include "components/checkbox.hpp"
-#include "components/textentry.hpp"
 #include "components/warmodebutton.hpp"
 
 #include <client.hpp>
@@ -372,7 +372,7 @@ void GumpMenu::sendReply(unsigned int buttonId) {
             continue;
         }
 
-        components::TextEntry* entry = dynamic_cast<components::TextEntry*>(*iter);
+        components::LineEdit* entry = dynamic_cast<components::LineEdit*>(*iter);
         if (entry && entry->getEntryId() != 0xFFFFFFFFu) {
             net::packets::GumpReply::TextEntryInfo info;
             info.number_ = entry->getEntryId();

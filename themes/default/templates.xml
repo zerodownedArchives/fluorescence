@@ -1,6 +1,15 @@
 <?xml version="1.0"?>
 <templates>
 
+<!-- required templates for server side gumps -->
+<template name="ssglabel">
+    <label font="unifont1" font-height="12" color="#000000" />
+</template>
+
+<template name="ssghtmllabel">
+    <htmllabel font="unifont1" font-height="12" color="#000000" background-template="thingreybackground" scrollarea-template="uoscrollarea" />
+</template>
+
 <template name="button">
     <button font="Devinne Swash" font-height="18" height="25">
         <normal font-color="#000000" />
@@ -165,7 +174,7 @@
 </template>
 
 <template name="htmllabel" default="1">
-    <htmllabel scrollbar-template="uoscrollarea" background-template="thingreybackground" font="Devinne Swash" font-height="14" color="#000000" />
+    <htmllabel scrollarea-template="uoscrollarea" background-template="thingreybackground" font="Devinne Swash" font-height="14" color="#000000" />
 </template>
 
 </templates>
