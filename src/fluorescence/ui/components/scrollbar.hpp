@@ -85,20 +85,10 @@ public:
         TEX_INDEX_DOWN = 2,
     };
 
-    enum Visibility {
-        VISIBLE_ON_DEMAND = 0,
-        VISIBLE_ALWAYS = 1,
-        VISIBLE_NEVER = 2,
-    };
-
     ScrollBar(CL_GUIComponent* parent);
     ~ScrollBar();
 
     void setTrackTexture(boost::shared_ptr<ui::Texture> texture, unsigned int hue = 0, const std::string& rgba = "");
-
-    void setVisibility(unsigned int vis);
-    unsigned int getVisibility() const;
-
 
     // clanlib stuff
     bool is_vertical() const;
@@ -146,9 +136,6 @@ private:
     void updateTextureIndices(const CL_Point& pos);
     bool shaderInitialized_;
     void renderTexture(CL_GraphicContext& gc, ui::Texture* tex, const CL_Rect& vertexRect, const CL_Colorf& color, const CL_Vec3f& hueInfo);
-
-    unsigned int visibility_;
-
 
 
     // clanlib stuff

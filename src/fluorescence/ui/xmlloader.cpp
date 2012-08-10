@@ -455,26 +455,11 @@ bool XmlLoader::parseScrollBarTextures(boost::shared_ptr<ui::Texture>* textures,
 }
 
 bool XmlLoader::parseScrollBar(components::ScrollBar* bar, components::ScrollArea* parent, bool vertical, pugi::xml_node node, pugi::xml_node defaultNode) {
-    static std::string visibilityAlways("always");
-    static std::string visibilityNever("never");
-    static std::string visibilityOnDemand("ondemand");
-
-    std::string visibility = getAttribute("visible", node, defaultNode).value();
-    if (visibility.length() > 0) {
-        if (visibility == visibilityAlways) {
-            bar->setVisibility(components::ScrollBar::VISIBLE_ALWAYS);
-        } else if (visibility == visibilityNever) {
-            bar->setVisibility(components::ScrollBar::VISIBLE_NEVER);
-        } else if (visibility == visibilityOnDemand) {
-            bar->setVisibility(components::ScrollBar::VISIBLE_ON_DEMAND);
-        } else {
-            LOG_ERROR << "Unknown scrollbar visibility: " << visibility << ". Possible values: always/never/ondemand" << std::endl;
-            return false;
-        }
-    }
+    bool visible = getAttribute("visible", node, defaultNode).as_bool();
+    bar->set_visible(visible);
 
     // don't bother parsing if it is not visible anyway
-    if (bar->getVisibility() == components::ScrollBar::VISIBLE_NEVER) {
+    if (!visible) {
         return true;
     }
 
@@ -973,6 +958,7 @@ GumpComponent* XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& d
         text = data::Manager::getClilocLoader()->get(cliloc, args);
     }
 
+    GumpComponent* background = nullptr;
     if (useBackground) {
         pugi::xml_node dummy;
         pugi::xml_node bgNode = getTemplate(backgroundTemplate);
@@ -981,13 +967,14 @@ GumpComponent* XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& d
             return nullptr;
         }
 
-        GumpComponent* bg = parseBackground(dummy, bgNode, parent, top);
-        if (!bg) {
+        background = parseBackground(dummy, bgNode, parent, top);
+        if (!background) {
             LOG_ERROR << "Unable to get htmllabel background from template " << backgroundTemplate << std::endl;
             return nullptr;
         }
-        bg->set_geometry(bounds);
-        top->addToCurrentPage(bg);
+
+        background->set_geometry(bounds);
+        top->addToCurrentPage(background);
     }
 
     components::ScrollArea* scrollarea = nullptr;
@@ -1005,8 +992,17 @@ GumpComponent* XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& d
             return nullptr;
         }
         scrollarea->set_geometry(bounds);
-    }
 
+        // adjust background size
+        if (background) {
+            CL_Rectf boundsWoScroll(bounds.left, bounds.top, CL_Sizef(
+                    bounds.get_width() - scrollarea->getVerticalScrollBar()->get_width(),
+                    bounds.get_height() - scrollarea->getHorizontalScrollBar()->get_height()
+            ));
+            // background does not span the scrollbars
+            background->set_geometry(boundsWoScroll);
+        }
+    }
 
     components::Label* label;
     if (scrollarea) {

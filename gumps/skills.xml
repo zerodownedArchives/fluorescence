@@ -3,8 +3,6 @@
       <background template="thingreybackground" width="400" height="400" />
 
       <scrollarea template="uoscrollarea" x="5" y="5" width="390" height="390">
-            <vscroll visible="always" />
-            <hscroll visible="never" />
             <content>
                   <repeat name="skills" yincrease="22" xlimit="1">
                         <!--

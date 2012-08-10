@@ -88,62 +88,35 @@ void ScrollArea::updateScrollbars(unsigned int marginRight, unsigned int marginB
     childWidth += marginRight;
     childHeight += marginBottom;
 
-    bool vVisible = true;
-    bool hVisible = true;
+    bool vVisible = verticalScrollBar_->is_visible();
+    bool hVisible = horizontalScrollBar_->is_visible();
 
-    // this has to run twice, because the visibility of one scrollbar affects the other
-    for (unsigned int i = 0; i < 2; ++i) {
-        switch (verticalScrollBar_->getVisibility()) {
-        case ScrollBar::VISIBLE_ALWAYS:
-            vVisible = true;
-            break;
-        case ScrollBar::VISIBLE_NEVER:
-            vVisible = false;
-            break;
-        case ScrollBar::VISIBLE_ON_DEMAND:
-            vVisible = viewSizeHeight < childHeight;
-            break;
-        }
-
-        switch (horizontalScrollBar_->getVisibility()) {
-        case ScrollBar::VISIBLE_ALWAYS:
-            hVisible = true;
-            break;
-        case ScrollBar::VISIBLE_NEVER:
-            hVisible = false;
-            break;
-        case ScrollBar::VISIBLE_ON_DEMAND:
-            hVisible = viewSizeWidth < childWidth;
-            break;
-        }
-
-        if (vVisible) {
-            unsigned int vWidth = verticalScrollBar_->get_width();
-            unsigned int vHeight = get_height();
-            if (hVisible) {
-                vHeight -= horizontalScrollBar_->get_height();
-            }
-            unsigned int vX = get_width() - vWidth;
-            unsigned int vY = 0;
-
-            verticalScrollBar_->set_geometry(CL_Rect(vX, vY, CL_Size(vWidth, vHeight)));
-
-            viewSizeWidth = get_width() - verticalScrollBar_->get_width();
-        }
-
+    if (vVisible) {
+        unsigned int vWidth = verticalScrollBar_->get_width();
+        unsigned int vHeight = get_height();
         if (hVisible) {
-            unsigned int hWidth = get_width();
-            if (vVisible) {
-                hWidth -= verticalScrollBar_->get_width();
-            }
-            unsigned int hHeight = horizontalScrollBar_->get_height();
-            unsigned int hX = 0;
-            unsigned int hY = get_height() - hHeight;
-
-            horizontalScrollBar_->set_geometry(CL_Rect(hX, hY, CL_Size(hWidth, hHeight)));
-
-            viewSizeHeight = get_height() - horizontalScrollBar_->get_height();
+            vHeight -= horizontalScrollBar_->get_height();
         }
+        unsigned int vX = get_width() - vWidth;
+        unsigned int vY = 0;
+
+        verticalScrollBar_->set_geometry(CL_Rect(vX, vY, CL_Size(vWidth, vHeight)));
+
+        viewSizeWidth = get_width() - verticalScrollBar_->get_width();
+    }
+
+    if (hVisible) {
+        unsigned int hWidth = get_width();
+        if (vVisible) {
+            hWidth -= verticalScrollBar_->get_width();
+        }
+        unsigned int hHeight = horizontalScrollBar_->get_height();
+        unsigned int hX = 0;
+        unsigned int hY = get_height() - hHeight;
+
+        horizontalScrollBar_->set_geometry(CL_Rect(hX, hY, CL_Size(hWidth, hHeight)));
+
+        viewSizeHeight = get_height() - horizontalScrollBar_->get_height();
     }
 
     clientArea_->set_geometry(CL_Rect(0, 0, CL_Size(viewSizeWidth, viewSizeHeight)));
@@ -152,8 +125,6 @@ void ScrollArea::updateScrollbars(unsigned int marginRight, unsigned int marginB
     verticalScrollBar_->calculate_ranges(viewSizeHeight, childHeight);
 
     clientArea_->set_clip_children(true);
-    verticalScrollBar_->set_visible(vVisible);
-    horizontalScrollBar_->set_visible(hVisible);
 
     // save parameters for next call
     marginRight_ = marginRight;

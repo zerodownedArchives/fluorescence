@@ -36,7 +36,7 @@
 
 <template name="themescrollarea">
     <scrollarea>
-        <vscroll width="15" visible="always">
+        <vscroll width="15" visible="1">
             <thumb>
                 <normal source="theme" id="images/scroll_thumb.png" />
                 <mouseover source="theme" id="images/scroll_thumb.png" color="#cceecc" />
@@ -54,7 +54,7 @@
             </decrement>
             <track source="theme" id="images/scroll_track.png" />
         </vscroll>
-        <hscroll visible="never" />
+        <hscroll visible="0" />
     </scrollarea>
 </template>
 
@@ -131,7 +131,7 @@
 
 <template name="uoscrollarea">
     <scrollarea>
-        <vscroll width="15" visible="always">
+        <vscroll width="15" visible="1">
             <thumb>
                 <normal source="gumpart" id="254" />
                 <mouseover source="gumpart" id="254" />
@@ -149,7 +149,7 @@
             </decrement>
             <track source="gumpart" id="255" />
         </vscroll>
-        <hscroll visible="never" />
+        <hscroll visible="0" />
     </scrollarea>
 </template>
 

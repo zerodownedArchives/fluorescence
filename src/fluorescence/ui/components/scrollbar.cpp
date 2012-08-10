@@ -68,7 +68,7 @@ namespace ui {
 namespace components {
 
 ScrollBar::ScrollBar(CL_GUIComponent* parent) : GumpComponent(parent),
-    incrementIndex_(0), decrementIndex_(0), thumbIndex_(0), shaderInitialized_(false), visibility_(VISIBLE_ON_DEMAND),
+    incrementIndex_(0), decrementIndex_(0), thumbIndex_(0), shaderInitialized_(false),
     vertical(false), scroll_min(0), scroll_max(1), line_step(1),
     page_step(10), position(0), mouse_down_mode(mouse_down_none),
     thumb_start_position(0), thumb_start_pixel_position(0) {
@@ -108,14 +108,6 @@ void ScrollBar::setTrackTexture(boost::shared_ptr<ui::Texture> texture, unsigned
     trackHueInfo_[1u] = hue;
 }
 
-void ScrollBar::setVisibility(unsigned int vis) {
-    visibility_ = vis;
-}
-
-unsigned int ScrollBar::getVisibility() const {
-    return visibility_;
-}
-
 void ScrollBar::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
     if (!incrementTextures_[incrementIndex_]->isReadComplete() ||
             !decrementTextures_[decrementIndex_]->isReadComplete() ||
@@ -144,7 +136,7 @@ void ScrollBar::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
         }
 
         // draw rest
-        int heightLeft = centeredTrack.bottom - rect_button_increment.top;
+        int heightLeft = rect_button_increment.top - centeredTrack.top;
         float factor = heightLeft / centeredTrack.get_height();
         centeredTrack.bottom = centeredTrack.top + (centeredTrack.get_height() * factor);
         trackTexCoords.bottom = trackTexCoords.top + (trackTexCoords.get_height() * factor);
@@ -158,7 +150,7 @@ void ScrollBar::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
         }
 
         // draw rest
-        int widthLeft = centeredTrack.right - rect_button_increment.left;
+        int widthLeft = rect_button_increment.left - centeredTrack.left;
         float factor = widthLeft / centeredTrack.get_width();
         centeredTrack.left = centeredTrack.right + (centeredTrack.get_width() * factor);
         trackTexCoords.left = trackTexCoords.right + (trackTexCoords.get_width() * factor);
