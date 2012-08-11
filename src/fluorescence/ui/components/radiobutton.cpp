@@ -26,6 +26,8 @@ namespace components {
 
 RadioButton::RadioButton(CL_GUIComponent* parent) : Checkbox(parent) {
     func_input_pressed().set(this, &RadioButton::onInputPressed);
+
+    set_type_name("radiobutton");
 }
 
 void RadioButton::setRadioGroupId(unsigned int groupId) {

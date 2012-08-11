@@ -40,6 +40,9 @@ ScrollArea::ScrollArea(CL_GUIComponent* parent) : GumpComponent(parent), lastScr
     verticalScrollBar_->func_scroll().set(this, &ScrollArea::onScroll);
 
     clientArea_ = new GumpComponent(this);
+    clientArea_->set_type_name("scrollarea-client");
+
+    set_type_name("scrollarea");
 }
 
 ScrollBar* ScrollArea::getVerticalScrollBar() {

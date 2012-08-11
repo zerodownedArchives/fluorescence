@@ -29,6 +29,7 @@ namespace ui {
 namespace components {
 
 PropertyLabel::PropertyLabel(CL_GUIComponent* parent, const UnicodeString& link) : Label(parent), linkName_(link) {
+    set_type_name("propertylabel");
 }
 
 void PropertyLabel::update(world::Mobile* mob) {

@@ -67,6 +67,8 @@ WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpCompo
     func_pointer_enter().set(this, &WorldView::onPointerEnter);
 
     ui::Manager::getSingleton()->setWorldView(this);
+
+    set_type_name("worldview");
 }
 
 WorldView::~WorldView() {

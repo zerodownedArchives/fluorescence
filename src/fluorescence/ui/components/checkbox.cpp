@@ -32,6 +32,8 @@ Checkbox::Checkbox(CL_GUIComponent* parent) : MultiTextureImage(parent, 4), mous
     func_pointer_exit().set(this, &Checkbox::onPointerExit);
 
     set_double_click_enabled(false);
+
+    set_type_name("checkbox");
 }
 
 bool Checkbox::onInputPressed(const CL_InputEvent & e) {

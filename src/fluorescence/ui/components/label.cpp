@@ -50,6 +50,8 @@ Label::Label(CL_GUIComponent* parent) : GumpComponent(parent), fontColor_(CL_Col
         }
         comp = comp->get_parent_component();
     }
+
+    set_type_name("label");
 }
 
 UnicodeString Label::getText() {

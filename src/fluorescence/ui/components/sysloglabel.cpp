@@ -34,6 +34,8 @@ namespace components {
 
 SysLogLabel::SysLogLabel(CL_GUIComponent* parent) : Label(parent) {
     world::Manager::getSysLog()->registerNotify(this);
+
+    set_type_name("sysloglabel");
 }
 
 SysLogLabel::~SysLogLabel() {

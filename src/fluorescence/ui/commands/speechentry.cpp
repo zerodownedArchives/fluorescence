@@ -31,7 +31,6 @@ void SpeechEntry::execute(const UnicodeString& args) {
     GumpMenu* gameWindow = ui::Manager::getSingleton()->getGumpMenu("gamewindow");
     if (gameWindow) {
         gameWindow->activatePage(2);
-
         CL_GUIComponent* lineedit = gameWindow->get_named_item("speechtext");
         if (lineedit) {
             lineedit->set_focus();

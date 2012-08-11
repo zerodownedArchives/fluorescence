@@ -135,10 +135,6 @@ public:
     }
 
 
-
-
-
-
 private:
     Serial serial_;
     unsigned int typeId_;

@@ -111,6 +111,8 @@ LineEdit::LineEdit(CL_GUIComponent* parent) :
 
     timer.func_expired().set(this, &LineEdit::on_timer_expired);
     scroll_timer.func_expired().set(this, &LineEdit::on_scroll_timer_expired);
+
+    set_type_name("lineedit");
 }
 
 LineEdit::~LineEdit() {

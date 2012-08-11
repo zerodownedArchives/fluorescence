@@ -35,6 +35,8 @@ WarModeButton::WarModeButton(CL_GUIComponent* parent) : MultiTextureImage(parent
     func_pointer_exit().set(this, &WarModeButton::onPointerExit);
 
     set_double_click_enabled(false);
+
+    set_type_name("warmodebutton");
 }
 
 bool WarModeButton::onInputReleased(const CL_InputEvent & e) {

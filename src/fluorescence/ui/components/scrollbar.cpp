@@ -87,7 +87,7 @@ ScrollBar::ScrollBar(CL_GUIComponent* parent) : GumpComponent(parent),
     trackColor_ = CL_Colorf::white;
     trackHueInfo_ = CL_Vec3f(0, 0, 1);
 
-    set_type_name("ScrollBar");
+    set_type_name("scrollbar");
 
     func_process_message().set(this, &ScrollBar::on_process_message);
 	func_render().set(this, &ScrollBar::on_render);

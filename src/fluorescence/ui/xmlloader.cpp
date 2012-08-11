@@ -66,7 +66,6 @@ XmlLoader* XmlLoader::getSingleton() {
 XmlLoader::XmlLoader() {
     functionTable_["image"] = boost::bind(&XmlLoader::parseImage, this, _1, _2, _3, _4);
     functionTable_["button"] = boost::bind(&XmlLoader::parseButton, this, _1, _2, _3, _4);
-    functionTable_["page"] = boost::bind(&XmlLoader::parsePage, this, _1, _2, _3, _4);
     functionTable_["background"] = boost::bind(&XmlLoader::parseBackground, this, _1, _2, _3, _4);
     functionTable_["checkbox"] = boost::bind(&XmlLoader::parseCheckbox, this, _1, _2, _3, _4);
     functionTable_["radiobutton"] = boost::bind(&XmlLoader::parseRadioButton, this, _1, _2, _3, _4);
@@ -275,10 +274,12 @@ GumpComponent* XmlLoader::parseChildren(pugi::xml_node& rootNode, CL_GUIComponen
     for (; iter != iterEnd && success; ++iter) {
         if (strcmp(iter->name(), "repeat") == 0) {
             success = parseRepeat(*iter, parent, top);
+        } else if (strcmp(iter->name(), "page") == 0) {
+            success = parsePage(*iter, parent, top);
         } else {
             std::map<UnicodeString, XmlParseFunction>::iterator function = functionTable_.find(iter->name());
 
-            //LOG_DEBUG << "Gump Component: " << iter->name() << std::endl;
+            LOG_DEBUG << "Gump Component: " << iter->name() << std::endl;
 
             if (function != functionTable_.end()) {
                 pugi::xml_node defaultNode;
@@ -718,25 +719,6 @@ GumpComponent* XmlLoader::parseBackground(pugi::xml_node& node, pugi::xml_node& 
 
     top->addToCurrentPage(img);
     return img;
-}
-
-GumpComponent* XmlLoader::parsePage(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    unsigned int number = getAttribute("number", node, defaultNode).as_uint();
-
-    if (top->getActivePageId() != 0) {
-        // check that we add pages only at the top level hierarchy
-        // adding a page inside another page
-        LOG_ERROR << "Adding page " << top->getActivePageId() << " inside of page " << number << std::endl;
-        return nullptr;
-    }
-
-    top->addPage(number);
-
-    GumpComponent* lastComponent = parseChildren(node, parent, top);
-
-    top->activatePage(0);
-
-    return lastComponent;
 }
 
 GumpComponent* XmlLoader::parseCheckbox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
@@ -1205,6 +1187,22 @@ GumpComponent* XmlLoader::parseWarModeButton(pugi::xml_node& node, pugi::xml_nod
 
 
 
+bool XmlLoader::parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
+    unsigned int number = node.attribute("number").as_uint();
+
+    if (top->getActivePageId() != 0) {
+        // check that we add pages only at the top level hierarchy
+        // adding a page inside another page
+        LOG_ERROR << "Adding page " << top->getActivePageId() << " inside of page " << number << std::endl;
+        return false;
+    }
+
+    top->addPage(number);
+    parseChildren(node, parent, top);
+    top->activatePage(0);
+
+    return true;
+}
 
 bool XmlLoader::parseRepeat(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {
     UnicodeString name(node.attribute("name").value());

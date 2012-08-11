@@ -57,6 +57,8 @@ PaperdollView::PaperdollView(CL_GUIComponent* parent, const CL_Rect& bounds) : G
     func_input_pressed().set(this, &PaperdollView::onInputPressed);
     func_input_released().set(this, &PaperdollView::onInputReleased);
     func_input_doubleclick().set(this, &PaperdollView::onDoubleClick);
+
+    set_type_name("paperdollview");
 }
 
 PaperdollView::~PaperdollView() {

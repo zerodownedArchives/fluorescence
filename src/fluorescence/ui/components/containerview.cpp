@@ -50,6 +50,8 @@ ContainerView::ContainerView(CL_GUIComponent* parent, const CL_Rect& bounds) : G
     func_input_doubleclick().set(this, &ContainerView::onDoubleClick);
     func_pointer_enter().set(this, &ContainerView::onPointerEnter);
     func_pointer_exit().set(this, &ContainerView::onPointerExit);
+
+    set_type_name("containerview");
 }
 
 ContainerView::~ContainerView() {

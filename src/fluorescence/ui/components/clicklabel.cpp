@@ -32,6 +32,8 @@ namespace components {
 ClickLabel::ClickLabel(CL_GUIComponent* parent) : Label(parent) {
     func_input_released().set(this, &ClickLabel::onInputReleased);
     func_input_pressed().set(this, &ClickLabel::onInputPressed);
+
+    set_type_name("clicklabel");
 }
 
 bool ClickLabel::onInputPressed(const CL_InputEvent & e) {
