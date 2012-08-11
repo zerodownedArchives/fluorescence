@@ -40,6 +40,7 @@ Label::Label(CL_GUIComponent* parent) : GumpComponent(parent), fontColor_(CL_Col
     func_render().set(this, &Label::onRender);
 
     fontDesc_.set_height(12);
+    fontDesc_.set_subpixel(false);
 
     hasScrollareaParent_ = false;
     CL_GUIComponent* comp = parent;

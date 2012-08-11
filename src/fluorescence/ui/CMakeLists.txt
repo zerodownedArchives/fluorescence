@@ -66,6 +66,7 @@ set (GUMPMENU_HPP
     ui/components/warmodebutton.hpp
     ui/components/clicklabel.hpp
     ui/components/scrollbar.hpp
+    ui/components/alpharegion.hpp
     )
 
 set (GUMPMENU_CPP
@@ -92,6 +93,7 @@ set (GUMPMENU_CPP
     ui/components/warmodebutton.cpp
     ui/components/clicklabel.cpp
     ui/components/scrollbar.cpp
+    ui/components/alpharegion.cpp
     )
 
 set (RENDER_HPP

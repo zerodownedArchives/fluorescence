@@ -127,6 +127,7 @@ private:
     GumpComponent* parsePaperdoll(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
     GumpComponent* parseContainer(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
     GumpComponent* parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
+    GumpComponent* parseAlphaRegion(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top);
 
 
     bool parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top);

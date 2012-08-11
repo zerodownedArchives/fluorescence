@@ -153,6 +153,7 @@ void LineEdit::setFont(const UnicodeString& fontName, unsigned int fontHeight) {
     CL_FontDescription desc;
     desc.set_typeface_name(StringConverter::toUtf8String(fontName));
     desc.set_height(fontHeight);
+    desc.set_subpixel(false);
 
     font_ = ui::Manager::getSingleton()->getFont(desc);
 

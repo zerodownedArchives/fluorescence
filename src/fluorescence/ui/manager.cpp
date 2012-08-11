@@ -374,6 +374,7 @@ void Manager::loadUnifonts() {
     unifonts_[0].reset(new UoFont(0));
     CL_FontDescription fontDesc;
     fontDesc.set_typeface_name("unifont");
+    fontDesc.set_subpixel(false);
     LOG_DEBUG << "Registering font unifont" << std::endl;
     getGuiManager()->register_font(*(unifonts_[0].get()), fontDesc);
 
@@ -383,6 +384,7 @@ void Manager::loadUnifonts() {
         std::stringstream sstr;
         sstr << "unifont" << i;
         curDesc.set_typeface_name(sstr.str());
+        curDesc.set_subpixel(false);
         LOG_DEBUG << "Registering font " << sstr.str() << std::endl;
         getGuiManager()->register_font(*(unifonts_[i].get()), curDesc);
     }

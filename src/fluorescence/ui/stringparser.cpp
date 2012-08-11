@@ -37,6 +37,7 @@
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
 #include "components/radiobutton.hpp"
+#include "components/alpharegion.hpp"
 
 namespace fluo {
 namespace ui {
@@ -122,8 +123,8 @@ GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std
     ret->fitSizeToChildren();
     ret->activateFirstPage();
 
-    //LOG_INFO << "Gump data: " << std::endl;
-    //LOG_INFO << commands << std::endl;
+    LOG_INFO << "Gump data: " << std::endl;
+    LOG_INFO << commands << std::endl;
     //LOG_INFO << "Additional lines: " << strings.size() << std::endl;
     //for (unsigned int i = 0; i < strings.size(); ++i) {
         //LOG_INFO << "\t" << i << ": " << strings[i] << std::endl;
@@ -549,6 +550,7 @@ bool StringParser::parseHtmlGump(const UnicodeString& params, const std::vector<
 }
 
 bool StringParser::parseXmfHtmlGump(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { xmlhtmlgump {x} {y} {width} {height} {clilodIc} {background} {scroll} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -581,6 +583,7 @@ bool StringParser::parseXmfHtmlGump(const UnicodeString& params, const std::vect
 }
 
 bool StringParser::parseXmfHtmlGumpColor(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { xmlhtmlgumpcolor {x} {y} {width} {height} {clilodIc} {background} {scroll} {color} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -622,6 +625,7 @@ bool StringParser::parseXmfHtmlGumpColor(const UnicodeString& params, const std:
 }
 
 bool StringParser::parseXmfHtmlTok(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { xmlhtmltok {x} {y} {width} {height} {background} {scroll} {color} {clilodIc} {args}
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*@([^@]*)@\\s*", 0, status);
     matcher.reset(params);
@@ -663,6 +667,7 @@ bool StringParser::parseXmfHtmlTok(const UnicodeString& params, const std::vecto
 }
 
 bool StringParser::parseCheckerTrans(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
+    // { checkertrans {x} {y} {width} {height} }
     UErrorCode status = U_ZERO_ERROR;
     static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
     matcher.reset(params);
@@ -674,22 +679,11 @@ bool StringParser::parseCheckerTrans(const UnicodeString& params, const std::vec
 
         CL_Rectf checkerRect(x, y, CL_Sizef(width, height));
 
-        std::vector<CL_GUIComponent*> children = menu->get_child_components();
-        std::vector<CL_GUIComponent*>::const_iterator iter = children.begin();
-        std::vector<CL_GUIComponent*>::const_iterator end = children.end();
-        for (; iter != end; ++iter) {
-            if ((*iter)->get_geometry().is_overlapped(checkerRect)) {
-                components::Image* img = dynamic_cast<components::Image*>(*iter);
-                if (img) {
-                    img->setAlpha(0.2f);
-                } else {
-                    components::Background* bg = dynamic_cast<components::Background*>(*iter);
-                    if (bg) {
-                        bg->setAlpha(0.2f);
-                    }
-                }
-            }
-        }
+        components::AlphaRegion* areg = new components::AlphaRegion(menu);
+        areg->set_geometry(checkerRect);
+        areg->setAlpha(0.2);
+
+        menu->addToCurrentPage(areg);
 
         return true;
     } else {

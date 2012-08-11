@@ -49,6 +49,7 @@
 #include "components/sysloglabel.hpp"
 #include "components/warmodebutton.hpp"
 #include "components/radiobutton.hpp"
+#include "components/alpharegion.hpp"
 
 namespace fluo {
 namespace ui {
@@ -76,6 +77,7 @@ XmlLoader::XmlLoader() {
     functionTable_["lineedit"] = boost::bind(&XmlLoader::parseLineEdit, this, _1, _2, _3, _4);
     functionTable_["scrollarea"] = boost::bind(&XmlLoader::parseScrollArea, this, _1, _2, _3, _4);
     functionTable_["htmllabel"] = boost::bind(&XmlLoader::parseHtmlLabel, this, _1, _2, _3, _4);
+    functionTable_["alpharegion"] = boost::bind(&XmlLoader::parseAlphaRegion, this, _1, _2, _3, _4);
 
     functionTable_["worldview"] = boost::bind(&XmlLoader::parseWorldView, this, _1, _2, _3, _4);
     functionTable_["paperdoll"] = boost::bind(&XmlLoader::parsePaperdoll, this, _1, _2, _3, _4);
@@ -279,7 +281,7 @@ GumpComponent* XmlLoader::parseChildren(pugi::xml_node& rootNode, CL_GUIComponen
         } else {
             std::map<UnicodeString, XmlParseFunction>::iterator function = functionTable_.find(iter->name());
 
-            LOG_DEBUG << "Gump Component: " << iter->name() << std::endl;
+            //LOG_DEBUG << "Gump Component: " << iter->name() << std::endl;
 
             if (function != functionTable_.end()) {
                 pugi::xml_node defaultNode;
@@ -1095,6 +1097,19 @@ GumpComponent* XmlLoader::parseScrollArea(pugi::xml_node& node, pugi::xml_node& 
     area->setupResizeHandler();
 
     return area;
+}
+
+GumpComponent* XmlLoader::parseAlphaRegion(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
+    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    float alpha = getAttribute("alpha", node, defaultNode).as_float();
+
+    components::AlphaRegion* areg = new components::AlphaRegion(parent);
+    parseId(node, areg);
+    areg->set_geometry(bounds);
+    areg->setAlpha(alpha);
+
+    top->addToCurrentPage(areg);
+    return areg;
 }
 
 GumpComponent* XmlLoader::parseWorldView(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {

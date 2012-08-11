@@ -51,6 +51,9 @@ Button::Button(CL_GUIComponent* parent) : MultiTextureImage(parent, 3), mouseOve
         }
         comp = comp->get_parent_component();
     }
+
+    fontDesc_.set_height(12);
+    fontDesc_.set_subpixel(false);
 }
 
 bool Button::onInputReleased(const CL_InputEvent & e) {

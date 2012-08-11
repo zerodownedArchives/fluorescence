@@ -1,13 +1,19 @@
 <?xml version="1.0"?>
-<gump x="100" y="30" closable="1" draggable="true">
+<gump x="250" y="100" closable="1" draggable="true">
     <background template="thingreybackground" x="0" y="0" width="600" height="600" />
-    <button template="themebutton" x="30" y="30" width="120" height="25" text="wohoo!!" page="1" />
+    <alpharegion x="30" y="30" width="100" height="300" alpha="0.0" />
+    <alpharegion x="130" y="30" width="100" height="300" alpha="0.25" />
+    <alpharegion x="230" y="30" width="100" height="300" alpha="0.5" />
+    <alpharegion x="330" y="30" width="100" height="300" alpha="0.75" />
+    <alpharegion x="430" y="30" width="100" height="300" alpha="1.0" />
+
+    <button template="themebutton" x="30" y="30" width="120" height="25" text="wohoo!!" page="1" font="unifont10" />
     <button template="themebutton" x="170" y="30" width="120" height="25" text="alright" page="14" />
 
     <page number="1">
         <checkbox template="themecheckbox" x="50" y="75" checked="1" />
         <label x="80" y="75" width="100" height="20" text="awesome?\nthis should WW be clipped out" hue="13" />
-        <label x="80" y="125" width="150" height="25" text="other font" font="Devinne Swash" font-height="16" hue="13" align="right" />
+        <label x="380" y="125" width="150" height="25" text="other font" font="Devinne Swash" font-height="16" color="#ff000077" align="right" />
 
         <radiobutton template="radiobutton" x="170" y="65" group="1" />
         <radiobutton template="radiobutton" x="210" y="65" group="1" />
@@ -23,7 +29,6 @@
         <lineedit template="themelineedit" x="5" y="145" width="120" text="password" password="1" />
         <background template="thingreybackground" x="135" y="145" width="120" height="25" color="#ffcccc" />
         <lineedit template="themelineedit" x="135" y="145" width="120" text="3829" numeric="1" maxlength="6" />
-
 
         <htmllabel x="5" y="200" width="300" height="180" background="1" scrollbar="1">
             <![CDATA[
