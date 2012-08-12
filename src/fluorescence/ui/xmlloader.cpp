@@ -271,7 +271,7 @@ GumpComponent* XmlLoader::parseChildren(pugi::xml_node& rootNode, CL_GUIComponen
     pugi::xml_node_iterator iterEnd = rootNode.end();
 
     bool success = true;
-    GumpComponent* lastComponent;
+    GumpComponent* lastComponent = nullptr;
 
     for (; iter != iterEnd && success; ++iter) {
         if (strcmp(iter->name(), "repeat") == 0) {
