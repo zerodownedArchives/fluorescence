@@ -1157,7 +1157,7 @@ GumpComponent* XmlLoader::parseWarModeButton(pugi::xml_node& node, pugi::xml_nod
         parseMultiTextureImage(normalNode, defaultNormalNode, button, components::WarModeButton::TEX_INDEX_UP);
     } else {
         LOG_ERROR << "Normal image for warmode button not defined" << std::endl;
-        return false;
+        return nullptr;
     }
 
     if (mouseOverNode || defaultMouseOverNode) {
