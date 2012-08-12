@@ -22,7 +22,6 @@
 
 #include <data/manager.hpp>
 #include <data/artloader.hpp>
-#include <data/mobtypesloader.hpp>
 
 namespace fluo {
 namespace ui {
@@ -87,7 +86,7 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
             nextAnimId_ = 0xFFFFFFFFu;
         }
     }
-    
+
     if (nextDirection_ != direction_) {
         frameChanged = true;
         direction_ = nextDirection_;
@@ -124,7 +123,7 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
     millis_ = newMillis;
 
     frameChanged |= lastIdx != currentIdx_;
-    
+
     return frameChanged;
 }
 
@@ -148,7 +147,7 @@ void AnimTextureProvider::setDelay(unsigned int delay) {
 void AnimTextureProvider::setDefaultAnimId(unsigned int animId) {
     bool changeCurrent = currentAnimId_ == defaultAnimId_;
     defaultAnimId_ = animId;
-    
+
     if (changeCurrent) {
         activateDefaultAnim();
     }

@@ -260,11 +260,14 @@ bool GumpActions::createShard(GumpMenu* menu, const UnicodeString& action, unsig
     UnicodeString name = nameEdit->getText();
     boost::filesystem::path path(StringConverter::toUtf8String(pathEdit->getText()));
 
-    boost::filesystem::path artPath = path / "client.exe";
-    if (!boost::filesystem::exists(artPath)) {
-        LOG_ERROR << "Invalid Ultima Online directory" << std::endl;
-        GumpMenus::openMessageBox("Invalid Ultima Online directory");
-        return false;
+    boost::filesystem::path clientPath = path / "client.exe";
+    if (!boost::filesystem::exists(clientPath)) {
+        clientPath = path / "Client.exe";
+        if (!boost::filesystem::exists(clientPath)) {
+            LOG_ERROR << "Invalid Ultima Online directory" << std::endl;
+            GumpMenus::openMessageBox("Invalid Ultima Online directory");
+            return false;
+        }
     }
 
     boost::filesystem::path shardPath(StringConverter::toUtf8String(nameEdit->getText()));

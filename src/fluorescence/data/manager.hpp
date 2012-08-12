@@ -90,6 +90,7 @@ public:
     // return the path to the file inside the current shard directory, if the file exists there.
     // if not, return default path
     static boost::filesystem::path getShardFilePath(const boost::filesystem::path& innerPath);
+    static bool hasPathFor(const std::string& file);
 
     static PaperdollDef getPaperdollDef(unsigned int bodyId);
     static BodyDef getBodyDef(unsigned int baseBodyId);
@@ -139,7 +140,6 @@ private:
     std::map<std::string, boost::filesystem::path> filePathMap_;
     void buildFilePathMap(Config& config);
     void addToFilePathMap(const boost::filesystem::path& directory, bool addSubdirectories = false, const UnicodeString& prefix = "");
-    bool hasPathFor(const std::string& file) const;
     void checkFileExists(const std::string& file) const;
 
     boost::shared_ptr<ArtLoader> artLoader_;

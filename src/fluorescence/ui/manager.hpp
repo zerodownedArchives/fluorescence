@@ -157,7 +157,6 @@ private:
 
     void loadFontDirectory(const boost::filesystem::path& path);
     void loadUnifonts();
-    boost::shared_ptr<UoFont> unifonts_[13];
 
     boost::shared_ptr<FontEngine> fontEngine_;
 

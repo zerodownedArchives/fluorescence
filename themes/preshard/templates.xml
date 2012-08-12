@@ -13,7 +13,7 @@
 
 <template name="themescrollarea" default="1">
     <scrollarea>
-        <vscroll width="15" visible="always">
+        <vscroll width="15" visible="1">
             <thumb>
                 <normal source="theme" id="images/scroll_thumb.png" />
                 <mouseover source="theme" id="images/scroll_thumb.png" color="#cceecc" />
@@ -31,7 +31,7 @@
             </decrement>
             <track source="theme" id="images/scroll_track.png" />
         </vscroll>
-        <hscroll visible="never" />
+        <hscroll visible="0" />
     </scrollarea>
 </template>
 

@@ -371,36 +371,32 @@ UnicodeString Manager::getOpenGLExtensions() const {
 }
 
 void Manager::loadUnifonts() {
-    unifonts_[0].reset(new UoFont(0));
+    UoFont uni0(0);
     CL_FontDescription fontDesc;
     fontDesc.set_typeface_name("unifont");
     fontDesc.set_subpixel(false);
     LOG_DEBUG << "Registering font unifont" << std::endl;
-    getGuiManager()->register_font(*(unifonts_[0].get()), fontDesc);
+    getGuiManager()->register_font(uni0, fontDesc);
 
     for (unsigned int i = 1; i <= 12; ++i) {
-        unifonts_[i].reset(new UoFont(i));
+        UoFont uniCur(i);
         CL_FontDescription curDesc;
         std::stringstream sstr;
         sstr << "unifont" << i;
         curDesc.set_typeface_name(sstr.str());
         curDesc.set_subpixel(false);
-        LOG_DEBUG << "Registering font " << sstr.str() << std::endl;
-        getGuiManager()->register_font(*(unifonts_[i].get()), curDesc);
+
+        // check if this unifont file exists
+        sstr << ".mul";
+        if (data::Manager::hasPathFor(sstr.str())) {
+            LOG_DEBUG << "Registering font " << sstr.str() << std::endl;
+            getGuiManager()->register_font(uniCur, curDesc);
+        }
     }
 }
 
 boost::shared_ptr<ClipRectManager> Manager::getClipRectManager() {
     return getSingleton()->clipRectManager_;
-}
-
-UoFont& Manager::getUnifont(unsigned int index) {
-    if (index < 13) {
-        return *(getSingleton()->unifonts_[index].get());
-    } else {
-        LOG_WARN << "Trying to access unifont with id " << index << std::endl;
-        return *(getSingleton()->unifonts_[0].get());
-    }
 }
 
 boost::shared_ptr<CommandManager> Manager::getCommandManager() {

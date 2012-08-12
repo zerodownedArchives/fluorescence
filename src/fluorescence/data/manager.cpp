@@ -165,6 +165,10 @@ bool Manager::setShardConfig(Config& config) {
     unsigned int blockCountY;
     bool difsEnabled;
 
+
+    // map0.mul is the only file that is absolutely required, all others are optional
+    checkFileExists("map0.mul");
+
     std::stringstream ss;
     for (unsigned int index = 0; index <= 5; ++index) {
         ss.str(""); ss.clear();
@@ -175,8 +179,23 @@ bool Manager::setShardConfig(Config& config) {
         }
 
         ss.str(""); ss.clear();
+        ss << "map" << index << ".mul";
+        if (!hasPathFor(ss.str())) {
+            // file does not exist
+            if (index == 1) {
+                // old clients use map0.mul also for map1
+                ss.str(""); ss.clear();
+                ss << "map0.mul";
+                LOG_INFO << "Using map0.mul instead of map1.mul" << std::endl;
+            } else {
+                LOG_WARN << "Could not find map file " << ss.str() << ", although this map is enabled" << std::endl;
+                continue;
+            }
+        }
+        path = filePathMap_[ss.str()];
+
+        ss.str(""); ss.clear();
         ss << "/fluo/files/map" << index << "@width";
-        // LOG_DEBUG << "key: " << ss.str().c_str() << std::endl;
         blockCountX = config[ss.str().c_str()].asInt();
 
         ss.str(""); ss.clear();
@@ -187,19 +206,14 @@ bool Manager::setShardConfig(Config& config) {
         ss << "/fluo/files/map" << index << "@difs-enabled";
         difsEnabled = config[ss.str().c_str()].asBool();
 
-        ss.str(""); ss.clear();
-        ss << "map" << index << ".mul";
-        checkFileExists(ss.str());
-        path = filePathMap_[ss.str()];
         if (difsEnabled) {
+            // difs are not really mandatory, so no hard checkFileExists here
             ss.str(""); ss.clear();
             ss << "mapdifl" << index << ".mul";
-            //checkFileExists(ss.str());
             difOffsetsPath = filePathMap_[ss.str()];
 
             ss.str(""); ss.clear();
             ss << "mapdif" << index << ".mul";
-            //checkFileExists(ss.str());
             difPath = filePathMap_[ss.str()];
 
             LOG_INFO << "Opening map" << index << " from mul=" << path << ", dif-offsets=" << difOffsetsPath <<
@@ -218,13 +232,37 @@ bool Manager::setShardConfig(Config& config) {
 
         ss.str(""); ss.clear();
         ss << "staidx" << index << ".mul";
-        checkFileExists(ss.str());
+        if (!hasPathFor(ss.str())) {
+            // file does not exist
+            if (index == 1) {
+                // old clients use staidx0.mul also for map 1
+                ss.str(""); ss.clear();
+                ss << "staidx0.mul";
+                LOG_INFO << "Using staidx0.mul instead of staidx1.mul" << std::endl;
+            } else {
+                LOG_WARN << "Could not find staidx file " << ss.str() << ", although this map is enabled" << std::endl;
+                continue;
+            }
+        }
         idxPath = filePathMap_[ss.str()];
 
         ss.str(""); ss.clear();
         ss << "statics" << index << ".mul";
-        checkFileExists(ss.str());
+        if (!hasPathFor(ss.str())) {
+            // file does not exist
+            if (index == 1) {
+                // old clients use statics0.mul also for map 1
+                ss.str(""); ss.clear();
+                ss << "statics0.mul";
+                LOG_INFO << "Using statics0.mul instead of statics1.mul" << std::endl;
+            } else {
+                LOG_WARN << "Could not find statics file " << ss.str() << ", although this map is enabled" << std::endl;
+                continue;
+            }
+        }
         path = filePathMap_[ss.str()];
+
+
 
         if (difsEnabled) {
             ss.str(""); ss.clear();
@@ -271,12 +309,18 @@ bool Manager::setShardConfig(Config& config) {
 
         ss.str(""); ss.clear();
         ss << animNames[index] << ".idx";
-        checkFileExists(ss.str());
+        if (!hasPathFor(ss.str())) {
+            LOG_WARN << "Animations file " << ss.str() << " not found" << std::endl;
+            continue;
+        }
         idxPath = filePathMap_[ss.str()];
 
         ss.str(""); ss.clear();
         ss << animNames[index] << ".mul";
-        checkFileExists(ss.str());
+        if (!hasPathFor(ss.str())) {
+            LOG_WARN << "Animations file " << ss.str() << " not found" << std::endl;
+            continue;
+        }
         path = filePathMap_[ss.str()];
 
         LOG_INFO << "Opening " << animNames[index] << " from idx=" << idxPath << ", mul=" << path << ", high-detail=" <<
@@ -288,10 +332,20 @@ bool Manager::setShardConfig(Config& config) {
         }
     }
 
-    checkFileExists("mobtypes.txt");
-    path = filePathMap_["mobtypes.txt"];
-    LOG_INFO << "Opening mobtypes.txt from path=" << path << std::endl;
-    mobTypesLoader_.reset(new DefFileLoader<MobTypeDef>(path, "isi", &MobTypesLoader::parseType));
+    // check if at least one anim mul file was found
+    if (!fallbackAnimLoader_) {
+        LOG_EMERGENCY << "No anim*.mul file found, exiting" << std::endl;
+        return false;
+    }
+
+
+    if (hasPathFor("mobtypes.txt")) {
+        path = filePathMap_["mobtypes.txt"];
+        LOG_INFO << "Opening mobtypes.txt from path=" << path << std::endl;
+        mobTypesLoader_.reset(new DefFileLoader<MobTypeDef>(path, "isi", &MobTypesLoader::parseType));
+    } else {
+        LOG_WARN << "mobtypes.txt not found" << std::endl;
+    }
 
 
     const char* unifontNames[] = { "unifont", "unifont1", "unifont2", "unifont3", "unifont4", "unifont5", "unifont6", "unifont7", "unifont8", "unifont9", "unifont10", "unifont11", "unifont12" };
@@ -346,10 +400,13 @@ bool Manager::setShardConfig(Config& config) {
     LOG_INFO << "Opening gump.def from path=" << path << std::endl;
     gumpDefLoader_.reset(new DefFileLoader<GumpDef>(path, "iri"));
 
-    checkFileExists("equipconv.def");
-    path = filePathMap_["equipconv.def"];
-    LOG_INFO << "Opening equipconv.def from path=" << path << std::endl;
-    equipConvDefLoader_.reset(new EquipConvDefLoader(path));
+    if (hasPathFor("equipconv.def")) {
+        path = filePathMap_["equipconv.def"];
+        LOG_INFO << "Opening equipconv.def from path=" << path << std::endl;
+        equipConvDefLoader_.reset(new EquipConvDefLoader(path));
+    } else {
+        LOG_WARN << "equipconv.def not found" << std::endl;
+    }
 
     checkFileExists("mount.def");
     path = filePathMap_["mount.def"];
@@ -628,8 +685,9 @@ void Manager::addToFilePathMap(const boost::filesystem::path& directory, bool ad
     }
 }
 
-bool Manager::hasPathFor(const std::string& file) const {
-    return filePathMap_.find(file) != filePathMap_.end();
+bool Manager::hasPathFor(const std::string& file) {
+    Manager* sing = getSingleton();
+    return sing->filePathMap_.find(file) != sing->filePathMap_.end();
 }
 
 void Manager::checkFileExists(const std::string& file) const {
