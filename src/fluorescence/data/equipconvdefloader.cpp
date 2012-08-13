@@ -24,13 +24,15 @@
 namespace fluo {
 namespace data {
 
+EquipConvDefLoader::EquipConvDefLoader() {
+}
 
 EquipConvDefLoader::EquipConvDefLoader(const boost::filesystem::path& path) {
     DefFileLoader<EquipConvDef> defLoader(path, "iiiii");
-    
+
     std::map<int, EquipConvDef>::const_iterator iter = defLoader.begin();
     std::map<int, EquipConvDef>::const_iterator end = defLoader.end();
-    
+
     for (; iter != end; ++iter) {
         EquipConvDef curValue = iter->second;
         std::pair<unsigned int, unsigned int> id = std::make_pair(curValue.bodyId_, curValue.gumpId_);

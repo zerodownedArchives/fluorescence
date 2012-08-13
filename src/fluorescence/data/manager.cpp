@@ -345,6 +345,7 @@ bool Manager::setShardConfig(Config& config) {
         mobTypesLoader_.reset(new DefFileLoader<MobTypeDef>(path, "isi", &MobTypesLoader::parseType));
     } else {
         LOG_WARN << "mobtypes.txt not found" << std::endl;
+        mobTypesLoader_.reset(new DefFileLoader<MobTypeDef>());
     }
 
 
@@ -406,6 +407,7 @@ bool Manager::setShardConfig(Config& config) {
         equipConvDefLoader_.reset(new EquipConvDefLoader(path));
     } else {
         LOG_WARN << "equipconv.def not found" << std::endl;
+        equipConvDefLoader_.reset(new EquipConvDefLoader());
     }
 
     checkFileExists("mount.def");

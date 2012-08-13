@@ -30,6 +30,7 @@ namespace data {
 
 class EquipConvDefLoader {
 public:
+    EquipConvDefLoader();
     EquipConvDefLoader(const boost::filesystem::path& path);
 
     bool hasValue(unsigned int bodyId, unsigned int itemId) const;

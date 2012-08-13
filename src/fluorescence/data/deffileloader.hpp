@@ -36,13 +36,16 @@ private:
     typedef boost::function<void (ValueType&, unsigned int, const char*, int*&)> StringParseFunction;
 
 public:
+    DefFileLoader() {
+    }
+
     DefFileLoader(const boost::filesystem::path& path, const char* pattern, StringParseFunction stringParseFunction = StringParseFunction()) {
         std::ifstream ifs(path.string().c_str());
         if (!ifs.is_open() || !ifs.good()) {
             LOG_ERROR << "Unable to open DefFileLoader for path: " << path.string() << std::endl;
             return;
         }
-        
+
         unsigned int patternCount = strlen(pattern);
         char strBuf[256];
         while (ifs.good()) {
@@ -50,31 +53,31 @@ public:
                 ifs.ignore(1000, '\n');
                 continue;
             }
-            
+
             ValueType curValue;
             int* ptr = reinterpret_cast<int*>(&curValue);
-            
+
             for (unsigned int patternIdx = 0; patternIdx < patternCount; ++patternIdx) {
                 if (!ifs.good()) {
                     break;
                 }
-                
+
                 switch (pattern[patternIdx]) {
                     case 'i': {
                         int newNum = 0;
                         ifs >> newNum;
                         *ptr = newNum;
                         ++ptr;
-                        
+
                         break;
                     }
-                    
+
                     case 'r': {
                         ifs.ignore(100, '{');
                         ifs.get(strBuf, 256, '}');
                         ifs.ignore(1);
                         std::istringstream iss(strBuf);
-                        
+
                         std::vector<int> randNrs;
                         while (iss.good()) {
                             int newRand;
@@ -84,7 +87,7 @@ public:
                             }
                             iss.ignore(100, ',');
                         }
-                        
+
                         if (randNrs.size() == 0 && ifs.good()) {
                             LOG_ERROR << "Unable to extract number from random group {" << strBuf << "} in file " << path << std::endl;
                             throw Exception("Error parsing def file");
@@ -93,10 +96,10 @@ public:
                             ++ptr;
                         }
                         // TODO: random information is discarded here
-                        
+
                         break;
                     }
-                    
+
                     case 's': {
                         ifs >> strBuf;
                         if (stringParseFunction) {
@@ -109,14 +112,14 @@ public:
                     }
                 }
             }
-            
+
             if (!ifs.fail()) {
                 // reading new value was ok, insert now
                 int id = *(reinterpret_cast<int*>(&curValue));
                 //LOG_DEBUG << "store id " << id << std::endl;
                 table_[id] = curValue;
             }
-            
+
             ifs.ignore(1000, '\n');
         }
     }
@@ -133,11 +136,11 @@ public:
             return ValueType();
         }
     }
-    
+
     typename std::map<int, ValueType>::const_iterator begin() {
         return table_.begin();
     }
-    
+
     typename std::map<int, ValueType>::const_iterator end() {
         return table_.end();
     }
