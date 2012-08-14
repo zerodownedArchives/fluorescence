@@ -20,10 +20,11 @@
 
 #include "bf.hpp"
 
-#include "bf/08_changemap.hpp"
-#include "bf/14_opencontextmenu.hpp"
 #include "bf/01_fastwalkinit.hpp"
 #include "bf/02_fastwalkupdate.hpp"
+#include "bf/04_closegump.hpp"
+#include "bf/08_changemap.hpp"
+#include "bf/14_opencontextmenu.hpp"
 #include "bf/1b_spellbookcontent.hpp"
 
 #include <misc/log.hpp>
@@ -45,6 +46,7 @@ boost::shared_ptr<Packet> BF::getSubpacket(uint16_t subId) {
     switch (subId) {
     case 0x01: ret.reset(new bf::FastWalkInit()); break;
     case 0x02: ret.reset(new bf::FastWalkUpdate()); break;
+    case 0x04: ret.reset(new bf::CloseGump()); break;
     case 0x08: ret.reset(new bf::ChangeMap()); break;
     case 0x14: ret.reset(new bf::OpenContextMenu()); break;
     case 0x1B: ret.reset(new bf::SpellbookContent()); break;

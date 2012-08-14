@@ -100,6 +100,7 @@ public:
     GumpMenu* openXmlGump(const UnicodeString& name);
     void closeGumpMenu(const UnicodeString& name);
     void closeGumpMenu(GumpMenu* menu);
+    void closeGumpMenuByTypeId(unsigned int typeId);
     void destroyAllGumpMenus(); // needed for final cleanup
     void closeAllNonMessageGumps(); // called on disconnect
 

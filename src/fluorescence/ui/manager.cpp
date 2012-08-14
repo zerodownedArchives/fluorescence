@@ -242,9 +242,28 @@ void Manager::closeGumpMenu(GumpMenu* menu) {
 }
 
 void Manager::closeGumpMenu(const UnicodeString& gumpName) {
-    GumpMenu* menu = getGumpMenu(gumpName);
-    if (menu) {
-        closeGumpMenu(menu);
+    std::list<GumpMenu*>::iterator iter = gumpList_.begin();
+    std::list<GumpMenu*>::iterator end = gumpList_.end();
+
+    for (; iter != end; ++iter) {
+        if ((*iter)->getName() == gumpName) {
+            closeGumpMenu(*iter);
+        }
+    }
+}
+
+void Manager::closeGumpMenuByTypeId(unsigned int typeId) {
+    if (typeId == 0) {
+        return;
+    }
+
+    std::list<GumpMenu*>::iterator iter = gumpList_.begin();
+    std::list<GumpMenu*>::iterator end = gumpList_.end();
+
+    for (; iter != end; ++iter) {
+        if ((*iter)->getTypeId() == typeId) {
+            closeGumpMenu(*iter);
+        }
     }
 }
 
@@ -269,7 +288,7 @@ GumpMenu* Manager::getGumpMenu(const UnicodeString& gumpName) {
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void Manager::processGumpCloseList() {

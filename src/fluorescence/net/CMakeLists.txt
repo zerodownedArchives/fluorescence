@@ -104,6 +104,7 @@ set (PACKETS_HPP
     net/packets/bf.hpp
     net/packets/bf/01_fastwalkinit.hpp
     net/packets/bf/02_fastwalkupdate.hpp
+    net/packets/bf/04_closegump.hpp
     net/packets/bf/08_changemap.hpp
     net/packets/bf/13_contextmenurequest.hpp
     net/packets/bf/14_opencontextmenu.hpp
@@ -187,6 +188,7 @@ set (PACKETS_CPP
     net/packets/bf.cpp
     net/packets/bf/01_fastwalkinit.cpp
     net/packets/bf/02_fastwalkupdate.cpp
+    net/packets/bf/04_closegump.cpp
     net/packets/bf/08_changemap.cpp
     net/packets/bf/13_contextmenurequest.cpp
     net/packets/bf/14_opencontextmenu.cpp

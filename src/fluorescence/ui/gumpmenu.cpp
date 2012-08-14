@@ -39,7 +39,7 @@ namespace ui {
 
 GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
     CL_Window(ui::Manager::getSingleton()->getGuiManager().get(), desc),
-    serial_(0), activePageId_(0), firstPageId_(0),
+    serial_(0), typeId_(0), activePageId_(0), firstPageId_(0),
     closable_(true),
     draggable_(true), isDragged_(false),
     linkedMobile_(NULL), currentRadioGroup_(0) {
@@ -354,8 +354,16 @@ void GumpMenu::setSerial(Serial serial) {
     }
 }
 
+Serial GumpMenu::getSerial() const {
+    return serial_;
+}
+
 void GumpMenu::setTypeId(unsigned int typeId) {
     typeId_ = typeId;
+}
+
+unsigned int GumpMenu::getTypeId() const {
+    return typeId_;
 }
 
 void GumpMenu::sendReply(unsigned int buttonId) {

@@ -69,7 +69,8 @@ public:
 
     void setSerial(Serial serial);
     void setTypeId(unsigned int typeId);
-
+    Serial getSerial() const;
+    unsigned int getTypeId() const;
 
     // mobile linking
     void updateMobileProperties();
