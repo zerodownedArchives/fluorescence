@@ -32,6 +32,7 @@
 #include <misc/config.hpp>
 #include <misc/exception.hpp>
 
+#include <net/packets/7c_objectpicker.hpp>
 #include <net/packets/a8_serverlist.hpp>
 #include <net/packets/a9_characterlist.hpp>
 #include <net/packets/bf/14_opencontextmenu.hpp>
@@ -355,6 +356,51 @@ GumpMenu* GumpMenus::openSkills(const world::Mobile* mob) {
     XmlLoader::addRepeatContext("skills", context);
     GumpMenu* menu = XmlLoader::fromXmlFile("skills");
     XmlLoader::removeRepeatContext("skills");
+
+    return menu;
+}
+
+GumpMenu* GumpMenus::openObjectPicker(const net::packets::ObjectPicker* pkt) {
+    unsigned int count = pkt->items_.size();
+    std::vector<UnicodeString> serialList(count, StringConverter::fromNumber(pkt->serial_));
+    std::vector<UnicodeString> menuIdList(count, StringConverter::fromNumber(pkt->menuId_));
+    std::vector<UnicodeString> answerIdList;
+    std::vector<UnicodeString> answerTextList;
+    std::vector<UnicodeString> artIdList;
+    std::vector<UnicodeString> hueList;
+
+    std::vector<net::packets::ObjectPickerItem>::const_iterator iter = pkt->items_.begin();
+    std::vector<net::packets::ObjectPickerItem>::const_iterator end = pkt->items_.end();
+    for (; iter != end; ++iter) {
+        answerIdList.push_back(StringConverter::fromNumber(iter->answerId_));
+        answerTextList.push_back(iter->text_);
+        artIdList.push_back(StringConverter::fromNumber(iter->artId_));
+        hueList.push_back(StringConverter::fromNumber(iter->hue_));
+    }
+
+    XmlLoader::RepeatContext answerContext;
+    answerContext.repeatCount_ = pkt->items_.size();
+    answerContext.keywordReplacements_["serial"] = serialList;
+    answerContext.keywordReplacements_["menuid"] = menuIdList;
+    answerContext.keywordReplacements_["answerid"] = answerIdList;
+    answerContext.keywordReplacements_["answertext"] = answerTextList;
+    answerContext.keywordReplacements_["artid"] = artIdList;
+    answerContext.keywordReplacements_["hue"] = hueList;
+
+    XmlLoader::addRepeatContext("answers", answerContext);
+
+    GumpMenu* menu;
+    if (pkt->items_.front().artId_ == 0) {
+        // text question
+        menu = XmlLoader::fromXmlFile("serverquestion");
+    } else {
+        // "real" object picker
+        menu = XmlLoader::fromXmlFile("objectpicker");
+    }
+
+    XmlLoader::removeRepeatContext("answers");
+
+    menu->setComponentText<components::Label>("questionlabel", pkt->title_);
 
     return menu;
 }

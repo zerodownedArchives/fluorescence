@@ -54,6 +54,8 @@ public:
 
     void setHtmlText(const UnicodeString& string);
 
+    unsigned int getAlignment() const;
+
 protected:
     CL_SpanLayout span_;
     CL_FontDescription fontDesc_;

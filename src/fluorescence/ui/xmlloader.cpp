@@ -398,6 +398,13 @@ bool XmlLoader::parseLabelHelper(components::Label* label, pugi::xml_node& node,
         return false;
     }
 
+    if (label->getAlignment() != components::Label::Alignment::LEFT && label->get_width() == 0) {
+        LOG_WARN << "Label with alignment != left, but no width detected. Setting width to 100" << std::endl;
+        CL_Rectf geom(label->get_geometry());
+        geom.set_width(100);
+        label->set_geometry(geom);
+    }
+
     label->setFont(fontName, fontHeight);
 
     // if the node has its own color or hue property, don't use the template values

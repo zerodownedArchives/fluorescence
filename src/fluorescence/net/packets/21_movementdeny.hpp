@@ -18,7 +18,7 @@
 
 
 #ifndef FLUO_NET_PACKETS_MOVEMENTDENY_HPP
-#define FLUO_NET_PACKETS__HPP
+#define FLUO_NET_PACKETS_MOVEMENTDENY_HPP
 
 #include <net/packet.hpp>
 

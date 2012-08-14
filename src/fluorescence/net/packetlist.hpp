@@ -55,6 +55,8 @@
 #include "packets/73_ping.hpp"
 #include "packets/77_nakedmobile.hpp"
 #include "packets/78_equippedmobile.hpp"
+#include "packets/7c_objectpicker.hpp"
+#include "packets/7d_objectpickerresponse.hpp"
 #include "packets/80_loginrequest.hpp"
 #include "packets/82_loginreject.hpp"
 #include "packets/83_characterdelete.hpp"

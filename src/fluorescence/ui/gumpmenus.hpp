@@ -35,6 +35,7 @@ namespace net {
 namespace packets {
 class ServerList;
 class CharacterList;
+class ObjectPicker;
 
 namespace bf {
 class OpenContextMenu;
@@ -58,6 +59,7 @@ public:
     static GumpMenu* openContextMenu(const net::packets::bf::OpenContextMenu* pkt);
     static GumpMenu* openSpellbook(const world::DynamicItem* itm);
     static GumpMenu* openSkills(const world::Mobile* mob);
+    static GumpMenu* openObjectPicker(const net::packets::ObjectPicker* pkt);
 };
 
 }

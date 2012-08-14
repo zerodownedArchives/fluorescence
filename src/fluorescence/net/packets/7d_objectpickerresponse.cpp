@@ -17,56 +17,32 @@
  */
 
 
-#ifndef FLUO_NET_PACKETS_CREATECHARACTER_HPP
-#define FLUO_NET_PACKETS_CREATECHARACTER_HPP
 
-#include <net/packet.hpp>
+#include "7d_objectpickerresponse.hpp"
 
 namespace fluo {
 namespace net {
-
 namespace packets {
 
-class CreateCharacter : public Packet {
-public:
-    CreateCharacter();
+ObjectPickerResponse::ObjectPickerResponse(unsigned int serial, unsigned int menuId, unsigned int answerId, unsigned int artId, unsigned int hue) :
+        Packet(0x7d, 13),
+        serial_(serial), menuId_(menuId), answerId_(answerId), artId_(artId), hue_(hue) {
+}
 
-    virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
+bool ObjectPickerResponse::write(int8_t* buf, unsigned int len, unsigned int& index) const {
+    bool ret = true;
 
+    ret &= writePacketId(buf, len, index);
 
-    UnicodeString name_;
-    UnicodeString password_;
-    bool female_;
+    ret &= PacketWriter::write(buf, len, index, serial_);
+    ret &= PacketWriter::write(buf, len, index, menuId_);
+    ret &= PacketWriter::write(buf, len, index, answerId_);
+    ret &= PacketWriter::write(buf, len, index, artId_);
+    ret &= PacketWriter::write(buf, len, index, hue_);
 
-    uint8_t strength_;
-    uint8_t dexterity_;
-    uint8_t intelligence_;
-
-    uint8_t skill1Id_;
-    uint8_t skill1Value_;
-    uint8_t skill2Id_;
-    uint8_t skill2Value_;
-    uint8_t skill3Id_;
-    uint8_t skill3Value_;
-
-    uint16_t hue_;
-    uint16_t hairStyle_;
-    uint16_t hairHue_;
-    uint16_t beardStyle_;
-    uint16_t beardHue_;
-
-    uint16_t startCity_;
-
-    uint16_t slot_;
-
-    uint32_t encryptionKey_;
-
-    uint16_t shirtHue_;
-    uint16_t pantsHue_;
-};
+    return ret;
+}
 
 }
 }
 }
-
-#endif

@@ -68,6 +68,8 @@ set (PACKETS_HPP
     net/packets/73_ping.hpp
     net/packets/77_nakedmobile.hpp
     net/packets/78_equippedmobile.hpp
+    net/packets/7c_objectpicker.hpp
+    net/packets/7d_objectpickerresponse.hpp
     net/packets/80_loginrequest.hpp
     net/packets/82_loginreject.hpp
     net/packets/83_characterdelete.hpp
@@ -149,6 +151,8 @@ set (PACKETS_CPP
     net/packets/73_ping.cpp
     net/packets/77_nakedmobile.cpp
     net/packets/78_equippedmobile.cpp
+    net/packets/7c_objectpicker.cpp
+    net/packets/7d_objectpickerresponse.cpp
     net/packets/80_loginrequest.cpp
     net/packets/82_loginreject.cpp
     net/packets/83_characterdelete.cpp

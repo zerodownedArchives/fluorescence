@@ -200,6 +200,10 @@ void Label::setHtmlText(const UnicodeString& text) {
     adjustSize();
 }
 
+unsigned int Label::getAlignment() const {
+    return alignment_;
+}
+
 }
 }
 }
