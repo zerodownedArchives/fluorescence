@@ -72,16 +72,19 @@ public:
 
     void registerOverheadMessage(boost::shared_ptr<OverheadMessage> msg);
     void unregisterOverheadMessage(boost::shared_ptr<OverheadMessage> msg);
-    
+
     void setAutoDeleteRange(unsigned int range);
-    
+
     void addEffect(boost::shared_ptr<Effect> effect);
     std::list<boost::shared_ptr<world::Effect> >::iterator effectsBegin();
     std::list<boost::shared_ptr<world::Effect> >::iterator effectsEnd();
-    
+
     void systemMessage(const UnicodeString& msg, unsigned int hue = 946, unsigned int font = 3);
-    
+
     void clear();
+
+    void updateRoofHeight();
+    int getRoofHeight() const;
 
 private:
     static Manager* singleton_;
@@ -101,17 +104,20 @@ private:
 
     void update(unsigned int millis);
     void updateObject(IngameObject* obj, unsigned int elapsedMillis);
-    
+
     boost::shared_ptr<SmoothMovementManager> smoothMovementManager_;
     boost::shared_ptr<PlayerWalkManager> playerWalkManager_;
 
     unsigned int autoDeleteRange_;
-    
+
     std::list<boost::shared_ptr<OverheadMessage> > overheadMessages_;
-    
+
     std::list<boost::shared_ptr<world::Effect> > effects_;
-    
+
     boost::shared_ptr<SysLog> sysLog_;
+
+    // items with z >= roofHeight_ are not displayed
+    int roofHeight_;
 };
 
 }

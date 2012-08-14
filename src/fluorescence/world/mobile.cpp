@@ -617,5 +617,14 @@ unsigned int Mobile::getMovementDuration() const {
     }
 }
 
+void Mobile::onLocationChanged(const CL_Vec3f& oldLocation) {
+    if (isPlayer()) {
+        world::Manager::getSingleton()->updateRoofHeight();
+    }
+
+    // pass call to parent class
+    ServerObject::onLocationChanged(oldLocation);
+}
+
 }
 }

@@ -49,21 +49,25 @@ public:
     bool isVisible() const;
 
     void update(unsigned int elapsedMillis);
-    
+
     std::list<world::IngameObject*>::iterator renderBegin();
     std::list<world::IngameObject*>::iterator renderEnd();
-    
+
     bool repaintRequired() const;
-    
+
     void addDynamicObject(world::IngameObject* obj);
     void removeDynamicObject(world::IngameObject* obj);
     void requestSort();
-    
+
     boost::shared_ptr<world::IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopObject) const;
-    
+
     // height that we can reach with one step from the given location
     int getStepReach(const CL_Vec3f& loc) const;
     bool checkMovement(const CL_Vec3f& curLocation, int stepReach, CL_Vec3f& outLoc) const;
+
+    boost::shared_ptr<MapTile> getMapTileAt(unsigned int worldX, unsigned int worldY) const;
+
+    void getWalkObjectsOn(unsigned int x, unsigned int y, std::list<world::IngameObject*>& list) const;
 
 private:
     unsigned int mapId_;
@@ -71,7 +75,7 @@ private:
 
     boost::shared_ptr<MapBlock> mapBlock_;
     bool mapAddedToList_;
-    
+
     boost::shared_ptr<StaticBlock> staticBlock_;
     bool staticsAddedToList_;
 
@@ -80,15 +84,14 @@ private:
     bool fullUpdateRenderDataRequired_;
     bool renderListSortRequired_;
     bool repaintRequired_;
-    
+
     // ownership of these objects is already provided by staticBlock_ or mapBlock_, thus no smart pointers here
-    std::list<world::IngameObject*> quickRenderUpdateList_;    
+    std::list<world::IngameObject*> quickRenderUpdateList_;
     std::list<world::IngameObject*> renderList_;
-    
+
     static bool renderDepthSortHelper(const world::IngameObject* a, const world::IngameObject* b);
-    
+
     bool checkFreeSpace(const std::list<world::IngameObject*>& list, int zFrom, int zTo) const;
-    void getWalkObjectsOn(unsigned int x, unsigned int y, std::list<world::IngameObject*>& list) const;
 };
 
 }

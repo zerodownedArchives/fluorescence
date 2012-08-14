@@ -108,6 +108,8 @@ public:
 
     void displayStatChange(unsigned int str, unsigned int dex, unsigned int intel);
 
+    virtual void onLocationChanged(const CL_Vec3f& oldLocation);
+
 private:
     unsigned int baseBodyId_; // as sent by the server
     unsigned int bodyId_; // after transformation, e.g. by body.def

@@ -204,6 +204,7 @@ void WorldRenderer::render(CL_GraphicContext& gc) {
     gc.set_buffer_control(bufferControlObjects_);
 
     ui::ClipRectManager* clipRectMan = ui::Manager::getClipRectManager().get();
+    int roofHeight = world::Manager::getSingleton()->getRoofHeight();
 
     boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getWorldShader();
     gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
@@ -249,7 +250,7 @@ void WorldRenderer::render(CL_GraphicContext& gc) {
             // check if texture is ready to be drawn
             ui::Texture* tex = curObj->getIngameTexture().get();
 
-            if (!tex || !tex->isReadComplete() || !curObj->isVisible()) {
+            if (!tex || !tex->isReadComplete() || !curObj->isVisible() || curObj->getLocZDraw() >= roofHeight) {
                 continue;
             }
 

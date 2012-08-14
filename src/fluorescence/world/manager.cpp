@@ -29,6 +29,7 @@
 #include "playerwalkmanager.hpp"
 #include "effect.hpp"
 #include "syslog.hpp"
+#include "sector.hpp"
 
 #include <ui/manager.hpp>
 #include <ui/cliprectmanager.hpp>
@@ -71,7 +72,7 @@ void Manager::destroy() {
     }
 }
 
-Manager::Manager(const Config& config) : currentMapId_(0) {
+Manager::Manager(const Config& config) : currentMapId_(0), roofHeight_(INT_MAX) {
     sectorManager_.reset(new SectorManager(config));
     lightManager_.reset(new LightManager());
     smoothMovementManager_.reset(new SmoothMovementManager());
@@ -330,6 +331,79 @@ void Manager::clear() {
     overheadMessages_.clear();
     effects_.clear();
     sectorManager_->clear();
+}
+
+void Manager::updateRoofHeight() {
+    roofHeight_ = INT_MAX;
+    unsigned int playerX = player_->getLocXGame();
+    unsigned int playerY = player_->getLocYGame();
+    int playerZ = player_->getLocZGame() + 15;
+
+    // we need to check 4 map tiles (x/y, x+1/y, x/y+1, x+1/y+1) and the statics on (x/y and x+1/y+1)
+    boost::shared_ptr<Sector> sectorXY = sectorManager_->getSectorForCoordinates(playerX, playerY);
+    boost::shared_ptr<Sector> sectorX1Y = sectorManager_->getSectorForCoordinates(playerX + 1, playerY);
+    boost::shared_ptr<Sector> sectorXY1 = sectorManager_->getSectorForCoordinates(playerX, playerY + 1);
+    boost::shared_ptr<Sector> sectorX1Y1 = sectorManager_->getSectorForCoordinates(playerX + 1, playerY + 1);
+
+    // map tile check
+    if (sectorXY->getMapTileAt(playerX, playerY)->getLocZGame() >= playerZ &&
+            sectorX1Y->getMapTileAt(playerX + 1, playerY)->getLocZGame() >= playerZ &&
+            sectorXY1->getMapTileAt(playerX, playerY + 1)->getLocZGame() >= playerZ &&
+            sectorX1Y1->getMapTileAt(playerX + 1, playerY + 1)->getLocZGame() >= playerZ) {
+        // player is fully under map
+        roofHeight_ = playerZ;
+        return;
+    }
+
+    // map check is okay, now check all statics and dynamics
+    std::list<world::IngameObject*> objList;
+    sectorXY->getWalkObjectsOn(playerX, playerY, objList);
+    std::list<world::IngameObject*>::const_iterator iter = objList.begin();
+    std::list<world::IngameObject*>::const_iterator end = objList.end();
+
+    for (; iter != end; ++iter) {
+        int curZ = (*iter)->getLocZGame();
+        if (curZ >= playerZ && curZ < roofHeight_) {
+            if ((*iter)->isStaticItem()) {
+                const data::StaticTileInfo* info = static_cast<world::StaticItem*>(*iter)->getTileDataInfo();
+                if (!info->roof() && (info->surface() || info->impassable())) {
+                    roofHeight_ = curZ;
+                }
+            } else if ((*iter)->isDynamicItem()) {
+                const data::StaticTileInfo* info = static_cast<world::DynamicItem*>(*iter)->getTileDataInfo();
+                if (!info->roof() && (info->surface() || info->impassable())) {
+                    roofHeight_ = curZ;
+                }
+            }
+        }
+    }
+
+    // now check x+1/y+1
+    objList.clear();
+    sectorX1Y1->getWalkObjectsOn(playerX + 1, playerY + 1, objList);
+    iter = objList.begin();
+    end = objList.end();
+
+    for (; iter != end; ++iter) {
+        int curZ = (*iter)->getLocZGame();
+        if (curZ >= playerZ && curZ < roofHeight_) {
+            if ((*iter)->isStaticItem()) {
+                const data::StaticTileInfo* info = static_cast<world::StaticItem*>(*iter)->getTileDataInfo();
+                if (info->roof()) {
+                    roofHeight_ = curZ;
+                }
+            } else if ((*iter)->isDynamicItem()) {
+                const data::StaticTileInfo* info = static_cast<world::DynamicItem*>(*iter)->getTileDataInfo();
+                if (info->roof()) {
+                    roofHeight_ = curZ;
+                }
+            }
+        }
+    }
+}
+
+int Manager::getRoofHeight() const {
+    return roofHeight_;
 }
 
 }
