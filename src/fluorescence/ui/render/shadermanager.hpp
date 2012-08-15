@@ -30,8 +30,9 @@ namespace ui {
 
 class ShaderManager {
 public:
-    ShaderManager(CL_GraphicContext& gc);
+    ShaderManager();
 
+    bool initShaders(CL_GraphicContext& gc);
 
     boost::shared_ptr<CL_ProgramObject> getWorldShader();
     boost::shared_ptr<CL_ProgramObject> getGumpShader();

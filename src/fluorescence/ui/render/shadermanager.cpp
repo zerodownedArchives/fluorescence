@@ -28,9 +28,17 @@
 namespace fluo {
 namespace ui {
 
-ShaderManager::ShaderManager(CL_GraphicContext& gc) {
+ShaderManager::ShaderManager() {
+}
+
+bool ShaderManager::initShaders(CL_GraphicContext& gc) {
     LOG_DEBUG << "Loading world shader" << std::endl;
-    worldShader_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/world_vertex.glsl", "shader/world_fragment.glsl")));
+    try {
+        worldShader_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/world_vertex.glsl", "shader/world_fragment.glsl")));
+    } catch (const CL_Exception& ex) {
+        LOG_EMERGENCY << "Error while loading world shader: " << ex.what() << std::endl;
+        return false;
+    }
     worldShader_->bind_attribute_location(0, "gl_Vertex");
     worldShader_->bind_attribute_location(1, "TexCoord0");
     worldShader_->bind_attribute_location(2, "gl_Normal");
@@ -39,24 +47,34 @@ ShaderManager::ShaderManager(CL_GraphicContext& gc) {
 
     if (!worldShader_->link()) {
         LOG_EMERGENCY << "Error while linking world shader:\n" << worldShader_->get_info_log().c_str() << std::endl;
-        throw CL_Exception("Unable to link shader");
+        return false;
     }
 
 
     LOG_DEBUG << "Loading gump shader" << std::endl;
-    gumpShader_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/gump_vertex.glsl", "shader/gump_fragment.glsl")));
+    try {
+        gumpShader_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/gump_vertex.glsl", "shader/gump_fragment.glsl")));
+    } catch (const CL_Exception& ex) {
+        LOG_EMERGENCY << "Error while loading gump shader: " << ex.what() << std::endl;
+        return false;
+    }
     gumpShader_->bind_attribute_location(0, "gl_Vertex");
     gumpShader_->bind_attribute_location(1, "TexCoord0");
     gumpShader_->bind_attribute_location(2, "HueInfo0");
 
     if (!gumpShader_->link()) {
         LOG_EMERGENCY << "Error while linking gump shader:\n" << gumpShader_->get_info_log().c_str() << std::endl;
-        throw CL_Exception("Unable to link shader");
+        return false;
     }
 
 
     LOG_DEBUG << "Loading particle shader" << std::endl;
-    particleShader_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/particles_vertex.glsl", "shader/particles_fragment.glsl")));
+    try {
+        particleShader_.reset(new CL_ProgramObject(CL_ProgramObject::load(gc, "shader/particles_vertex.glsl", "shader/particles_fragment.glsl")));
+    } catch (const CL_Exception& ex) {
+        LOG_EMERGENCY << "Error while loading particle shader: " << ex.what() << std::endl;
+        return false;
+    }
     particleShader_->bind_attribute_location(0, "LocationStart");
     particleShader_->bind_attribute_location(1, "VelocityStart");
     particleShader_->bind_attribute_location(2, "VelocityEnd");
@@ -68,8 +86,10 @@ ShaderManager::ShaderManager(CL_GraphicContext& gc) {
 
     if (!particleShader_->link()) {
         LOG_EMERGENCY << "Error while linking particle shader:\n" << particleShader_->get_info_log().c_str() << std::endl;
-        throw CL_Exception("Unable to link shader");
+        return false;
     }
+
+    return true;
 }
 
 boost::shared_ptr<CL_ProgramObject> ShaderManager::getWorldShader() {

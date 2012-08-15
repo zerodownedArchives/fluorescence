@@ -123,7 +123,10 @@ bool Manager::setShardConfig(Config& config) {
     cursorManager_.reset(new CursorManager(config, mainWindow_));
 
     LOG_DEBUG << "Initializing shaders" << std::endl;
-    shaderManager_.reset(new ShaderManager(getGraphicContext()));
+    shaderManager_.reset(new ShaderManager());
+    if (!shaderManager_->initShaders(getGraphicContext())) {
+        return false;
+    }
 
     clipRectManager_.reset(new ClipRectManager());
 
