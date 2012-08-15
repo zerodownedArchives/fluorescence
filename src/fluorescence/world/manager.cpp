@@ -148,6 +148,8 @@ void Manager::deleteObject(Serial serial) {
             dynamicItems_.erase(serial);
         }
     }
+
+    smoothMovementManager_->clear(serial);
 }
 
 boost::shared_ptr<Mobile> Manager::getMobile(Serial serial, bool createIfNotExists) {

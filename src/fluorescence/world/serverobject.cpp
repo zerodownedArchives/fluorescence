@@ -50,17 +50,17 @@ void ServerObject::setHue(unsigned int hue) {
 
 void ServerObject::onLocationChanged(const CL_Vec3f& oldLocation) {
     boost::shared_ptr<Sector> newSector = world::Manager::getSectorManager()->getSectorForCoordinates(getLocXGame(), getLocYGame());
-    
+
     if (sector_ != newSector) {
         if (sector_) {
             sector_->removeDynamicObject(this);
         }
-        
+
         if (newSector) {
             newSector->addDynamicObject(this);
         }
     }
-    
+
     sector_ = newSector;
 }
 
@@ -68,9 +68,9 @@ void ServerObject::onDelete() {
     if (sector_) {
         sector_->removeDynamicObject(this);
     }
-    
+
     sector_.reset();
-    
+
     IngameObject::onDelete();
 }
 
