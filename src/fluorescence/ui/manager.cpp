@@ -94,7 +94,12 @@ Manager::Manager() : worldView_(nullptr), promptSerial_(0) {
     description.set_version(2, 1, true);
     mainWindow_.reset(new CL_DisplayWindow(description));
 
-    LOG_DEBUG << "OpenGL extensions: " << getOpenGLExtensions() << std::endl;
+    UnicodeString openglExt = getOpenGLExtensions();
+    LOG_DEBUG << "OpenGL extensions: " << openglExt << std::endl;
+    if (openglExt.indexOf("GL_EXT_gpu_shader4") == -1) {
+        LOG_EMERGENCY << "Sorry, your graphics card or graphics card driver is not supported. Please try to update the most recent, official driver" << std::endl;
+        throw Exception("Graphics card or driver not supported");
+    }
 
     slotCloseWindow = mainWindow_->sig_window_close().connect(Client::getSingleton(), &Client::shutdown);
 
