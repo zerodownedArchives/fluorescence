@@ -233,8 +233,13 @@ bool Config::parseNode(const pugi::xml_node& node) {
     for (; attrIter != attrEnd; ++attrIter) {
         UnicodeString configKey = currentPath;
         configKey.append(attrIter->name());
-        if (!variablesMap_[configKey].parse(attrIter->value())) {
-            return false;
+        std::map<UnicodeString, Variable>::iterator itm = variablesMap_.find(configKey);
+        if (itm != variablesMap_.end()) {
+            if (!itm->second.parse(attrIter->value())) {
+                return false;
+            }
+        } else {
+            LOG_WARN << "Ignoring unknown config value " << configKey << std::endl;
         }
     }
 
