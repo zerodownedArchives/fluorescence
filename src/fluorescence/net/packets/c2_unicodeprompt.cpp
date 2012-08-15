@@ -16,19 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "speechentry.hpp"
+
+
+#include "c2_unicodeprompt.hpp"
 
 #include <ui/manager.hpp>
 
 namespace fluo {
-namespace ui {
-namespace commands {
+namespace net {
+namespace packets {
 
-void SpeechEntry::execute(const UnicodeString& args) {
-    ui::Manager::getSingleton()->showSpeechEntry();
-}
-
-}
-}
+UnicodePrompt::UnicodePrompt() : Packet(0xc2) {
 }
 
+bool UnicodePrompt::read(const int8_t* buf, unsigned int len, unsigned int& index) {
+    bool ret = true;
+
+    ret &= PacketReader::read(buf, len, index, playerSerial_);
+    ret &= PacketReader::read(buf, len, index, promptSerial_);
+
+    index += 10; // jump 2 zero dwords and the unicode null terminator
+
+    return ret;
+}
+
+void UnicodePrompt::onReceive() {
+    ui::Manager::getSingleton()->setPrompt(promptSerial_);
+}
+
+}
+}
+}

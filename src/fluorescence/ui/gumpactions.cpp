@@ -162,9 +162,9 @@ bool GumpActions::sendSpeech(GumpMenu* menu, const UnicodeString& action, unsign
         if (speechText.length() > 0) {
             ui::Manager::getCommandManager()->handleTextInput(speechText);
             line->setText("");
-            line->set_focus(false);
-            menu->activatePage(0);
         }
+        line->set_focus(false);
+        menu->activatePage(0);
     } else {
         LOG_ERROR << "Line element \"speechtext\" not found in gamewindow gump" << std::endl;
     }

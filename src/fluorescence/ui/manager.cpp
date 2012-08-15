@@ -35,6 +35,8 @@
 #include "commandmanager.hpp"
 #include "macromanager.hpp"
 
+#include "components/lineedit.hpp"
+
 #include <client.hpp>
 
 #include <misc/log.hpp>
@@ -46,6 +48,7 @@
 
 #include <net/manager.hpp>
 #include <net/packets/ad_speechrequest.hpp>
+#include <net/packets/c2_unicodepromptreply.hpp>
 
 namespace fluo {
 namespace ui {
@@ -81,7 +84,7 @@ Manager* Manager::getSingleton() {
     return singleton_;
 }
 
-Manager::Manager() : worldView_(nullptr) {
+Manager::Manager() : worldView_(nullptr), promptSerial_(0) {
     CL_OpenGLWindowDescription description;
     description.set_position(CL_Rect(50, 50, CL_Size(1024, 768)), true);
     description.set_title("fluorescence");
@@ -529,6 +532,51 @@ CL_Font Manager::getFont(const CL_FontDescription& desc) {
         ret = CL_Font_System(getSingleton()->getGraphicContext(), desc);
     }
     return ret;
+}
+
+void Manager::setPrompt(Serial serial) {
+    promptSerial_ = serial;
+    showSpeechEntry(true);
+}
+
+bool Manager::hasPrompt() const {
+    return promptSerial_ != 0;
+}
+
+void Manager::handlePrompt(const UnicodeString& text) {
+    if (promptSerial_) {
+        net::packets::UnicodePromptReply pkt(promptSerial_, text);
+        net::Manager::getSingleton()->send(pkt);
+        promptSerial_ = 0;
+    }
+}
+
+void Manager::cancelPrompt() {
+    net::packets::UnicodePromptReply pkt(promptSerial_, "");
+    net::Manager::getSingleton()->send(pkt);
+    promptSerial_ = 0;
+}
+
+void Manager::showSpeechEntry(bool clearText) {
+    GumpMenu* gameWindow = getGumpMenu("gamewindow");
+    if (gameWindow) {
+        gameWindow->activatePage(2);
+        CL_GUIComponent* lineedit = gameWindow->get_named_item("speechtext");
+        if (lineedit) {
+            gameWindow->set_focus();
+            lineedit->set_focus();
+            if (clearText) {
+                components::LineEdit* le = dynamic_cast<components::LineEdit*>(lineedit);
+                if (le) {
+                    le->setText("");
+                }
+            }
+        } else {
+            LOG_ERROR << "Unable to find speech lineedit in gamewindow" << std::endl;
+        }
+    } else {
+        LOG_ERROR << "Unable to find gamewindow gump to activate speech lineedit" << std::endl;
+    }
 }
 
 }

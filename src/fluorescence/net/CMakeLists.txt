@@ -93,6 +93,8 @@ set (PACKETS_HPP
     net/packets/bd_clientversion.hpp
     net/packets/c0_osieffect.hpp
     net/packets/c1_localizedtext.hpp
+    net/packets/c2_unicodeprompt.hpp
+    net/packets/c2_unicodepromptreply.hpp
     net/packets/c7_osieffectextended.hpp
     net/packets/c8_updaterange.hpp
     net/packets/cc_localizedtextaffix.hpp
@@ -177,6 +179,8 @@ set (PACKETS_CPP
     net/packets/bd_clientversion.cpp
     net/packets/c0_osieffect.cpp
     net/packets/c1_localizedtext.cpp
+    net/packets/c2_unicodeprompt.cpp
+    net/packets/c2_unicodepromptreply.cpp
     net/packets/c7_osieffectextended.cpp
     net/packets/c8_updaterange.cpp
     net/packets/cc_localizedtextaffix.cpp

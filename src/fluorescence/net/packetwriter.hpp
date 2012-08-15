@@ -30,6 +30,8 @@ public:
     static bool writeUnicodeNull(int8_t* buf, unsigned int len, unsigned int& index, const UnicodeString& value);
     static bool writeUnicodeFixed(int8_t* buf, unsigned int len, unsigned int& index, const UnicodeString& value, unsigned int charCount);
 
+    static bool writeUnicodeLENull(int8_t* buf, unsigned int len, unsigned int& index, const UnicodeString& value);
+
     static bool writeUtf8Null(int8_t* buf, unsigned int len, unsigned int& index, const UnicodeString& value);
     static bool writeUtf8Fixed(int8_t* buf, unsigned int len, unsigned int& index, const UnicodeString& value, unsigned int fixed);
 

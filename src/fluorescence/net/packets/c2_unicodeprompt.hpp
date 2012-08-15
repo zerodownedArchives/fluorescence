@@ -16,19 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "speechentry.hpp"
 
-#include <ui/manager.hpp>
+#ifndef FLUO_NET_PACKETS_UNICODEPROMPT_HPP
+#define FLUO_NET_PACKETS_UNICODEPROMPT_HPP
+
+#include <net/packet.hpp>
+
+#include <typedefs.hpp>
 
 namespace fluo {
-namespace ui {
-namespace commands {
+namespace net {
 
-void SpeechEntry::execute(const UnicodeString& args) {
-    ui::Manager::getSingleton()->showSpeechEntry();
-}
+namespace packets {
+
+class UnicodePrompt : public Packet {
+public:
+    UnicodePrompt();
+
+    virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
+
+    virtual void onReceive();
+
+private:
+    Serial playerSerial_;
+    Serial promptSerial_;
+};
 
 }
 }
 }
 
+#endif

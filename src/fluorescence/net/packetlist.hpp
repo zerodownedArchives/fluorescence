@@ -81,6 +81,8 @@
 #include "packets/bf.hpp"
 #include "packets/c0_osieffect.hpp"
 #include "packets/c1_localizedtext.hpp"
+#include "packets/c2_unicodeprompt.hpp"
+#include "packets/c2_unicodepromptreply.hpp"
 #include "packets/c7_osieffectextended.hpp"
 #include "packets/c8_updaterange.hpp"
 #include "packets/cc_localizedtextaffix.hpp"

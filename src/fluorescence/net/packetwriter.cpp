@@ -80,6 +80,17 @@ bool PacketWriter::writeUnicodeNull(int8_t* buf, unsigned int len, unsigned int&
     }
 }
 
+bool PacketWriter::writeUnicodeLENull(int8_t* buf, unsigned int len, unsigned int& index, const UnicodeString& value) {
+    int bytecount = StringConverter::toUnicodeLE(value, &buf[index], len - index, true);
+
+    if (bytecount == -1) {
+        return false;
+    } else {
+        index += bytecount;
+        return true;
+    }
+}
+
 bool PacketWriter::writeUnicodeFixed(int8_t* buf, unsigned int len, unsigned int& index, const UnicodeString& value, unsigned int charCount) {
     unsigned int fixed = charCount * 2;
     if (index + fixed < len) {

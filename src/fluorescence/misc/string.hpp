@@ -42,6 +42,7 @@ public:
 
     static int toUtf8(const UnicodeString& str, char* buffer, int bufferSize, bool nullTerminated);
     static int toUnicode(const UnicodeString& str, char* buffer, int bufferSize, bool nullTerminated);
+    static int toUnicodeLE(const UnicodeString& str, char* buffer, int bufferSize, bool nullTerminated);
 
     static std::string toUtf8String(const UnicodeString& str);
 
@@ -50,6 +51,7 @@ public:
     static UnicodeString fromUnicodeLE(const int8_t* buffer, int bufferSize);
     static int toUtf8(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated);
     static int toUnicode(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated);
+    static int toUnicodeLE(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated);
 
     static int toInt(const UnicodeString& str);
 
@@ -57,7 +59,7 @@ private:
     static UConverter* getUnicodeConverter();
     static UConverter* getUnicodeConverterLE();
     static NumberFormat* getNumberFormat();
-    
+
     static boost::mutex* unicodeConverterMutex_;
     static boost::mutex* unicodeConverterLeMutex_;
 };

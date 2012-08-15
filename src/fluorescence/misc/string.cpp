@@ -26,7 +26,7 @@
 #include <string.h>
 
 namespace fluo {
-    
+
 boost::mutex* StringConverter::unicodeConverterMutex_ = new boost::mutex();
 boost::mutex* StringConverter::unicodeConverterLeMutex_ = new boost::mutex;
 
@@ -145,6 +145,29 @@ int StringConverter::toUnicode(const UnicodeString& str, char* buffer, int buffe
     }
 }
 
+int StringConverter::toUnicodeLE(const UnicodeString& str, char* buffer, int bufferSize, bool nullTerminated) {
+    boost::mutex::scoped_lock myLock(*unicodeConverterLeMutex_);
+    UErrorCode error = U_ZERO_ERROR;
+    int ret = str.extract(buffer, bufferSize, getUnicodeConverterLE(), error);
+    if (U_FAILURE(error)) {
+        LOG_WARN << "Unable to convert to utf-16-le string" << std::endl;
+        return -1;
+    }
+
+    if (!nullTerminated) {
+        return ret;
+    } else {
+        if (ret+2 < bufferSize) {
+            buffer[ret++] = 0;
+            buffer[ret++] = 0;
+
+            return ret;
+        } else {
+            return -1;
+        }
+    }
+}
+
 int StringConverter::toInt(const UnicodeString& str) {
     UErrorCode error = U_ZERO_ERROR;
     Formattable fmt(-999);
@@ -220,6 +243,10 @@ int StringConverter::toUtf8(const UnicodeString& str, int8_t* buffer, int buffer
 
 int StringConverter::toUnicode(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated) {
     return toUnicode(str, reinterpret_cast<char*>(buffer), bufferSize, nullTerminated);
+}
+
+int StringConverter::toUnicodeLE(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated) {
+    return toUnicodeLE(str, reinterpret_cast<char*>(buffer), bufferSize, nullTerminated);
 }
 
 }

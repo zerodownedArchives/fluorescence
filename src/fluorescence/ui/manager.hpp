@@ -34,6 +34,7 @@
 #include <queue>
 #include <map>
 
+#include <typedefs.hpp>
 #include <misc/config.hpp>
 
 namespace fluo {
@@ -125,9 +126,15 @@ public:
 
     void setWorldView(components::WorldView* view);
     components::WorldView* getWorldView() const;
+    void showSpeechEntry(bool clearText = false);
 
     void setTheme(const UnicodeString& themeName);
     const boost::filesystem::path& getThemePath() const;
+
+    void setPrompt(Serial serial);
+    bool hasPrompt() const;
+    void handlePrompt(const UnicodeString& text);
+    void cancelPrompt();
 
 private:
     static Manager* singleton_;
@@ -189,6 +196,8 @@ private:
     components::WorldView* worldView_;
 
     boost::filesystem::path themePath_;
+
+    Serial promptSerial_;
 };
 
 }
