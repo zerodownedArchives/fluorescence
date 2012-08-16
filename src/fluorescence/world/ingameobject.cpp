@@ -42,7 +42,7 @@ namespace world {
 IngameObject::IngameObject(unsigned int objectType) :
     draggable_(false),
     materialInfo_(ui::render::MaterialInfo::get(Material::DEFAULT)),
-    objectType_(objectType), visible_(true) {
+    objectType_(objectType), visible_(true), ignored_(false) {
 
 }
 
