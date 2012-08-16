@@ -648,6 +648,7 @@ const boost::filesystem::path& Manager::getFilePathFor(const UnicodeString& stri
 void Manager::buildFilePathMap(Config& config) {
     boost::filesystem::path mulDirPath = config["/fluo/files/mul-directory@path"].asPath();
     if (!boost::filesystem::exists(mulDirPath) || !boost::filesystem::is_directory(mulDirPath)) {
+        LOG_EMERGENCY << "Invalid mul directory" << std::endl;
         throw Exception("Invalid mul directory");
     }
 

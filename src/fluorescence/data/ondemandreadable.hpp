@@ -29,15 +29,15 @@ namespace data {
 template<class T>
 class OnDemandReadable {
 public:
-    typedef boost::function<void (boost::shared_ptr<T>)> Callback;
+    typedef boost::function<void ()> Callback;
     
     OnDemandReadable() : readComplete_(false) { }
     
-    void setReadComplete(boost::shared_ptr<T> sharedThis = boost::shared_ptr<T>()) { 
+    void setReadComplete() { 
         readComplete_ = true; 
         
-        if (completeCallback_ && sharedThis) {
-            completeCallback_(sharedThis);
+        if (completeCallback_) {
+            completeCallback_();
         }
     }
     

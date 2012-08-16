@@ -151,7 +151,7 @@ void PaperdollRenderer::render(CL_GraphicContext& gc) {
     renderQueue_->postRender(renderingComplete);
 
     if (!renderingComplete) {
-        paperdollView_->request_repaint();
+        ui::Manager::getSingleton()->queueComponentRepaint(paperdollView_);
     }
 }
 

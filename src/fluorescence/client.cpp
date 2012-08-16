@@ -278,6 +278,8 @@ int Client::main(const std::vector<CL_String8>& args) {
     setlocale(LC_ALL, "");
     setlocale(LC_NUMERIC, "C");
 
+    config_.initDefaults();
+
     // patcher can't update itself directly => make sure the new files are copied to the main folder
     PatcherUpdater::copyPatcherUpdateFolder();
 

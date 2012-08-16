@@ -118,7 +118,8 @@ public:
 
     bool onUnhandledInputEvent(const CL_InputEvent& event);
 
-    void queueComponentResize(CL_GUIComponent* elem, const CL_Rectf& geom);
+    void queueComponentResize(CL_GUIComponent* comp, const CL_Rectf& geom);
+    void queueComponentRepaint(CL_GUIComponent* comp);
 
     void releaseIngameObjects();
 
@@ -192,6 +193,7 @@ private:
     std::vector<int> staticWaterIds_;
 
     std::vector<std::pair<CL_GUIComponent*, CL_Rectf> > componentResizeQueue_;
+    std::vector<CL_GUIComponent*> componentRepaintQueue_;
 
     components::WorldView* worldView_;
 

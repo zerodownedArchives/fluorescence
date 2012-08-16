@@ -31,7 +31,9 @@ boost::mutex* StringConverter::unicodeConverterMutex_ = new boost::mutex();
 boost::mutex* StringConverter::unicodeConverterLeMutex_ = new boost::mutex;
 
 UnicodeString StringConverter::fromUtf8(const std::string& string) {
-    UnicodeString ret = UnicodeString::fromUTF8(string);
+    UnicodeString ret(string.c_str());
+    // this does not work in the windows debug build: UnicodeString::fromUTF8(string);
+    // although it looks "more correct" to me... 
     if (ret.isBogus()) {
         ret = UnicodeString("##FLUOERROR"); // set error string
         LOG_WARN << "Unable to convert from utf-8 string" << std::endl;

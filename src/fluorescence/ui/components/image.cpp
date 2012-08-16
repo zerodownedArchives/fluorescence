@@ -50,13 +50,13 @@ void Image::setTexture(boost::shared_ptr<ui::Texture> tex) {
 void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     CL_Rectf geom = get_geometry();
     if (!texture_ || !texture_->isReadComplete()) {
-        request_repaint();
+        ui::Manager::getSingleton()->queueComponentRepaint(this);
     } else if (autoResize_ && (geom.get_width() != texture_->getWidth() || geom.get_height() != texture_->getHeight())) {
         geom.set_width(texture_->getWidth());
         geom.set_height(texture_->getHeight());
-        request_repaint();
 
         ui::Manager::getSingleton()->queueComponentResize(this, geom);
+        // repainted automatically after resize
     } else if (!tiled_) {
         if (hueInfo_[1u] == 0) {
             CL_Draw::texture(gc, texture_->getTexture(), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_, texture_->getNormalizedTextureCoords());

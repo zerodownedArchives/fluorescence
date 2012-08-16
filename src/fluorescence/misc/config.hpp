@@ -34,6 +34,8 @@ class Config {
 public:
     Config();
 
+    void initDefaults();
+
     bool parseCommandLine(const std::vector<CL_String8>& args);
     bool parseShardConfig();
 

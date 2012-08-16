@@ -318,9 +318,6 @@
     <ClInclude Include="..\..\src\fluorescence\ui\gumpactions.hpp">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\gumpelement.hpp">
-      <Filter>ui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\fluorescence\ui\gumpmenu.hpp">
       <Filter>ui</Filter>
     </ClInclude>
@@ -349,9 +346,6 @@
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\fluorescence\ui\uofontprovider.hpp">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\xmlparser.hpp">
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\fluorescence\ui\commands\clientcommand.hpp">
@@ -395,66 +389,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\fluorescence\ui\commands\zoom.hpp">
       <Filter>ui\commands</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\background.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\basebutton.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\clicklabel.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\containerview.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\image.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\label.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\lineedit.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\multitextureimage.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\paperdollview.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\propertylabel.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\scrollarea.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\sysloglabel.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\tbackground.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\templatebutton.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\textentry.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\uobutton.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\uocheckbox.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\uoradiobutton.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\warmodebutton.hpp">
-      <Filter>ui\components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\fluorescence\ui\components\worldview.hpp">
-      <Filter>ui\components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\fluorescence\ui\particles\emitter.hpp">
       <Filter>ui\particles</Filter>
@@ -777,6 +711,84 @@
     <ClInclude Include="..\..\src\fluorescence\misc\patcherupdater.hpp">
       <Filter>misc</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\xmlloader.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\bf\04_closegump.hpp">
+      <Filter>net\packets\bf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\c2_unicodeprompt.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\c2_unicodepromptreply.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\7d_objectpickerresponse.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\net\packets\7c_objectpicker.hpp">
+      <Filter>net\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\basebutton.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\button.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\checkbox.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\clicklabel.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\containerview.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\image.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\label.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\lineedit.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\multitextureimage.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\paperdollview.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\propertylabel.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\radiobutton.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\scrollarea.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\scrollbar.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\sysloglabel.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\warmodebutton.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\worldview.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\alpharegion.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\components\background.hpp">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\fluorescence\ui\gumpcomponent.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\fluorescence\data\animdataloader.cpp">
@@ -995,9 +1007,6 @@
     <ClCompile Include="..\..\src\fluorescence\ui\gumpactions.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\gumpelement.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\fluorescence\ui\gumpmenu.cpp">
       <Filter>ui</Filter>
     </ClCompile>
@@ -1023,9 +1032,6 @@
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\fluorescence\ui\uofontprovider.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\xmlparser.cpp">
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\fluorescence\ui\commands\command.cpp">
@@ -1066,63 +1072,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\fluorescence\ui\commands\zoom.cpp">
       <Filter>ui\commands</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\background.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\basebutton.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\clicklabel.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\containerview.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\image.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\label.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\lineedit.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\paperdollview.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\propertylabel.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\scrollarea.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\sysloglabel.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\tbackground.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\templatebutton.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\textentry.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\uobutton.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\uocheckbox.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\uoradiobutton.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\warmodebutton.cpp">
-      <Filter>ui\components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fluorescence\ui\components\worldview.cpp">
-      <Filter>ui\components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\fluorescence\ui\particles\emitter.cpp">
       <Filter>ui\particles</Filter>
@@ -1435,6 +1384,84 @@
     </ClCompile>
     <ClCompile Include="..\..\src\fluorescence\misc\patcherupdater.cpp">
       <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\xmlloader.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\bf\04_closegump.cpp">
+      <Filter>net\packets\bf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\c2_unicodepromptreply.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\c2_unicodeprompt.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\7d_objectpickerresponse.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\net\packets\7c_objectpicker.cpp">
+      <Filter>net\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\basebutton.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\button.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\checkbox.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\clicklabel.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\containerview.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\image.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\label.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\lineedit.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\multitextureimage.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\paperdollview.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\propertylabel.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\radiobutton.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\scrollarea.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\scrollbar.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\sysloglabel.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\warmodebutton.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\worldview.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\alpharegion.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\components\background.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fluorescence\ui\gumpcomponent.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

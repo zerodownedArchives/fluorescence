@@ -188,7 +188,7 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
     renderQueue_->postRender(renderingComplete);
     
     if (!renderingComplete) {
-        containerView_->request_repaint();
+        ui::Manager::getSingleton()->queueComponentRepaint(containerView_);
     }
 }
 

@@ -50,7 +50,7 @@ void Background::setBaseId(unsigned int id) {
 void Background::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     for (unsigned int i = 0; i < 9; ++i) {
         if (!textures_[i] || !textures_[i]->isReadComplete()) {
-            request_repaint();
+            ui::Manager::getSingleton()->queueComponentRepaint(this);
             return; // don't draw until everything is ready
         }
     }

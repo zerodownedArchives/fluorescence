@@ -57,12 +57,12 @@ Manager* Manager::singleton_ = NULL;
 
 bool Manager::create() {
     if (!singleton_) {
-        //try {
+        try {
             singleton_ = new Manager();
-        //} catch (const std::exception& ex) {
-            //LOG_EMERGENCY << "Error initializing ui::Manager: " << ex.what() << std::endl;
-            //return false;
-        //}
+        } catch (const std::exception& ex) {
+            LOG_EMERGENCY << "Error initializing ui::Manager: " << ex.what() << std::endl;
+            return false;
+        }
     }
 
     return true;
@@ -202,6 +202,15 @@ void Manager::stepDraw() {
             iter->first->set_geometry(iter->second);
         }
         componentResizeQueue_.clear();
+    }
+
+    if (!componentRepaintQueue_.empty()) {
+        std::vector<CL_GUIComponent*>::iterator iter = componentRepaintQueue_.begin();
+        std::vector<CL_GUIComponent*>::iterator end = componentRepaintQueue_.end();
+        for (; iter != end; ++iter) {
+            (*iter)->request_repaint();
+        }
+        componentRepaintQueue_.clear();
     }
 }
 
@@ -469,8 +478,12 @@ bool Manager::isStaticIdWater(unsigned int id) {
     return std::binary_search(singleton_->staticWaterIds_.begin(), singleton_->staticWaterIds_.end(), id);
 }
 
-void Manager::queueComponentResize(CL_GUIComponent* elem, const CL_Rectf& geom) {
-    componentResizeQueue_.push_back(std::make_pair(elem, geom));
+void Manager::queueComponentResize(CL_GUIComponent* comp, const CL_Rectf& geom) {
+    componentResizeQueue_.push_back(std::make_pair(comp, geom));
+}
+
+void Manager::queueComponentRepaint(CL_GUIComponent* comp) {
+    componentRepaintQueue_.push_back(comp);
 }
 
 void Manager::releaseIngameObjects() {

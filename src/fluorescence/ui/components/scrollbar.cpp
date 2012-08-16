@@ -113,7 +113,7 @@ void ScrollBar::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
             !decrementTextures_[decrementIndex_]->isReadComplete() ||
             !thumbTextures_[thumbIndex_]->isReadComplete() ||
             !trackTexture_->isReadComplete()) {
-        request_repaint();
+        ui::Manager::getSingleton()->queueComponentRepaint(this);
         return;
     }
 
