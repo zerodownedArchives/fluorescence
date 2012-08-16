@@ -77,19 +77,25 @@ void SectorManager::updateSectorList() {
     buildSectorRequiredList(sectorRequiredList, sectorAddDistanceCache_, mapId);
     
     // iterate over all stored sectors and remove the ones we do not need anymore
-    std::map<IsoIndex, boost::shared_ptr<Sector> >::iterator deleteIter = sectorMap_.begin();
-    std::map<IsoIndex, boost::shared_ptr<Sector> >::iterator deleteEnd = sectorMap_.end();
+    std::map<IsoIndex, boost::shared_ptr<Sector> >::const_iterator sectorIter = sectorMap_.begin();
+    std::map<IsoIndex, boost::shared_ptr<Sector> >::const_iterator sectorEnd = sectorMap_.end();
+    std::vector<IsoIndex> toDelete;
 
     std::list<IsoIndex>::const_iterator requiredBegin = sectorRequiredList.begin();
     std::list<IsoIndex>::const_iterator requiredEnd = sectorRequiredList.end();
 
-    while (deleteIter != deleteEnd) {
-        if (!std::binary_search(requiredBegin, requiredEnd, deleteIter->second->getSectorId())) {
+    while (sectorIter != sectorEnd) {
+        if (!std::binary_search(requiredBegin, requiredEnd, sectorIter->first)) {
             //LOG_DEBUG << "sector remove from manager x=" << deleteIter->second->getSectorId().x_ << " y=" << deleteIter->second->getSectorId().y_ << std::endl;
-            sectorMap_.erase(deleteIter);
+            toDelete.push_back(sectorIter->first);
         }
+        ++sectorIter;
+    }
 
-        ++deleteIter;
+    std::vector<IsoIndex>::const_iterator deleteIter = toDelete.begin();
+    std::vector<IsoIndex>::const_iterator deleteEnd = toDelete.begin();
+    for (; deleteIter != deleteEnd; ++deleteIter) {
+        sectorMap_.erase(*deleteIter);
     }
 
 
