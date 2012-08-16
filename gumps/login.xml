@@ -17,6 +17,6 @@
     <image template="lineeditbackground" x="115" y="103" />
     <lineedit name="loginpassword" x="120" y="105" width="215"  password="1" />
 
-    <button template="themebutton" x="30" y="150" width="130" text="Exit fluorescence" action="shutdown" />
+    <button template="themebutton" x="30" y="150" width="130" text="Exit" action="shutdown" />
     <button template="themebutton" x="190" y="150" width="130" text="Connect" action="connect" />
 </gump>
