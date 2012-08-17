@@ -266,16 +266,8 @@ void Manager::handleServerRedirect(const packets::ServerRedirect* packet) {
 
     socket_.connect(packet->ipaddr_, packet->port_);
     socket_.setUseDecompress(true);
-
-    Client* clientSing = Client::getSingleton();
-    packets::Seed seed(packet->encryptionKey_,
-        clientSing->getConfig()["/fluo/shard/clientversion@major"].asInt(),
-        clientSing->getConfig()["/fluo/shard/clientversion@minor"].asInt(),
-        clientSing->getConfig()["/fluo/shard/clientversion@revision"].asInt(),
-        clientSing->getConfig()["/fluo/shard/clientversion@build"].asInt()
-    );
-    send(seed);
-
+    socket_.setSeed(packet->encryptionKey_);
+    socket_.writeShortSeed();
 
     Config& config = Client::getSingleton()->getConfig();
     packets::GameServerLoginRequest loginReq(config["/fluo/shard/account@name"].asString(),

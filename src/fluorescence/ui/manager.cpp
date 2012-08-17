@@ -581,7 +581,7 @@ void Manager::showSpeechEntry(bool clearText) {
         gameWindow->activatePage(2);
         CL_GUIComponent* lineedit = gameWindow->get_named_item("speechtext");
         if (lineedit) {
-            gameWindow->set_focus();
+            gameWindow->set_visible(); // activate this window
             lineedit->set_focus();
             if (clearText) {
                 components::LineEdit* le = dynamic_cast<components::LineEdit*>(lineedit);

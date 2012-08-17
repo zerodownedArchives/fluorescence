@@ -54,6 +54,7 @@ public:
 
     void setSeed(uint32_t seed);
     uint32_t getSeed() const;
+    void writeShortSeed();
 
     bool sendAll();
 

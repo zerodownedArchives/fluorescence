@@ -290,6 +290,10 @@ void Socket::setSeed(uint32_t seed) {
     seed_ = seed;
 }
 
+void Socket::writeShortSeed() {
+    PacketWriter::write(sendBuffer_, 0x10000, sendSize_, seed_);
+}
+
 uint32_t Socket::getSeed() const {
     return seed_;
 }
