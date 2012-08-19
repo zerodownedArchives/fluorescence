@@ -36,51 +36,51 @@ WorldObject::WorldObject() : Packet(0xF3, net::Manager::getSingleton()->getProto
 bool WorldObject::read(const int8_t* buf, unsigned int len, unsigned int& index) {
     bool ret = true;
 
-	uint16_t header;
+    uint16_t header;
 
-	ret = ret && PacketReader::read(buf, len, index, header);
-	if (header != 0x0001) {
+    ret = ret && PacketReader::read(buf, len, index, header);
+    if (header != 0x0001) {
         LOG_ERROR << "Unknown header != 1 in WorldObject packet" << std::endl;
-		return false;
+        return false;
     }
-	ret = ret && PacketReader::read(buf, len, index, datatype_);
-	ret = ret && PacketReader::read(buf, len, index, serial_);
-	ret = ret && PacketReader::read(buf, len, index, objectid_);
-	ret = ret && PacketReader::read(buf, len, index, direction_);
-	ret = ret && PacketReader::read(buf, len, index, amount1_);
-	ret = ret && PacketReader::read(buf, len, index, amount2_);
-	ret = ret && PacketReader::read(buf, len, index, locX_);
-	ret = ret && PacketReader::read(buf, len, index, locY_);
-	ret = ret && PacketReader::read(buf, len, index, locZ_);
-	ret = ret && PacketReader::read(buf, len, index, quality_);
-	ret = ret && PacketReader::read(buf, len, index, hue_);
-	ret = ret && PacketReader::read(buf, len, index, flag_);
+    ret = ret && PacketReader::read(buf, len, index, datatype_);
+    ret = ret && PacketReader::read(buf, len, index, serial_);
+    ret = ret && PacketReader::read(buf, len, index, objectid_);
+    ret = ret && PacketReader::read(buf, len, index, direction_);
+    ret = ret && PacketReader::read(buf, len, index, amount1_);
+    ret = ret && PacketReader::read(buf, len, index, amount2_);
+    ret = ret && PacketReader::read(buf, len, index, locX_);
+    ret = ret && PacketReader::read(buf, len, index, locY_);
+    ret = ret && PacketReader::read(buf, len, index, locZ_);
+    ret = ret && PacketReader::read(buf, len, index, quality_);
+    ret = ret && PacketReader::read(buf, len, index, hue_);
+    ret = ret && PacketReader::read(buf, len, index, flag_);
 
-	if (net::Manager::getSingleton()->getProtocolVersion() >= ProtocolVersion::HS) {
-		ret = ret && PacketReader::read(buf, len, index, access_);
-	} else {
-		access_ = 0;
-	}
+    if (net::Manager::getSingleton()->getProtocolVersion() >= ProtocolVersion::HS) {
+        ret = ret && PacketReader::read(buf, len, index, access_);
+    } else {
+        access_ = 0;
+    }
 
     return ret;
 }
 
 void WorldObject::onReceive() {
-	if (datatype_ == 0x00) {
-		// dynamic item
-		boost::shared_ptr<world::DynamicItem> itm = world::Manager::getSingleton()->getDynamicItem(serial_);
+    if (datatype_ == 0x00) {
+        // dynamic item
+        boost::shared_ptr<world::DynamicItem> itm = world::Manager::getSingleton()->getDynamicItem(serial_);
 
-		itm->setLocation(locX_, locY_, locZ_);
-		itm->setDirection(direction_);
-		itm->setAmount(amount1_);
-		itm->setStackIdOffset(0);
-		itm->setArtId(objectid_);
-		itm->setHue(hue_);
+        itm->setLocation(locX_, locY_, locZ_);
+        itm->setDirection(direction_);
+        itm->setAmount(amount1_);
+        itm->setStackIdOffset(0);
+        itm->setArtId(objectid_);
+        itm->setHue(hue_);
 
-		// TODO: handle status
-	} else {
-		LOG_ERROR << "Unable to handle WorldObject packets with datatype != 0" << std::endl;
-	}
+        // TODO: handle status
+    } else {
+        LOG_ERROR << "Unable to handle WorldObject packets with datatype != 0" << std::endl;
+    }
 }
 
 }

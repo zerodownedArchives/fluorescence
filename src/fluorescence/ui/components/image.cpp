@@ -131,14 +131,14 @@ void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
         textureRect = texture_->getNormalizedTextureCoords();
     }
 
-	CL_Vec2f tex1_coords[6] = {
+    CL_Vec2f tex1_coords[6] = {
         CL_Vec2f(textureRect.left, textureRect.top),
         CL_Vec2f(textureRect.right, textureRect.top),
         CL_Vec2f(textureRect.left, textureRect.bottom),
         CL_Vec2f(textureRect.right, textureRect.top),
         CL_Vec2f(textureRect.left, textureRect.bottom),
         CL_Vec2f(textureRect.right, textureRect.bottom)
-	};
+    };
 
     CL_Vec2f vertexCoords[6];
 

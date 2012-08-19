@@ -90,9 +90,9 @@ ScrollBar::ScrollBar(CL_GUIComponent* parent) : GumpComponent(parent),
     set_type_name("scrollbar");
 
     func_process_message().set(this, &ScrollBar::on_process_message);
-	func_render().set(this, &ScrollBar::on_render);
+    func_render().set(this, &ScrollBar::on_render);
 
-	mouse_down_timer.func_expired().set(this, &ScrollBar::on_timer_expired);
+    mouse_down_timer.func_expired().set(this, &ScrollBar::on_timer_expired);
 }
 
 ScrollBar::~ScrollBar() {
@@ -212,14 +212,14 @@ void ScrollBar::renderTexture(CL_GraphicContext& gc, ui::Texture* tex, const CL_
     CL_Rectf textureRect = tex->getNormalizedTextureCoords();
     gc.set_texture(1, tex->getTexture());
 
-	CL_Vec2f tex1_coords[6] = {
+    CL_Vec2f tex1_coords[6] = {
         CL_Vec2f(textureRect.left, textureRect.top),
         CL_Vec2f(textureRect.right, textureRect.top),
         CL_Vec2f(textureRect.left, textureRect.bottom),
         CL_Vec2f(textureRect.right, textureRect.top),
         CL_Vec2f(textureRect.left, textureRect.bottom),
         CL_Vec2f(textureRect.right, textureRect.bottom)
-	};
+    };
 
     CL_Vec2f vertexCoords[6];
     vertexCoords[0] = CL_Vec2f(vertexRect.left, vertexRect.top);
@@ -578,7 +578,7 @@ void ScrollBar::on_timer_expired() {
 
 void ScrollBar::invoke_scroll_event() {
     if (!func_scroll_.is_null())
-		func_scroll_.invoke();
+        func_scroll_.invoke();
 }
 
 void ScrollBar::updateTextureIndices(const CL_Point& pos) {
@@ -594,7 +594,7 @@ void ScrollBar::updateTextureIndices(const CL_Point& pos) {
 }
 
 CL_Callback_v0& ScrollBar::func_scroll() {
-	return func_scroll_;
+    return func_scroll_;
 }
 
 }

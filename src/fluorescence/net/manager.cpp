@@ -84,8 +84,10 @@ Manager::Manager(Config& config) {
         protocolVersion_ = ProtocolVersion::PRE_HS;
     } else if (protocolVersionStr == "hs") {
         protocolVersion_ = ProtocolVersion::HS;
+    } else if (protocolVersionStr == "hs-7013") {
+        protocolVersion_ = ProtocolVersion::HS_7013;
     } else {
-        LOG_ERROR << "Unknown network protocol version " << protocolVersionStr << ". Valid versions are \"hs\" and \"pre-hs\". Setting to default \"pre-hs\"." << std::endl;
+        LOG_ERROR << "Unknown network protocol version " << protocolVersionStr << ". Valid versions are \"pre-hs\", \"hs\" and \"hs-7013\" . Setting to default \"pre-hs\"." << std::endl;
         protocolVersion_ = ProtocolVersion::PRE_HS;
     }
 

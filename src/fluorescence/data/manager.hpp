@@ -60,10 +60,10 @@ class DefFileLoader;
 
 struct TextureSource {
 enum {
-	FILE = 1,
-	MAPART = 2,
-	STATICART = 3,
-	GUMPART = 4,
+    FILE = 1,
+    MAPART = 2,
+    STATICART = 3,
+    GUMPART = 4,
     HTTP = 5,
     THEME = 6,
 };

@@ -90,19 +90,19 @@ LineEdit::LineEdit(CL_GUIComponent* parent) :
         fontColor_(CL_Colorf::black),
 
         cursor_pos(0),
-		max_length(-1),
+        max_length(-1),
         mouse_selecting(false),
-		password_mode(false),
-		numeric_mode(false),
-		selection_start(-1),
-		selection_length(0),
-		decimal_char("."),
+        password_mode(false),
+        numeric_mode(false),
+        selection_start(-1),
+        selection_length(0),
+        decimal_char("."),
         cursor_drawing_enabled_when_parent_focused(false),
         mouse_moves_left(false),
         cursor_blink_visible(true),
         clip_start_offset(0),
-		clip_end_offset(0),
-		ignore_mouse_events(false) {
+        clip_end_offset(0),
+        ignore_mouse_events(false) {
 
     set_focus_policy(focus_local);
 
@@ -350,7 +350,7 @@ void LineEdit::on_process_message(CL_GUIMessage &msg) {
                     request_repaint();
                     msg.set_consumed();
                 } else if (e.id == CL_KEY_C && e.ctrl) {
-                    if(!password_mode) {	// Do not allow copying the password to clipboard
+                    if(!password_mode) {    // Do not allow copying the password to clipboard
                         CL_String str = get_selection();
                         get_gui_manager().set_clipboard_text(str);
                         msg.set_consumed();
@@ -795,7 +795,7 @@ CL_Rect LineEdit::get_cursor_rect() {
 
 
     CL_FontMetrics metrics = font_.get_font_metrics();
-	float align_height = metrics.get_ascent() - metrics.get_internal_leading();
+    float align_height = metrics.get_ascent() - metrics.get_internal_leading();
     cursor_rect.top = ((get_height() - align_height) / 2.0f) - metrics.get_internal_leading();
     cursor_rect.bottom = cursor_rect.top + metrics.get_ascent() + metrics.get_descent();
 
@@ -830,7 +830,7 @@ CL_Rect LineEdit::get_selection_rect() {
     selection_rect.right = selection_rect.left + text_size_selection.width;
 
     CL_FontMetrics metrics = font_.get_font_metrics();
-	float align_height = metrics.get_ascent() - metrics.get_internal_leading();
+    float align_height = metrics.get_ascent() - metrics.get_internal_leading();
     selection_rect.top = ((get_height() - align_height) / 2.0f) - metrics.get_internal_leading();
     selection_rect.bottom = selection_rect.top + metrics.get_ascent() + metrics.get_descent();
 
@@ -984,7 +984,7 @@ void LineEdit::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
     }
 
     CL_FontMetrics metrics = font_.get_font_metrics();
-	float align_height = metrics.get_ascent() - metrics.get_internal_leading();
+    float align_height = metrics.get_ascent() - metrics.get_internal_leading();
     int y = align_height + ((get_height() - align_height) / 2.0f);
 
 

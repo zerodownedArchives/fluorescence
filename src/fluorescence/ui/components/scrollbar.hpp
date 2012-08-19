@@ -92,24 +92,24 @@ public:
 
     // clanlib stuff
     bool is_vertical() const;
-	bool is_horizontal() const;
-	int get_min() const;
-	int get_max() const;
-	int get_line_step() const;
-	int get_page_step() const;
-	int get_position() const;
-	int get_preferred_width() const;
-	int get_preferred_height() const;
+    bool is_horizontal() const;
+    int get_min() const;
+    int get_max() const;
+    int get_line_step() const;
+    int get_page_step() const;
+    int get_position() const;
+    int get_preferred_width() const;
+    int get_preferred_height() const;
 
-	void set_vertical();
-	void set_horizontal();
-	void set_min(int scroll_min);
-	void set_max(int scroll_max);
-	void set_line_step(int step);
-	void set_page_step(int step);
-	void set_ranges(int min, int max, int lstep, int pstep);
-	void calculate_ranges(int view_size, int total_size);
-	void set_position(int pos);
+    void set_vertical();
+    void set_horizontal();
+    void set_min(int scroll_min);
+    void set_max(int scroll_max);
+    void set_line_step(int step);
+    void set_page_step(int step);
+    void set_ranges(int min, int max, int lstep, int pstep);
+    void calculate_ranges(int view_size, int total_size);
+    void set_position(int pos);
 
     CL_Callback_v0 &func_scroll();
 
@@ -140,46 +140,46 @@ private:
 
     // clanlib stuff
     bool vertical;
-	int scroll_min, scroll_max, line_step, page_step, position;
+    int scroll_min, scroll_max, line_step, page_step, position;
 
-	enum MouseDownMode
-	{
-		mouse_down_none,
-		mouse_down_button_decr,
-		mouse_down_button_incr,
-		mouse_down_track_decr,
-		mouse_down_track_incr,
-		mouse_down_thumb_drag
-	} mouse_down_mode;
+    enum MouseDownMode
+    {
+        mouse_down_none,
+        mouse_down_button_decr,
+        mouse_down_button_incr,
+        mouse_down_track_decr,
+        mouse_down_track_incr,
+        mouse_down_thumb_drag
+    } mouse_down_mode;
 
-	int thumb_start_position;
-	CL_Point mouse_drag_start_pos;
-	int thumb_start_pixel_position;
+    int thumb_start_position;
+    CL_Point mouse_drag_start_pos;
+    int thumb_start_pixel_position;
 
-	CL_Timer mouse_down_timer;
-	int last_step_size;
+    CL_Timer mouse_down_timer;
+    int last_step_size;
 
-	CL_Rect rect_button_decrement;
-	CL_Rect rect_track_decrement;
-	CL_Rect rect_thumb;
-	CL_Rect rect_track_increment;
-	CL_Rect rect_button_increment;
+    CL_Rect rect_button_decrement;
+    CL_Rect rect_track_decrement;
+    CL_Rect rect_thumb;
+    CL_Rect rect_track_increment;
+    CL_Rect rect_button_increment;
 
     void invoke_scroll_event();
 
     void on_process_message(CL_GUIMessage &msg);
-	void on_mouse_move(CL_GUIMessage_Input &input, CL_InputEvent &input_event);
-	void on_mouse_lbutton_down(CL_GUIMessage_Input &input, CL_InputEvent &input_event);
-	void on_mouse_lbutton_up(CL_GUIMessage_Input &input, CL_InputEvent &input_event);
-	void on_mouse_leave();
-	void on_render(CL_GraphicContext &gc, const CL_Rect &update_rect);
-	void on_enablemode_changed();
-	void on_timer_expired();
+    void on_mouse_move(CL_GUIMessage_Input &input, CL_InputEvent &input_event);
+    void on_mouse_lbutton_down(CL_GUIMessage_Input &input, CL_InputEvent &input_event);
+    void on_mouse_lbutton_up(CL_GUIMessage_Input &input, CL_InputEvent &input_event);
+    void on_mouse_leave();
+    void on_render(CL_GraphicContext &gc, const CL_Rect &update_rect);
+    void on_enablemode_changed();
+    void on_timer_expired();
 
-	bool update_part_positions();
-	int calculate_thumb_size(int track_size);
-	int calculate_thumb_position(int thumb_size, int track_size);
-	CL_Rect create_rect(const CL_Rect content_rect, int start, int end);
+    bool update_part_positions();
+    int calculate_thumb_size(int track_size);
+    int calculate_thumb_position(int thumb_size, int track_size);
+    CL_Rect create_rect(const CL_Rect content_rect, int start, int end);
 
     CL_Callback_v0 func_scroll_;
 };

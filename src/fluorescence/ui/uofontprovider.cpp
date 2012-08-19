@@ -158,21 +158,21 @@ void UoFontProvider::initFontMetrics() {
     }
 
     fontMetrics_ = CL_FontMetrics(
-		height,		// height
-		ascent,		// ascent
-		descent,			// descent
-		ascent - height,			// internal_leading
-		1,			// external_leading
-		avgWidth, // average_character_width
-		maxWidth, // max_character_width
-		0.0f,		// weight
-		0.0f,		// overhang
-		96.0f,		// digitized_aspect_x
-		96.0f,		// digitized_aspect_y
-		false,		// italic
-		false,		// underline
-		false,		// struck_out
-		false);		// fixed_pitch
+        height,        // height
+        ascent,        // ascent
+        descent,            // descent
+        ascent - height,            // internal_leading
+        1,            // external_leading
+        avgWidth, // average_character_width
+        maxWidth, // max_character_width
+        0.0f,        // weight
+        0.0f,        // overhang
+        96.0f,        // digitized_aspect_x
+        96.0f,        // digitized_aspect_y
+        false,        // italic
+        false,        // underline
+        false,        // struck_out
+        false);        // fixed_pitch
 }
 
 void UoFontProvider::applyBorder(CL_PixelBuffer pxBuf, const CL_Colorf& clcolor, unsigned int borderWidth, const CL_Colorf& clborderColor) {

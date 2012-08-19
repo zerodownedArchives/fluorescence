@@ -48,10 +48,10 @@ public:
     virtual CL_FontMetrics get_font_metrics();
 
 public:
-	virtual void destroy();
-	virtual void draw_text(CL_GraphicContext &gc, float x, float y, const CL_StringRef &text, const CL_Colorf &color);
-	virtual CL_Size get_text_size(CL_GraphicContext &gc, const CL_StringRef &text);
-	virtual int get_character_index(CL_GraphicContext &gc, const CL_String &text, const CL_Point &point);
+    virtual void destroy();
+    virtual void draw_text(CL_GraphicContext &gc, float x, float y, const CL_StringRef &text, const CL_Colorf &color);
+    virtual CL_Size get_text_size(CL_GraphicContext &gc, const CL_StringRef &text);
+    virtual int get_character_index(CL_GraphicContext &gc, const CL_String &text, const CL_Point &point);
 
 private:
     unsigned int unifontId_;
@@ -70,20 +70,20 @@ private:
     uint32_t clToUintColor(const CL_Colorf& clcolor) const;
 
 
-	// history stuff
-	struct HistoryEntry {
-		int32_t hash_;
-		CL_Colorf color_;
-		boost::shared_ptr<ui::Texture> texture_;
-	};
+    // history stuff
+    struct HistoryEntry {
+        int32_t hash_;
+        CL_Colorf color_;
+        boost::shared_ptr<ui::Texture> texture_;
+    };
 
-	boost::mutex historyMutex_;
-	static const unsigned int HISTORY_SIZE = 30;
-	unsigned int historyIndex_;
-	unsigned int historySize_;
-	HistoryEntry textureHistory_[HISTORY_SIZE];
+    boost::mutex historyMutex_;
+    static const unsigned int HISTORY_SIZE = 30;
+    unsigned int historyIndex_;
+    unsigned int historySize_;
+    HistoryEntry textureHistory_[HISTORY_SIZE];
 
-	boost::shared_ptr<ui::Texture> findInHistory(const UnicodeString& str, const CL_Colorf& color);
+    boost::shared_ptr<ui::Texture> findInHistory(const UnicodeString& str, const CL_Colorf& color);
     void addToHistory(const UnicodeString& str, const CL_Colorf& color, boost::shared_ptr<ui::Texture> tex);
 };
 

@@ -24,6 +24,7 @@
 #include <misc/string.hpp>
 
 #include <vector>
+#include <ClanLib/Core/Math/vec4.h>
 
 namespace fluo {
 namespace net {
@@ -47,6 +48,8 @@ public:
     std::vector<uint8_t> cityIndices_;
     std::vector<UnicodeString> cityNames_;
     std::vector<UnicodeString> tavernNames_;
+    std::vector<CL_Vec4f> cityCoordinates_;
+    std::vector<unsigned int> cityCliloc_;
 
     uint32_t flags_;
 };

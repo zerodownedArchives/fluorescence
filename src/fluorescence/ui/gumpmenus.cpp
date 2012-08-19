@@ -129,7 +129,7 @@ GumpMenu* GumpMenus::openShardSelectionGump() {
     bfs::directory_iterator nameEnd;
 
     for (; nameIter != nameEnd; ++nameIter) {
-		if (bfs::is_directory(nameIter->status()) && nameIter->leaf() != ".svn") {
+        if (bfs::is_directory(nameIter->status()) && nameIter->leaf() != ".svn") {
             nameList.push_back(StringConverter::fromUtf8(nameIter->path().filename()));
         }
     }

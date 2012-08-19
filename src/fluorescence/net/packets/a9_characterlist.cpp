@@ -20,6 +20,7 @@
 
 #include "a9_characterlist.hpp"
 
+#include <net/manager.hpp>
 #include <misc/log.hpp>
 #include <ui/manager.hpp>
 #include <ui/gumpmenus.hpp>
@@ -44,20 +45,59 @@ bool CharacterList::read(const int8_t* buf, unsigned int len, unsigned int& inde
 
     uint8_t idx;
     UnicodeString tmp;
-    for (unsigned int i = 0; i < cityCount_; ++i) {
-        ret &= PacketReader::read(buf, len, index, idx);
-        cityIndices_.push_back(idx);
 
-        ret &= PacketReader::readUtf8Fixed(buf, len, index, tmp, 31);
-        cityNames_.push_back(tmp);
+    if (fluo::net::Manager::getSingleton()->getProtocolVersion() >= ProtocolVersion::HS_7013) {
+        for (unsigned int i = 0; i < cityCount_; ++i) {
+            ret &= PacketReader::read(buf, len, index, idx);
+            cityIndices_.push_back(idx);
 
-        ret &= PacketReader::readUtf8Fixed(buf, len, index, tmp, 31);
-        tavernNames_.push_back(tmp);
+            ret &= PacketReader::readUtf8Fixed(buf, len, index, tmp, 32);
+            cityNames_.push_back(tmp);
+
+            ret &= PacketReader::readUtf8Fixed(buf, len, index, tmp, 32);
+            tavernNames_.push_back(tmp);
+
+            uint32_t x, y, z, map, cliloc;
+            ret &= PacketReader::read(buf, len, index, x);
+            ret &= PacketReader::read(buf, len, index, y);
+            ret &= PacketReader::read(buf, len, index, z);
+            ret &= PacketReader::read(buf, len, index, map);
+            ret &= PacketReader::read(buf, len, index, cliloc);
+
+            cityCoordinates_.push_back(CL_Vec4f(x, y, z, map));
+            cityCliloc_.push_back(cliloc);
+
+            index += 4; // jump 0
+        }
+
+        unsigned int readSize = 5 + charCount_*60 + cityCount_*89;
+        if (size_ - readSize == 4) {
+            ret &= PacketReader::read(buf, len, index, flags_);
+        } else if (size_ - readSize == 6) {
+            ret &= PacketReader::read(buf, len, index, flags_);
+            index += 2; // jump last character slot
+        }
     }
+    else {
+        for (unsigned int i = 0; i < cityCount_; ++i) {
+            ret &= PacketReader::read(buf, len, index, idx);
+            cityIndices_.push_back(idx);
 
-    unsigned int readSize = 5 + charCount_*60 + cityCount_*63;
-    if (size_ - readSize == 4) {
-        PacketReader::read(buf, len, index, flags_);
+            ret &= PacketReader::readUtf8Fixed(buf, len, index, tmp, 31);
+            cityNames_.push_back(tmp);
+
+            ret &= PacketReader::readUtf8Fixed(buf, len, index, tmp, 31);
+            tavernNames_.push_back(tmp);
+
+            cityCoordinates_.push_back(CL_Vec4f(0, 0, 0, 0));
+            cityCliloc_.push_back(0);
+        }
+
+        // flags might not be present
+        unsigned int readSize = 5 + charCount_*60 + cityCount_*63;
+        if (size_ - readSize == 4) {
+            ret &= PacketReader::read(buf, len, index, flags_);
+        }
     }
 
     // prevent empty char slots from being displayed

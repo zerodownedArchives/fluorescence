@@ -38,19 +38,19 @@ public:
     virtual void onReceive();
 
 private:
-	uint8_t datatype_; // 0x00 = use TileData, 0x01 = use BodyData, 0x02 = use MultiData
+    uint8_t datatype_; // 0x00 = use TileData, 0x01 = use BodyData, 0x02 = use MultiData
     Serial serial_;
-	uint16_t objectid_;
-	uint8_t direction_;
-	uint16_t amount1_;
-	uint16_t amount2_;
-	uint16_t locX_;
+    uint16_t objectid_;
+    uint8_t direction_;
+    uint16_t amount1_;
+    uint16_t amount2_;
+    uint16_t locX_;
     uint16_t locY_;
-	int8_t locZ_;
-	uint8_t quality_; // Light Level (TileData.Quality or 0 for Mobiles)
-	uint16_t hue_;
-	uint8_t flag_; // 0x20 = Show Properties; 0x80 = Hidden
-	uint16_t access_; // for items only, 0x01 = Player Item, 0x00 = World Item
+    int8_t locZ_;
+    uint8_t quality_; // Light Level (TileData.Quality or 0 for Mobiles)
+    uint16_t hue_;
+    uint8_t flag_; // 0x20 = Show Properties; 0x80 = Hidden
+    uint16_t access_; // for items only, 0x01 = Player Item, 0x00 = World Item
 };
 
 }

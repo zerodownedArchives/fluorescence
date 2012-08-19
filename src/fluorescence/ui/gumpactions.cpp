@@ -258,7 +258,7 @@ bool GumpActions::openGump(GumpMenu* menu, const UnicodeString& action, unsigned
 bool GumpActions::createShard(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     components::LineEdit* nameEdit = dynamic_cast<components::LineEdit*>(menu->get_named_item("shardname"));
     components::LineEdit* pathEdit = dynamic_cast<components::LineEdit*>(menu->get_named_item("uopath"));
-	components::Checkbox* highSeasCheckBox = dynamic_cast<components::Checkbox*>(menu->get_named_item("highseas"));
+    components::Checkbox* highSeasCheckBox = dynamic_cast<components::Checkbox*>(menu->get_named_item("highseas"));
 
     UnicodeString name = nameEdit->getText();
     boost::filesystem::path path(StringConverter::toUtf8String(pathEdit->getText()));
@@ -302,10 +302,10 @@ bool GumpActions::createShard(GumpMenu* menu, const UnicodeString& action, unsig
         return false;
     } else {
         configStream << "<?xml version=\"1.0\"?>\n<fluo>\n<files";
-		if (highSeasCheckBox->isChecked()) {
-			configStream << " format=\"mul-hs\"";
-		}
-		configStream << ">\n<mul-directory path=\"" << path.string();
+        if (highSeasCheckBox->isChecked()) {
+            configStream << " format=\"mul-hs\"";
+        }
+        configStream << ">\n<mul-directory path=\"" << path.string();
         configStream << "\" />\n</files>\n</fluo>";
         configStream.close();
     }

@@ -43,6 +43,7 @@ struct ProtocolVersion {
 enum {
     PRE_HS = 0,
     HS = 2,
+    HS_7013 = 3,
 };
 };
 
