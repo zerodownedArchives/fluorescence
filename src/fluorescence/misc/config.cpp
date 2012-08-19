@@ -156,6 +156,7 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
     consoleDesc.add_options()
     ("help,h", "Receive this message")
     ("patcherupdate", "Indicates that the patcher itself has just received an update")
+    ("defaultconfig", "Write defaultConfig.xml file")
     ("shard", po::value<std::string>(), "The shard you want to connect to. If empty, shard selection dialog is shown. Shard name can also be given without --shard prefix")
     ;
 
@@ -181,6 +182,12 @@ bool Config::parseCommandLine(const std::vector<CL_String8>& args) {
         if (consoleOptions.count("help")) {
             std::cout << consoleDesc << std::endl;
             return false;
+        }
+
+        if (consoleOptions.count("defaultconfig")) {
+            // write default config
+            boost::filesystem::path defaultPath("defaultConfig.xml");
+            save(defaultPath, true);
         }
 
         po::notify(consoleOptions);

@@ -392,12 +392,12 @@ void Manager::updateRoofHeight() {
             if ((*iter)->isStaticItem()) {
                 const data::StaticTileInfo* info = static_cast<world::StaticItem*>(*iter)->getTileDataInfo();
                 if (info->roof()) {
-                    roofHeight_ = curZ;
+                    roofHeight_ = playerZ;
                 }
             } else if ((*iter)->isDynamicItem()) {
                 const data::StaticTileInfo* info = static_cast<world::DynamicItem*>(*iter)->getTileDataInfo();
                 if (info->roof()) {
-                    roofHeight_ = curZ;
+                    roofHeight_ = playerZ;
                 }
             }
         }

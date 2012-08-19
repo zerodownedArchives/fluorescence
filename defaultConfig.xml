@@ -11,12 +11,12 @@
         <anim5 highdetail="200" lowdetail="200" />
         <anim highdetail="200" lowdetail="200" />
         <cliloc language="enu" />
-        <map0 difs-enabled="1" enabled="1" height="512" width="768" />
-        <map1 difs-enabled="1" enabled="1" height="512" width="768" />
+        <map0 difs-enabled="1" enabled="1" height="512" width="896" />
+        <map1 difs-enabled="1" enabled="1" height="512" width="896" />
         <map2 difs-enabled="1" enabled="1" height="200" width="288" />
-        <map3 difs-enabled="1" enabled="1" height="256" width="320" />
-        <map4 difs-enabled="1" enabled="1" height="181" width="181" />
-        <map5 difs-enabled="1" enabled="1" height="256" width="320" />
+        <map3 difs-enabled="0" enabled="1" height="256" width="320" />
+        <map4 difs-enabled="0" enabled="1" height="181" width="181" />
+        <map5 difs-enabled="0" enabled="1" height="512" width="160" />
         <mul-directory path="./" />
     </files>
     <input>
@@ -25,7 +25,8 @@
     <shard>
         <account name="" save-password="0" />
         <address host="" port="2593" />
-        <client version-id="0.1.0 fluo" />
+        <clientversion build="0" major="7" minor="0" revision="7" string="7.0.7.0 fluo" />
+        <protocol version="pre-hs" />
     </shard>
     <specialids>
         <ignore mapart="0, 2, 431, 432, 433, 434, 435, 436, 437" staticart="0, 1, 1168, 5702, 5703, 8600, 8601, 8602, 8603, 8604, 8605, 8606, 8607, 8608, 8609 8610, 8611, 8612, 8636, 22160" />

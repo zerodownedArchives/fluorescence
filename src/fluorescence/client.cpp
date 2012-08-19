@@ -178,10 +178,6 @@ void Client::saveConfig() {
             boost::filesystem::rename(tempPath, path);
         }
     }
-
-    // uncomment to generate the default config file on next start
-    //boost::filesystem::path defaultPath("defaultConfig.xml");
-    //config_.save(defaultPath, true);
 }
 
 bool Client::initBase(const std::vector<CL_String8>& args) {

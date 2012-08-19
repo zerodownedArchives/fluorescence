@@ -123,8 +123,8 @@ GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std
     ret->fitSizeToChildren();
     ret->activateFirstPage();
 
-    LOG_INFO << "Gump data: " << std::endl;
-    LOG_INFO << commands << std::endl;
+    //LOG_INFO << "Gump data: " << std::endl;
+    //LOG_INFO << commands << std::endl;
     //LOG_INFO << "Additional lines: " << strings.size() << std::endl;
     //for (unsigned int i = 0; i < strings.size(); ++i) {
         //LOG_INFO << "\t" << i << ": " << strings[i] << std::endl;

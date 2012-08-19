@@ -42,7 +42,7 @@ boost::shared_ptr<ui::Texture> MapTexLoader::get(unsigned int id) {
 void MapTexLoader::readCallback(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<ui::Texture> tex, unsigned int extra, unsigned int userData) {
     tex->setUsage(ui::Texture::USAGE_WORLD);
     tex->setBorderWidth(1);
-    
+
     // map textures are always quadratic
     unsigned short width = (extra == 1) ? 128 : 64;
 

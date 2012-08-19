@@ -66,7 +66,7 @@ CL_Texture Texture::getTexture() {
         LOG_EMERGENCY << "Creating texture without specified usage" << std::endl;
         throw Exception("Unable to create texture without specified usage");
     }
-    
+
     if (texture_.is_null()) {
         initSubTexture();
     }
@@ -77,11 +77,11 @@ CL_Texture Texture::getTexture() {
 void Texture::setTexture(const CL_PixelBuffer& pixBuf) {
     if (texture_.is_null()) {
         pixelBuffer_ = pixBuf.copy();
-        
+
         if (useBitMask_) {
             bitMask_.init(pixelBuffer_);
         }
-        
+
         setReadComplete();
     }
 }
@@ -132,13 +132,13 @@ CL_Rectf Texture::getNormalizedTextureCoords() {
 void Texture::initSubTexture() {
     CL_Size sizeWithBorder = pixelBuffer_.get_size();
     sizeWithBorder += borderWidth_*2;
-    
+
     texture_ = ui::Manager::getSingleton()->provideTexture(textureUsage_, sizeWithBorder);
     borderlessGeometry_ = texture_.get_geometry();
     if (borderWidth_ > 0) {
         borderlessGeometry_.shrink(borderWidth_);
         CL_PixelBuffer bufferWithBorder = CL_PixelBufferHelp::add_border(pixelBuffer_, borderWidth_, CL_Rect(0, 0, pixelBuffer_.get_size()));
-        
+
         texture_.get_texture().set_subimage(
             texture_.get_geometry().left, texture_.get_geometry().top,
             bufferWithBorder, CL_Rect(0, 0, sizeWithBorder));
@@ -153,7 +153,7 @@ void Texture::initSubTexture() {
     }
 
     pixelBuffer_ = CL_PixelBuffer();
-    
+
     normalizedTextureCoords_ = borderlessGeometry_;
     normalizedTextureCoords_.top /= ui::Manager::TEXTURE_GROUP_HEIGHT;
     normalizedTextureCoords_.left /= ui::Manager::TEXTURE_GROUP_WIDTH;
@@ -167,7 +167,7 @@ CL_Texture Texture::extractSingleTexture() {
         if (!pixelBuffer_.is_null()) {
             ret.set_image(pixelBuffer_);
         }
-        
+
         if (useBitMask_) {
             bitMask_.init(pixelBuffer_);
         }
