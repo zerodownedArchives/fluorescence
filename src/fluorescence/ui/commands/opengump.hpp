@@ -24,9 +24,10 @@
 namespace fluo {
 namespace ui {
 namespace commands {
-    
+
 class OpenGump : public ClientCommand {
 public:
+    OpenGump();
     virtual void execute(const UnicodeString& args);
 };
 

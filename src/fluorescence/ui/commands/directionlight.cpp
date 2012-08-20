@@ -25,10 +25,13 @@
 namespace fluo {
 namespace ui {
 namespace commands {
-    
+
+DirectionLight::DirectionLight() : ClientCommand("Usage: directionlight on/off. Switches the directional light used for terrain and water rendering on or off") {
+}
+
 void DirectionLight::execute(const UnicodeString& args) {
     boost::shared_ptr<world::LightManager> lightMan = world::Manager::getLightManager();
-    
+
     if (args == "off") {
         lightMan->setAmbientIntensity(CL_Vec3f(0.8, 0.8, 0.8));
         lightMan->setGlobalIntensity(CL_Vec3f(0, 0, 0));

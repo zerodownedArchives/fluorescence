@@ -28,6 +28,9 @@ namespace fluo {
 namespace ui {
 namespace commands {
 
+Zoom::Zoom() : ClientCommand("Usage: zoom in/out/reset. Manipulate or reset the zoom level") {
+}
+
 void Zoom::execute(const UnicodeString& args) {
     ui::components::WorldView* wv = ui::Manager::getSingleton()->getWorldView();
     if (!wv) {

@@ -28,12 +28,15 @@
 namespace fluo {
 namespace ui {
 namespace commands {
-    
+
+Effect::Effect() : ClientCommand("Usage: effect <name>. Displays the given particle effect") {
+}
+
 void Effect::execute(const UnicodeString& args) {
     world::Manager* worldMan = world::Manager::getSingleton();
-    
+
     boost::shared_ptr<world::IngameObject> sourceObj = boost::static_pointer_cast<world::IngameObject>(worldMan->getPlayer());
-    
+
     boost::shared_ptr<world::Effect> effect = ui::particles::XmlLoader::fromFile(args);
     if (effect) {
         effect->setAtSource(sourceObj);

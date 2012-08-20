@@ -16,24 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FLUO_UI_COMMANDS_CLIENTCOMMAND_HPP
-#define FLUO_UI_COMMANDS_CLIENTCOMMAND_HPP
+#ifndef FLUO_UI_COMMANDS_HELP_HPP
+#define FLUO_UI_COMMANDS_HELP_HPP
 
-#include <misc/string.hpp>
+#include "clientcommand.hpp"
 
 namespace fluo {
 namespace ui {
 namespace commands {
 
-class ClientCommand {
+class Help : public ClientCommand {
 public:
-    ClientCommand(const UnicodeString& help);
+    Help();
 
-    virtual void execute(const UnicodeString& args) = 0;
-    const UnicodeString& getHelpText() const;
-
-private:
-    UnicodeString helpText_;
+    virtual void execute(const UnicodeString& args);
 };
 
 }

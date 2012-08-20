@@ -26,7 +26,7 @@ namespace fluo {
 namespace ui {
 namespace commands {
 
-Say::Say(Config& config) : font_(1), hue_(1) {
+Say::Say(Config& config) : ClientCommand("Usage: say <text>. Sends a speech request to the server"), font_(1), hue_(1) {
     // TODO: pull the properties from the config
 }
 

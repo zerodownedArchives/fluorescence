@@ -24,8 +24,8 @@
 namespace fluo {
 namespace ui {
 namespace commands {
-    
-Command::Command(Config& config) {
+
+Command::Command(Config& config) : ClientCommand("Execute the command given as parameter") {
 }
 
 void Command::execute(const UnicodeString& args) {

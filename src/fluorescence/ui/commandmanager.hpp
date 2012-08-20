@@ -28,29 +28,32 @@
 
 namespace fluo {
 namespace ui {
-    
+
 namespace commands {
 class ClientCommand;
 }
-    
+
 class CommandManager {
 public:
     CommandManager(Config& config);
-    
+
     void execute(const UnicodeString& command, const UnicodeString& args = "");
     void handleTextInput(const UnicodeString& text);
-    
+
     bool hasCommand(const UnicodeString& cmd) const;
-    
+
+    UnicodeString getHelpText(const UnicodeString& command) const;
+    UnicodeString getCommandList() const;
+
 private:
     std::map<UnicodeString, boost::shared_ptr<commands::ClientCommand> > commandMap_;
-    
+
     char commandPrefix_;
     char emotePrefix_;
     char yellPrefix_;
     char whisperPrefix_;
 };
-    
+
 }
 }
 

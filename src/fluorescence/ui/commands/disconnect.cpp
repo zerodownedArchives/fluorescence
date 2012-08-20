@@ -24,7 +24,10 @@
 namespace fluo {
 namespace ui {
 namespace commands {
-    
+
+Disconnect::Disconnect() : ClientCommand("Disconnect from the server") {
+}
+
 void Disconnect::execute(const UnicodeString& args) {
     Client::getSingleton()->disconnect();
 }

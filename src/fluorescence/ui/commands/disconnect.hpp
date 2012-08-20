@@ -24,9 +24,10 @@
 namespace fluo {
 namespace ui {
 namespace commands {
-    
+
 class Disconnect : public ClientCommand {
 public:
+    Disconnect();
     virtual void execute(const UnicodeString& args);
 };
 

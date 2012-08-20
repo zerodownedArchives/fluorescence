@@ -24,9 +24,10 @@
 namespace fluo {
 namespace ui {
 namespace commands {
-    
+
 class ToggleWarMode : public ClientCommand {
 public:
+    ToggleWarMode();
     virtual void execute(const UnicodeString& args);
 };
 

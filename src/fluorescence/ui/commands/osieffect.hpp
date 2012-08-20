@@ -24,9 +24,10 @@
 namespace fluo {
 namespace ui {
 namespace commands {
-    
+
 class OsiEffect : public ClientCommand {
 public:
+    OsiEffect();
     virtual void execute(const UnicodeString& args);
 };
 

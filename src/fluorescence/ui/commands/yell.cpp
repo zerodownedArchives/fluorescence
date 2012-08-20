@@ -26,7 +26,7 @@ namespace fluo {
 namespace ui {
 namespace commands {
 
-Yell::Yell(Config& config) : font_(1), hue_(1) {
+Yell::Yell(Config& config) : ClientCommand("Usage: emote <text>. Send the text as a yell to the server"), font_(1), hue_(1) {
     // TODO: pull the properties from the config
 }
 

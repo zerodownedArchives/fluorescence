@@ -26,6 +26,9 @@ namespace fluo {
 namespace ui {
 namespace commands {
 
+Property::Property() : ClientCommand("Usage: property <name>. Displays the given property of the player") {
+}
+
 void Property::execute(const UnicodeString& args) {
     UnicodeString msg("Property ");
     msg += args;

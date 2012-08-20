@@ -24,6 +24,9 @@ namespace fluo {
 namespace ui {
 namespace commands {
 
+SpeechEntry::SpeechEntry() : ClientCommand("Brings up the speech entry") {
+}
+
 void SpeechEntry::execute(const UnicodeString& args) {
     ui::Manager::getSingleton()->showSpeechEntry();
 }

@@ -16,36 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "osieffect.hpp"
+#include "help.hpp"
 
-#include <typedefs.hpp>
+#include <ui/manager.hpp>
+#include <ui/commandmanager.hpp>
 #include <world/manager.hpp>
-#include <world/ingameobject.hpp>
-#include <world/mobile.hpp>
-#include <world/osieffect.hpp>
 
 namespace fluo {
 namespace ui {
 namespace commands {
 
-OsiEffect::OsiEffect() : ClientCommand("Usage: osieffect <id>. Displays the OSI effect with the given id") {
+Help::Help() : ClientCommand("Usage: help [command]. Display a list of all commands, or details about one command") {
 }
 
-void OsiEffect::execute(const UnicodeString& args) {
-    int effectId = StringConverter::toInt(args);
-    if (effectId == 0) {
-        return;
+void Help::execute(const UnicodeString& args) {
+    if (args.length() == 0) {
+        // list all commands
+        UnicodeString list = ui::Manager::getCommandManager()->getCommandList();
+        world::Manager::getSingleton()->systemMessage(list);
+    } else {
+        UnicodeString hlp = ui::Manager::getCommandManager()->getHelpText(args);
+        world::Manager::getSingleton()->systemMessage(hlp);
     }
-
-    world::Manager* worldMan = world::Manager::getSingleton();
-
-    boost::shared_ptr<world::IngameObject> sourceObj = boost::static_pointer_cast<world::IngameObject>(worldMan->getPlayer());
-
-    boost::shared_ptr<world::Effect> effect(new world::OsiEffect(effectId));
-    effect->setAtSource(sourceObj);
-    effect->setLifetimeMillis(10 * 50);
-    effect->setShouldExplode(false);
-    worldMan->addEffect(effect);
 }
 
 }

@@ -27,6 +27,7 @@ namespace commands {
 
 class Zoom : public ClientCommand {
 public:
+    Zoom();
     virtual void execute(const UnicodeString& args);
 };
 

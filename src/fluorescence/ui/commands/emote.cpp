@@ -26,7 +26,7 @@ namespace fluo {
 namespace ui {
 namespace commands {
 
-Emote::Emote(Config& config) : font_(1), hue_(1) {
+Emote::Emote(Config& config) : ClientCommand("Usage: emote <text>. Send the text as an emote to the server"), font_(1), hue_(1) {
     // TODO: pull the properties from the config
 }
 

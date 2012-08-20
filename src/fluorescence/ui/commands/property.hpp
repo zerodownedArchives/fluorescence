@@ -27,6 +27,7 @@ namespace commands {
 
 class Property : public ClientCommand {
 public:
+    Property();
     virtual void execute(const UnicodeString& args);
 };
 

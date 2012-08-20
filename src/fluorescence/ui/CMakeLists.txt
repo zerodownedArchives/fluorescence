@@ -182,9 +182,11 @@ set (CLIENTCOMMANDS_HPP
     ui/commands/speechentry.hpp
     ui/commands/zoom.hpp
     ui/commands/property.hpp
+    ui/commands/help.hpp
     )
 
 set (CLIENTCOMMANDS_CPP
+    ui/commands/clientcommand.cpp
     ui/commands/say.cpp
     ui/commands/emote.cpp
     ui/commands/yell.cpp
@@ -199,6 +201,7 @@ set (CLIENTCOMMANDS_CPP
     ui/commands/speechentry.cpp
     ui/commands/zoom.cpp
     ui/commands/property.cpp
+    ui/commands/help.cpp
     )
 
 

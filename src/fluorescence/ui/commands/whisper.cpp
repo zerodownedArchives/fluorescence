@@ -26,7 +26,7 @@ namespace fluo {
 namespace ui {
 namespace commands {
 
-Whisper::Whisper(Config& config) : font_(1), hue_(1) {
+Whisper::Whisper(Config& config) : ClientCommand("Usage: emote <text>. Send the text as a whisper to the server"), font_(1), hue_(1) {
     // TODO: pull the properties from the config
 }
 

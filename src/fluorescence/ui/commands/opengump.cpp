@@ -24,7 +24,10 @@
 namespace fluo {
 namespace ui {
 namespace commands {
-    
+
+OpenGump::OpenGump() : ClientCommand("Usage: opengump <name>. Opens the gump with the given name") {
+}
+
 void OpenGump::execute(const UnicodeString& args) {
     // TODO: make this also available for gumps needing a mobile link
     ui::Manager::getSingleton()->openXmlGump(args);

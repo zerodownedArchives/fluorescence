@@ -25,7 +25,10 @@
 namespace fluo {
 namespace ui {
 namespace commands {
-    
+
+ToggleWarMode::ToggleWarMode() : ClientCommand("Toggles the war mode state") {
+}
+
 void ToggleWarMode::execute(const UnicodeString& args) {
     boost::shared_ptr<world::Mobile> mob = world::Manager::getSingleton()->getPlayer();
     mob->setWarMode(!mob->isWarMode());

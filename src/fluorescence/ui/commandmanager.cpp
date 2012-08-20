@@ -38,12 +38,14 @@
 #include "commands/speechentry.hpp"
 #include "commands/zoom.hpp"
 #include "commands/property.hpp"
+#include "commands/help.hpp"
 
 namespace fluo {
 namespace ui {
 
 CommandManager::CommandManager(Config& config) {
     commandMap_["command"].reset(new commands::Command(config));
+    commandMap_["help"].reset(new commands::Help());
 
     commandMap_["say"].reset(new commands::Say(config));
     commandMap_["emote"].reset(new commands::Emote(config));
@@ -70,6 +72,7 @@ CommandManager::CommandManager(Config& config) {
 void CommandManager::execute(const UnicodeString& command, const UnicodeString& args) {
     UnicodeString cmdLower(command);
     cmdLower.toLower();
+    cmdLower.trim();
     std::map<UnicodeString, boost::shared_ptr<commands::ClientCommand> >::iterator iter = commandMap_.find(cmdLower);
 
     if (iter != commandMap_.end()) {
@@ -116,6 +119,37 @@ void CommandManager::handleTextInput(const UnicodeString& text) {
 
 bool CommandManager::hasCommand(const UnicodeString& cmd) const {
     return commandMap_.find(cmd) != commandMap_.end();
+}
+
+UnicodeString CommandManager::getHelpText(const UnicodeString& command) const {
+    UnicodeString cmdLower(command);
+    cmdLower.toLower();
+    cmdLower.trim();
+    std::map<UnicodeString, boost::shared_ptr<commands::ClientCommand> >::const_iterator iter = commandMap_.find(cmdLower);
+
+    if (iter != commandMap_.end()) {
+        return iter->second->getHelpText();
+    } else {
+        UnicodeString errMsg("Unknown client command: ");
+        errMsg += command;
+        return errMsg;
+    }
+}
+
+UnicodeString CommandManager::getCommandList() const {
+    UnicodeString ret;
+    std::map<UnicodeString, boost::shared_ptr<commands::ClientCommand> >::const_iterator iter = commandMap_.begin();
+    std::map<UnicodeString, boost::shared_ptr<commands::ClientCommand> >::const_iterator end = commandMap_.end();
+    std::map<UnicodeString, boost::shared_ptr<commands::ClientCommand> >::const_iterator endHelper = end;
+    --endHelper;
+
+    for (; iter != endHelper; ++iter) {
+        ret += iter->first;
+        ret += ", ";
+    }
+    ret += iter->first;
+
+    return ret;
 }
 
 }

@@ -24,9 +24,10 @@
 namespace fluo {
 namespace ui {
 namespace commands {
-    
+
 class DirectionLight : public ClientCommand {
 public:
+    DirectionLight();
     virtual void execute(const UnicodeString& args);
 };
 

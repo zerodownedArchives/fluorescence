@@ -27,6 +27,7 @@ namespace commands {
 
 class SpeechEntry : public ClientCommand {
 public:
+    SpeechEntry();
     virtual void execute(const UnicodeString& args);
 };
 
