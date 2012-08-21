@@ -183,6 +183,7 @@ set (CLIENTCOMMANDS_HPP
     ui/commands/zoom.hpp
     ui/commands/property.hpp
     ui/commands/help.hpp
+    ui/commands/cancel.hpp
     )
 
 set (CLIENTCOMMANDS_CPP
@@ -202,6 +203,7 @@ set (CLIENTCOMMANDS_CPP
     ui/commands/zoom.cpp
     ui/commands/property.cpp
     ui/commands/help.cpp
+    ui/commands/cancel.cpp
     )
 
 

@@ -120,6 +120,7 @@ void MacroManager::init() {
                 int keyCode = ui::Manager::getInputContext().get_keyboard().string_to_keyid(keyString);
 
                 if (keyCode == 0) {
+                    LOG_WARN << "Unknown key " << keyString << " in macros.xml" << std::endl;
                     continue;
                 }
 

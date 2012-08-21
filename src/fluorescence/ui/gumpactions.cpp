@@ -332,6 +332,7 @@ bool GumpActions::createShard(GumpMenu* menu, const UnicodeString& action, unsig
         macroStream << "<macro key=\"subtract\">\n\t<command name=\"zoom\" param=\"out\" />\n</macro>\n";
         macroStream << "<macro key=\"multiply\">\n\t<command name=\"zoom\" param=\"reset\" />\n</macro>\n";
         macroStream << "<macro key=\"tab\">\n\t<command name=\"togglewarmode\" />\n</macro>\n";
+        macroStream << "<macro key=\"escape\">\n\t<command name=\"cancel\" />\n</macro>\n";
         macroStream << "</macros>";
         macroStream.close();
     }
