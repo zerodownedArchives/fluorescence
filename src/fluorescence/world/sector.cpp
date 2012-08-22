@@ -449,5 +449,26 @@ boost::shared_ptr<MapTile> Sector::getMapTileAt(unsigned int worldX, unsigned in
     return mapBlock_->get(myX, myY);
 }
 
+void Sector::invalidateAllTextures() {
+    if (mapBlock_ && mapBlock_->isReadComplete()) {
+        for (unsigned int x = 0; x < 8; ++x) {
+            for (unsigned int y = 0; y < 8; ++y) {
+                mapBlock_->get(x, y)->invalidateTextureProvider();
+            }
+        }
+    }
+
+    if (staticBlock_ && staticBlock_->isReadComplete()) {
+        std::list<boost::shared_ptr<world::StaticItem> >::iterator it = staticBlock_->getItemList().begin();
+        std::list<boost::shared_ptr<world::StaticItem> >::iterator end = staticBlock_->getItemList().end();
+
+        for (; it != end; ++it) {
+            (*it)->invalidateTextureProvider();
+        }
+    }
+
+    fullUpdateRenderDataRequired_ = true;
+}
+
 }
 }

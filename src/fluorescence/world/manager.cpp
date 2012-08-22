@@ -408,5 +408,28 @@ int Manager::getRoofHeight() const {
     return roofHeight_;
 }
 
+void Manager::invalidateAllTextures() {
+    sectorManager_->invalidateAllTextures();
+
+    std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobIter = mobiles_.begin();
+    std::map<Serial, boost::shared_ptr<Mobile> >::iterator mobEnd = mobiles_.end();
+    for (; mobIter != mobEnd; ++mobIter) {
+        mobIter->second->invalidateTextureProvider();
+    }
+
+    std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator itmIter = dynamicItems_.begin();
+    std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator itmEnd = dynamicItems_.end();
+    for (; itmIter != itmEnd; ++itmIter) {
+        itmIter->second->invalidateTextureProvider();
+    }
+
+    std::list<boost::shared_ptr<Effect> >::iterator effectIter = effects_.begin();
+    std::list<boost::shared_ptr<Effect> >::iterator effectEnd = effects_.end();
+
+    for (; effectIter != effectEnd; ++effectIter) {
+        (*effectIter)->invalidateTextureProvider();
+    }
+}
+
 }
 }

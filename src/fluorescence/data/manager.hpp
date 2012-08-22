@@ -66,6 +66,7 @@ enum {
     GUMPART = 4,
     HTTP = 5,
     THEME = 6,
+    MAPTEX = 7,
 };
 };
 
@@ -110,7 +111,6 @@ public:
     static boost::shared_ptr<HuesLoader> getHuesLoader();
     static boost::shared_ptr<MapLoader> getMapLoader(unsigned int index);
     static boost::shared_ptr<StaticsLoader> getStaticsLoader(unsigned int index);
-    static boost::shared_ptr<MapTexLoader> getMapTexLoader();
     static boost::shared_ptr<AnimDataLoader> getAnimDataLoader();
     static boost::shared_ptr<AnimLoader> getAnimLoader(unsigned int index);
     static boost::shared_ptr<UniFontLoader> getUniFontLoader(unsigned int index);
@@ -125,6 +125,8 @@ public:
     static const boost::filesystem::path& getFilePathFor(const UnicodeString& string);
 
     static const SpellbookInfo* getSpellbookInfo(unsigned int packetOffset);
+
+    static void reloadOverrides();
 
 private:
     static Manager* singleton_;
@@ -185,6 +187,7 @@ private:
     void addOverrideDirectory(std::map<unsigned int, boost::filesystem::path>& map, boost::filesystem::path directory);
     std::map<unsigned int, boost::filesystem::path> staticArtOverrides_;
     std::map<unsigned int, boost::filesystem::path> mapArtOverrides_;
+    std::map<unsigned int, boost::filesystem::path> mapTexOverrides_;
     std::map<unsigned int, boost::filesystem::path> gumpArtOverrides_;
 };
 

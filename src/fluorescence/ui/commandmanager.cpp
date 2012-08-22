@@ -40,6 +40,7 @@
 #include "commands/property.hpp"
 #include "commands/help.hpp"
 #include "commands/cancel.hpp"
+#include "commands/reload.hpp"
 
 namespace fluo {
 namespace ui {
@@ -62,6 +63,7 @@ CommandManager::CommandManager(Config& config) {
     commandMap_["zoom"].reset(new commands::Zoom());
     commandMap_["property"].reset(new commands::Property());
     commandMap_["cancel"].reset(new commands::Cancel());
+    commandMap_["reload"].reset(new commands::Reload());
 
     // TODO: fill prefixes with values from config
 

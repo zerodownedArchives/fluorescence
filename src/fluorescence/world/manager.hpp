@@ -86,6 +86,8 @@ public:
     void updateRoofHeight();
     int getRoofHeight() const;
 
+    void invalidateAllTextures();
+
 private:
     static Manager* singleton_;
     Manager(const Config& config);

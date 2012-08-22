@@ -59,7 +59,7 @@ void SectorManager::updateSectorList() {
     if (worldViews_.empty()) {
         return;
     }
-    
+
     // the player does not move overly fast, so it is enough to check for new sectors every x frames
     bool doUpdate = (updateCounter_ % sectorAddFrequency_ == 0);
     updateCounter_++;
@@ -69,13 +69,13 @@ void SectorManager::updateSectorList() {
     }
 
     //LOGARG_INFO(LOGTYPE_WORLD, "Sector manager has %u cached", sectorMap_.size());
-    
+
     unsigned int mapId = world::Manager::getSingleton()->getCurrentMapId();
 
     // these are all sectors we require for rendering
     std::list<IsoIndex> sectorRequiredList;
     buildSectorRequiredList(sectorRequiredList, sectorAddDistanceCache_, mapId);
-    
+
     // iterate over all stored sectors and remove the ones we do not need anymore
     std::map<IsoIndex, boost::shared_ptr<Sector> >::const_iterator sectorIter = sectorMap_.begin();
     std::map<IsoIndex, boost::shared_ptr<Sector> >::const_iterator sectorEnd = sectorMap_.end();
@@ -177,10 +177,10 @@ std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator SectorManager::e
 boost::shared_ptr<world::Sector> SectorManager::getSectorForCoordinates(unsigned int locX, unsigned int locY) {
     locX /= 8;
     locY /= 8;
-    
+
     IsoIndex secIdx(locX, locY);
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::const_iterator iter = sectorMap_.find(secIdx);
-    
+
     if (iter != sectorMap_.end()) {
         return iter->second;
     } else {
@@ -192,19 +192,28 @@ boost::shared_ptr<world::Sector> SectorManager::getSectorForCoordinates(unsigned
 
 boost::shared_ptr<world::IngameObject> SectorManager::getFirstObjectAt(int worldX, int worldY, bool getTopObject) const {
     boost::shared_ptr<world::IngameObject> ret;
-    
+
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::const_reverse_iterator iter = sectorMap_.rbegin();
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::const_reverse_iterator end = sectorMap_.rend();
-    
+
     for (; iter != end; ++iter) {
         ret = iter->second->getFirstObjectAt(worldX, worldY, getTopObject);
-        
+
         if (ret) {
             break;
         }
     }
-    
+
     return ret;
+}
+
+void SectorManager::invalidateAllTextures() {
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator iter = sectorMap_.begin();
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator end = sectorMap_.end();
+
+    for (; iter != end; ++iter) {
+        iter->second->invalidateAllTextures();
+    }
 }
 
 }

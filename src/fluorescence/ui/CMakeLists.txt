@@ -184,6 +184,7 @@ set (CLIENTCOMMANDS_HPP
     ui/commands/property.hpp
     ui/commands/help.hpp
     ui/commands/cancel.hpp
+    ui/commands/reload.hpp
     )
 
 set (CLIENTCOMMANDS_CPP
@@ -204,6 +205,7 @@ set (CLIENTCOMMANDS_CPP
     ui/commands/property.cpp
     ui/commands/help.cpp
     ui/commands/cancel.cpp
+    ui/commands/reload.cpp
     )
 
 

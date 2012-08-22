@@ -69,6 +69,8 @@ public:
 
     void getWalkObjectsOn(unsigned int x, unsigned int y, std::list<world::IngameObject*>& list) const;
 
+    void invalidateAllTextures();
+
 private:
     unsigned int mapId_;
     IsoIndex id_;

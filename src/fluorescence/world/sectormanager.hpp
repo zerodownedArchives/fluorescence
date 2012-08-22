@@ -56,13 +56,15 @@ public:
     void clear();
 
     void update(unsigned int elapsedMillis);
-    
+
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator begin();
     std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator end();
-    
+
     boost::shared_ptr<world::Sector> getSectorForCoordinates(unsigned int locX, unsigned int locY);
-    
+
     boost::shared_ptr<IngameObject> getFirstObjectAt(int worldX, int worldY, bool getTopObject) const;
+
+    void invalidateAllTextures();
 
 private:
     std::map<IsoIndex, boost::shared_ptr<world::Sector> > sectorMap_;

@@ -746,10 +746,6 @@ boost::shared_ptr<HuesLoader> Manager::getHuesLoader() {
     return getSingleton()->huesLoader_;
 }
 
-boost::shared_ptr<MapTexLoader> Manager::getMapTexLoader() {
-    return getSingleton()->mapTexLoader_;
-}
-
 boost::shared_ptr<AnimDataLoader> Manager::getAnimDataLoader() {
     return getSingleton()->animDataLoader_;
 }
@@ -814,6 +810,16 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, unsigned
         }
         break;
 
+    case TextureSource::MAPTEX:
+        iter = sing->mapTexOverrides_.find(id);
+        if (iter != sing->mapTexOverrides_.end()) {
+            ret = sing->filePathLoader_->getTexture(iter->second);
+            ret->setUsage(ui::Texture::USAGE_WORLD);
+        } else {
+            ret = sing->mapTexLoader_->get(id);
+        }
+        break;
+
     case TextureSource::GUMPART:
         iter = sing->gumpArtOverrides_.find(id);
         if (iter != sing->gumpArtOverrides_.end()) {
@@ -855,6 +861,7 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, const Un
         break;
     }
 
+    case TextureSource::MAPTEX:
     case TextureSource::MAPART:
     case TextureSource::STATICART:
     case TextureSource::GUMPART: {
@@ -886,6 +893,8 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(const UnicodeString& source, 
         sourceId = TextureSource::HTTP;
     } else if (lowerSource == "theme") {
         sourceId = TextureSource::THEME;
+    } else if (lowerSource == "maptex") {
+        sourceId = TextureSource::MAPTEX;
     }
 
     if (sourceId != 0) {
@@ -939,6 +948,18 @@ void Manager::initOverrides() {
             addOverrideDirectory(gumpArtOverrides_, shardGumpDir);
         }
     }
+
+    bfs::path globalTexDir("data/overrides/maptex");
+    if (bfs::exists(globalTexDir) && bfs::is_directory(globalTexDir)) {
+        addOverrideDirectory(mapTexOverrides_, globalTexDir);
+    }
+
+    if (hasPathFor("overrides/maptex")) {
+        bfs::path shardTexDir = filePathMap_["overrides/maptex"];
+        if (bfs::is_directory(shardTexDir) && shardTexDir != globalTexDir) {
+            addOverrideDirectory(mapTexOverrides_, shardTexDir);
+        }
+    }
 }
 
 void Manager::addOverrideDirectory(std::map<unsigned int, boost::filesystem::path>& map, boost::filesystem::path directory) {
@@ -957,6 +978,15 @@ void Manager::addOverrideDirectory(std::map<unsigned int, boost::filesystem::pat
             }
         }
     }
+}
+
+void Manager::reloadOverrides() {
+    Manager* sing = getSingleton();
+    sing->staticArtOverrides_.clear();
+    sing->mapArtOverrides_.clear();
+    sing->mapTexOverrides_.clear();
+    sing->gumpArtOverrides_.clear();
+    sing->initOverrides();
 }
 
 }
