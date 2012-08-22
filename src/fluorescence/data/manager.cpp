@@ -982,6 +982,7 @@ void Manager::addOverrideDirectory(std::map<unsigned int, boost::filesystem::pat
 
 void Manager::reloadOverrides() {
     Manager* sing = getSingleton();
+    sing->filePathLoader_->clearCache();
     sing->staticArtOverrides_.clear();
     sing->mapArtOverrides_.clear();
     sing->mapTexOverrides_.clear();

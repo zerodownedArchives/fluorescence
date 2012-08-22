@@ -124,10 +124,10 @@ public:
                 realCount += 1;
                 unsigned int width = smPtr->getWidth();
                 unsigned int height = smPtr->getHeight();
-                
+
                 avgWidth += width;
                 avgHeight += height;
-                
+
                 maxWidth = (std::max)(maxWidth, width);
                 maxHeight = (std::max)(maxHeight, height);
             }
@@ -135,6 +135,11 @@ public:
 
         LOG_DEBUG << "WeakPtrCache stats: weak=" << weakCount << " real=" << realCount << std::endl;
         LOG_DEBUG << "Sizes avg=" << (avgWidth / realCount) << "/" << (avgHeight / realCount) << "  max=" << maxWidth << "/" << maxHeight << std::endl;
+    }
+
+    void clear() {
+        fixedList_.clear();
+        cache_.clear();
     }
 
 private:

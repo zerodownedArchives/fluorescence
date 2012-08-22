@@ -60,6 +60,10 @@ void FilePathLoader::readTextureCallback(const boost::filesystem::path& path, bo
     }
 }
 
+void FilePathLoader::clearCache() {
+    cache_.clear();
+}
+
 }
 }
 

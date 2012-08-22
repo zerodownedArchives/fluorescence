@@ -29,7 +29,7 @@
 #include "weakptrcache.hpp"
 
 namespace fluo {
-namespace ui { 
+namespace ui {
     class Texture;
 }
 
@@ -38,14 +38,16 @@ namespace data {
 class FilePathLoader {
 public:
     FilePathLoader();
-    
+
     boost::shared_ptr<ui::Texture> getTexture(const boost::filesystem::path& url);
 
     void readTextureCallback(const boost::filesystem::path& url, boost::shared_ptr<ui::Texture> tex);
-    
+
+    void clearCache();
+
 private:
     WeakPtrCache<boost::filesystem::path, ui::Texture, OnDemandUrlLoader> cache_;
-};    
+};
 
 }
 }
