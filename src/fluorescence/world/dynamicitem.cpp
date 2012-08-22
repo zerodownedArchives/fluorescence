@@ -239,7 +239,7 @@ void DynamicItem::updateTextureProvider() {
 
         // TODO: load this on demand
         unsigned int gumpId = data::Manager::getGumpIdForItem(artId_, parent->getBodyId());
-        gumpTextureProvider_.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_GUMPART_MUL, gumpId));
+        gumpTextureProvider_.reset(new ui::SingleTextureProvider(data::TextureSource::GUMPART, gumpId));
         //LOG_DEBUG << "Gump idx " << gumpId << std::endl;
     } else {
         textureProvider_ = data::Manager::getItemTextureProvider(artId_);

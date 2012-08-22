@@ -30,11 +30,6 @@ namespace ui {
 
 class SingleTextureProvider : public TextureProvider {
 public:
-    enum {
-        FROM_ART_MUL,
-        FROM_GUMPART_MUL,
-    };
-
     SingleTextureProvider(unsigned int textureSource, unsigned int artId);
 
     virtual boost::shared_ptr<ui::Texture> getTexture() const;

@@ -53,7 +53,7 @@ CursorImage::~CursorImage() {
 
 void CursorImage::set(unsigned int cursorId, unsigned int artId, boost::shared_ptr<CL_DisplayWindow> window) {
     cursorId_ = cursorId;
-    boost::shared_ptr<ui::Texture> texture = data::Manager::getArtLoader()->getItemTexture(artId);
+    boost::shared_ptr<ui::Texture> texture = data::Manager::getTexture(data::TextureSource::STATICART, artId);
     setHotspotFromTexture(texture);
 
 #ifdef WIN32

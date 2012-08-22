@@ -106,7 +106,6 @@ public:
     static std::vector<boost::shared_ptr<ui::Animation> > getAnim(unsigned int bodyId, unsigned int animId);
     static unsigned int getAnimType(unsigned int bodyId);
 
-    static boost::shared_ptr<ArtLoader> getArtLoader();
     static boost::shared_ptr<TileDataLoader> getTileDataLoader();
     static boost::shared_ptr<HuesLoader> getHuesLoader();
     static boost::shared_ptr<GumpArtLoader> getGumpArtLoader();
@@ -139,7 +138,7 @@ private:
 
     std::map<std::string, boost::filesystem::path> filePathMap_;
     void buildFilePathMap(Config& config);
-    void addToFilePathMap(const boost::filesystem::path& directory, bool addSubdirectories = false, const UnicodeString& prefix = "");
+    void addToFilePathMap(const boost::filesystem::path& directory, bool addSubdirectories, const UnicodeString& prefix = "");
     void checkFileExists(const std::string& file) const;
 
     boost::shared_ptr<ArtLoader> artLoader_;
@@ -182,6 +181,10 @@ private:
     boost::shared_ptr<FilePathLoader> filePathLoader_;
 
     boost::shared_ptr<Spellbooks> spellbooks_;
+
+    void initOverrides();
+    void addOverrideDirectory(std::map<unsigned int, boost::filesystem::path>& map, boost::filesystem::path directory);
+    std::map<unsigned int, boost::filesystem::path> staticArtOverrides_;
 };
 
 }

@@ -21,6 +21,7 @@
 #include "manager.hpp"
 
 #include <boost/filesystem/operations.hpp>
+#include <unicode/regex.h>
 
 #include "tiledataloader.hpp"
 #include "artloader.hpp"
@@ -453,6 +454,8 @@ bool Manager::setShardConfig(Config& config) {
     }
 
 
+    initOverrides();
+
     return true;
 }
 
@@ -503,7 +506,7 @@ boost::shared_ptr<ui::TextureProvider> Manager::getItemTextureProvider(unsigned 
         ret.reset(new ui::AnimDataTextureProvider(artId));
     } else {
         // if not, just load the simple one
-        ret.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_ART_MUL, artId));
+        ret.reset(new ui::SingleTextureProvider(TextureSource::STATICART, artId));
     }
 
     return ret;
@@ -655,10 +658,10 @@ void Manager::buildFilePathMap(Config& config) {
     addToFilePathMap(mulDirPath, true);
 
     boost::filesystem::path fluoDataPath("data");
-    addToFilePathMap(fluoDataPath);
+    addToFilePathMap(fluoDataPath, true);
 
     boost::filesystem::path shardDataPath = config.getShardPath() / "data";
-    addToFilePathMap(shardDataPath);
+    addToFilePathMap(shardDataPath, true);
 }
 
 void Manager::addToFilePathMap(const boost::filesystem::path& directory, bool addSubdirectories, const UnicodeString& prefix) {
@@ -677,8 +680,6 @@ void Manager::addToFilePathMap(const boost::filesystem::path& directory, bool ad
                 UnicodeString nextPre = prefix + StringConverter::fromUtf8(nameIter->path().filename()) + "/";
                 addToFilePathMap(nameIter->path(), true, nextPre);
             }
-
-            continue;
         }
 
         UnicodeString str = prefix + StringConverter::fromUtf8(nameIter->path().filename());
@@ -737,10 +738,6 @@ boost::shared_ptr<ClilocLoader> Manager::getClilocLoader() {
     return getSingleton()->clilocLoader_;
 }
 
-boost::shared_ptr<ArtLoader> Manager::getArtLoader() {
-    return getSingleton()->artLoader_;
-}
-
 boost::shared_ptr<TileDataLoader> Manager::getTileDataLoader() {
     return getSingleton()->tileDataLoader_;
 }
@@ -790,27 +787,41 @@ boost::filesystem::path Manager::getShardFilePath(const boost::filesystem::path&
 }
 
 boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, unsigned int id) {
+    Manager* sing = getSingleton();
     boost::shared_ptr<ui::Texture> ret;
+    std::map<unsigned int, boost::filesystem::path>::const_iterator iter;
+
     switch (source) {
     case TextureSource::HTTP:
     case TextureSource::FILE:
     case TextureSource::THEME:
         LOG_ERROR << "Unable to handle getTexture(int, int) for file, http or theme source" << std::endl;
-        return ret;
+        break;
 
     case TextureSource::MAPART:
-        return getArtLoader()->getMapTexture(id);
+        ret = sing->artLoader_->getMapTexture(id);
+        break;
 
     case TextureSource::STATICART:
-        return getArtLoader()->getItemTexture(id);
+        iter = sing->staticArtOverrides_.find(id);
+        if (iter != sing->staticArtOverrides_.end()) {
+            ret = sing->filePathLoader_->getTexture(iter->second);
+            ret->setUsage(ui::Texture::USAGE_WORLD);
+        } else {
+            ret = sing->artLoader_->getItemTexture(id);
+        }
+        break;
 
     case TextureSource::GUMPART:
-        return getGumpArtLoader()->getTexture(id);
+        ret = getGumpArtLoader()->getTexture(id);
+        break;
 
     default:
         LOG_ERROR << "Unknown texture source \"" << source << "\"" << std::endl;
-        return ret;
+        break;
     }
+
+    return ret;
 }
 
 boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, const UnicodeString& id) {
@@ -819,28 +830,36 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, const Un
     case TextureSource::FILE: {
         boost::filesystem::path idPath(StringConverter::toUtf8String(id));
         idPath = getShardFilePath(idPath);
-        return getSingleton()->filePathLoader_->getTexture(idPath);
+        ret = getSingleton()->filePathLoader_->getTexture(idPath);
+        ret->setUsage(ui::Texture::USAGE_GUMP);
+        break;
     }
 
     case TextureSource::HTTP:
-        return getSingleton()->httpLoader_->getTexture(id);
+        ret = getSingleton()->httpLoader_->getTexture(id);
+        ret->setUsage(ui::Texture::USAGE_GUMP);
+        break;
 
     case TextureSource::THEME: {
         boost::filesystem::path idPath = ui::Manager::getSingleton()->getThemePath() / StringConverter::toUtf8String(id);
-        return getSingleton()->filePathLoader_->getTexture(idPath);
+        ret = getSingleton()->filePathLoader_->getTexture(idPath);
+        ret->setUsage(ui::Texture::USAGE_GUMP);
+        break;
     }
 
     case TextureSource::MAPART:
     case TextureSource::STATICART:
     case TextureSource::GUMPART: {
         int idInt = StringConverter::toInt(id);
-        return getTexture(source, idInt);
+        ret = getTexture(source, idInt);
+        break;
     }
 
     default:
         LOG_ERROR << "Unknown texture source \"" << source << "\"" << std::endl;
-        return ret;
     }
+
+    return ret;
 }
 
 boost::shared_ptr<ui::Texture> Manager::getTexture(const UnicodeString& source, const UnicodeString& id) {
@@ -872,6 +891,40 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(const UnicodeString& source, 
 
 const SpellbookInfo* Manager::getSpellbookInfo(unsigned int packetOffset) {
     return getSingleton()->spellbooks_->get(packetOffset);
+}
+
+void Manager::initOverrides() {
+    namespace bfs = boost::filesystem;
+
+    bfs::path globalStaticDir("data/overrides/staticart");
+    if (bfs::exists(globalStaticDir) && bfs::is_directory(globalStaticDir)) {
+        addOverrideDirectory(staticArtOverrides_, globalStaticDir);
+    }
+
+    if (hasPathFor("overrides/staticart")) {
+        bfs::path shardStaticDir = filePathMap_["overrides/staticart"];
+        if (bfs::is_directory(shardStaticDir) && shardStaticDir != globalStaticDir) {
+            addOverrideDirectory(staticArtOverrides_, shardStaticDir);
+        }
+    }
+}
+
+void Manager::addOverrideDirectory(std::map<unsigned int, boost::filesystem::path>& map, boost::filesystem::path directory) {
+    LOG_DEBUG << "Scanning override directory: " << directory.string() << std::endl;
+    namespace bfs = boost::filesystem;
+    bfs::directory_iterator nameIter(directory);
+    bfs::directory_iterator nameEnd;
+
+    for (; nameIter != nameEnd; ++nameIter) {
+        if (bfs::is_regular_file(nameIter->status()) && nameIter->leaf() != ".svn") {
+            int parsedNum = StringConverter::toInt(nameIter->path().stem().c_str());
+            if (parsedNum > 0) {
+                map[parsedNum] = nameIter->path();
+            } else {
+                LOG_WARN << "Invalid file in override directory: " << nameIter->path() << std::endl;
+            }
+        }
+    }
 }
 
 }

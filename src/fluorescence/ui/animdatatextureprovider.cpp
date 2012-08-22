@@ -33,13 +33,13 @@ AnimDataTextureProvider::AnimDataTextureProvider(unsigned int artId) : currentId
 
     if (info_.frameCount_ == 0) {
         LOG_WARN << "Using artId without animdata for animation: " << artId << "  " << std::hex << artId << std::dec << std::endl;
-        boost::shared_ptr<ui::Texture> tex = data::Manager::getArtLoader()->getItemTexture(artId);
+        boost::shared_ptr<ui::Texture> tex = data::Manager::getTexture(data::TextureSource::STATICART, artId);
         textures_.push_back(tex);
     }
 
     for (unsigned int i = 0; i < info_.frameCount_; ++i) {
         //LOGARG_WARN(LOGTYPE_DATA, "\t: anim frame: %u", info_.artIds_[i]);
-        boost::shared_ptr<ui::Texture> tex = data::Manager::getArtLoader()->getItemTexture(info_.artIds_[i]);
+        boost::shared_ptr<ui::Texture> tex = data::Manager::getTexture(data::TextureSource::STATICART, info_.artIds_[i]);
         textures_.push_back(tex);
     }
 }

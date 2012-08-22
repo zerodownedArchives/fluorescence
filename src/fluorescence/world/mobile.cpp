@@ -159,9 +159,9 @@ void Mobile::updateTextureProvider() {
     data::PaperdollDef pdDef = data::Manager::getPaperdollDef(bodyId_);
     if (pdDef.bodyId_ == 0) {
         LOG_ERROR << "Unable to find paperdoll.def entry for body " << bodyId_ << std::endl;
-        gumpTextureProvider_.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_GUMPART_MUL, 0xC));
+        gumpTextureProvider_.reset(new ui::SingleTextureProvider(data::TextureSource::GUMPART, 0xC));
     } else {
-        gumpTextureProvider_.reset(new ui::SingleTextureProvider(ui::SingleTextureProvider::FROM_GUMPART_MUL, pdDef.gumpId_));
+        gumpTextureProvider_.reset(new ui::SingleTextureProvider(data::TextureSource::GUMPART, pdDef.gumpId_));
 
         if (!childObjects_.empty()) {
             std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();

@@ -102,7 +102,7 @@ void MapTile::updateTextureProvider() {
     calculateIsFlat();
 
     if (isFlat_) {
-        texture_ = data::Manager::getArtLoader()->getMapTexture(artId_);
+        texture_ = data::Manager::getTexture(data::TextureSource::MAPART, artId_);
     } else {
         texture_ = data::Manager::getMapTexLoader()->get(tileDataInfo_->textureId_);
     }
