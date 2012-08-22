@@ -723,7 +723,7 @@ unsigned int Manager::getGumpIdForItem(unsigned int itemId, unsigned int parentB
         gumpId = gumpDef.translateId_;
     }
 
-    if (!sing->getGumpArtLoader()->hasTexture(gumpId)) {
+    if (!sing->gumpArtLoader_->hasTexture(gumpId) && sing->gumpArtOverrides_.find(gumpId) == sing->gumpArtOverrides_.end()) {
         gumpId = animId + pdDef.gumpOffsetFallback_;
         data::GumpDef gumpDef2 = sing->getGumpDef(gumpId);
         if (gumpDef2.gumpId_ != 0) {
@@ -744,10 +744,6 @@ boost::shared_ptr<TileDataLoader> Manager::getTileDataLoader() {
 
 boost::shared_ptr<HuesLoader> Manager::getHuesLoader() {
     return getSingleton()->huesLoader_;
-}
-
-boost::shared_ptr<GumpArtLoader> Manager::getGumpArtLoader() {
-    return getSingleton()->gumpArtLoader_;
 }
 
 boost::shared_ptr<MapTexLoader> Manager::getMapTexLoader() {
@@ -799,7 +795,13 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, unsigned
         break;
 
     case TextureSource::MAPART:
-        ret = sing->artLoader_->getMapTexture(id);
+        iter = sing->mapArtOverrides_.find(id);
+        if (iter != sing->mapArtOverrides_.end()) {
+            ret = sing->filePathLoader_->getTexture(iter->second);
+            ret->setUsage(ui::Texture::USAGE_WORLD);
+        } else {
+            ret = sing->artLoader_->getMapTexture(id);
+        }
         break;
 
     case TextureSource::STATICART:
@@ -813,7 +815,13 @@ boost::shared_ptr<ui::Texture> Manager::getTexture(unsigned int source, unsigned
         break;
 
     case TextureSource::GUMPART:
-        ret = getGumpArtLoader()->getTexture(id);
+        iter = sing->gumpArtOverrides_.find(id);
+        if (iter != sing->gumpArtOverrides_.end()) {
+            ret = sing->filePathLoader_->getTexture(iter->second);
+            ret->setUsage(ui::Texture::USAGE_GUMP);
+        } else {
+            ret = sing->gumpArtLoader_->getTexture(id);
+        }
         break;
 
     default:
@@ -905,6 +913,30 @@ void Manager::initOverrides() {
         bfs::path shardStaticDir = filePathMap_["overrides/staticart"];
         if (bfs::is_directory(shardStaticDir) && shardStaticDir != globalStaticDir) {
             addOverrideDirectory(staticArtOverrides_, shardStaticDir);
+        }
+    }
+
+    bfs::path globalMapDir("data/overrides/mapart");
+    if (bfs::exists(globalMapDir) && bfs::is_directory(globalMapDir)) {
+        addOverrideDirectory(mapArtOverrides_, globalMapDir);
+    }
+
+    if (hasPathFor("overrides/mapart")) {
+        bfs::path shardMapDir = filePathMap_["overrides/mapart"];
+        if (bfs::is_directory(shardMapDir) && shardMapDir != globalMapDir) {
+            addOverrideDirectory(mapArtOverrides_, shardMapDir);
+        }
+    }
+
+    bfs::path globalGumpDir("data/overrides/gumpart");
+    if (bfs::exists(globalGumpDir) && bfs::is_directory(globalGumpDir)) {
+        addOverrideDirectory(gumpArtOverrides_, globalGumpDir);
+    }
+
+    if (hasPathFor("overrides/gumpart")) {
+        bfs::path shardGumpDir = filePathMap_["overrides/gumpart"];
+        if (bfs::is_directory(shardGumpDir) && shardGumpDir != globalGumpDir) {
+            addOverrideDirectory(gumpArtOverrides_, shardGumpDir);
         }
     }
 }

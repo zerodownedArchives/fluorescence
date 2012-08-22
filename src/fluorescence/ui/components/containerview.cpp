@@ -175,7 +175,7 @@ void ContainerView::removeObject(boost::shared_ptr<world::IngameObject> obj) {
 }
 
 void ContainerView::setBackgroundGumpId(unsigned int gumpId) {
-    backgroundTexture_ = data::Manager::getGumpArtLoader()->getTexture(gumpId);
+    backgroundTexture_ = data::Manager::getTexture(data::TextureSource::GUMPART, gumpId);
     sizeAdjusted = false;
     request_repaint();
 }

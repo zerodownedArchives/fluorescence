@@ -43,7 +43,7 @@ Background::Background(CL_GUIComponent* parent) : GumpComponent(parent), hueInfo
 
 void Background::setBaseId(unsigned int id) {
     for (unsigned int i = 0; i < 9; ++i) {
-        textures_[i] = data::Manager::getGumpArtLoader()->getTexture(i + id);
+        textures_[i] = data::Manager::getTexture(data::TextureSource::GUMPART, i + id);
     }
 }
 

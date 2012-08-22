@@ -108,7 +108,6 @@ public:
 
     static boost::shared_ptr<TileDataLoader> getTileDataLoader();
     static boost::shared_ptr<HuesLoader> getHuesLoader();
-    static boost::shared_ptr<GumpArtLoader> getGumpArtLoader();
     static boost::shared_ptr<MapLoader> getMapLoader(unsigned int index);
     static boost::shared_ptr<StaticsLoader> getStaticsLoader(unsigned int index);
     static boost::shared_ptr<MapTexLoader> getMapTexLoader();
@@ -185,6 +184,8 @@ private:
     void initOverrides();
     void addOverrideDirectory(std::map<unsigned int, boost::filesystem::path>& map, boost::filesystem::path directory);
     std::map<unsigned int, boost::filesystem::path> staticArtOverrides_;
+    std::map<unsigned int, boost::filesystem::path> mapArtOverrides_;
+    std::map<unsigned int, boost::filesystem::path> gumpArtOverrides_;
 };
 
 }
