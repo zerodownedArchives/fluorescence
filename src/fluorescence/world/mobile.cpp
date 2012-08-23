@@ -639,21 +639,30 @@ void Mobile::moveTo(unsigned int locX, unsigned int locY, int locZ, unsigned int
         diffy = abs((int)getLocYGame() - (int)locY);
     }
 
+    //LOG_DEBUG << "moveTo: " << diffx << "/" << diffy
+            //<< " cur=" << getLocXGame() << "/" << getLocYGame()
+            //<< " pred=" << (int)smoothTargetLoc.x << "/" << (int)smoothTargetLoc.y
+            //<< " targ=" << locX << "/" << locY
+            //<< std::endl;
+
     if (diffx > 1 || diffy > 1) {
         // far teleport
+        world::Manager::getSmoothMovementManager()->clear(getSerial());
         setLocation(locX, locY, locZ);
         setDirection(direction);
     } else if (diffx != 0 || diffy != 0) {
         boost::shared_ptr<ServerObject> sharedThis = boost::static_pointer_cast<ServerObject>(shared_from_this());
+        world::SmoothMovement dirCh(sharedThis, direction, CL_Vec3f(locX, locY, locZ));
+        world::Manager::getSmoothMovementManager()->add(getSerial(), dirCh);
+
         world::SmoothMovement mov(sharedThis, CL_Vec3f(locX, locY, locZ), getMovementDuration());
         mov.setStartCallback(boost::bind(&Mobile::resumeAnimationCallback, this));
         mov.setFinishedCallback(boost::bind(&Mobile::haltAnimationCallback, this));
         world::Manager::getSmoothMovementManager()->add(getSerial(), mov);
-        setDirection(direction);
     } else {
         // only direction change
         boost::shared_ptr<ServerObject> sharedThis = boost::static_pointer_cast<ServerObject>(shared_from_this());
-        world::SmoothMovement dirCh(sharedThis, direction);
+        world::SmoothMovement dirCh(sharedThis, direction, CL_Vec3f(locX, locY, locZ));
         world::Manager::getSmoothMovementManager()->add(getSerial(), dirCh);
     }
 }
@@ -665,10 +674,11 @@ void Mobile::haltAnimationCallback() {
 }
 
 void Mobile::resumeAnimationCallback() {
-    if (textureProvider_ && textureProvider_->isHalted()) {
+    unsigned int moveAnim = getMoveAnim();
+    if (textureProvider_ && textureProvider_->isHalted() && textureProvider_->getAnimId() == moveAnim) {
         textureProvider_->resume();
     } else {
-        animate(getMoveAnim(), 0, AnimRepeatMode::LOOP);
+        animate(moveAnim, 0, AnimRepeatMode::LOOP);
     }
 }
 

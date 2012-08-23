@@ -48,7 +48,7 @@ public:
     void setDelay(unsigned int delay);
 
     void setDirection(unsigned int direction);
-    virtual void setAnimId(unsigned int animId);
+    void setAnimId(unsigned int animId);
 
     void setDefaultAnimId(unsigned int id);
     unsigned int getDefaultAnimId() const;
@@ -58,6 +58,8 @@ public:
     bool isHalted() const;
     void halt();
     void resume();
+
+    unsigned int getAnimId() const;
 
 private:
     // stores for each anim (walk, run, ...) the frames for all directions

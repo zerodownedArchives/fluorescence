@@ -32,8 +32,8 @@ SmoothMovement::SmoothMovement(boost::shared_ptr<world::ServerObject> obj, CL_Ve
         movingObject_(obj), targetLoc_(targetLoc), duration_(durationMillis), wasStarted_(false), isDirectionChange_(false) {
 }
 
-SmoothMovement::SmoothMovement(boost::shared_ptr<world::ServerObject> obj, unsigned int direction) :
-        movingObject_(obj), wasStarted_(false), isDirectionChange_(true), newDirection_(direction) {
+SmoothMovement::SmoothMovement(boost::shared_ptr<world::ServerObject> obj, unsigned int direction, CL_Vec3f targetLoc) :
+        movingObject_(obj), targetLoc_(targetLoc), wasStarted_(false), isDirectionChange_(true), newDirection_(direction) {
 }
 
 bool SmoothMovement::wasStarted() const {

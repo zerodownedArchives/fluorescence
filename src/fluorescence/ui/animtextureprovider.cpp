@@ -60,6 +60,8 @@ void AnimTextureProvider::setAnimId(unsigned int animId) {
     if (animId != currentAnimId_) {
         nextAnimId_ = animId;
     }
+
+    haltMillis_ = 0;
 }
 
 bool AnimTextureProvider::update(unsigned int elapsedMillis) {
@@ -178,6 +180,10 @@ void AnimTextureProvider::halt() {
 
 void AnimTextureProvider::resume() {
     haltMillis_ = 0;
+}
+
+unsigned int AnimTextureProvider::getAnimId() const {
+    return nextAnimId_ == 0xFFFFFFFFu ? currentAnimId_ : nextAnimId_;
 }
 
 }
