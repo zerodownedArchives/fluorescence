@@ -27,7 +27,7 @@ namespace fluo {
 namespace ui {
 
 AnimTextureProvider::AnimTextureProvider(unsigned int bodyId, unsigned int defaultAnim) : bodyId_(bodyId), nextAnimId_(0xFFFFFFFFu), currentAnimId_(defaultAnim),
-        direction_(0), currentIdx_(0), millis_(0), frameMillis_(100), repeatMode_(AnimRepeatMode::DEFAULT), defaultAnimId_(defaultAnim), nextDirection_(0) {
+        direction_(0), currentIdx_(0), millis_(0), frameMillis_(100), repeatMode_(AnimRepeatMode::DEFAULT), defaultAnimId_(defaultAnim), nextDirection_(0), haltMillis_(0) {
     animations_[defaultAnimId_] = data::Manager::getAnim(bodyId, defaultAnimId_);
 }
 
@@ -102,7 +102,18 @@ bool AnimTextureProvider::update(unsigned int elapsedMillis) {
     unsigned int newMillis = millis_ + elapsedMillis;
 
     unsigned int maxMillis = it->second[direction_]->getFrameCount() * frameMillis_;
-    if (newMillis >= maxMillis) {
+    if (haltMillis_ > 0) {
+        if (haltMillis_ <= elapsedMillis) {
+            // halt ended with nothing happening
+            haltMillis_ = 0;
+            activateDefaultAnim();
+        } else {
+            haltMillis_ -= elapsedMillis;
+        }
+        // don't count the elapsed time in this case
+        newMillis = millis_;
+
+    } else if (newMillis >= maxMillis) {
         switch (repeatMode_) {
             case AnimRepeatMode::LOOP:
                 currentIdx_ = 0;
@@ -155,6 +166,18 @@ void AnimTextureProvider::setDefaultAnimId(unsigned int animId) {
 
 unsigned int AnimTextureProvider::getDefaultAnimId() const {
     return defaultAnimId_;
+}
+
+bool AnimTextureProvider::isHalted() const {
+    return haltMillis_ > 0;
+}
+
+void AnimTextureProvider::halt() {
+    haltMillis_ = 1000;
+}
+
+void AnimTextureProvider::resume() {
+    haltMillis_ = 0;
 }
 
 }

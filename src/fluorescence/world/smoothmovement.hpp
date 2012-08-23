@@ -31,10 +31,11 @@ namespace world {
 
 class SmoothMovement {
 public:
-
+    typedef boost::function<void ()> StartCallback;
     typedef boost::function<void ()> FinishedCallback;
 
     SmoothMovement(boost::shared_ptr<world::ServerObject> obj, CL_Vec3f targetLoc_, unsigned int durationMillis);
+    SmoothMovement(boost::shared_ptr<world::ServerObject> obj, unsigned int direction);
 
     bool wasStarted() const;
     void start();
@@ -45,7 +46,10 @@ public:
     bool isFinished() const;
     void finish(bool interrupted);
 
+    void setStartCallback(StartCallback cb);
     void setFinishedCallback(FinishedCallback cb);
+
+    CL_Vec3f getTargetLoc() const;
 
 private:
     boost::shared_ptr<world::ServerObject> movingObject_;
@@ -57,7 +61,11 @@ private:
     CL_Vec3f startLoc_;
     unsigned int totalElapsedMillis_;
 
+    StartCallback startCallback_;
     FinishedCallback finishedCallback_;
+
+    bool isDirectionChange_;
+    unsigned int newDirection_;
 };
 
 }

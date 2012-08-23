@@ -110,6 +110,10 @@ public:
 
     virtual void onLocationChanged(const CL_Vec3f& oldLocation);
 
+    // move the mobile to the given location.
+    // depending on the difference to the current location, this is either done with smooth movement or a teleport
+    void moveTo(unsigned int locX, unsigned int locY, int locZ, unsigned int direction);
+
 private:
     unsigned int baseBodyId_; // as sent by the server
     unsigned int bodyId_; // after transformation, e.g. by body.def
@@ -138,6 +142,9 @@ private:
 
     unsigned int animType_; // high detail, low detail, people
 
+    // these are used to display the halted animations for mobiles != player
+    void haltAnimationCallback();
+    void resumeAnimationCallback();
 };
 
 }

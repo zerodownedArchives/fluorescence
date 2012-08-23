@@ -43,6 +43,8 @@
 #include "manager.hpp"
 #include "dynamicitem.hpp"
 #include "sector.hpp"
+#include "smoothmovement.hpp"
+#include "smoothmovementmanager.hpp"
 
 namespace fluo {
 namespace world {
@@ -624,6 +626,50 @@ void Mobile::onLocationChanged(const CL_Vec3f& oldLocation) {
 
     // pass call to parent class
     ServerObject::onLocationChanged(oldLocation);
+}
+
+void Mobile::moveTo(unsigned int locX, unsigned int locY, int locZ, unsigned int direction) {
+    CL_Vec3f smoothTargetLoc = world::Manager::getSmoothMovementManager()->getTargetLoc(getSerial());
+    int diffx, diffy;
+    if (smoothTargetLoc.x != 0 && smoothTargetLoc.y != 0) {
+        diffx = abs(ceil(smoothTargetLoc.x) - locX);
+        diffy = abs(ceil(smoothTargetLoc.y) - locY);
+    } else {
+        diffx = abs((int)getLocXGame() - (int)locX);
+        diffy = abs((int)getLocYGame() - (int)locY);
+    }
+
+    if (diffx > 1 || diffy > 1) {
+        // far teleport
+        setLocation(locX, locY, locZ);
+        setDirection(direction);
+    } else if (diffx != 0 || diffy != 0) {
+        boost::shared_ptr<ServerObject> sharedThis = boost::static_pointer_cast<ServerObject>(shared_from_this());
+        world::SmoothMovement mov(sharedThis, CL_Vec3f(locX, locY, locZ), getMovementDuration());
+        mov.setStartCallback(boost::bind(&Mobile::resumeAnimationCallback, this));
+        mov.setFinishedCallback(boost::bind(&Mobile::haltAnimationCallback, this));
+        world::Manager::getSmoothMovementManager()->add(getSerial(), mov);
+        setDirection(direction);
+    } else {
+        // only direction change
+        boost::shared_ptr<ServerObject> sharedThis = boost::static_pointer_cast<ServerObject>(shared_from_this());
+        world::SmoothMovement dirCh(sharedThis, direction);
+        world::Manager::getSmoothMovementManager()->add(getSerial(), dirCh);
+    }
+}
+
+void Mobile::haltAnimationCallback() {
+    if (textureProvider_) {
+        textureProvider_->halt();
+    }
+}
+
+void Mobile::resumeAnimationCallback() {
+    if (textureProvider_ && textureProvider_->isHalted()) {
+        textureProvider_->resume();
+    } else {
+        animate(getMoveAnim(), 0, AnimRepeatMode::LOOP);
+    }
 }
 
 }

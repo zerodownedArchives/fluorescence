@@ -49,12 +49,16 @@ public:
 
     void setDirection(unsigned int direction);
     virtual void setAnimId(unsigned int animId);
-    
+
     void setDefaultAnimId(unsigned int id);
     unsigned int getDefaultAnimId() const;
-    
+
     void activateDefaultAnim();
-    
+
+    bool isHalted() const;
+    void halt();
+    void resume();
+
 private:
     // stores for each anim (walk, run, ...) the frames for all directions
     std::map<unsigned int, std::vector<boost::shared_ptr<Animation> > > animations_;
@@ -69,6 +73,8 @@ private:
 
     unsigned int defaultAnimId_;
     unsigned int nextDirection_;
+
+    unsigned int haltMillis_;
 };
 
 }

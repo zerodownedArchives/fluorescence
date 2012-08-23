@@ -38,19 +38,19 @@ void SmoothMovementManager::update(unsigned int elapsedMillis) {
         unsigned int millisLeft = elapsedMillis;
         while (millisLeft > 0 && !iter->second.empty()) {
             SmoothMovement* curMov = &iter->second.front();
-            
+
             if (!curMov->wasStarted()) {
                 curMov->start();
             }
-            
+
             millisLeft = curMov->update(millisLeft);
-            
+
             if (curMov->isFinished()) {
                 curMov->finish(false);
                 iter->second.pop_front();
             }
         }
-        
+
         ++iter;
     }
 }
@@ -65,13 +65,22 @@ void SmoothMovementManager::clear(Serial serial) {
         if (!it->second.empty()) {
             it->second.front().finish(true);
         }
-        
+
         movementQueues_.erase(it);
     }
 }
 
 void SmoothMovementManager::clear() {
     movementQueues_.clear();
+}
+
+CL_Vec3f SmoothMovementManager::getTargetLoc(Serial serial) const {
+    std::map<Serial, std::list<SmoothMovement> >::const_iterator it = movementQueues_.find(serial);
+    if (it != movementQueues_.end()) {
+        return it->second.back().getTargetLoc();
+    }
+
+    return CL_Vec3f(0, 0, 0);
 }
 
 }

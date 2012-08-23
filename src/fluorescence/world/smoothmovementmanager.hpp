@@ -36,8 +36,11 @@ public:
 
     void add(Serial serial, SmoothMovement& movement);
     void clear(Serial serial);
-    
+
     void clear();
+
+    // returns the target location of the last queued smooth movement, or (0,0,0) for no movements
+    CL_Vec3f getTargetLoc(Serial serial) const;
 
 private:
     std::map<Serial, std::list<SmoothMovement> > movementQueues_;
