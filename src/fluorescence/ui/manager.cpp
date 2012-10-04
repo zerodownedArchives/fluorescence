@@ -34,6 +34,7 @@
 #include "audiomanager.hpp"
 #include "commandmanager.hpp"
 #include "macromanager.hpp"
+#include "python/scriptloader.hpp"
 
 #include "components/lineedit.hpp"
 
@@ -113,6 +114,10 @@ Manager::Manager() : worldView_(nullptr), promptSerial_(0) {
     loadFontDirectory(path);
 
     setTheme("preshard");
+
+    LOG_DEBUG << "Initializing Python" << std::endl;
+    pythonLoader_.reset(new python::ScriptLoader());
+    pythonLoader_->init();
 }
 
 bool Manager::setShardConfig(Config& config) {
@@ -155,6 +160,8 @@ bool Manager::setShardConfig(Config& config) {
     std::sort(staticWaterIds_.begin(), staticWaterIds_.end());
 
     setTheme(config["/fluo/ui/theme@name"].asString());
+
+    pythonLoader_->setShardConfig(config);
 
     return true;
 }
@@ -348,6 +355,10 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
             CL_Font_System::register_font(iter->path().string(), iter->path().stem());
         }
     }
+}
+
+GumpMenu* Manager::openPythonGump(const UnicodeString& name) {
+    return pythonLoader_->openGump(name);
 }
 
 GumpMenu* Manager::openXmlGump(const UnicodeString& name) {

@@ -14,12 +14,14 @@ EXEC_PROGRAM(icu-config
 include_directories(${ClanLib_INCLUDE_DIRS})
 
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost 1.46.0 REQUIRED COMPONENTS filesystem system thread program_options)
+find_package(Boost 1.46.0 REQUIRED COMPONENTS filesystem system thread program_options python)
 
-set(FLUO_LIBRARIES ${ClanLib_LIBRARIES} ${Boost_LIBRARIES} ${ICU_LIBRARIES} -lXcursor -lcurl -lfmodex)
+find_package(PythonLibs 2.7 REQUIRED)
 
+set(FLUO_LIBRARIES ${ClanLib_LIBRARIES} ${Boost_LIBRARIES} ${ICU_LIBRARIES} -lXcursor -lcurl -lfmodex ${PYTHON_LIBRARIES})
 
 include_directories(".")
+include_directories(${PYTHON_INCLUDE_DIRS})
 
 
 add_subdirectory(data)

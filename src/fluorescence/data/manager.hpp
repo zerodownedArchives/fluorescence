@@ -59,7 +59,7 @@ template<typename ValueType>
 class DefFileLoader;
 
 struct TextureSource {
-enum {
+enum TextureSourceEnum {
     FILE = 1,
     MAPART = 2,
     STATICART = 3,
@@ -127,6 +127,8 @@ public:
     static const SpellbookInfo* getSpellbookInfo(unsigned int packetOffset);
 
     static void reloadOverrides();
+
+    static UnicodeString getItemName(unsigned int artId);
 
 private:
     static Manager* singleton_;

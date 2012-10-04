@@ -66,6 +66,8 @@
 #include "packets/8c_serverredirect.hpp"
 #include "packets/91_gameserverloginrequest.hpp"
 #include "packets/9b_helprequest.hpp"
+#include "packets/9e_vendorselllist.hpp"
+#include "packets/9f_vendorselloffer.hpp"
 #include "packets/a0_gameserverselect.hpp"
 #include "packets/a1_statupdatehitpoints.hpp"
 #include "packets/a2_statupdatemana.hpp"

@@ -208,6 +208,24 @@ set (CLIENTCOMMANDS_CPP
     ui/commands/reload.cpp
     )
 
+set (PYTHON_HPP
+    ui/python/scriptloader.hpp
+    ui/python/modules.hpp
+    ui/python/pystring.hpp
+    ui/python/pygumpmenu.hpp
+    ui/python/pygumpcomponent.hpp
+    ui/python/pytexture.hpp
+    ui/python/pydata.hpp
+    )
+
+set (PYTHON_CPP
+    ui/python/scriptloader.cpp
+    ui/python/pystring.cpp
+    ui/python/pygumpmenu.cpp
+    ui/python/pygumpcomponent.cpp
+    ui/python/pytexture.cpp
+    ui/python/pydata.cpp
+    )
 
 SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${RENDER_HPP} ${RENDER_CPP} ${TARGETING_HPP} ${TARGETING_CPP}
-        ${PARTICLES_HPP} ${PARTICLES_CPP} ${CLIENTCOMMANDS_HPP} ${CLIENTCOMMANDS_CPP} PARENT_SCOPE)
+        ${PARTICLES_HPP} ${PARTICLES_CPP} ${CLIENTCOMMANDS_HPP} ${CLIENTCOMMANDS_CPP} ${PYTHON_HPP} ${PYTHON_CPP} PARENT_SCOPE)

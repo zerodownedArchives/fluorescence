@@ -79,6 +79,8 @@ set (PACKETS_HPP
     net/packets/8c_serverredirect.hpp
     net/packets/91_gameserverloginrequest.hpp
     net/packets/9b_helprequest.hpp
+    net/packets/9e_vendorselllist.hpp
+    net/packets/9f_vendorselloffer.hpp
     net/packets/a0_gameserverselect.hpp
     net/packets/a1_statupdatehitpoints.hpp
     net/packets/a2_statupdatemana.hpp
@@ -165,6 +167,8 @@ set (PACKETS_CPP
     net/packets/8c_serverredirect.cpp
     net/packets/91_gameserverloginrequest.cpp
     net/packets/9b_helprequest.cpp
+    net/packets/9e_vendorselllist.cpp
+    net/packets/9f_vendorselloffer.cpp
     net/packets/a0_gameserverselect.cpp
     net/packets/a1_statupdatehitpoints.cpp
     net/packets/a2_statupdatemana.cpp

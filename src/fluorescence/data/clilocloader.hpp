@@ -50,8 +50,11 @@ public:
 
     void indexFile(const boost::filesystem::path& path, bool isEnu);
 
+    bool hasEntry(unsigned int id) const;
+
     UnicodeString get(unsigned int id);
     UnicodeString get(unsigned int id, const UnicodeString& paramString);
+    UnicodeString get(unsigned int id, const std::vector<UnicodeString>& params);
 
 private:
     std::map<unsigned int, ClilocEntry> entryMap_;

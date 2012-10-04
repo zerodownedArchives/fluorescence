@@ -54,7 +54,7 @@ void DisplayContainer::onReceive() {
     if (itm) {
         itm->openContainerGump(gumpId_);
     } else {
-        LOG_WARN << "Trying to open container with unknown serial " << serial_;
+        LOG_WARN << "Trying to open container with unknown serial " << serial_ << std::endl;
     }
 }
 

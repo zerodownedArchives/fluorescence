@@ -53,7 +53,7 @@ public:
     static int toUnicode(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated);
     static int toUnicodeLE(const UnicodeString& str, int8_t* buffer, int bufferSize, bool nullTerminated);
 
-    static int toInt(const UnicodeString& str);
+    static int toInt(const UnicodeString& str, bool noErrorMessage = false);
 
 private:
     static UConverter* getUnicodeConverter();

@@ -54,6 +54,10 @@ class AudioManager;
 class CommandManager;
 class MacroManager;
 
+namespace python {
+class ScriptLoader;
+}
+
 namespace components {
 class WorldView;
 }
@@ -137,6 +141,8 @@ public:
     void handlePrompt(const UnicodeString& text);
     void cancelPrompt();
 
+    GumpMenu* openPythonGump(const UnicodeString& name);
+
 private:
     static Manager* singleton_;
 
@@ -200,6 +206,8 @@ private:
     boost::filesystem::path themePath_;
 
     Serial promptSerial_;
+
+    boost::shared_ptr<python::ScriptLoader> pythonLoader_;
 };
 
 }

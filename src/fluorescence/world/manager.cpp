@@ -211,7 +211,7 @@ void Manager::update(unsigned int elapsedMillis) {
     std::map<Serial, boost::shared_ptr<DynamicItem> >::iterator itmEnd = dynamicItems_.end();
 
     for (; itmIter != itmEnd; ++itmIter) {
-        if ((unsigned int)(abs((int)itmIter->second->getLocXGame() - playerX) > autoDeleteRange_ ||
+        if (((unsigned int)(abs((int)itmIter->second->getLocXGame() - playerX)) > autoDeleteRange_ ||
                 (unsigned int)abs((int)itmIter->second->getLocYGame() - playerY) > autoDeleteRange_) && !itmIter->second->hasParent()) {
             outOfRangeDelete.push_back(itmIter->first);
         } else {

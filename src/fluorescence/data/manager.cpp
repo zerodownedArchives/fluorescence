@@ -990,5 +990,15 @@ void Manager::reloadOverrides() {
     sing->initOverrides();
 }
 
+UnicodeString Manager::getItemName(unsigned int artId) {
+    Manager* sing = getSingleton();
+    unsigned int clilocId = (artId < 0x4000) ? (1020000 + artId) : (1078872 + artId);
+    if (sing->clilocLoader_->hasEntry(clilocId)) {
+        return sing->clilocLoader_->get(clilocId);
+    } else {
+        return sing->tileDataLoader_->getStaticTileInfo(artId)->name_;
+    }
+}
+
 }
 }

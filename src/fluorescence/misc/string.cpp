@@ -173,14 +173,16 @@ int StringConverter::toUnicodeLE(const UnicodeString& str, char* buffer, int buf
     }
 }
 
-int StringConverter::toInt(const UnicodeString& str) {
+int StringConverter::toInt(const UnicodeString& str, bool noErrorMessage) {
     UErrorCode error = U_ZERO_ERROR;
     Formattable fmt(-999);
     getNumberFormat()->parse(str, fmt, error);
 
     int ret = 0;
     if (U_FAILURE(error) || !fmt.isNumeric()) {
-        LOG_ERROR << "Error parsing number from string: " << str << std::endl;
+        if (!noErrorMessage) {
+            LOG_ERROR << "Error parsing number from string: " << str << std::endl;
+        }
     } else {
         ret = fmt.getLong();
     }
