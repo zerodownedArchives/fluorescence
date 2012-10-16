@@ -21,8 +21,8 @@
 #include "pygumpcomponent.hpp"
 
 #include <misc/log.hpp>
-#include <ui/gumpmenu.hpp>
 
+#include <ui/gumpmenu.hpp>
 #include <ui/componentlist.hpp>
 
 namespace fluo {
@@ -59,6 +59,16 @@ components::AlphaRegion* PyGumpComponentContainer::addAlphaRegion(CL_GUIComponen
     static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(region);
 
     return region;
+}
+
+components::Label* PyGumpComponentContainer::addLabel(CL_GUIComponent* self, boost::python::tuple& geom, const UnicodeString& text) {
+    components::Label* label = new components::Label(self);
+    PyGumpComponent::setGeometry(label, geom);
+    label->setText(text);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(label);
+
+    return label;
 }
 
 }
