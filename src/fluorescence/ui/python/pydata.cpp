@@ -31,11 +31,11 @@ UnicodeString PyData::test() {
     return UnicodeString("bertlüü ßß hallo");
 }
 
-UnicodeString PyData::cliloc(int id) {
+UnicodeString PyData::cliloc(unsigned int id) {
     return data::Manager::getClilocLoader()->get(id);
 }
 
-UnicodeString PyData::clilocArgs(int id, boost::python::list args) {
+UnicodeString PyData::clilocArgs(unsigned int id, boost::python::list args) {
     namespace bpy = boost::python;
 
     std::vector<UnicodeString> cppArgs;
@@ -46,6 +46,14 @@ UnicodeString PyData::clilocArgs(int id, boost::python::list args) {
     }
 
     return data::Manager::getClilocLoader()->get(id, cppArgs);
+}
+
+boost::shared_ptr<ui::Texture> PyData::getTexture(unsigned int src, const UnicodeString& id) {
+    return data::Manager::getTexture(src, id);
+}
+
+boost::shared_ptr<ui::Texture> PyData::getTextureInt(unsigned int src, unsigned int id) {
+    return data::Manager::getTexture(src, id);
 }
 
 }

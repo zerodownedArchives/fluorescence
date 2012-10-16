@@ -27,22 +27,10 @@ class GumpMenu;
 
 namespace python {
 
-class PyTexture;
-
 class PyGumpMenu {
 public:
-    PyGumpMenu(int x, int y);
-    PyGumpMenu(int x, int y, bool inBackground);
-    PyGumpMenu(ui::GumpMenu* menu);
-
-    ui::GumpMenu* get() const;
-
-    void addImage(PyTexture* tex);
-
-private:
-    ui::GumpMenu* menu_;
-
-    void init(int x, int y, bool inBackground);
+    static GumpMenu* create(int x, int y);
+    static GumpMenu* createBackground(int x, int y, bool inBackground);
 };
 
 }

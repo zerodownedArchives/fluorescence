@@ -35,7 +35,7 @@ namespace ui {
 namespace components {
 
 Image::Image(CL_GUIComponent* parent) : GumpComponent(parent),
-        autoResize_(false), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white), tiled_(false) {
+        autoResize_(false), tiled_(false) {
     func_render().set(this, &Image::render);
 
     set_type_name("image");
@@ -58,8 +58,8 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
         ui::Manager::getSingleton()->queueComponentResize(this, geom);
         // repainted automatically after resize
     } else if (!tiled_) {
-        if (hueInfo_[1u] == 0) {
-            CL_Draw::texture(gc, texture_->getTexture(), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), colorRgba_, texture_->getNormalizedTextureCoords());
+        if (useRgba_) {
+            CL_Draw::texture(gc, texture_->getTexture(), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), rgba_, texture_->getNormalizedTextureCoords());
         } else {
             renderShader(gc, clipRect);
         }
@@ -71,10 +71,10 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
             tileableTexture_.set_wrap_mode(cl_wrap_repeat , cl_wrap_repeat );
         }
 
-        if (hueInfo_[1u] == 0) {
+        if (useRgba_) {
             CL_Draw::texture(gc, tileableTexture_,
                     CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())),
-                    colorRgba_,
+                    rgba_,
                     CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight()));
         } else {
             renderShader(gc, clipRect);
@@ -82,24 +82,8 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     }
 }
 
-void Image::setColorRGBA(const CL_Colorf& color) {
-    colorRgba_ = color;
-}
-
-void Image::setHue(unsigned int hue) {
-    hueInfo_[1u] = hue;
-}
-
-void Image::setAlpha(float alpha) {
-    hueInfo_[2u] = alpha;
-}
-
 void Image::setTiled(bool value) {
     tiled_ = value;
-}
-
-void Image::setHueInfo(const CL_Vec3f& info) {
-    hueInfo_ = info;
 }
 
 void Image::setAutoResize(bool value) {
@@ -155,7 +139,8 @@ void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     primarray.set_attributes(0, vertexCoords);
     primarray.set_attributes(1, tex1_coords);
 
-    primarray.set_attribute(2, hueInfo_);
+    CL_Vec3f hueVec = getHueVector();
+    primarray.set_attribute(2, hueVec);
 
     gc.draw_primitives(cl_triangles, 6, primarray);
 
@@ -186,6 +171,10 @@ bool Image::has_pixel(const CL_Point& p) const {
     }
 
     return texture_->hasPixel(px, py);
+}
+
+boost::shared_ptr<ui::Texture> Image::getTexture() const {
+    return texture_;
 }
 
 }

@@ -591,7 +591,7 @@ GumpComponent* XmlLoader::parseImage(pugi::xml_node& node, pugi::xml_node& defau
 
     img->setHue(hue);
     if (rgba.length() > 0) {
-        img->setColorRGBA(CL_Colorf(rgba));
+        img->setRgba(CL_Colorf(rgba));
     }
 
     if (alpha) {
@@ -719,7 +719,7 @@ GumpComponent* XmlLoader::parseBackground(pugi::xml_node& node, pugi::xml_node& 
 
     img->setHue(hue);
     if (rgba.length() > 0) {
-        img->setColorRGBA(CL_Colorf(rgba));
+        img->setRgba(CL_Colorf(rgba));
     }
 
     if (alpha) {

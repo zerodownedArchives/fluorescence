@@ -10,7 +10,7 @@ debug-quiet:
 	cd ../../build/ && cmake -DCMAKE_BUILD_TYPE=Debug ../ && make -j4 updater ${GREP_FILTER}
 
 release:
-	cd ../../build/ && cmake -DCMAKE_BUILD_TYPE=Release ../ && make -j4 updater 
+	cd ../../build/ && cmake -DCMAKE_BUILD_TYPE=Release ../ && make -j4 updater
 
 debug:
 	cd ../../build/ && cmake -DCMAKE_BUILD_TYPE=Debug ../ && make -j4 updater

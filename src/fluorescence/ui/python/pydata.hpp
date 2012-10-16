@@ -26,13 +26,19 @@
 
 namespace fluo {
 namespace ui {
+
+class Texture;
+
 namespace python {
 
 class PyData {
 public:
     static UnicodeString test();
-    static UnicodeString cliloc(int id);
-    static UnicodeString clilocArgs(int id, boost::python::list args);
+    static UnicodeString cliloc(unsigned int id);
+    static UnicodeString clilocArgs(unsigned int id, boost::python::list args);
+
+    static boost::shared_ptr<ui::Texture> getTexture(unsigned int src, const UnicodeString& id);
+    static boost::shared_ptr<ui::Texture> getTextureInt(unsigned int src, unsigned int id);
 
 };
 

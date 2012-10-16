@@ -17,32 +17,26 @@
  */
 
 
-#ifndef FLUO_UI_PYTHON_PYTEXTURE_HPP
-#define FLUO_UI_PYTHON_PYTEXTURE_HPP
+#ifndef FLUO_UI_COMPONENTLIST_HPP
+#define FLUO_UI_COMPONENTLIST_HPP
 
-#include <boost/shared_ptr.hpp>
-
-namespace fluo {
-namespace ui {
-
-class Texture;
-
-namespace python {
-
-class PyTexture {
-public:
-    PyTexture(const boost::shared_ptr<ui::Texture>& tex);
-    PyTexture(unsigned int source, const char* id);
-
-    boost::shared_ptr<ui::Texture> get() const;
-
-private:
-    boost::shared_ptr<ui::Texture> texture_;
-};
-
-}
-}
-}
+#include "components/alpharegion.hpp"
+#include "components/background.hpp"
+#include "components/button.hpp"
+#include "components/checkbox.hpp"
+#include "components/clicklabel.hpp"
+#include "components/containerview.hpp"
+#include "components/image.hpp"
+#include "components/label.hpp"
+#include "components/lineedit.hpp"
+#include "components/paperdollview.hpp"
+#include "components/propertylabel.hpp"
+#include "components/radiobutton.hpp"
+#include "components/scrollarea.hpp"
+#include "components/scrollbar.hpp"
+#include "components/sysloglabel.hpp"
+#include "components/warmodebutton.hpp"
+#include "components/worldview.hpp"
 
 #endif
 

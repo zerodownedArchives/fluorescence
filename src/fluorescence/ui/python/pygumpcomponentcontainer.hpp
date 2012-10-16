@@ -16,26 +16,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "pytexture.hpp"
 
-#include <data/manager.hpp>
+#ifndef FLUO_UI_PYTHON_PYGUMPCOMPONENTCONTAINER_HPP
+#define FLUO_UI_PYTHON_PYGUMPCOMPONENTCONTAINER_HPP
+
+#include <boost/shared_ptr.hpp>
+
+#include <boost/python.hpp>
+
+class CL_GUIComponent;
 
 namespace fluo {
 namespace ui {
+
+class Texture;
+
+namespace components {
+class Image;
+class Background;
+}
+
 namespace python {
 
-PyTexture::PyTexture(const boost::shared_ptr<ui::Texture>& tex) : texture_(tex) {
+class PyGumpComponentContainer {
+public:
+    PyGumpComponentContainer();
+
+    // has to be called by child classes during initialization
+    void setContainer(CL_GUIComponent* cont);
+
+    static components::Image* addImage(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex);
+    static components::Background* addBackground(CL_GUIComponent* self, boost::python::tuple& geom, unsigned int baseId);
+
+private:
+    CL_GUIComponent* container_;
+};
+
+}
+}
 }
 
-PyTexture::PyTexture(unsigned int source, const char* id) {
-    texture_ = data::Manager::getTexture(source, id);
-}
-
-boost::shared_ptr<ui::Texture> PyTexture::get() const {
-    return texture_;
-}
-
-}
-}
-}
+#endif
 

@@ -47,6 +47,7 @@ set (GUMPMENU_HPP
     ui/stringparser.hpp
     ui/gumpmenu.hpp
     ui/gumpcomponent.hpp
+    ui/componentlist.hpp
 
     ui/components/multitextureimage.hpp
     ui/components/basebutton.hpp
@@ -212,18 +213,18 @@ set (PYTHON_HPP
     ui/python/scriptloader.hpp
     ui/python/modules.hpp
     ui/python/pystring.hpp
+    ui/python/pygumpcomponentcontainer.hpp
     ui/python/pygumpmenu.hpp
     ui/python/pygumpcomponent.hpp
-    ui/python/pytexture.hpp
     ui/python/pydata.hpp
     )
 
 set (PYTHON_CPP
     ui/python/scriptloader.cpp
     ui/python/pystring.cpp
+    ui/python/pygumpcomponentcontainer.cpp
     ui/python/pygumpmenu.cpp
     ui/python/pygumpcomponent.cpp
-    ui/python/pytexture.cpp
     ui/python/pydata.cpp
     )
 

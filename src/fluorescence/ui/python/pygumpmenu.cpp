@@ -18,44 +18,22 @@
 
 #include "pygumpmenu.hpp"
 
-#include "pytexture.hpp"
-
 #include <ui/gumpmenu.hpp>
-#include <ui/components/image.hpp>
 
 namespace fluo {
 namespace ui {
 namespace python {
 
-PyGumpMenu::PyGumpMenu(int x, int y) {
-    init(x, y, false);
+GumpMenu* PyGumpMenu::create(int x, int y) {
+    return createBackground(x, y, false);
 }
 
-PyGumpMenu::PyGumpMenu(int x, int y, bool inBackground) {
-    init(x, y, inBackground);
-}
-
-PyGumpMenu::PyGumpMenu(ui::GumpMenu* menu) : menu_(menu) {
-}
-
-void PyGumpMenu::init(int x, int y, bool inBackground) {
-    CL_GUITopLevelDescription desc(CL_Rect(x, y, CL_Size(100, 100)), false);
+GumpMenu* PyGumpMenu::createBackground(int x, int y, bool inBackground) {
+    CL_GUITopLevelDescription desc(CL_Rect(x, y, CL_Size(1, 1)), false);
     desc.set_decorations(false);
     desc.set_in_background(inBackground);
 
-    menu_ = new GumpMenu(desc);
-}
-
-GumpMenu* PyGumpMenu::get() const {
-    return menu_;
-}
-
-void PyGumpMenu::addImage(PyTexture* tex) {
-    components::Image* img = new components::Image(menu_);
-    img->set_geometry(CL_Rectf(0, 0, 100, 100));
-    img->setTexture(tex->get());
-    img->setAutoResize(false);
-    menu_->addToCurrentPage(img);
+    return new GumpMenu(desc);
 }
 
 }

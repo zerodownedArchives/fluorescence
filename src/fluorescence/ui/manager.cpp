@@ -208,7 +208,6 @@ void Manager::stepDraw() {
         for (; iter != end; ++iter) {
             iter->first->set_geometry(iter->second);
         }
-        componentResizeQueue_.clear();
     }
 
     if (!componentRepaintQueue_.empty()) {

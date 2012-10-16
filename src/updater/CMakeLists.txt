@@ -1,5 +1,9 @@
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+project (fluorescence)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror --std=c++0x -msse2 -Wno-deprecated-declarations")
+set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -DDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(ClanLib_VERSION_LIBNAME "23")
 set(ClanLib_VERSION_DIRNAME "2.3")

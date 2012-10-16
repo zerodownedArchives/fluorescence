@@ -96,8 +96,8 @@ GumpMenu* ScriptLoader::openGump(const UnicodeString& name) {
         }
 
         if (module.attr("create")) {
-            PyGumpMenu& menu = bpy::extract<PyGumpMenu&>(module.attr("create")());
-            ui::GumpMenu* ret = menu.get();
+            GumpMenu& menu = bpy::extract<GumpMenu&>(module.attr("create")());
+            ui::GumpMenu* ret = &menu;
             ret->fitSizeToChildren();
             ret->activateFirstPage();
             return ret;

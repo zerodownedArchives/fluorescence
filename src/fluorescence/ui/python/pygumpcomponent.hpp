@@ -20,6 +20,8 @@
 #ifndef FLUO_UI_PYTHON_PYGUMPCOMPONENT_HPP
 #define FLUO_UI_PYTHON_PYGUMPCOMPONENT_HPP
 
+#include <boost/python/tuple.hpp>
+
 namespace fluo {
 namespace ui {
 
@@ -29,10 +31,15 @@ namespace python {
 
 class PyGumpComponent {
 public:
-    PyGumpComponent(GumpComponent* comp);
+    static boost::python::tuple getGeometry(const GumpComponent* self);
+    static void setGeometry(GumpComponent* self, boost::python::tuple& geom);
 
-private:
-    GumpComponent* component_;
+    static boost::python::tuple getRgba(const GumpComponent* self);
+    static void setRgba(GumpComponent* self, boost::python::tuple& rgba);
+    static void setRgba3(GumpComponent* self, float r, float g, float b);
+    static void setRgba4(GumpComponent* self, float r, float g, float b, float a);
+    static void setRgbaString(GumpComponent* self, const std::string& str);
+
 };
 
 }

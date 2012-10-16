@@ -41,28 +41,20 @@ friend class ui::XmlParser;
 public:
     Image(CL_GUIComponent* parent);
 
+    boost::shared_ptr<ui::Texture> getTexture() const;
     void setTexture(boost::shared_ptr<ui::Texture> tex);
+
     void render(CL_GraphicContext& gc, const CL_Rect& clipRect);
 
-    virtual void setColorRGBA(const CL_Colorf& color);
-    virtual void setHue(unsigned int hue);
-    virtual void setAlpha(float alpha);
-
     void setTiled(bool value);
-    void setAutoResize(bool value);
+    virtual void setAutoResize(bool value);
 
     virtual bool has_pixel(const CL_Point& p) const;
-
-protected:
-    void setHueInfo(const CL_Vec3f& hueInfo);
 
 private:
     boost::shared_ptr<ui::Texture> texture_;
 
     bool autoResize_;
-
-    CL_Vec3f hueInfo_;
-    CL_Colorf colorRgba_;
 
     void renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect);
 

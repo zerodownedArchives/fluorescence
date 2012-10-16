@@ -38,7 +38,6 @@ namespace world {
 
 namespace ui {
 
-// TODO: change to inheritance from CL_GUIComponent ?
 class GumpMenu : public CL_Window {
 public:
     GumpMenu(const CL_GUITopLevelDescription& desc);

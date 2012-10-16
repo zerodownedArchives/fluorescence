@@ -41,20 +41,19 @@ public:
     Background(CL_GUIComponent* parent);
 
     void setBaseId(unsigned int id);
+    unsigned int getBaseId() const;
+
     void render(CL_GraphicContext& gc, const CL_Rect& clipRect);
 
-    void setColorRGBA(const CL_Colorf& color);
-    void setHue(unsigned int hue);
-    void setAlpha(float alpha);
+    virtual void setAutoResize(bool value);
 
 private:
+    unsigned int baseId_;
+
     boost::shared_ptr<ui::Texture> textures_[9];
     CL_Texture extractedTextures_[9];
     CL_Vec2f vertexCoords_[9][6];
     CL_Vec2f textureCoords_[9][6];
-
-    CL_Vec3f hueInfo_;
-    CL_Colorf colorRgba_;
 
     void renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect);
 

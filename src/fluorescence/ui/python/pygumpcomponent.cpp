@@ -18,11 +18,71 @@
 
 #include "pygumpcomponent.hpp"
 
+#include <boost/python/extract.hpp>
+
+#include <ui/gumpcomponent.hpp>
+
 namespace fluo {
 namespace ui {
 namespace python {
 
-PyGumpComponent::PyGumpComponent(GumpComponent* comp) : component_(comp) {
+boost::python::tuple PyGumpComponent::getGeometry(const GumpComponent* self) {
+    CL_Rectf geom = self->getGeometry();
+    return boost::python::make_tuple(geom.left, geom.top, geom.get_width(), geom.get_height());
+}
+
+void PyGumpComponent::setGeometry(GumpComponent* self, boost::python::tuple& geom) {
+    namespace bpy = boost::python;
+
+    int x = bpy::extract<int>(geom[0]);
+    int y = bpy::extract<int>(geom[1]);
+
+    int width = 1;
+    int height = 1;
+    if (bpy::len(geom) > 3) {
+        width = bpy::extract<int>(geom[2]);
+        height = bpy::extract<int>(geom[3]);
+
+        self->setAutoResize(false);
+    } else {
+        self->setAutoResize(true);
+    }
+
+    CL_Rectf rect(x, y, CL_Sizef(width, height));
+    self->set_geometry(rect);
+}
+
+boost::python::tuple PyGumpComponent::getRgba(const GumpComponent* self) {
+    CL_Colorf rgba = self->getRgba();
+    return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+void PyGumpComponent::setRgba(GumpComponent* self, boost::python::tuple& rgba) {
+    namespace bpy = boost::python;
+
+    float r = bpy::extract<float>(rgba[0]);
+    float g = bpy::extract<float>(rgba[1]);
+    float b = bpy::extract<float>(rgba[2]);
+
+    if (bpy::len(rgba) > 3) {
+        float a = bpy::extract<float>(rgba[3]);
+        self->setRgba(r, g, b, a);
+    } else {
+        self->setRgba(r, g, b);
+    }
+}
+
+void PyGumpComponent::setRgba4(GumpComponent* self, float r, float g, float b, float a) {
+    self->setRgba(r, g, b, a);
+}
+
+void PyGumpComponent::setRgba3(GumpComponent* self, float r, float g, float b) {
+    self->setRgba(r, g, b);
+}
+
+void PyGumpComponent::setRgbaString(GumpComponent* self, const std::string& str) {
+    CL_Colorf col(str);
+    self->setRgba(col);
 }
 
 }

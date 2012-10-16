@@ -77,8 +77,11 @@ void MultiTextureImage::activateTexture(unsigned int idx) {
         idx = 0;
     }
 
-    this->Image::setColorRGBA(allColors_[idx]);
-    this->Image::setHueInfo(allHueInfos_[idx]);
+    this->Image::setRgba(allColors_[idx]);
+
+    // TODO:
+    //this->Image::setHueInfo(allHueInfos_[idx]);
+
     this->Image::setTiled(allTiled_[idx]);
     this->Image::setTexture(allTextures_[idx]);
 }

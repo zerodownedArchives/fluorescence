@@ -35,16 +35,21 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-Background::Background(CL_GUIComponent* parent) : GumpComponent(parent), hueInfo_(0, 0, 1), colorRgba_(CL_Colorf::white) {
+Background::Background(CL_GUIComponent* parent) : GumpComponent(parent), baseId_(0) {
     func_render().set(this, &Background::render);
 
     set_type_name("background");
 }
 
 void Background::setBaseId(unsigned int id) {
+    baseId_ = id;
     for (unsigned int i = 0; i < 9; ++i) {
         textures_[i] = data::Manager::getTexture(data::TextureSource::GUMPART, i + id);
     }
+}
+
+unsigned int Background::getBaseId() const {
+    return baseId_;
 }
 
 void Background::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
@@ -63,16 +68,16 @@ void Background::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
             extractedTextures_[i] = textures_[i]->extractSingleTexture();
         }
 
-        if (hueInfo_[1u] == 0) {
+        if (hue_ == 0) {
             calculateQuadCoordinates();
         } else {
             calculateVertexCoordinates();
         }
     }
 
-    if (hueInfo_[1u] == 0) {
+    if (hue_ == 0) {
         for (unsigned int i = 0; i < 9; ++i) {
-            CL_Draw::texture(gc, extractedTextures_[i], quadCoords_[i], colorRgba_, quadTextureCoords_[i]);
+            CL_Draw::texture(gc, extractedTextures_[i], quadCoords_[i], rgba_, quadTextureCoords_[i]);
         }
     } else {
         renderShader(gc, clipRect);
@@ -214,19 +219,6 @@ void Background::setTextureCoordinates(unsigned int index, const CL_Rectf& rect)
     textureCoords_[index][5] = CL_Vec2f(rect.right, rect.bottom);
 }
 
-void Background::setColorRGBA(const CL_Colorf& color) {
-    colorRgba_ = color;
-}
-
-void Background::setHue(unsigned int hue) {
-    hueInfo_[1u] = hue;
-}
-
-void Background::setAlpha(float alpha) {
-    hueInfo_[2u] = alpha;
-    colorRgba_.a = alpha;
-}
-
 void Background::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     //gc.clear(CL_Colorf(0.f, 0.f, 0.f, 0.f));
 
@@ -246,7 +238,7 @@ void Background::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
         primarray.set_attributes(0, vertexCoords_[i]);
         primarray.set_attributes(1, textureCoords_[i]);
 
-        primarray.set_attribute(2, hueInfo_);
+        primarray.set_attribute(2, getHueVector());
 
         gc.set_texture(1, extractedTextures_[i]);
         gc.draw_primitives(cl_triangles, 6, primarray);
@@ -254,6 +246,12 @@ void Background::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
 
     gc.reset_textures();
     gc.reset_program_object();
+}
+
+void Background::setAutoResize(bool value) {
+    if (value) {
+        LOG_WARN << "Auto resizing is not supported on background components" << std::endl;
+    }
 }
 
 }
