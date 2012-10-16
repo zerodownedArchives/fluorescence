@@ -34,22 +34,16 @@ class Texture;
 namespace components {
 class Image;
 class Background;
+class AlphaRegion;
 }
 
 namespace python {
 
 class PyGumpComponentContainer {
 public:
-    PyGumpComponentContainer();
-
-    // has to be called by child classes during initialization
-    void setContainer(CL_GUIComponent* cont);
-
-    static components::Image* addImage(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex);
+    static components::AlphaRegion* addAlphaRegion(CL_GUIComponent* self, boost::python::tuple& geom, float alpha);
     static components::Background* addBackground(CL_GUIComponent* self, boost::python::tuple& geom, unsigned int baseId);
-
-private:
-    CL_GUIComponent* container_;
+    static components::Image* addImage(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex);
 };
 
 }

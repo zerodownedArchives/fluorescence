@@ -23,21 +23,13 @@
 #include <misc/log.hpp>
 #include <ui/gumpmenu.hpp>
 
-#include <ui/components/image.hpp>
-#include <ui/components/background.hpp>
+#include <ui/componentlist.hpp>
 
 namespace fluo {
 namespace ui {
 namespace python {
 
 namespace bpy = boost::python;
-
-PyGumpComponentContainer::PyGumpComponentContainer() : container_(nullptr) {
-}
-
-void PyGumpComponentContainer::setContainer(CL_GUIComponent* cont) {
-    container_ = cont;
-}
 
 components::Image* PyGumpComponentContainer::addImage(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex) {
     components::Image* img = new components::Image(self);
@@ -57,6 +49,16 @@ components::Background* PyGumpComponentContainer::addBackground(CL_GUIComponent*
     static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(bg);
 
     return bg;
+}
+
+components::AlphaRegion* PyGumpComponentContainer::addAlphaRegion(CL_GUIComponent* self, boost::python::tuple& geom, float alpha) {
+    components::AlphaRegion* region = new components::AlphaRegion(self);
+    PyGumpComponent::setGeometry(region, geom);
+    region->setAlpha(alpha);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(region);
+
+    return region;
 }
 
 }

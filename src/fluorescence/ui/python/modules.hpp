@@ -74,6 +74,7 @@ BOOST_PYTHON_MODULE(gumps) {
     bpy::class_<CL_GUIComponent, boost::noncopyable>("GumpComponentContainer", bpy::no_init)
         .def("addImage", &PyGumpComponentContainer::addImage, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addBackground", &PyGumpComponentContainer::addBackground, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("addAlphaRegion", &PyGumpComponentContainer::addAlphaRegion, bpy::return_value_policy<bpy::reference_existing_object>())
     ;
 
     // non-instanciable wrapper class for gump menus
@@ -109,10 +110,13 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("texture", &components::Image::getTexture, &components::Image::setTexture)
     ;
 
-
     // background component
     bpy::class_<components::Background, bpy::bases<GumpComponent>, boost::noncopyable>("BackgroundWrapper", bpy::no_init)
         .add_property("baseId", &components::Background::getBaseId, &components::Background::setBaseId)
+    ;
+
+    // alpha region component
+    bpy::class_<components::AlphaRegion, bpy::bases<GumpComponent>, boost::noncopyable>("AlphaRegionWrapper", bpy::no_init)
     ;
 }
 

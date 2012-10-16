@@ -27,14 +27,10 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-AlphaRegion::AlphaRegion(CL_GUIComponent* parent) : GumpComponent(parent), alpha_(1.0) {
+AlphaRegion::AlphaRegion(CL_GUIComponent* parent) : GumpComponent(parent) {
     func_render().set(this, &AlphaRegion::render);
 
     set_type_name("alpharegion");
-}
-
-void AlphaRegion::setAlpha(float alpha) {
-    alpha_ = alpha;
 }
 
 void AlphaRegion::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
@@ -52,6 +48,12 @@ void AlphaRegion::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
 
     // restore old mode
     gc.set_blend_mode(oldBlend);
+}
+
+void AlphaRegion::setAutoResize(bool value) {
+    if (value) {
+        LOG_WARN << "Auto resizing is not supported on alpha region components" << std::endl;
+    }
 }
 
 }

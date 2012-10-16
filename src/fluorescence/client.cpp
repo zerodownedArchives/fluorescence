@@ -134,7 +134,7 @@ bool Client::handleStateChange() {
     // start new state
     switch(requestedState_) {
     case STATE_PRE_LOGIN:
-        //ui::GumpMenus::openLoginGump();
+        ui::GumpMenus::openLoginGump();
         //ui::Manager::getSingleton()->openXmlGump("simpletest");
 
         uiManager->openPythonGump("test");
