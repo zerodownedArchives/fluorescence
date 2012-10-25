@@ -26,8 +26,8 @@ def create():
 	i2.setState("foo")
 
 	but = g.addButton((10, 10), Texture(TextureSource.THEME, "images/button.png"))
-	but.state("mouseover").hue = 13
-	but.state("mousedown").rgba = (1.0, 1.0, 0.0)
+	but.mouseover.hue = 13
+	but.mousedown.rgba = (1.0, 1.0, 0.0)
 
 
 	# cliloc test

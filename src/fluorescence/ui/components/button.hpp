@@ -46,6 +46,9 @@ public:
     void setFontColor(unsigned int index, const CL_Colorf& color);
     void setFontHue(unsigned int index, unsigned int hue);
 
+    ImageState* getStateMouseOver();
+    ImageState* getStateMouseDown();
+
 private:
     bool onInputPressed(const CL_InputEvent & e);
     bool onInputReleased(const CL_InputEvent & e);

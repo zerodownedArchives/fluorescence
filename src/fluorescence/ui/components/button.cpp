@@ -169,6 +169,14 @@ void Button::setFontAlignment(unsigned int align) {
     alignment_ = align;
 }
 
+ImageState* Button::getStateMouseOver() {
+    return getState("mouseover");
+}
+
+ImageState* Button::getStateMouseDown() {
+    return getState("mousedown");
+}
+
 }
 }
 }

@@ -136,8 +136,10 @@ BOOST_PYTHON_MODULE(gumps) {
         .def("setRgba", &PyGumpComponent::setRgbaStringImageState)
     ;
 
-    // button class
+    // button component
     bpy::class_<components::Button, bpy::bases<components::Image>, boost::noncopyable>("ButtonWrapper", bpy::no_init)
+        .add_property("mouseover", make_function(&components::Button::getStateMouseOver, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("mousedown", make_function(&components::Button::getStateMouseDown, bpy::return_value_policy<bpy::reference_existing_object>()))
     ;
 
     // background component
