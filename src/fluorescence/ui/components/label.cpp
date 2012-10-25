@@ -36,7 +36,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-Label::Label(CL_GUIComponent* parent) : GumpComponent(parent), fontColor_(CL_Colorf::black), alignment_(Alignment::LEFT) {
+Label::Label(CL_GUIComponent* parent) : GumpComponent(parent), fontColor_(CL_Colorf::black), alignment_(Alignment::LEFT), autoResize_(false) {
     func_render().set(this, &Label::onRender);
 
     fontDesc_.set_height(12);
@@ -67,10 +67,12 @@ void Label::setText(const UnicodeString& text) {
     span_.add_text(StringConverter::toUtf8String(text_), cachedFont_, fontColor_);
     span_.set_align((CL_SpanAlign)alignment_);
 
-    adjustSize();
+    if (autoResize_) {
+        adjustSize();
+    }
 }
 
-void Label::setAlignment(unsigned int align) {
+void Label::setAlignment(Alignment align) {
     alignment_ = align;
 }
 
@@ -200,8 +202,16 @@ void Label::setHtmlText(const UnicodeString& text) {
     adjustSize();
 }
 
-unsigned int Label::getAlignment() const {
+Label::Alignment Label::getAlignment() const {
     return alignment_;
+}
+
+void Label::setAutoResize(bool value) {
+    autoResize_ = value;
+
+    if (value) {
+        adjustSize();
+    }
 }
 
 }

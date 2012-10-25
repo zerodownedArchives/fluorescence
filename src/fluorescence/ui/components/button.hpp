@@ -26,29 +26,19 @@
 #include <ClanLib/Display/Font/font.h>
 #include <ClanLib/Display/Font/font_description.h>
 
-#include "multitextureimage.hpp"
-#include "basebutton.hpp"
+#include <misc/string.hpp>
+
+#include "image.hpp"
 
 namespace fluo {
 namespace ui {
 namespace components {
 
-class Button : public MultiTextureImage, public BaseButton {
-
-friend class ui::XmlParser;
-
+class Button : public Image {
 public:
-    enum TextureIndex {
-        TEX_INDEX_UP = 0,
-        TEX_INDEX_MOUSEOVER = 1,
-        TEX_INDEX_DOWN = 2,
-    };
-
     Button(CL_GUIComponent* parent);
 
     virtual GumpMenu* getTopLevelMenu();
-
-    void updateTexture();
 
     void setFont(const UnicodeString& name, unsigned int height);
     void setFontAlignment(unsigned int align);
@@ -65,6 +55,7 @@ private:
 
     bool mouseOver_;
     bool mouseDown_;
+    void updateState();
 
     unsigned int calcTextureId() const;
 

@@ -37,6 +37,7 @@ class Image;
 class Background;
 class AlphaRegion;
 class Label;
+class Button;
 }
 
 namespace python {
@@ -47,6 +48,7 @@ public:
     static components::Background* addBackground(CL_GUIComponent* self, boost::python::tuple& geom, unsigned int baseId);
     static components::Image* addImage(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex);
     static components::Label* addLabel(CL_GUIComponent* self, boost::python::tuple& geom, const UnicodeString& text);
+    static components::Button* addButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex);
 };
 
 }

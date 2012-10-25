@@ -34,63 +34,187 @@ namespace fluo {
 namespace ui {
 namespace components {
 
+ImageState::ImageState() :
+        owner_(nullptr),
+        overrideTexture_(false),
+        overrideHue_(false), hue_(0),
+        overrideRgba_(false), rgba_(CL_Colorf::white),
+        overrideAlpha_(false), alpha_(1),
+        overrideFontRgba_(false), fontRgba_(CL_Colorf::white),
+        overrideText_(false),
+        overrideTiled_(false), tiled_(false),
+        overridePartialHue_(false), partialHue_(false) {
+}
+
+void ImageState::setOwner(Image* owner) {
+    owner_ = owner;
+}
+
+void ImageState::setTexture(boost::shared_ptr<ui::Texture> texture) {
+    overrideTexture_ = true;
+    texture_ = texture;
+    tileableTexture_ = CL_Texture();
+
+    owner_->request_repaint();
+}
+
+boost::shared_ptr<ui::Texture> ImageState::getTexture() const {
+    return texture_;
+}
+
+void ImageState::setHue(unsigned int hue) {
+    overrideHue_ = true;
+    hue_ = hue;
+
+    owner_->request_repaint();
+}
+
+unsigned int ImageState::getHue() const {
+    return hue_;
+}
+
+void ImageState::setRgba(const CL_Colorf& rgba) {
+    overrideRgba_ = true;
+    rgba_ = rgba;
+
+    owner_->request_repaint();
+}
+
+void ImageState::setRgba(float r, float g, float b, float a) {
+    setRgba(CL_Colorf(r, g, b, a));
+}
+
+void ImageState::setRgba(float r, float g, float b) {
+    setRgba(CL_Colorf(r, g, b));
+}
+
+CL_Colorf ImageState::getRgba() const {
+    return rgba_;
+}
+
+void ImageState::setAlpha(float alpha) {
+    overrideAlpha_ = true;
+    alpha_ = alpha;
+
+    owner_->request_repaint();
+}
+
+float ImageState::getAlpha() const {
+    return alpha_;
+}
+
+void ImageState::setFontRgba(const CL_Colorf& rgba) {
+    overrideFontRgba_ = true;
+    fontRgba_ = rgba;
+
+    owner_->request_repaint();
+}
+
+void ImageState::setFontRgba(float r, float g, float b, float a) {
+    setFontRgba(CL_Colorf(r, g, b, a));
+}
+
+void ImageState::setFontRgba(float r, float g, float b) {
+    setFontRgba(CL_Colorf(r, g, b));
+}
+
+CL_Colorf ImageState::getFontRgba() const {
+    return fontRgba_;
+}
+
+void ImageState::setText(const UnicodeString& text) {
+    overrideText_ = true;
+    text_ = text;
+
+    owner_->request_repaint();
+}
+
+UnicodeString ImageState::getText() const {
+    return text_;
+}
+
+void ImageState::setTiled(bool value) {
+    overrideTiled_ = true;
+    tiled_ = value;
+
+    owner_->request_repaint();
+}
+
+bool ImageState::getTiled() const {
+    return tiled_;
+}
+
+void ImageState::setPartialHue(bool value) {
+    overridePartialHue_ = true;
+    partialHue_ = value;
+
+    owner_->request_repaint();
+}
+
+bool ImageState::getPartialHue() const {
+    return partialHue_;
+}
+
+
+
+
+CL_Texture ImageState::getTileableTexture() {
+    if (!texture_ || !texture_->isReadComplete()) {
+        return CL_Texture();
+    }
+
+    if (tileableTexture_.is_null()) {
+        // create CL_Texture from ui::Texture. can be very expensive, unfortunately.
+        // maybe find a better solution (tile and crop textures manually here instead of relying on tex coords?)
+        tileableTexture_ = texture_->extractSingleTexture();
+        tileableTexture_.set_wrap_mode(cl_wrap_repeat , cl_wrap_repeat );
+    }
+
+    return tileableTexture_;
+}
+
+
 Image::Image(CL_GUIComponent* parent) : GumpComponent(parent),
-        autoResize_(false), tiled_(false) {
+        autoResize_(false) {
     func_render().set(this, &Image::render);
 
     set_type_name("image");
-}
 
-void Image::setTexture(boost::shared_ptr<ui::Texture> tex) {
-    texture_ = tex;
-    tileableTexture_ = CL_Texture();
-    request_repaint();
+    setCurrentState("normal");
+    defaultState_ = currentState_;
 }
 
 void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     CL_Rectf geom = get_geometry();
-    if (!texture_ || !texture_->isReadComplete()) {
+    boost::shared_ptr<ui::Texture> tex = getTexture();
+    if (!tex || !tex->isReadComplete()) {
         ui::Manager::getSingleton()->queueComponentRepaint(this);
-    } else if (autoResize_ && (geom.get_width() != texture_->getWidth() || geom.get_height() != texture_->getHeight())) {
-        geom.set_width(texture_->getWidth());
-        geom.set_height(texture_->getHeight());
+    } else if (autoResize_ && (geom.get_width() != tex->getWidth() || geom.get_height() != tex->getHeight())) {
+        geom.set_width(tex->getWidth());
+        geom.set_height(tex->getHeight());
 
         ui::Manager::getSingleton()->queueComponentResize(this, geom);
         // repainted automatically after resize
-    } else if (!tiled_) {
-        if (useRgba_) {
-            CL_Draw::texture(gc, texture_->getTexture(), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), rgba_, texture_->getNormalizedTextureCoords());
+    } else if (!getTiled()) {
+        if (useRgba()) {
+            CL_Draw::texture(gc, tex->getTexture(), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), getRgba(), tex->getNormalizedTextureCoords());
         } else {
             renderShader(gc, clipRect);
         }
     } else {
-        if (tileableTexture_.is_null()) {
-            // create CL_Texture from ui::Texture. can be very expensive, unfortunately.
-            // maybe find a better solution (tile and crop textures manually here instead of relying on tex coords?)
-            tileableTexture_ = texture_->extractSingleTexture();
-            tileableTexture_.set_wrap_mode(cl_wrap_repeat , cl_wrap_repeat );
-        }
-
-        if (useRgba_) {
-            CL_Draw::texture(gc, tileableTexture_,
+        if (useRgba()) {
+            CL_Draw::texture(gc, getTileableTexture(),
                     CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())),
-                    rgba_,
-                    CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight()));
+                    getRgba(),
+                    CL_Rectf(0.0f, 0.0f, get_width() / tex->getWidth(), get_height() / tex->getHeight()));
         } else {
             renderShader(gc, clipRect);
         }
     }
 }
 
-void Image::setTiled(bool value) {
-    tiled_ = value;
-}
-
 void Image::setAutoResize(bool value) {
     autoResize_ = value;
-    if (autoResize_) {
-        tiled_ = false;
-    }
 }
 
 void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
@@ -107,12 +231,14 @@ void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
 
     CL_Rectf textureRect;
 
-    if (tiled_) {
-        gc.set_texture(1, tileableTexture_);
-        textureRect = CL_Rectf(0.0f, 0.0f, get_width() / texture_->getWidth(), get_height() / texture_->getHeight());
+    if (getTiled()) {
+        CL_Texture tex = getTileableTexture();
+        gc.set_texture(1, tex);
+        textureRect = CL_Rectf(0.0f, 0.0f, get_width() / tex.get_width(), get_height() / tex.get_height());
     } else {
-        gc.set_texture(1, texture_->getTexture());
-        textureRect = texture_->getNormalizedTextureCoords();
+        boost::shared_ptr<ui::Texture> tex = getTexture();
+        gc.set_texture(1, tex->getTexture());
+        textureRect = tex->getNormalizedTextureCoords();
     }
 
     CL_Vec2f tex1_coords[6] = {
@@ -149,32 +275,198 @@ void Image::renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect) {
 }
 
 bool Image::has_pixel(const CL_Point& p) const {
-    if (!texture_) {
+    boost::shared_ptr<ui::Texture> tex = getTexture();
+    if (!tex || !tex->isReadComplete()) {
         return false;
     }
 
     int px = p.x;
     int py = p.y;
 
-    if (tiled_) {
-        if (tileableTexture_.is_null()) {
-            return false;
-        } else {
-            px %= tileableTexture_.get_width();
-            py %= tileableTexture_.get_height();
-        }
+    if (getTiled()) {
+        px %= (int)tex->getWidth();
+        py %= (int)tex->getHeight();
     } else {
-        float stretchHori = (float)get_width() / texture_->getWidth();
-        float stretchVert = (float)get_height() / texture_->getHeight();
+        float stretchHori = (float)get_width() / tex->getWidth();
+        float stretchVert = (float)get_height() / tex->getHeight();
         px /= stretchHori;
         py /= stretchVert;
     }
 
-    return texture_->hasPixel(px, py);
+    return tex->hasPixel(px, py);
+}
+
+void Image::setCurrentState(const UnicodeString& name) {
+    currentStateName_ = name;
+    currentState_ = getState(name);
+
+    request_repaint();
+}
+
+UnicodeString Image::getCurrentStateName() const {
+    return currentStateName_;
+}
+
+ImageState* Image::getState(const UnicodeString& name) {
+    ImageState* ret = &states_[name];
+    ret->setOwner(this);
+    return ret;
 }
 
 boost::shared_ptr<ui::Texture> Image::getTexture() const {
-    return texture_;
+    if (defaultState_ != currentState_ && currentState_->overrideTexture_) {
+        return currentState_->getTexture();
+    } else {
+        return defaultState_->getTexture();
+    }
+}
+
+void Image::setTexture(boost::shared_ptr<ui::Texture> tex) {
+    defaultState_->setTexture(tex);
+
+    request_repaint();
+}
+
+CL_Texture Image::getTileableTexture() {
+    if (defaultState_ != currentState_ && currentState_->overrideTexture_) {
+        return currentState_->getTileableTexture();
+    } else {
+        return defaultState_->getTileableTexture();
+    }
+}
+
+unsigned int Image::getHue() const {
+    if (defaultState_ != currentState_ && currentState_->overrideHue_) {
+        return currentState_->getHue();
+    } else {
+        return defaultState_->getHue();
+    }
+}
+
+void Image::setHue(unsigned int hue) {
+    defaultState_->setHue(hue);
+
+    request_repaint();
+}
+
+bool Image::getTiled() const {
+    if (defaultState_ != currentState_ && currentState_->overrideTiled_) {
+        return currentState_->getTiled();
+    } else {
+        return defaultState_->getTiled();
+    }
+}
+
+void Image::setTiled(bool value) {
+    defaultState_->setTiled(value);
+
+    request_repaint();
+}
+
+CL_Colorf Image::getRgba() const {
+    if (defaultState_ != currentState_ && currentState_->overrideRgba_) {
+        return currentState_->getRgba();
+    } else {
+        return defaultState_->getRgba();
+    }
+}
+
+void Image::setRgba(const CL_Colorf& rgba) {
+    defaultState_->setRgba(rgba);
+
+    request_repaint();
+}
+
+void Image::setRgba(float r, float g, float b, float a) {
+    setRgba(CL_Colorf(r, g, b, a));
+
+    request_repaint();
+}
+
+void Image::setRgba(float r, float g, float b) {
+    setRgba(CL_Colorf(r, g, b));
+
+    request_repaint();
+}
+
+bool Image::useRgba() const {
+    if (currentState_->overrideRgba_) {
+        return true;
+    } else if (currentState_->overrideHue_) {
+        return false;
+    } else if (defaultState_->overrideRgba_) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void Image::setPartialHue(bool value) {
+    defaultState_->setPartialHue(value);
+
+    request_repaint();
+}
+
+bool Image::getPartialHue() const {
+    if (defaultState_ != currentState_ && currentState_->overridePartialHue_) {
+        return currentState_->getPartialHue();
+    } else {
+        return defaultState_->getPartialHue();
+    }
+}
+
+CL_Vec3f Image::getHueVector() const {
+    return CL_Vec3f((getPartialHue() ? 1 : 0), getHue(), getAlpha());
+}
+
+void Image::setAlpha(float alpha) {
+    defaultState_->setAlpha(alpha);
+
+    request_repaint();
+}
+
+float Image::getAlpha() const {
+    if (defaultState_ != currentState_ && currentState_->overrideAlpha_) {
+        return currentState_->getAlpha();
+    } else {
+        return defaultState_->getAlpha();
+    }
+}
+
+CL_Colorf Image::getFontRgba() const {
+    if (defaultState_ != currentState_ && currentState_->overrideFontRgba_) {
+        return currentState_->getFontRgba();
+    } else {
+        return defaultState_->getFontRgba();
+    }
+}
+
+void Image::setFontRgba(const CL_Colorf& rgba) {
+    defaultState_->setFontRgba(rgba);
+
+    request_repaint();
+}
+
+void Image::setFontRgba(float r, float g, float b, float a) {
+    setFontRgba(CL_Colorf(r, g, b, a));
+}
+
+void Image::setFontRgba(float r, float g, float b) {
+    setFontRgba(CL_Colorf(r, g, b));
+}
+
+UnicodeString Image::getText() const {
+    if (defaultState_ != currentState_ && currentState_->overrideText_) {
+        return currentState_->getText();
+    } else {
+        return defaultState_->getText();
+    }
+}
+
+void Image::setText(const UnicodeString& text) {
+    defaultState_->setText(text);
+
+    request_repaint();
 }
 
 }

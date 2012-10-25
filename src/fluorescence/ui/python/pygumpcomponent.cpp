@@ -21,6 +21,8 @@
 #include <boost/python/extract.hpp>
 
 #include <ui/gumpcomponent.hpp>
+#include <ui/components/image.hpp>
+#include <ui/components/background.hpp>
 
 namespace fluo {
 namespace ui {
@@ -52,12 +54,12 @@ void PyGumpComponent::setGeometry(GumpComponent* self, boost::python::tuple& geo
     self->set_geometry(rect);
 }
 
-boost::python::tuple PyGumpComponent::getRgba(const GumpComponent* self) {
+boost::python::tuple PyGumpComponent::getRgbaImage(const components::Image* self) {
     CL_Colorf rgba = self->getRgba();
     return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
 }
 
-void PyGumpComponent::setRgba(GumpComponent* self, boost::python::tuple& rgba) {
+void PyGumpComponent::setRgbaImage(components::Image* self, boost::python::tuple& rgba) {
     namespace bpy = boost::python;
 
     float r = bpy::extract<float>(rgba[0]);
@@ -72,15 +74,81 @@ void PyGumpComponent::setRgba(GumpComponent* self, boost::python::tuple& rgba) {
     }
 }
 
-void PyGumpComponent::setRgba4(GumpComponent* self, float r, float g, float b, float a) {
+void PyGumpComponent::setRgba4Image(components::Image* self, float r, float g, float b, float a) {
     self->setRgba(r, g, b, a);
 }
 
-void PyGumpComponent::setRgba3(GumpComponent* self, float r, float g, float b) {
+void PyGumpComponent::setRgba3Image(components::Image* self, float r, float g, float b) {
     self->setRgba(r, g, b);
 }
 
-void PyGumpComponent::setRgbaString(GumpComponent* self, const std::string& str) {
+void PyGumpComponent::setRgbaStringImage(components::Image* self, const std::string& str) {
+    CL_Colorf col(str);
+    self->setRgba(col);
+}
+
+boost::python::tuple PyGumpComponent::getRgbaImageState(const components::ImageState* self) {
+    CL_Colorf rgba = self->getRgba();
+    return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+void PyGumpComponent::setRgbaImageState(components::ImageState* self, boost::python::tuple& rgba) {
+    namespace bpy = boost::python;
+
+    float r = bpy::extract<float>(rgba[0]);
+    float g = bpy::extract<float>(rgba[1]);
+    float b = bpy::extract<float>(rgba[2]);
+
+    if (bpy::len(rgba) > 3) {
+        float a = bpy::extract<float>(rgba[3]);
+        self->setRgba(r, g, b, a);
+    } else {
+        self->setRgba(r, g, b);
+    }
+}
+
+void PyGumpComponent::setRgba4ImageState(components::ImageState* self, float r, float g, float b, float a) {
+    self->setRgba(r, g, b, a);
+}
+
+void PyGumpComponent::setRgba3ImageState(components::ImageState* self, float r, float g, float b) {
+    self->setRgba(r, g, b);
+}
+
+void PyGumpComponent::setRgbaStringImageState(components::ImageState* self, const std::string& str) {
+    CL_Colorf col(str);
+    self->setRgba(col);
+}
+
+boost::python::tuple PyGumpComponent::getRgbaBackground(const components::Background* self) {
+    CL_Colorf rgba = self->getRgba();
+    return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+void PyGumpComponent::setRgbaBackground(components::Background* self, boost::python::tuple& rgba) {
+    namespace bpy = boost::python;
+
+    float r = bpy::extract<float>(rgba[0]);
+    float g = bpy::extract<float>(rgba[1]);
+    float b = bpy::extract<float>(rgba[2]);
+
+    if (bpy::len(rgba) > 3) {
+        float a = bpy::extract<float>(rgba[3]);
+        self->setRgba(r, g, b, a);
+    } else {
+        self->setRgba(r, g, b);
+    }
+}
+
+void PyGumpComponent::setRgba4Background(components::Background* self, float r, float g, float b, float a) {
+    self->setRgba(r, g, b, a);
+}
+
+void PyGumpComponent::setRgba3Background(components::Background* self, float r, float g, float b) {
+    self->setRgba(r, g, b);
+}
+
+void PyGumpComponent::setRgbaStringBackground(components::Background* self, const std::string& str) {
     CL_Colorf col(str);
     self->setRgba(col);
 }

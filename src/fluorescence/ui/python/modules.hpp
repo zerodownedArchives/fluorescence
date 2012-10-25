@@ -63,19 +63,29 @@ BOOST_PYTHON_MODULE(data) {
 
 
     // factory functions for cliloc strings
-    bpy::def("cltest", PyData::test);
     bpy::def("Cliloc", PyData::cliloc);
     bpy::def("Cliloc", PyData::clilocArgs);
+
+    // convert hue value to rgba tuple
+    bpy::def("hueToRgba", PyData::hueToRgba);
 }
 
 
 BOOST_PYTHON_MODULE(gumps) {
+    // alignment for labels, etc
+    bpy::enum_<components::Label::Alignment>("Alignment")
+        .value("LEFT", components::Label::Alignment::LEFT)
+        .value("RIGHT", components::Label::Alignment::RIGHT)
+        .value("CENTER", components::Label::Alignment::CENTER)
+    ;
+
     // base class used for gump menus and scrollbars (i.e. components to which you can add other components)
     bpy::class_<CL_GUIComponent, boost::noncopyable>("GumpComponentContainer", bpy::no_init)
         .def("addImage", &PyGumpComponentContainer::addImage, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addBackground", &PyGumpComponentContainer::addBackground, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addAlphaRegion", &PyGumpComponentContainer::addAlphaRegion, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addLabel", &PyGumpComponentContainer::addLabel, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("addButton", &PyGumpComponentContainer::addButton, bpy::return_value_policy<bpy::reference_existing_object>())
     ;
 
     // non-instanciable wrapper class for gump menus
@@ -95,33 +105,62 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("height", &GumpComponent::getHeight, &GumpComponent::setHeight)
         .add_property("geometry", &PyGumpComponent::getGeometry, &PyGumpComponent::setGeometry)
         .def("setGeometry", &GumpComponent::setGeometry)
-
-        .add_property("useRgba", &GumpComponent::useRgba, &GumpComponent::setUseRgba)
-        .add_property("hue", &GumpComponent::getHue, &GumpComponent::setHue)
-        .add_property("alpha", &GumpComponent::getAlpha, &GumpComponent::setAlpha)
-        .add_property("usePartialHue", &GumpComponent::usePartialHue, &GumpComponent::setUsePartialHue)
-        .add_property("rgba", &PyGumpComponent::getRgba, &PyGumpComponent::setRgba)
-        .def("setRgba", &PyGumpComponent::setRgba3)
-        .def("setRgba", &PyGumpComponent::setRgba4)
-        .def("setRgba", &PyGumpComponent::setRgbaString)
     ;
 
     // image component
     bpy::class_<components::Image, bpy::bases<GumpComponent>, boost::noncopyable>("ImageWrapper", bpy::no_init)
         .add_property("texture", &components::Image::getTexture, &components::Image::setTexture)
+        .add_property("hue", &components::Image::getHue, &components::Image::setHue)
+        .add_property("alpha", &components::Image::getAlpha, &components::Image::setAlpha)
+        .add_property("usePartialHue", &components::Image::getPartialHue, &components::Image::setPartialHue)
+        .add_property("tiled", &components::Image::getTiled, &components::Image::setTiled)
+        .add_property("rgba", &PyGumpComponent::getRgbaImage, &PyGumpComponent::setRgbaImage)
+        .def("setRgba", &PyGumpComponent::setRgba3Image)
+        .def("setRgba", &PyGumpComponent::setRgba4Image)
+        .def("setRgba", &PyGumpComponent::setRgbaStringImage)
+
+        .def("state", &components::Image::getState, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("setState", &components::Image::setCurrentState)
+    ;
+
+    // image states
+    bpy::class_<components::ImageState, boost::noncopyable>("ImageStateWrapper", bpy::no_init)
+        .add_property("texture", &components::ImageState::getTexture, &components::ImageState::setTexture)
+        .add_property("hue", &components::ImageState::getHue, &components::ImageState::setHue)
+        .add_property("alpha", &components::ImageState::getAlpha, &components::ImageState::setAlpha)
+        .add_property("usePartialHue", &components::ImageState::getPartialHue, &components::ImageState::setPartialHue)
+        .add_property("tiled", &components::ImageState::getTiled, &components::ImageState::setTiled)
+        .add_property("rgba", &PyGumpComponent::getRgbaImageState, &PyGumpComponent::setRgbaImageState)
+        .def("setRgba", &PyGumpComponent::setRgba3ImageState)
+        .def("setRgba", &PyGumpComponent::setRgba4ImageState)
+        .def("setRgba", &PyGumpComponent::setRgbaStringImageState)
+    ;
+
+    // button class
+    bpy::class_<components::Button, bpy::bases<components::Image>, boost::noncopyable>("ButtonWrapper", bpy::no_init)
     ;
 
     // background component
     bpy::class_<components::Background, bpy::bases<GumpComponent>, boost::noncopyable>("BackgroundWrapper", bpy::no_init)
         .add_property("baseId", &components::Background::getBaseId, &components::Background::setBaseId)
+        .add_property("hue", &components::Image::getHue, &components::Image::setHue)
+        .add_property("alpha", &components::Image::getAlpha, &components::Image::setAlpha)
+        .add_property("usePartialHue", &components::Image::getPartialHue, &components::Image::setPartialHue)
+        .add_property("rgba", &PyGumpComponent::getRgbaBackground, &PyGumpComponent::setRgbaBackground)
+        .def("setRgba", &PyGumpComponent::setRgba3Background)
+        .def("setRgba", &PyGumpComponent::setRgba4Background)
+        .def("setRgba", &PyGumpComponent::setRgbaStringBackground)
     ;
 
     // alpha region component
     bpy::class_<components::AlphaRegion, bpy::bases<GumpComponent>, boost::noncopyable>("AlphaRegionWrapper", bpy::no_init)
+        .add_property("alpha", &components::AlphaRegion::getAlpha, &components::AlphaRegion::setAlpha)
     ;
 
     // label component
     bpy::class_<components::Label, bpy::bases<GumpComponent>, boost::noncopyable>("LabelWrapper", bpy::no_init)
+        .add_property("text", &components::Label::getText, &components::Label::setText)
+        .add_property("align", &components::Label::getAlignment, &components::Label::setAlignment)
     ;
 }
 

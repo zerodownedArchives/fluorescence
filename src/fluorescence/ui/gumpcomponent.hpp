@@ -46,33 +46,8 @@ public:
     CL_Rectf getGeometry() const;
     void setGeometry(int x, int y, int w, int h);
 
-    bool useRgba() const;
-    void setUseRgba(bool value);
-
-    unsigned int getHue() const;
-    void setHue(unsigned int hue);
-
-    bool usePartialHue() const;
-    void setUsePartialHue(bool value);
-
-    float getAlpha() const;
-    void setAlpha(float alpha);
-
-    CL_Colorf getRgba() const;
-    void setRgba(const CL_Colorf& rgba);
-    void setRgba(float r, float g, float b, float a);
-    void setRgba(float r, float g, float b);
-
-    CL_Vec3f getHueVector() const;
 
     virtual void setAutoResize(bool value);
-
-protected:
-    bool useRgba_;
-    unsigned int hue_;
-    bool usePartialHue_;
-    float alpha_;
-    CL_Colorf rgba_;
 };
 
 }

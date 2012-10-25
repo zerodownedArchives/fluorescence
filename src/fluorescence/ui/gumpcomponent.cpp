@@ -24,9 +24,7 @@ namespace fluo {
 namespace ui {
 
 GumpComponent::GumpComponent(CL_GUIComponent* parent) :
-    CL_GUIComponent(parent),
-    useRgba_(false), hue_(0), usePartialHue_(false), alpha_(1.0), rgba_(CL_Colorf::white) {
-
+    CL_GUIComponent(parent) {
     set_double_click_enabled(false);
 }
 
@@ -80,72 +78,6 @@ void GumpComponent::setGeometry(int x, int y, int w, int h) {
     CL_Rectf geom(x, y, CL_Sizef(w, h));
     set_geometry(geom);
 }
-
-bool GumpComponent::useRgba() const {
-    return useRgba_;
-}
-
-void GumpComponent::setUseRgba(bool value) {
-    useRgba_ = value;
-}
-
-bool GumpComponent::usePartialHue() const {
-    return usePartialHue_;
-}
-
-void GumpComponent::setUsePartialHue(bool value) {
-    usePartialHue_ = value;
-}
-
-CL_Colorf GumpComponent::getRgba() const {
-    return rgba_;
-}
-
-void GumpComponent::setRgba(const CL_Colorf& rgba) {
-    rgba_ = rgba;
-
-    setUseRgba(true);
-}
-
-void GumpComponent::setRgba(float r, float g, float b, float a) {
-    rgba_.r = r;
-    rgba_.g = g;
-    rgba_.b = b;
-    rgba_.a = a;
-
-    setUseRgba(true);
-}
-
-void GumpComponent::setRgba(float r, float g, float b) {
-    rgba_.r = r;
-    rgba_.g = g;
-    rgba_.b = b;
-
-    setUseRgba(true);
-}
-
-unsigned int GumpComponent::getHue() const {
-    return hue_;
-}
-
-void GumpComponent::setHue(unsigned int hue) {
-    hue_ = hue;
-    setUseRgba(false);
-}
-
-float GumpComponent::getAlpha() const {
-    return alpha_;
-}
-
-void GumpComponent::setAlpha(float alpha) {
-    alpha_ = alpha;
-    rgba_.a = alpha;
-}
-
-CL_Vec3f GumpComponent::getHueVector() const {
-    return CL_Vec3f((usePartialHue_ ? 1 : 0), hue_, alpha_);
-}
-
 
 void GumpComponent::setAutoResize(bool value) {
 }

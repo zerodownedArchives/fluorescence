@@ -366,56 +366,60 @@ bool StringParser::parseTilePicHue(const UnicodeString& params, const std::vecto
 
 bool StringParser::parseButton(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
     // { button {x} {y} {upId} {downId} {type} {pageId} {buttonId} }
-    UErrorCode status = U_ZERO_ERROR;
-    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
-    matcher.reset(params);
+    // TODO: new gui
 
-    if (matcher.find() && matcher.groupCount() == 7) {
-        int x = StringConverter::toInt(matcher.group(1, status));
-        int y = StringConverter::toInt(matcher.group(2, status));
-        int upId = StringConverter::toInt(matcher.group(3, status));
-        int downId = StringConverter::toInt(matcher.group(4, status));
-        int type = StringConverter::toInt(matcher.group(5, status));
-        int pageId = StringConverter::toInt(matcher.group(6, status));
-        int buttonId = StringConverter::toInt(matcher.group(7, status));
+    //UErrorCode status = U_ZERO_ERROR;
+    //static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    //matcher.reset(params);
 
-        boost::shared_ptr<ui::Texture> upTex = data::Manager::getTexture(data::TextureSource::GUMPART, upId);
-        boost::shared_ptr<ui::Texture> downTex = data::Manager::getTexture(data::TextureSource::GUMPART, downId);
+    //if (matcher.find() && matcher.groupCount() == 7) {
+        //int x = StringConverter::toInt(matcher.group(1, status));
+        //int y = StringConverter::toInt(matcher.group(2, status));
+        //int upId = StringConverter::toInt(matcher.group(3, status));
+        //int downId = StringConverter::toInt(matcher.group(4, status));
+        //int type = StringConverter::toInt(matcher.group(5, status));
+        //int pageId = StringConverter::toInt(matcher.group(6, status));
+        //int buttonId = StringConverter::toInt(matcher.group(7, status));
 
-        if (!upTex) {
-            LOG_ERROR << "Unable to add button with up id " << upId << std::endl;
-            return true;
-        }
+        //boost::shared_ptr<ui::Texture> upTex = data::Manager::getTexture(data::TextureSource::GUMPART, upId);
+        //boost::shared_ptr<ui::Texture> downTex = data::Manager::getTexture(data::TextureSource::GUMPART, downId);
 
-        if (!downTex) {
-            LOG_WARN << "Unable to set button down id " << downId << std::endl;
-            return true;
-        }
+        //if (!upTex) {
+            //LOG_ERROR << "Unable to add button with up id " << upId << std::endl;
+            //return true;
+        //}
 
-        components::Button* but = new components::Button(menu);
-        CL_Rectf bounds(x, y, CL_Sizef(upTex->getWidth(), upTex->getHeight()));
-        but->set_geometry(bounds);
+        //if (!downTex) {
+            //LOG_WARN << "Unable to set button down id " << downId << std::endl;
+            //return true;
+        //}
 
-        but->addTexture(components::Button::TEX_INDEX_UP, upTex);
-        but->addTexture(components::Button::TEX_INDEX_MOUSEOVER, upTex);
-        but->addTexture(components::Button::TEX_INDEX_DOWN, downTex);
-        but->updateTexture();
+        //components::Button* but = new components::Button(menu);
+        //CL_Rectf bounds(x, y, CL_Sizef(upTex->getWidth(), upTex->getHeight()));
+        //but->set_geometry(bounds);
 
-        if (type == 0) {
-            but->setPageButton(pageId);
-        } else {
-            but->setServerButton(buttonId);
-        }
+        //but->addTexture(components::Button::TEX_INDEX_UP, upTex);
+        //but->addTexture(components::Button::TEX_INDEX_MOUSEOVER, upTex);
+        //but->addTexture(components::Button::TEX_INDEX_DOWN, downTex);
+        //but->updateTexture();
 
-        but->setAutoResize(true);
+        //if (type == 0) {
+            //but->setPageButton(pageId);
+        //} else {
+            //but->setServerButton(buttonId);
+        //}
 
-        menu->addToCurrentPage(but);
+        //but->setAutoResize(true);
 
-        return true;
-    } else {
-        LOG_ERROR << "Unable to parse button, params " << params << std::endl;
-        return false;
-    }
+        //menu->addToCurrentPage(but);
+
+        //return true;
+    //} else {
+        //LOG_ERROR << "Unable to parse button, params " << params << std::endl;
+        //return false;
+    //}
+
+    return true;
 }
 
 bool StringParser::parseCheckbox(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
@@ -668,28 +672,30 @@ bool StringParser::parseXmfHtmlTok(const UnicodeString& params, const std::vecto
 
 bool StringParser::parseCheckerTrans(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
     // { checkertrans {x} {y} {width} {height} }
-    UErrorCode status = U_ZERO_ERROR;
-    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
-    matcher.reset(params);
-    if (matcher.find() && matcher.groupCount() == 4) {
-        int x = StringConverter::toInt(matcher.group(1, status));
-        int y = StringConverter::toInt(matcher.group(2, status));
-        int width = StringConverter::toInt(matcher.group(3, status));
-        int height = StringConverter::toInt(matcher.group(4, status));
+    // TODO: new gumps
+    //UErrorCode status = U_ZERO_ERROR;
+    //static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    //matcher.reset(params);
+    //if (matcher.find() && matcher.groupCount() == 4) {
+        //int x = StringConverter::toInt(matcher.group(1, status));
+        //int y = StringConverter::toInt(matcher.group(2, status));
+        //int width = StringConverter::toInt(matcher.group(3, status));
+        //int height = StringConverter::toInt(matcher.group(4, status));
 
-        CL_Rectf checkerRect(x, y, CL_Sizef(width, height));
+        //CL_Rectf checkerRect(x, y, CL_Sizef(width, height));
 
-        components::AlphaRegion* areg = new components::AlphaRegion(menu);
-        areg->set_geometry(checkerRect);
-        areg->setAlpha(0.2);
+        //components::AlphaRegion* areg = new components::AlphaRegion(menu);
+        //areg->set_geometry(checkerRect);
+        //areg->setAlpha(0.2);
 
-        menu->addToCurrentPage(areg);
+        //menu->addToCurrentPage(areg);
 
-        return true;
-    } else {
-        LOG_ERROR << "Unable to parse checkertrans, params " << params << std::endl;
-        return false;
-    }
+        //return true;
+    //} else {
+        //LOG_ERROR << "Unable to parse checkertrans, params " << params << std::endl;
+        //return false;
+    //}
+    return false;
 }
 
 bool StringParser::parseRadio(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {

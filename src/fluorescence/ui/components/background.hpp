@@ -35,8 +35,9 @@ class Texture;
 
 namespace components {
 
-class Background : public GumpComponent {
+class Image;
 
+class Background : public GumpComponent {
 public:
     Background(CL_GUIComponent* parent);
 
@@ -47,23 +48,27 @@ public:
 
     virtual void setAutoResize(bool value);
 
+    unsigned int getHue() const;
+    void setHue(unsigned int hue);
+
+    CL_Colorf getRgba() const;
+    void setRgba(const CL_Colorf& rgba);
+    void setRgba(float r, float g, float b, float a);
+    void setRgba(float r, float g, float b);
+
+    bool getPartialHue() const;
+    void setPartialHue(bool value);
+
+    float getAlpha() const;
+    void setAlpha(float alpha);
+
 private:
     unsigned int baseId_;
 
-    boost::shared_ptr<ui::Texture> textures_[9];
-    CL_Texture extractedTextures_[9];
-    CL_Vec2f vertexCoords_[9][6];
-    CL_Vec2f textureCoords_[9][6];
+    components::Image* images_[9];
 
-    void renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect);
-
-    void calculateVertexCoordinates();
-    void setVertexCoordinates(unsigned int index, const CL_Rectf& rect);
-    void setTextureCoordinates(unsigned int index, const CL_Rectf& rect);
-
-    void calculateQuadCoordinates();
-    CL_Quadf quadCoords_[9];
-    CL_Rectf quadTextureCoords_[9];
+    bool coordinateRecalcRequired_;
+    void calculateImageCoordinates();
 };
 
 }

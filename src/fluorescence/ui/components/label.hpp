@@ -34,12 +34,10 @@ namespace components {
 
 class Label : public GumpComponent {
 public:
-    struct Alignment {
-        enum {
-            LEFT = CL_SpanAlign::cl_left,
-            CENTER = CL_SpanAlign::cl_center,
-            RIGHT = CL_SpanAlign::cl_right,
-        };
+    enum Alignment {
+        LEFT = CL_SpanAlign::cl_left,
+        CENTER = CL_SpanAlign::cl_center,
+        RIGHT = CL_SpanAlign::cl_right,
     };
 
     Label(CL_GUIComponent* parent);
@@ -47,14 +45,16 @@ public:
     void setText(const UnicodeString& string);
     UnicodeString getText();
 
-    void setAlignment(unsigned int align);
     void setFont(const UnicodeString& name, unsigned int height);
     void setColor(const CL_Colorf& color);
     void setHue(unsigned int hue);
 
     void setHtmlText(const UnicodeString& string);
 
-    unsigned int getAlignment() const;
+    void setAlignment(Alignment align);
+    Alignment getAlignment() const;
+
+    virtual void setAutoResize(bool value);
 
 protected:
     CL_SpanLayout span_;
@@ -64,8 +64,9 @@ protected:
 
 private:
     UnicodeString text_;
-    unsigned int alignment_;
+    Alignment alignment_;
 
+    bool autoResize_;
     void adjustSize();
 
     void onRender(CL_GraphicContext& gc, const CL_Rect& update_rect);

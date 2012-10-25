@@ -23,6 +23,7 @@
 #include <misc/string.hpp>
 
 #include <boost/python/list.hpp>
+#include <boost/python/tuple.hpp>
 
 namespace fluo {
 namespace ui {
@@ -40,6 +41,8 @@ public:
     static boost::shared_ptr<ui::Texture> getTexture(unsigned int src, const UnicodeString& id);
     static boost::shared_ptr<ui::Texture> getTextureInt(unsigned int src, unsigned int id);
 
+    static boost::python::tuple hueToRgba(unsigned int hue);
+
 };
 
 }
@@ -47,4 +50,3 @@ public:
 }
 
 #endif
-

@@ -178,6 +178,8 @@ private:
     boost::shared_ptr<ShaderManager> shaderManager_;
 
     UnicodeString getOpenGLExtensions() const;
+    UnicodeString getOpenGLVendor() const;
+    UnicodeString getOpenGLRenderer() const;
 
     boost::shared_ptr<ClipRectManager> clipRectManager_;
 

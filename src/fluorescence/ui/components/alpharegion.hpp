@@ -38,6 +38,12 @@ public:
     void render(CL_GraphicContext& gc, const CL_Rect& clipRect);
 
     virtual void setAutoResize(bool value);
+
+    void setAlpha(float alpha);
+    float getAlpha() const;
+
+private:
+    float alpha_;
 };
 
 }

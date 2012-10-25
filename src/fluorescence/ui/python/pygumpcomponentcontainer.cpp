@@ -71,6 +71,16 @@ components::Label* PyGumpComponentContainer::addLabel(CL_GUIComponent* self, boo
     return label;
 }
 
+components::Button* PyGumpComponentContainer::addButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex) {
+    components::Button* but = new components::Button(self);
+    PyGumpComponent::setGeometry(but, geom);
+    but->setTexture(tex);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(but);
+
+    return but;
+}
+
 }
 }
 }

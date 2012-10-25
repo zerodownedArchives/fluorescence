@@ -603,131 +603,133 @@ GumpComponent* XmlLoader::parseImage(pugi::xml_node& node, pugi::xml_node& defau
 }
 
 GumpComponent* XmlLoader::parseButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    unsigned int buttonId = getAttribute("buttonid", node, defaultNode).as_uint();
-    unsigned int pageId = getAttribute("page", node, defaultNode).as_uint();
-    UnicodeString action = StringConverter::fromUtf8(getAttribute("action", node, defaultNode).value());
-    UnicodeString param = StringConverter::fromUtf8(getAttribute("param", node, defaultNode).value());
-    UnicodeString param2 = StringConverter::fromUtf8(getAttribute("param2", node, defaultNode).value());
-    UnicodeString param3 = StringConverter::fromUtf8(getAttribute("param3", node, defaultNode).value());
-    UnicodeString param4 = StringConverter::fromUtf8(getAttribute("param4", node, defaultNode).value());
-    UnicodeString param5 = StringConverter::fromUtf8(getAttribute("param5", node, defaultNode).value());
+    //CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    //unsigned int buttonId = getAttribute("buttonid", node, defaultNode).as_uint();
+    //unsigned int pageId = getAttribute("page", node, defaultNode).as_uint();
+    //UnicodeString action = StringConverter::fromUtf8(getAttribute("action", node, defaultNode).value());
+    //UnicodeString param = StringConverter::fromUtf8(getAttribute("param", node, defaultNode).value());
+    //UnicodeString param2 = StringConverter::fromUtf8(getAttribute("param2", node, defaultNode).value());
+    //UnicodeString param3 = StringConverter::fromUtf8(getAttribute("param3", node, defaultNode).value());
+    //UnicodeString param4 = StringConverter::fromUtf8(getAttribute("param4", node, defaultNode).value());
+    //UnicodeString param5 = StringConverter::fromUtf8(getAttribute("param5", node, defaultNode).value());
 
-    std::string align = getAttribute("font-align", node, defaultNode).value();
-    UnicodeString fontName = getAttribute("font", node, defaultNode).value();
-    unsigned int fontHeight = getAttribute("font-height", node, defaultNode).as_uint();
-    UnicodeString text = getAttribute("text", node, defaultNode).value();
+    //std::string align = getAttribute("font-align", node, defaultNode).value();
+    //UnicodeString fontName = getAttribute("font", node, defaultNode).value();
+    //unsigned int fontHeight = getAttribute("font-height", node, defaultNode).as_uint();
+    //UnicodeString text = getAttribute("text", node, defaultNode).value();
 
-    components::Button* button = new components::Button(parent);
-    if (action.length() > 0) {
-        button->setLocalButton(action);
-        button->setParameter(param, 0);
-        button->setParameter(param2, 1);
-        button->setParameter(param3, 2);
-        button->setParameter(param4, 3);
-        button->setParameter(param5, 4);
-    } else if (!getAttribute("buttonid", node, defaultNode).empty()) {
-        button->setServerButton(buttonId);
-    } else if (!getAttribute("page", node, defaultNode).empty()) {
-        button->setPageButton(pageId);
-    } else {
-        LOG_WARN << "Button without action, id or page" << std::endl;
-        return nullptr;
-    }
+    //components::Button* button = new components::Button(parent);
+    //if (action.length() > 0) {
+        //button->setLocalButton(action);
+        //button->setParameter(param, 0);
+        //button->setParameter(param2, 1);
+        //button->setParameter(param3, 2);
+        //button->setParameter(param4, 3);
+        //button->setParameter(param5, 4);
+    //} else if (!getAttribute("buttonid", node, defaultNode).empty()) {
+        //button->setServerButton(buttonId);
+    //} else if (!getAttribute("page", node, defaultNode).empty()) {
+        //button->setPageButton(pageId);
+    //} else {
+        //LOG_WARN << "Button without action, id or page" << std::endl;
+        //return nullptr;
+    //}
 
-    if (align == "left") {
-        button->setFontAlignment(components::Label::Alignment::LEFT);
-    } else if (align == "right") {
-        button->setFontAlignment(components::Label::Alignment::RIGHT);
-    } else if (align.length() == 0 || align == "center") {
-        button->setFontAlignment(components::Label::Alignment::CENTER);
-    } else {
-        LOG_WARN << "Unknown button align: " << align << std::endl;
-        return nullptr;
-    }
-    button->setFont(fontName, fontHeight);
+    //if (align == "left") {
+        //button->setFontAlignment(components::Label::Alignment::LEFT);
+    //} else if (align == "right") {
+        //button->setFontAlignment(components::Label::Alignment::RIGHT);
+    //} else if (align.length() == 0 || align == "center") {
+        //button->setFontAlignment(components::Label::Alignment::CENTER);
+    //} else {
+        //LOG_WARN << "Unknown button align: " << align << std::endl;
+        //return nullptr;
+    //}
+    //button->setFont(fontName, fontHeight);
 
-    if (text.length() > 0) {
-        button->setText(0, text);
-        button->setText(1, text);
-        button->setText(2, text);
-    }
+    //if (text.length() > 0) {
+        //button->setText(0, text);
+        //button->setText(1, text);
+        //button->setText(2, text);
+    //}
 
-    parseId(node, button);
+    //parseId(node, button);
 
-    pugi::xml_node normalNode = node.child("normal");
-    pugi::xml_node mouseOverNode = node.child("mouseover");
-    pugi::xml_node mouseDownNode = node.child("mousedown");
+    //pugi::xml_node normalNode = node.child("normal");
+    //pugi::xml_node mouseOverNode = node.child("mouseover");
+    //pugi::xml_node mouseDownNode = node.child("mousedown");
 
-    pugi::xml_node defaultNormalNode = defaultNode.child("normal");
-    pugi::xml_node defaultMouseOverNode = defaultNode.child("mouseover");
-    pugi::xml_node defaultMouseDownNode = defaultNode.child("mousedown");
+    //pugi::xml_node defaultNormalNode = defaultNode.child("normal");
+    //pugi::xml_node defaultMouseOverNode = defaultNode.child("mouseover");
+    //pugi::xml_node defaultMouseDownNode = defaultNode.child("mousedown");
 
-    if (normalNode || defaultNormalNode) {
-        parseMultiTextureImage(normalNode, defaultNormalNode, button, components::Button::TEX_INDEX_UP);
-        parseButtonText(normalNode, defaultNormalNode, button, components::Button::TEX_INDEX_UP);
-    } else {
-        LOG_ERROR << "Normal image for uo button not defined" << std::endl;
-        node.print(std::cout);
-        return nullptr;
-    }
+    //if (normalNode || defaultNormalNode) {
+        //parseMultiTextureImage(normalNode, defaultNormalNode, button, components::Button::TEX_INDEX_UP);
+        //parseButtonText(normalNode, defaultNormalNode, button, components::Button::TEX_INDEX_UP);
+    //} else {
+        //LOG_ERROR << "Normal image for uo button not defined" << std::endl;
+        //node.print(std::cout);
+        //return nullptr;
+    //}
 
-    if (mouseOverNode || defaultMouseOverNode) {
-        parseMultiTextureImage(mouseOverNode, defaultMouseOverNode, button, components::Button::TEX_INDEX_MOUSEOVER);
-        parseButtonText(mouseOverNode, defaultMouseOverNode, button, components::Button::TEX_INDEX_MOUSEOVER);
-    }
-    if (mouseDownNode || defaultMouseDownNode) {
-        parseMultiTextureImage(mouseDownNode, defaultMouseDownNode, button, components::Button::TEX_INDEX_DOWN);
-        parseButtonText(mouseDownNode, defaultMouseDownNode, button, components::Button::TEX_INDEX_DOWN);
-    }
+    //if (mouseOverNode || defaultMouseOverNode) {
+        //parseMultiTextureImage(mouseOverNode, defaultMouseOverNode, button, components::Button::TEX_INDEX_MOUSEOVER);
+        //parseButtonText(mouseOverNode, defaultMouseOverNode, button, components::Button::TEX_INDEX_MOUSEOVER);
+    //}
+    //if (mouseDownNode || defaultMouseDownNode) {
+        //parseMultiTextureImage(mouseDownNode, defaultMouseDownNode, button, components::Button::TEX_INDEX_DOWN);
+        //parseButtonText(mouseDownNode, defaultMouseDownNode, button, components::Button::TEX_INDEX_DOWN);
+    //}
 
-    if (bounds.get_width() == 0 || bounds.get_height() == 0) {
-        button->setAutoResize(true);
-        bounds.set_width(1);
-        bounds.set_height(1);
-    }
+    //if (bounds.get_width() == 0 || bounds.get_height() == 0) {
+        //button->setAutoResize(true);
+        //bounds.set_width(1);
+        //bounds.set_height(1);
+    //}
 
-    button->updateTexture();
+    //button->updateTexture();
 
-    button->set_geometry(bounds);
+    //button->set_geometry(bounds);
 
-    top->addToCurrentPage(button);
+    //top->addToCurrentPage(button);
 
-    return button;
+    //return button;
+    return nullptr;
 }
 
 GumpComponent* XmlLoader::parseBackground(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    //CL_Rect bounds = getBoundsFromNode(node, defaultNode);
 
-    unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
-    std::string rgba = getAttribute("color", node, defaultNode).value();
-    float alpha = getAttribute("alpha", node, defaultNode).as_float();
+    //unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
+    //std::string rgba = getAttribute("color", node, defaultNode).value();
+    //float alpha = getAttribute("alpha", node, defaultNode).as_float();
 
-    unsigned int gumpId = getAttribute("gumpid", node, defaultNode).as_uint();
+    //unsigned int gumpId = getAttribute("gumpid", node, defaultNode).as_uint();
 
-    if (!gumpId) {
-        LOG_ERROR << "Unable to parse background, gumpid not found, not a number or zero" << std::endl;
-        return nullptr;
-    }
+    //if (!gumpId) {
+        //LOG_ERROR << "Unable to parse background, gumpid not found, not a number or zero" << std::endl;
+        //return nullptr;
+    //}
 
-    components::Background* img = new components::Background(parent);
-    parseId(node, img);
+    //components::Background* img = new components::Background(parent);
+    //parseId(node, img);
 
-    img->set_geometry(bounds);
+    //img->set_geometry(bounds);
 
-    img->setBaseId(gumpId);
+    //img->setBaseId(gumpId);
 
-    img->setHue(hue);
-    if (rgba.length() > 0) {
-        img->setRgba(CL_Colorf(rgba));
-    }
+    //img->setHue(hue);
+    //if (rgba.length() > 0) {
+        //img->setRgba(CL_Colorf(rgba));
+    //}
 
-    if (alpha) {
-        img->setAlpha(alpha);
-    }
+    //if (alpha) {
+        //img->setAlpha(alpha);
+    //}
 
-    top->addToCurrentPage(img);
-    return img;
+    //top->addToCurrentPage(img);
+    //return img;
+    return nullptr;
 }
 
 GumpComponent* XmlLoader::parseCheckbox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
@@ -1107,16 +1109,17 @@ GumpComponent* XmlLoader::parseScrollArea(pugi::xml_node& node, pugi::xml_node& 
 }
 
 GumpComponent* XmlLoader::parseAlphaRegion(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    float alpha = getAttribute("alpha", node, defaultNode).as_float();
+    //CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    //float alpha = getAttribute("alpha", node, defaultNode).as_float();
 
-    components::AlphaRegion* areg = new components::AlphaRegion(parent);
-    parseId(node, areg);
-    areg->set_geometry(bounds);
-    areg->setAlpha(alpha);
+    //components::AlphaRegion* areg = new components::AlphaRegion(parent);
+    //parseId(node, areg);
+    //areg->set_geometry(bounds);
+    ////areg->setAlpha(alpha);
 
-    top->addToCurrentPage(areg);
-    return areg;
+    //top->addToCurrentPage(areg);
+    //return areg;
+    return nullptr;
 }
 
 GumpComponent* XmlLoader::parseWorldView(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {

@@ -95,8 +95,11 @@ Manager::Manager() : worldView_(nullptr), promptSerial_(0) {
     description.set_version(2, 1, true);
     mainWindow_.reset(new CL_DisplayWindow(description));
 
+    LOG_INFO << "OpenGL vendor: " << getOpenGLVendor() << std::endl;
+    LOG_INFO << "OpenGL renderer: " << getOpenGLRenderer() << std::endl;
+
     UnicodeString openglExt = getOpenGLExtensions();
-    LOG_DEBUG << "OpenGL extensions: " << openglExt << std::endl;
+    LOG_INFO << "OpenGL extensions: " << openglExt << std::endl;
     if (openglExt.indexOf("GL_EXT_gpu_shader4") == -1) {
         LOG_EMERGENCY << "Sorry, your graphics card or graphics card driver is not supported. Please try to update the most recent, official driver" << std::endl;
         throw Exception("Graphics card or driver not supported");
@@ -208,6 +211,7 @@ void Manager::stepDraw() {
         for (; iter != end; ++iter) {
             iter->first->set_geometry(iter->second);
         }
+        componentResizeQueue_.clear();
     }
 
     if (!componentRepaintQueue_.empty()) {
@@ -416,6 +420,16 @@ boost::shared_ptr<ShaderManager> Manager::getShaderManager() {
 
 UnicodeString Manager::getOpenGLExtensions() const {
     const GLubyte* sExtensions = glGetString(GL_EXTENSIONS);
+    return UnicodeString((const char*)sExtensions);
+}
+
+UnicodeString Manager::getOpenGLVendor() const {
+    const GLubyte* sExtensions = glGetString(GL_VENDOR);
+    return UnicodeString((const char*)sExtensions);
+}
+
+UnicodeString Manager::getOpenGLRenderer() const {
+    const GLubyte* sExtensions = glGetString(GL_RENDERER);
     return UnicodeString((const char*)sExtensions);
 }
 

@@ -20,6 +20,7 @@
 
 #include <data/manager.hpp>
 #include <data/clilocloader.hpp>
+#include <data/huesloader.hpp>
 
 #include <boost/python/extract.hpp>
 
@@ -54,6 +55,11 @@ boost::shared_ptr<ui::Texture> PyData::getTexture(unsigned int src, const Unicod
 
 boost::shared_ptr<ui::Texture> PyData::getTextureInt(unsigned int src, unsigned int id) {
     return data::Manager::getTexture(src, id);
+}
+
+boost::python::tuple PyData::hueToRgba(unsigned int hue) {
+    CL_Colorf rgba = data::Manager::getHuesLoader()->getFontClColor(hue);
+    return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
 }
 
 }

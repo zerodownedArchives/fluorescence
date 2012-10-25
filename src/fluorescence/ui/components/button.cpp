@@ -31,12 +31,14 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-Button::Button(CL_GUIComponent* parent) : MultiTextureImage(parent, 3), mouseOver_(false), mouseDown_(false) {
+Button::Button(CL_GUIComponent* parent) : Image(parent),
+        mouseOver_(false), mouseDown_(false) {
+
     func_input_pressed().set(this, &Button::onInputPressed);
     func_input_released().set(this, &Button::onInputReleased);
     func_pointer_enter().set(this, &Button::onPointerEnter);
     func_pointer_exit().set(this, &Button::onPointerExit);
-    func_render().set(this, &Button::render);
+    //func_render().set(this, &Button::render);
 
     set_double_click_enabled(false);
 
@@ -59,8 +61,8 @@ Button::Button(CL_GUIComponent* parent) : MultiTextureImage(parent, 3), mouseOve
 bool Button::onInputReleased(const CL_InputEvent & e) {
     if (e.id == CL_MOUSE_LEFT) {
         mouseDown_ = false;
-        updateTexture();
-        handleClick();
+        updateState();
+        //handleClick();
         return true;
     } else {
         return false;
@@ -70,7 +72,7 @@ bool Button::onInputReleased(const CL_InputEvent & e) {
 bool Button::onInputPressed(const CL_InputEvent & e) {
     if (e.id == CL_MOUSE_LEFT) {
         mouseDown_ = true;
-        updateTexture();
+        updateState();
         return true;
     } else {
         return false;
@@ -84,7 +86,7 @@ GumpMenu* Button::getTopLevelMenu() {
 
 bool Button::onPointerEnter() {
     mouseOver_ = true;
-    updateTexture();
+    updateState();
 
     return true;
 }
@@ -92,25 +94,19 @@ bool Button::onPointerEnter() {
 bool Button::onPointerExit() {
     mouseOver_ = false;
     mouseDown_ = false;
-    updateTexture();
+    updateState();
 
     return true;
 }
 
-void Button::updateTexture() {
-    unsigned int idx = calcTextureId();
-    activateTexture(idx);
-    activateText(idx);
-}
-
-unsigned int Button::calcTextureId() const {
+void Button::updateState() {
     if (mouseDown_) {
-        return Button::TEX_INDEX_DOWN;
+        setCurrentState("mousedown");
     } else {
         if (mouseOver_) {
-            return Button::TEX_INDEX_MOUSEOVER;
+            setCurrentState("mouseover");
         } else {
-            return Button::TEX_INDEX_UP;
+            setCurrentState("normal");
         }
     }
 }
@@ -132,7 +128,7 @@ void Button::activateText(unsigned int index) {
 
 void Button::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     // render base image
-    MultiTextureImage::render(gc, clipRect);
+    //MultiTextureImage::render(gc, clipRect);
 
     if (displayText_) {
         if (!hasScrollareaParent_) {
@@ -161,7 +157,7 @@ void Button::setFontColor(unsigned int index, const CL_Colorf& color) {
 }
 
 void Button::setFontHue(unsigned int index, unsigned int hue) {
-    fontColors_[index] = data::Manager::getHuesLoader()->getFontClColor(hue);;
+    fontColors_[index] = data::Manager::getHuesLoader()->getFontClColor(hue);
 }
 
 void Button::setFont(const UnicodeString& name, unsigned int height) {
