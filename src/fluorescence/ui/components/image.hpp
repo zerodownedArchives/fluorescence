@@ -27,6 +27,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <misc/string.hpp>
+#include <ui/enums.hpp>
 #include <ui/gumpcomponent.hpp>
 
 namespace fluo {
@@ -157,6 +158,14 @@ public:
     UnicodeString getText() const;
     void setText(const UnicodeString& text);
 
+    void setFont(const UnicodeString& name, unsigned int height, bool border);
+
+    void setVAlign(VAlign align);
+    VAlign getVAlign() const;
+
+    void setHAlign(HAlign align);
+    HAlign getHAlign() const;
+
 private:
     bool autoResize_;
 
@@ -171,6 +180,9 @@ private:
     CL_FontDescription fontDesc_;
 
     bool hasScrollareaParent_;
+
+    VAlign vAlign_;
+    HAlign hAlign_;
 };
 
 }

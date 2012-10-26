@@ -176,7 +176,8 @@ CL_Texture ImageState::getTileableTexture() {
 
 
 Image::Image(CL_GUIComponent* parent) : GumpComponent(parent),
-        autoResize_(false), defaultState_(nullptr), overrideGumpFont_(false) {
+        autoResize_(false), defaultState_(nullptr), overrideGumpFont_(false),
+        vAlign_(MIDDLE), hAlign_(CENTER) {
     func_render().set(this, &Image::render);
 
     set_type_name("image");
@@ -238,7 +239,7 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
         }
         CL_Font font = ui::Manager::getSingleton()->getFont(fd);
         span.add_text(StringConverter::toUtf8String(txt), font, getFontRgba());
-        //span.set_align((CL_SpanAlign)alignment_);
+        span.set_align((CL_SpanAlign)getHAlign());
 
         if (!hasScrollareaParent_) {
             gc.push_cliprect(get_geometry());
@@ -247,7 +248,17 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
         span.layout(gc, get_geometry().get_width());
         CL_Size spanSize = span.get_size();
         // span aligns only horizontally. vertical alignment needs to be done manually
-        span.set_position(CL_Point(0, (get_height() - spanSize.height) / 2));
+        switch (getVAlign()) {
+        case TOP:
+            span.set_position(CL_Point(0, 0));
+            break;
+        case MIDDLE:
+            span.set_position(CL_Point(0, (get_height() - spanSize.height) / 2));
+            break;
+        case BOTTOM:
+            span.set_position(CL_Point(0, (get_height() - spanSize.height)));
+            break;
+        }
         span.draw_layout(gc);
         span.set_component_geometry();
 
@@ -515,6 +526,35 @@ void Image::setText(const UnicodeString& text) {
     defaultState_->setText(text);
 
     request_repaint();
+}
+
+void Image::setFont(const UnicodeString& name, unsigned int height, bool border) {
+    fontDesc_.set_typeface_name(StringConverter::toUtf8String(name));
+    fontDesc_.set_height(height);
+    fontDesc_.set_weight(border ? 700 : 400); // weight values taken from clanlib
+    fontDesc_.set_subpixel(false);
+
+    overrideGumpFont_ = true;
+}
+
+void Image::setVAlign(VAlign align) {
+    vAlign_ = align;
+
+    request_repaint();
+}
+
+VAlign Image::getVAlign() const {
+    return vAlign_;
+}
+
+void Image::setHAlign(HAlign align) {
+    hAlign_ = align;
+
+    request_repaint();
+}
+
+HAlign Image::getHAlign() const {
+    return hAlign_;
 }
 
 }

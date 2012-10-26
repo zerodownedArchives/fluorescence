@@ -28,6 +28,7 @@
 
 #include <data/manager.hpp>
 
+#include <ui/enums.hpp>
 #include <ui/componentlist.hpp>
 
 namespace fluo {
@@ -77,10 +78,16 @@ BOOST_PYTHON_MODULE(data) {
 
 BOOST_PYTHON_MODULE(gumps) {
     // alignment for labels, etc
-    bpy::enum_<components::Label::Alignment>("Alignment")
-        .value("LEFT", components::Label::Alignment::LEFT)
-        .value("RIGHT", components::Label::Alignment::RIGHT)
-        .value("CENTER", components::Label::Alignment::CENTER)
+    bpy::enum_<ui::HAlign>("HAlign")
+        .value("LEFT", ui::HAlign::LEFT)
+        .value("RIGHT", ui::HAlign::RIGHT)
+        .value("CENTER", ui::HAlign::CENTER)
+    ;
+
+    bpy::enum_<ui::VAlign>("VAlign")
+        .value("TOP", ui::VAlign::TOP)
+        .value("BOTTOM", ui::VAlign::BOTTOM)
+        .value("MIDDLE", ui::VAlign::MIDDLE)
     ;
 
     // base class used for gump menus and scrollbars (i.e. components to which you can add other components)
@@ -113,6 +120,7 @@ BOOST_PYTHON_MODULE(gumps) {
 
     // image component
     bpy::class_<components::Image, bpy::bases<GumpComponent>, boost::noncopyable>("ImageWrapper", bpy::no_init)
+        // the functions in this block are just forwarded to the current ImageState
         .add_property("texture", &components::Image::getTexture, &components::Image::setTexture)
         .add_property("hue", &components::Image::getHue, &components::Image::setHue)
         .add_property("alpha", &components::Image::getAlpha, &components::Image::setAlpha)
@@ -122,8 +130,12 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("rgba", &PyGumpComponent::getRgbaImage, &PyGumpComponent::setRgbaImage)
         .add_property("fontRgba", &PyGumpComponent::getFontRgbaImage, &PyGumpComponent::setFontRgbaImage)
 
+        // these functions are really part of the image class
+        .add_property("valign", &components::Image::getVAlign, &components::Image::setVAlign)
+        .add_property("halign", &components::Image::getHAlign, &components::Image::setHAlign)
         .def("state", &components::Image::getState, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("setState", &components::Image::setCurrentState)
+        .def("setFont", &components::Image::setFont)
     ;
 
     // image states

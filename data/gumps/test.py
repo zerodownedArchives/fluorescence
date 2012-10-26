@@ -25,13 +25,12 @@ def create():
 	i2.state("foo").rgba = (0.0, 1.0, 0.0)
 	i2.setState("foo")
 
-	but = g.addButton((10, 10, 100, 25), Texture(TextureSource.THEME, "images/button.png"))
+	but = g.addButton((10, 10, 100, 60), Texture(TextureSource.THEME, "images/button.png"))
 	but.mouseover.hue = 13
 	but.mousedown.rgba = (1.0, 1.0, 0.0)
 	but.text = "foooobert"
 	but.mousedown.fontRgba = rgba(4)
 	but.mouseover.fontRgba = rgba("#00ffff")
-	but.mouseover.text = "barbar"
 
 
 	# cliloc test

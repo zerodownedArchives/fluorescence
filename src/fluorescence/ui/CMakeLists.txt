@@ -1,6 +1,7 @@
 
 set (UI_HPP
     ui/manager.hpp
+    ui/enums.hpp
     ui/texture.hpp
     ui/animation.hpp
     ui/textureprovider.hpp
