@@ -62,6 +62,19 @@ boost::python::tuple PyData::hueToRgba(unsigned int hue) {
     return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
 }
 
+boost::python::tuple PyData::rgba4(float r, float g, float b, float a) {
+    return boost::python::make_tuple(r, g, b, a);
+}
+
+boost::python::tuple PyData::rgba3(float r, float g, float b) {
+    return rgba4(r, g, b, 1.0);
+}
+
+boost::python::tuple PyData::rgbaString(const UnicodeString& str) {
+    CL_Colorf rgba(StringConverter::toUtf8String(str));
+    return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
 }
 }
 }

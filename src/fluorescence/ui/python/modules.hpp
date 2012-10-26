@@ -67,7 +67,11 @@ BOOST_PYTHON_MODULE(data) {
     bpy::def("Cliloc", PyData::clilocArgs);
 
     // convert hue value to rgba tuple
-    bpy::def("hueToRgba", PyData::hueToRgba);
+    bpy::def("rgba", PyData::hueToRgba);
+    // create proper rgba tuples
+    bpy::def("rgba", PyData::rgba3);
+    bpy::def("rgba", PyData::rgba4);
+    bpy::def("rgba", PyData::rgbaString);
 }
 
 
@@ -114,10 +118,9 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("alpha", &components::Image::getAlpha, &components::Image::setAlpha)
         .add_property("usePartialHue", &components::Image::getPartialHue, &components::Image::setPartialHue)
         .add_property("tiled", &components::Image::getTiled, &components::Image::setTiled)
+        .add_property("text", &components::Image::getText, &components::Image::setText)
         .add_property("rgba", &PyGumpComponent::getRgbaImage, &PyGumpComponent::setRgbaImage)
-        .def("setRgba", &PyGumpComponent::setRgba3Image)
-        .def("setRgba", &PyGumpComponent::setRgba4Image)
-        .def("setRgba", &PyGumpComponent::setRgbaStringImage)
+        .add_property("fontRgba", &PyGumpComponent::getFontRgbaImage, &PyGumpComponent::setFontRgbaImage)
 
         .def("state", &components::Image::getState, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("setState", &components::Image::setCurrentState)
@@ -130,10 +133,9 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("alpha", &components::ImageState::getAlpha, &components::ImageState::setAlpha)
         .add_property("usePartialHue", &components::ImageState::getPartialHue, &components::ImageState::setPartialHue)
         .add_property("tiled", &components::ImageState::getTiled, &components::ImageState::setTiled)
+        .add_property("text", &components::ImageState::getText, &components::ImageState::setText)
         .add_property("rgba", &PyGumpComponent::getRgbaImageState, &PyGumpComponent::setRgbaImageState)
-        .def("setRgba", &PyGumpComponent::setRgba3ImageState)
-        .def("setRgba", &PyGumpComponent::setRgba4ImageState)
-        .def("setRgba", &PyGumpComponent::setRgbaStringImageState)
+        .add_property("fontRgba", &PyGumpComponent::getFontRgbaImageState, &PyGumpComponent::setFontRgbaImageState)
     ;
 
     // button component
@@ -149,9 +151,6 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("alpha", &components::Image::getAlpha, &components::Image::setAlpha)
         .add_property("usePartialHue", &components::Image::getPartialHue, &components::Image::setPartialHue)
         .add_property("rgba", &PyGumpComponent::getRgbaBackground, &PyGumpComponent::setRgbaBackground)
-        .def("setRgba", &PyGumpComponent::setRgba3Background)
-        .def("setRgba", &PyGumpComponent::setRgba4Background)
-        .def("setRgba", &PyGumpComponent::setRgbaStringBackground)
     ;
 
     // alpha region component

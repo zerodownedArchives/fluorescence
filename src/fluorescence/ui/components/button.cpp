@@ -130,22 +130,7 @@ void Button::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     // render base image
     //MultiTextureImage::render(gc, clipRect);
 
-    if (displayText_) {
-        if (!hasScrollareaParent_) {
-            gc.push_cliprect(get_geometry());
-        }
 
-        span_.layout(gc, get_geometry().get_width());
-        CL_Size spanSize = span_.get_size();
-        // span aligns only horizontally. vertical alignment needs to be done manually
-        span_.set_position(CL_Point(0, (get_height() - spanSize.height) / 2));
-        span_.draw_layout(gc);
-        span_.set_component_geometry();
-
-        if (!hasScrollareaParent_) {
-            gc.pop_cliprect();
-        }
-    }
 }
 
 void Button::setText(unsigned int index, const UnicodeString& text) {

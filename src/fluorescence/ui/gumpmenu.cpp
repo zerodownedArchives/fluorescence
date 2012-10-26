@@ -51,6 +51,8 @@ GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
     func_input_pointer_moved().set(this, &GumpMenu::onPointerMoved);
 
     ui::Manager::getSingleton()->registerGumpMenu(this);
+
+    setFont("unifont1", 12, false);
 }
 
 GumpMenu::~GumpMenu() {
@@ -409,6 +411,17 @@ bool GumpMenu::has_pixel(const CL_Point& p) const {
 
 void GumpMenu::setCloseCallback(boost::function<void()> cb) {
     closeCallback_ = cb;
+}
+
+void GumpMenu::setFont(const UnicodeString& name, unsigned int height, bool border) {
+    fontDesc_.set_typeface_name(StringConverter::toUtf8String(name));
+    fontDesc_.set_height(height);
+    fontDesc_.set_weight(border ? 700 : 400); // weight values taken from clanlib
+    fontDesc_.set_subpixel(false);
+}
+
+CL_FontDescription GumpMenu::getFontDescription() const {
+    return fontDesc_;
 }
 
 }

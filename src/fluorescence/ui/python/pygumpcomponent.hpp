@@ -42,21 +42,16 @@ public:
 
     static boost::python::tuple getRgbaImage(const components::Image* self);
     static void setRgbaImage(components::Image* self, boost::python::tuple& rgba);
-    static void setRgba3Image(components::Image* self, float r, float g, float b);
-    static void setRgba4Image(components::Image* self, float r, float g, float b, float a);
-    static void setRgbaStringImage(components::Image* self, const std::string& str);
+    static boost::python::tuple getFontRgbaImage(const components::Image* self);
+    static void setFontRgbaImage(components::Image* self, boost::python::tuple& rgba);
 
     static boost::python::tuple getRgbaImageState(const components::ImageState* self);
     static void setRgbaImageState(components::ImageState* self, boost::python::tuple& rgba);
-    static void setRgba3ImageState(components::ImageState* self, float r, float g, float b);
-    static void setRgba4ImageState(components::ImageState* self, float r, float g, float b, float a);
-    static void setRgbaStringImageState(components::ImageState* self, const std::string& str);
+    static boost::python::tuple getFontRgbaImageState(const components::ImageState* self);
+    static void setFontRgbaImageState(components::ImageState* self, boost::python::tuple& rgba);
 
     static boost::python::tuple getRgbaBackground(const components::Background* self);
     static void setRgbaBackground(components::Background* self, boost::python::tuple& rgba);
-    static void setRgba3Background(components::Background* self, float r, float g, float b);
-    static void setRgba4Background(components::Background* self, float r, float g, float b, float a);
-    static void setRgbaStringBackground(components::Background* self, const std::string& str);
 };
 
 }

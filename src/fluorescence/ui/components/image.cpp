@@ -22,10 +22,13 @@
 #include <ClanLib/Core/Math/quad.h>
 #include <ClanLib/Core/Math/rect.h>
 #include <ClanLib/Display/Render/program_object.h>
+#include <ClanLib/Display/2D/span_layout.h>
 
 #include <ui/manager.hpp>
 #include <ui/render/shadermanager.hpp>
 #include <ui/texture.hpp>
+#include <ui/gumpmenu.hpp>
+#include "scrollarea.hpp"
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
 #include <misc/log.hpp>
@@ -155,9 +158,6 @@ bool ImageState::getPartialHue() const {
     return partialHue_;
 }
 
-
-
-
 CL_Texture ImageState::getTileableTexture() {
     if (!texture_ || !texture_->isReadComplete()) {
         return CL_Texture();
@@ -174,14 +174,24 @@ CL_Texture ImageState::getTileableTexture() {
 }
 
 
+
 Image::Image(CL_GUIComponent* parent) : GumpComponent(parent),
-        autoResize_(false) {
+        autoResize_(false), defaultState_(nullptr), overrideGumpFont_(false) {
     func_render().set(this, &Image::render);
 
     set_type_name("image");
 
+    hasScrollareaParent_ = false;
+    CL_GUIComponent* comp = parent;
+    while (comp) {
+        if (dynamic_cast<components::ScrollArea*>(comp)) {
+            hasScrollareaParent_ = true;
+            break;
+        }
+        comp = comp->get_parent_component();
+    }
+
     setCurrentState("normal");
-    defaultState_ = currentState_;
 }
 
 void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
@@ -189,13 +199,18 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     boost::shared_ptr<ui::Texture> tex = getTexture();
     if (!tex || !tex->isReadComplete()) {
         ui::Manager::getSingleton()->queueComponentRepaint(this);
+        return;
     } else if (autoResize_ && (geom.get_width() != tex->getWidth() || geom.get_height() != tex->getHeight())) {
         geom.set_width(tex->getWidth());
         geom.set_height(tex->getHeight());
 
         ui::Manager::getSingleton()->queueComponentResize(this, geom);
         // repainted automatically after resize
-    } else if (!getTiled()) {
+        return;
+    }
+
+    // component is ready to be rendered
+    if (!getTiled()) {
         if (useRgba()) {
             CL_Draw::texture(gc, tex->getTexture(), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), getRgba(), tex->getNormalizedTextureCoords());
         } else {
@@ -209,6 +224,35 @@ void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
                     CL_Rectf(0.0f, 0.0f, get_width() / tex->getWidth(), get_height() / tex->getHeight()));
         } else {
             renderShader(gc, clipRect);
+        }
+    }
+
+    UnicodeString txt = getText();
+    if (txt.length() > 0) {
+        CL_SpanLayout span;
+        CL_FontDescription fd;
+        if (overrideGumpFont_) {
+            fd = fontDesc_;
+        } else {
+            fd = (dynamic_cast<GumpMenu*>(get_top_level_component()))->getFontDescription();
+        }
+        CL_Font font = ui::Manager::getSingleton()->getFont(fd);
+        span.add_text(StringConverter::toUtf8String(txt), font, getFontRgba());
+        //span.set_align((CL_SpanAlign)alignment_);
+
+        if (!hasScrollareaParent_) {
+            gc.push_cliprect(get_geometry());
+        }
+
+        span.layout(gc, get_geometry().get_width());
+        CL_Size spanSize = span.get_size();
+        // span aligns only horizontally. vertical alignment needs to be done manually
+        span.set_position(CL_Point(0, (get_height() - spanSize.height) / 2));
+        span.draw_layout(gc);
+        span.set_component_geometry();
+
+        if (!hasScrollareaParent_) {
+            gc.pop_cliprect();
         }
     }
 }
@@ -299,6 +343,10 @@ bool Image::has_pixel(const CL_Point& p) const {
 void Image::setCurrentState(const UnicodeString& name) {
     currentStateName_ = name;
     currentState_ = getState(name);
+
+    if (!defaultState_) {
+        defaultState_ = currentState_;
+    }
 
     request_repaint();
 }

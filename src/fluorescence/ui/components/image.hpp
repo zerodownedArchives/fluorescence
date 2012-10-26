@@ -22,6 +22,8 @@
 
 #include <ClanLib/Display/Render/graphic_context.h>
 #include <ClanLib/Display/Render/texture.h>
+#include <ClanLib/Display/Font/font.h>
+#include <ClanLib/Display/Font/font_description.h>
 #include <boost/shared_ptr.hpp>
 
 #include <misc/string.hpp>
@@ -164,6 +166,11 @@ private:
     ImageState* defaultState_;
     ImageState* currentState_;
     UnicodeString currentStateName_;
+
+    bool overrideGumpFont_;
+    CL_FontDescription fontDesc_;
+
+    bool hasScrollareaParent_;
 };
 
 }

@@ -21,6 +21,7 @@
 #define FLUO_UI_GUMPMENU_HPP
 
 #include <ClanLib/GUI/Components/window.h>
+#include <ClanLib/Display/Font/font_description.h>
 #include <map>
 #include <boost/function.hpp>
 
@@ -135,6 +136,10 @@ public:
     }
 
 
+    void setFont(const UnicodeString& name, unsigned int height, bool border);
+    CL_FontDescription getFontDescription() const;
+
+
 private:
     Serial serial_;
     unsigned int typeId_;
@@ -167,6 +172,8 @@ private:
     unsigned int currentRadioGroup_;
 
     boost::function<void()> closeCallback_;
+
+    CL_FontDescription fontDesc_;
 };
 
 }
