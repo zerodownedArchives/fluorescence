@@ -23,6 +23,7 @@
 #include <stack>
 #include <ClanLib/Display/2D/span_layout.h>
 #include <unicode/regex.h>
+#include <boost/python/extract.hpp>
 
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
@@ -38,7 +39,7 @@ namespace ui {
 namespace components {
 
 Label::Label(CL_GUIComponent* parent) : GumpComponent(parent),
-        overrideGumpFont_(false), fontColor_(CL_Colorf::black), vAlign_(VAlign::MIDDLE), hAlign_(HAlign::LEFT), autoResize_(false) {
+        overrideGumpFont_(false), rgba_(CL_Colorf::black), vAlign_(VAlign::MIDDLE), hAlign_(HAlign::LEFT), autoResize_(false) {
     func_render().set(this, &Label::onRender);
 
     fontDesc_.set_height(12);
@@ -69,8 +70,14 @@ void Label::setText(const UnicodeString& text) {
 }
 
 void Label::setFont(const UnicodeString& name, unsigned int height) {
+    setFontB(name, height, false);
+}
+
+void Label::setFontB(const UnicodeString& name, unsigned int height, bool border) {
     fontDesc_.set_typeface_name(StringConverter::toUtf8String(name));
     fontDesc_.set_height(height);
+    fontDesc_.set_weight(border ? 700 : 400); // weight values taken from clanlib
+    fontDesc_.set_subpixel(false);
 
     cachedFont_ = ui::Manager::getSingleton()->getFont(fontDesc_);
     overrideGumpFont_ = true;
@@ -78,12 +85,18 @@ void Label::setFont(const UnicodeString& name, unsigned int height) {
     layout();
 }
 
-void Label::setColor(const CL_Colorf& color) {
-    fontColor_ = color;
+void Label::setRgba(const CL_Colorf& rgba) {
+    rgba_ = rgba;
+
+    layout();
+}
+
+CL_Colorf Label::getRgba() const {
+    return rgba_;
 }
 
 void Label::setHue(unsigned int hue) {
-    fontColor_ = data::Manager::getHuesLoader()->getFontClColor(hue);
+    rgba_ = data::Manager::getHuesLoader()->getFontClColor(hue);
 }
 
 void Label::onRender(CL_GraphicContext& gc, const CL_Rect& update_rect) {
@@ -101,7 +114,7 @@ void Label::onRender(CL_GraphicContext& gc, const CL_Rect& update_rect) {
 void Label::layout() {
     CL_Font font = overrideGumpFont_ ? cachedFont_ : getGumpMenu()->getFont();
     span_ = CL_SpanLayout();
-    span_.add_text(StringConverter::toUtf8String(text_), font, fontColor_);
+    span_.add_text(StringConverter::toUtf8String(text_), font, rgba_);
 
     if (!autoResize_) {
         span_.set_align((CL_SpanAlign)hAlign_);
@@ -138,7 +151,7 @@ void Label::setHtmlText(const UnicodeString& text) {
     static RegexMatcher basefontMatcher("basefont\\s+color=\"{0,1}([0-9a-fA-F#]+)\"{0,1}", 0, status);
 
     CL_Font curFont = overrideGumpFont_ ? cachedFont_ : getGumpMenu()->getFont();
-    CL_Colorf curColor = fontColor_;
+    CL_Colorf curColor = rgba_;
 
     std::stack<CL_Font> fontStack;
     std::stack<CL_Colorf> colorStack;
@@ -227,6 +240,34 @@ void Label::setHAlign(HAlign align) {
 
 HAlign Label::getHAlign() const {
     return hAlign_;
+}
+
+void Label::setRgba(float r, float g, float b, float a) {
+    setRgba(CL_Colorf(r, g, b, a));
+}
+
+void Label::setRgba(float r, float g, float b) {
+    setRgba(CL_Colorf(r, g, b));
+}
+
+boost::python::tuple Label::pyGetRgba() const {
+    CL_Colorf rgba = getRgba();
+    return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+void Label::pySetRgba(const boost::python::tuple& rgba) {
+    namespace bpy = boost::python;
+
+    float r = bpy::extract<float>(rgba[0]);
+    float g = bpy::extract<float>(rgba[1]);
+    float b = bpy::extract<float>(rgba[2]);
+
+    if (bpy::len(rgba) > 3) {
+        float a = bpy::extract<float>(rgba[3]);
+        setRgba(r, g, b, a);
+    } else {
+        setRgba(r, g, b);
+    }
 }
 
 }

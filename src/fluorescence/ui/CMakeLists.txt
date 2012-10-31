@@ -210,6 +210,7 @@ set (PYTHON_HPP
     ui/python/pystring.hpp
     ui/python/pygumpcomponentcontainer.hpp
     ui/python/pydata.hpp
+    ui/python/pyclient.hpp
     )
 
 set (PYTHON_CPP
@@ -217,6 +218,7 @@ set (PYTHON_CPP
     ui/python/pystring.cpp
     ui/python/pygumpcomponentcontainer.cpp
     ui/python/pydata.cpp
+    ui/python/pyclient.cpp
     )
 
 SET(UI_FILES ${UI_HPP} ${UI_CPP} ${GUMPMENU_HPP} ${GUMPMENU_CPP} ${RENDER_HPP} ${RENDER_CPP} ${TARGETING_HPP} ${TARGETING_CPP}

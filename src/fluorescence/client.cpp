@@ -98,6 +98,10 @@ void Client::disconnect() {
     setState(STATE_PRE_LOGIN);
 }
 
+bool Client::connect(const UnicodeString& host, unsigned int port, const UnicodeString& account, const UnicodeString& password) {
+    return net::Manager::getSingleton()->connect(host, port, account, password);
+}
+
 void Client::setState(unsigned int value) {
     requestedState_ = value;
 }
@@ -134,10 +138,8 @@ bool Client::handleStateChange() {
     // start new state
     switch(requestedState_) {
     case STATE_PRE_LOGIN:
-        ui::GumpMenus::openLoginGump();
-        //ui::Manager::getSingleton()->openXmlGump("simpletest");
-
         uiManager->openPythonGump("test");
+        uiManager->openPythonGump("login");
 
         break;
 

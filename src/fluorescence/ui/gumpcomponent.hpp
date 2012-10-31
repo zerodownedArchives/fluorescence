@@ -51,6 +51,7 @@ public:
 
     virtual void setAutoResize(bool value);
 
+    const GumpMenu* getGumpMenu() const;
     GumpMenu* getGumpMenu();
 
     UnicodeString getName() const;
@@ -59,6 +60,7 @@ public:
     // python specific functions
     boost::python::tuple pyGetGeometry() const;
     void pySetGeometry(boost::python::tuple& geom);
+    GumpMenu* pyGetGumpMenu();
 };
 
 }

@@ -112,6 +112,11 @@ void GumpComponent::pySetGeometry(boost::python::tuple& geom) {
     set_geometry(rect);
 }
 
+const GumpMenu* GumpComponent::getGumpMenu() const {
+    const CL_GUIComponent* topLevel = get_top_level_component();
+    return dynamic_cast<const GumpMenu*>(topLevel);
+}
+
 GumpMenu* GumpComponent::getGumpMenu() {
     CL_GUIComponent* topLevel = get_top_level_component();
     return dynamic_cast<GumpMenu*>(topLevel);
@@ -123,6 +128,10 @@ UnicodeString GumpComponent::getName() const {
 
 void GumpComponent::setName(const UnicodeString& name) {
     set_id_name(StringConverter::toUtf8String(name));
+}
+
+GumpMenu* GumpComponent::pyGetGumpMenu() {
+    return getGumpMenu();
 }
 
 }

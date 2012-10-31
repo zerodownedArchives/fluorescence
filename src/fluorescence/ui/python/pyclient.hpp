@@ -17,40 +17,21 @@
  */
 
 
-#ifndef FLUO_UI_PYTHON_SCRIPTLOADER_HPP
-#define FLUO_UI_PYTHON_SCRIPTLOADER_HPP
-
-#include <boost/python.hpp>
-#include <map>
+#ifndef FLUO_UI_PYTHON_PYCLIENT_HPP
+#define FLUO_UI_PYTHON_PYCLIENT_HPP
 
 #include <misc/string.hpp>
-#include <misc/config.hpp>
 
 namespace fluo {
 namespace ui {
-
-class GumpMenu;
-
 namespace python {
 
-class ScriptLoader {
+class PyClient {
 public:
-    ScriptLoader();
-    ~ScriptLoader();
-
-    void init();
-    void setShardConfig(Config& config);
-    void unload();
-    void reload();
-
-    void logError() const;
-
-    void openGump(const UnicodeString& name);
-
-private:
-    bool initialized_;
-
-    std::map<UnicodeString, boost::python::object> pythonModules_;
+    static bool connect(const UnicodeString& host, unsigned int port, const UnicodeString& account, const UnicodeString& password);
+    static UnicodeString getConfig(const UnicodeString& key);
+    static void shutdown();
+    static void messagebox(const UnicodeString& msg);
 };
 
 }

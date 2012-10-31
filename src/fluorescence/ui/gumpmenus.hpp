@@ -50,10 +50,9 @@ class GumpMenu;
 
 class GumpMenus {
 public:
-    static GumpMenu* openMessageBox(const UnicodeString& message);
+    static void openMessageBox(const UnicodeString& message);
     static GumpMenu* openYesNoBox(const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
     static GumpMenu* openShardSelectionGump();
-    static GumpMenu* openLoginGump();
     static GumpMenu* openServerListGump(const net::packets::ServerList* list);
     static GumpMenu* openCharacterListGump(unsigned int charCount, const UnicodeString* charNames, const UnicodeString* charPasswords);
     static GumpMenu* openContextMenu(const net::packets::bf::OpenContextMenu* pkt);

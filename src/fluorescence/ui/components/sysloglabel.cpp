@@ -57,7 +57,7 @@ void SysLogLabel::notify(std::list<world::SysLogEntry>::const_iterator iter, std
 
         // 0x3B2 is the default font used by runuo. use the custom color instead
         if (iter->hue_ == 0x3B2) {
-            span_.add_text(StringConverter::toUtf8String(iter->text_), font, fontColor_);
+            span_.add_text(StringConverter::toUtf8String(iter->text_), font, rgba_);
         } else {
             span_.add_text(StringConverter::toUtf8String(iter->text_), font, data::Manager::getHuesLoader()->getFontClColor(iter->hue_));
         }

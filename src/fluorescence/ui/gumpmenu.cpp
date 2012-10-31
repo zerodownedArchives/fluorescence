@@ -23,6 +23,7 @@
 #include "manager.hpp"
 #include "gumpactions.hpp"
 #include "cursormanager.hpp"
+#include "python/scriptloader.hpp"
 #include "components/lineedit.hpp"
 #include "components/propertylabel.hpp"
 #include "components/checkbox.hpp"
@@ -51,7 +52,7 @@ GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
 
     ui::Manager::getSingleton()->registerGumpMenu(this);
 
-    setFont("unifont1", 12, false);
+    setFontB("unifont1", 12, false);
 }
 
 GumpMenu::~GumpMenu() {
@@ -161,16 +162,16 @@ bool GumpMenu::onInputPressed(const CL_InputEvent& msg) {
     case CL_KEY_NUMPAD_ENTER:
 #endif
     case CL_KEY_ENTER:
-        if (action_.length() > 0) {
-            GumpActions::doAction(this, action_, 0, NULL);
+        if (pyEnterCallback_) {
+            executePythonCallback(pyEnterCallback_);
         } else {
             consumed = false;
         }
         break;
 
     case CL_KEY_ESCAPE:
-        if (cancelAction_.length() > 0) {
-            GumpActions::doAction(this, cancelAction_, 0, NULL);
+        if (pyEscapeCallback_) {
+            executePythonCallback(pyEscapeCallback_);
         } else {
             consumed = false;
         }
@@ -250,14 +251,6 @@ void GumpMenu::setName(const UnicodeString& name) {
 
 const UnicodeString& GumpMenu::getName() {
     return name_;
-}
-
-void GumpMenu::setAction(const UnicodeString& action) {
-    action_ = action;
-}
-
-void GumpMenu::setCancelAction(const UnicodeString& action) {
-    cancelAction_ = action;
 }
 
 void GumpMenu::updateMobileProperties() {
@@ -412,7 +405,11 @@ void GumpMenu::setCloseCallback(boost::function<void()> cb) {
     closeCallback_ = cb;
 }
 
-void GumpMenu::setFont(const UnicodeString& name, unsigned int height, bool border) {
+void GumpMenu::setFont(const UnicodeString& name, unsigned int height) {
+    setFontB(name, height, false);
+}
+
+void GumpMenu::setFontB(const UnicodeString& name, unsigned int height, bool border) {
     fontDesc_.set_typeface_name(StringConverter::toUtf8String(name));
     fontDesc_.set_height(height);
     fontDesc_.set_weight(border ? 700 : 400); // weight values taken from clanlib
@@ -425,16 +422,19 @@ CL_Font GumpMenu::getFont() const {
     return cachedFont_;
 }
 
-GumpMenu* GumpMenu::create(int x, int y) {
-    return createBackground(x, y, false);
+GumpMenu* GumpMenu::create(const UnicodeString& name, int x, int y) {
+    return createBackground(name, x, y, false);
 }
 
-GumpMenu* GumpMenu::createBackground(int x, int y, bool inBackground) {
+GumpMenu* GumpMenu::createBackground(const UnicodeString& name, int x, int y, bool inBackground) {
     CL_GUITopLevelDescription desc(CL_Rect(x, y, CL_Size(1, 1)), false);
     desc.set_decorations(false);
     desc.set_in_background(inBackground);
 
-    return new GumpMenu(desc);
+    GumpMenu* gm = new GumpMenu(desc);
+    gm->setName(name);
+
+    return gm;
 }
 
 GumpComponent* GumpMenu::getNamedComponent(const UnicodeString& name) {
@@ -444,6 +444,32 @@ GumpComponent* GumpMenu::getNamedComponent(const UnicodeString& name) {
 
 boost::python::dict GumpMenu::getPythonStore() {
     return pythonStore_;
+}
+
+boost::python::object GumpMenu::getPyEnterCallback() const {
+    return pyEnterCallback_;
+}
+
+void GumpMenu::setPyEnterCallback(boost::python::object cb) {
+    pyEnterCallback_ = cb;
+}
+
+boost::python::object GumpMenu::getPyEscapeCallback() const {
+    return pyEscapeCallback_;
+}
+
+void GumpMenu::setPyEscapeCallback(boost::python::object cb) {
+    pyEscapeCallback_ = cb;
+}
+
+void GumpMenu::executePythonCallback(boost::python::object& cb) const {
+    if (cb) {
+        try {
+            cb(boost::python::ptr(this));
+        } catch (boost::python::error_already_set const&) {
+            ui::Manager::getPythonLoader()->logError();
+        }
+    }
 }
 
 }

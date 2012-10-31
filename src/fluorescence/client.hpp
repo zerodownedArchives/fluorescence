@@ -55,11 +55,13 @@ public:
 
     Config& getConfig();
 
+    bool connect(const UnicodeString& host, unsigned int port, const UnicodeString& account, const UnicodeString& password);
+    void disconnect();
+
     void shutdown();
     void setState(unsigned int state);
     unsigned int getState();
     void loginComplete(); /// < called when the game window should be displayed => setState(playing)
-    void disconnect();
     void selectShard(const UnicodeString& shardName);
 
     // gump callbacks

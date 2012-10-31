@@ -69,32 +69,55 @@ public:
     LineEdit(CL_GUIComponent* parent);
     ~LineEdit();
 
+
     void setFont(const UnicodeString& fontName, unsigned int fontHeight);
-    void setColor(const CL_Colorf& color);
+    void setFontB(const UnicodeString& fontName, unsigned int fontHeight, bool border);
+
+    void setRgba(float r, float g, float b, float a);
+    void setRgba(float r, float g, float b);
+    void setRgba(const CL_Colorf& rgba);
+    CL_Colorf getRgba() const;
     void setHue(unsigned int hue);
 
     void setText(const UnicodeString& string);
     UnicodeString getText();
     int getTextInt() const;
 
-    void setAction(const UnicodeString& action);
     void onEnterPressed();
 
     void setEntryId(unsigned int entryId);
     unsigned int getEntryId() const;
 
-    void setPasswordMode(bool enable = true);
-    void setNumericMode(bool enable = true);
+    void setPasswordMode(bool enable);
+    bool getPasswordMode() const;
+
+    void setNumericMode(bool enable);
+    bool getNumericMode() const;
+
     void setMaxLength(int length);
+    int getMaxLength() const;
+
+    // python specific api
+    boost::python::tuple pyGetRgba() const;
+    void pySetRgba(const boost::python::tuple& rgba);
+
+    boost::python::object getPyEnterCallback() const;
+    void setPyEnterCallback(boost::python::object cb);
 
 private:
     UnicodeString action_;
 
     unsigned int entryId_;
 
-    CL_Font font_;
+    CL_FontDescription fontDesc_;
+    CL_Font cachedFont_;
     bool isUoFont_;
     CL_Colorf fontColor_;
+    bool overrideGumpFont_;
+
+    CL_Font getFont() const;
+
+    boost::python::object pyEnterCallback_;
 
 
     // clanlib stuff

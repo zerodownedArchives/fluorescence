@@ -617,7 +617,7 @@ bool StringParser::parseXmfHtmlGumpColor(const UnicodeString& params, const std:
             return false;
         }
 
-        label->setColor(colorDef);
+        label->setRgba(colorDef);
         label->setText(text);
         menu->addToCurrentPage(label);
 
@@ -659,7 +659,7 @@ bool StringParser::parseXmfHtmlTok(const UnicodeString& params, const std::vecto
             LOG_ERROR << "Error reading template ssghtmllabel from theme" << std::endl;
             return false;
         }
-        label->setColor(colorDef);
+        label->setRgba(colorDef);
         label->setHtmlText(text);
         menu->addToCurrentPage(label);
 
@@ -672,29 +672,28 @@ bool StringParser::parseXmfHtmlTok(const UnicodeString& params, const std::vecto
 
 bool StringParser::parseCheckerTrans(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
     // { checkertrans {x} {y} {width} {height} }
-    // TODO: new gumps
-    //UErrorCode status = U_ZERO_ERROR;
-    //static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
-    //matcher.reset(params);
-    //if (matcher.find() && matcher.groupCount() == 4) {
-        //int x = StringConverter::toInt(matcher.group(1, status));
-        //int y = StringConverter::toInt(matcher.group(2, status));
-        //int width = StringConverter::toInt(matcher.group(3, status));
-        //int height = StringConverter::toInt(matcher.group(4, status));
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
+    if (matcher.find() && matcher.groupCount() == 4) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int width = StringConverter::toInt(matcher.group(3, status));
+        int height = StringConverter::toInt(matcher.group(4, status));
 
-        //CL_Rectf checkerRect(x, y, CL_Sizef(width, height));
+        CL_Rectf checkerRect(x, y, CL_Sizef(width, height));
 
-        //components::AlphaRegion* areg = new components::AlphaRegion(menu);
-        //areg->set_geometry(checkerRect);
-        //areg->setAlpha(0.2);
+        components::AlphaRegion* areg = new components::AlphaRegion(menu);
+        areg->set_geometry(checkerRect);
+        areg->setAlpha(0.2);
 
-        //menu->addToCurrentPage(areg);
+        menu->addToCurrentPage(areg);
 
-        //return true;
-    //} else {
-        //LOG_ERROR << "Unable to parse checkertrans, params " << params << std::endl;
-        //return false;
-    //}
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse checkertrans, params " << params << std::endl;
+        return false;
+    }
     return false;
 }
 

@@ -44,7 +44,7 @@ ImageState::ImageState() :
         overrideHue_(false), hue_(0),
         overrideRgba_(false), rgba_(CL_Colorf::white),
         overrideAlpha_(false), alpha_(1),
-        overrideFontRgba_(false), fontRgba_(CL_Colorf::white),
+        overrideFontRgba_(false), fontRgba_(CL_Colorf::black),
         overrideText_(false),
         overrideTiled_(false), tiled_(false),
         overridePartialHue_(false), partialHue_(false) {

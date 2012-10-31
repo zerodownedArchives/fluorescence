@@ -176,6 +176,8 @@ Manager::~Manager() {
 void Manager::stepInput(unsigned int elapsedMillis) {
     CL_KeepAlive::process();
 
+    processGumpNewList();
+
     // waiting for a doubleclick?
     if (singleClickWait_.first) {
         if (singleClickWait_.second <= elapsedMillis) {
@@ -334,6 +336,19 @@ void Manager::processGumpCloseList() {
     gumpCloseList_.clear();
 }
 
+void Manager::processGumpNewList() {
+    std::list<GumpMenu*>::iterator iter = gumpNewList_.begin();
+    std::list<GumpMenu*>::iterator end = gumpNewList_.end();
+
+    for (; iter != end; ++iter) {
+        (*iter)->fitSizeToChildren();
+        (*iter)->activateFirstPage();
+        gumpList_.push_back(*iter);
+    }
+
+    gumpNewList_.clear();
+}
+
 void Manager::loadFontDirectory(const boost::filesystem::path& path) {
     namespace bfs = boost::filesystem;
 
@@ -360,8 +375,8 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
     }
 }
 
-GumpMenu* Manager::openPythonGump(const UnicodeString& name) {
-    return pythonLoader_->openGump(name);
+void Manager::openPythonGump(const UnicodeString& name) {
+    pythonLoader_->openGump(name);
 }
 
 GumpMenu* Manager::openXmlGump(const UnicodeString& name) {
@@ -369,7 +384,7 @@ GumpMenu* Manager::openXmlGump(const UnicodeString& name) {
 }
 
 void Manager::registerGumpMenu(GumpMenu* menu) {
-    gumpList_.push_back(menu);
+    gumpNewList_.push_back(menu);
 }
 
 void Manager::installMacros() {

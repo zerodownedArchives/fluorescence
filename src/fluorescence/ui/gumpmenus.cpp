@@ -45,6 +45,7 @@
 #include <world/dynamicitem.hpp>
 #include <world/mobile.hpp>
 
+#include "manager.hpp"
 #include "gumpmenu.hpp"
 #include "xmlloader.hpp"
 #include "components/lineedit.hpp"
@@ -53,15 +54,9 @@
 namespace fluo {
 namespace ui {
 
-GumpMenu* GumpMenus::openMessageBox(const UnicodeString& message) {
-    GumpMenu* menu = XmlLoader::fromXmlFile("messagebox");
-    if (menu) {
-        menu->setComponentText<components::Label>("messagetext", message);
-    }
-
+void GumpMenus::openMessageBox(const UnicodeString& message) {
+    ui::Manager::getSingleton()->openPythonGump("messagebox");
     LOG_INFO << "MessageBox: " << message << std::endl;
-
-    return menu;
 }
 
 GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
@@ -88,27 +83,6 @@ GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int para
     }
 
     LOG_INFO << "YesNoBox: " << parameters[0] << std::endl;
-
-    return menu;
-}
-
-GumpMenu* GumpMenus::openLoginGump() {
-    GumpMenu* menu = XmlLoader::fromXmlFile("login");
-
-    if (menu) {
-        Config& config = Client::getSingleton()->getConfig();
-        menu->setComponentTextFromConfig<components::LineEdit>("loginhost", "/fluo/shard/address@host", config);
-
-        if (config.exists("/fluo/shard/address@port")) {
-            UnicodeString portStr = StringConverter::fromNumber(config["/fluo/shard/address@port"].asInt());
-
-            menu->setComponentText<components::LineEdit>("loginport", portStr);
-        }
-
-        menu->setComponentTextFromConfig<components::LineEdit>("loginaccount", "/fluo/shard/account@name", config);
-        menu->setComponentTextFromConfig<components::LineEdit>("loginpassword", "/fluo/shard/account@password", config);
-
-    }
 
     return menu;
 }

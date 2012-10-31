@@ -82,10 +82,6 @@ public:
     void onClose();
     void setCloseCallback(boost::function<void()> cb);
 
-    void setAction(const UnicodeString& action);
-    void setCancelAction(const UnicodeString& action);
-
-
     // auto-resize
     void fitSizeToChildren();
 
@@ -136,17 +132,23 @@ public:
     }
 
 
-    void setFont(const UnicodeString& name, unsigned int height, bool border);
+    void setFont(const UnicodeString& name, unsigned int height);
+    void setFontB(const UnicodeString& name, unsigned int height, bool border);
     CL_Font getFont() const;
 
     GumpComponent* getNamedComponent(const UnicodeString& name);
 
 
     // python specific
-    static GumpMenu* create(int x, int y);
-    static GumpMenu* createBackground(int x, int y, bool inBackground);
+    static GumpMenu* create(const UnicodeString& name, int x, int y);
+    static GumpMenu* createBackground(const UnicodeString& name, int x, int y, bool inBackground);
 
     boost::python::dict getPythonStore();
+
+    boost::python::object getPyEnterCallback() const;
+    void setPyEnterCallback(boost::python::object cb);
+    boost::python::object getPyEscapeCallback() const;
+    void setPyEscapeCallback(boost::python::object cb);
 
 private:
     Serial serial_;
@@ -171,9 +173,6 @@ private:
 
     UnicodeString name_;
 
-    UnicodeString action_;
-    UnicodeString cancelAction_;
-
     world::Mobile* linkedMobile_;
     void updateMobilePropertiesRec(CL_GUIComponent* comp);
 
@@ -185,6 +184,10 @@ private:
     CL_Font cachedFont_;
 
     boost::python::dict pythonStore_;
+    boost::python::object pyEnterCallback_;
+    boost::python::object pyEscapeCallback_;
+
+    void executePythonCallback(boost::python::object& cb) const;
 };
 
 }

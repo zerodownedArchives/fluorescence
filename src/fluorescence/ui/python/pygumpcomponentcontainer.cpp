@@ -102,6 +102,15 @@ components::Button* PyGumpComponentContainer::addPythonButton(CL_GUIComponent* s
     return but;
 }
 
+components::LineEdit* PyGumpComponentContainer::addLineEdit(CL_GUIComponent* self, boost::python::tuple& geom) {
+    components::LineEdit* edit = new components::LineEdit(self);
+    edit->pySetGeometry(geom);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(edit);
+
+    return edit;
+}
+
 }
 }
 }

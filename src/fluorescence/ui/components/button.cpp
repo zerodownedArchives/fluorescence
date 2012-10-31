@@ -167,10 +167,16 @@ void Button::onClickServer() {
 
 void Button::onClickPython() {
     if (pyClickCallback_) {
+        bool ret = false;
         try {
-            pyClickCallback_(boost::python::ptr(this));
+            ret = boost::python::extract<bool>(pyClickCallback_(boost::python::ptr(this)));
         } catch (boost::python::error_already_set const&) {
             ui::Manager::getPythonLoader()->logError();
+        }
+
+        GumpMenu* g = getGumpMenu();
+        if (ret && g->isClosable()) {
+            ui::Manager::getSingleton()->closeGumpMenu(g);
         }
     }
 }

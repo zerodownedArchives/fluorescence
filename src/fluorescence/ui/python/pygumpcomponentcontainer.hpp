@@ -38,6 +38,7 @@ class Background;
 class AlphaRegion;
 class Label;
 class Button;
+class LineEdit;
 }
 
 namespace python {
@@ -51,6 +52,7 @@ public:
     static components::Button* addPageButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, unsigned int page);
     static components::Button* addServerButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, unsigned int id);
     static components::Button* addPythonButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, boost::python::object& func);
+    static components::LineEdit* addLineEdit(CL_GUIComponent* self, boost::python::tuple& geom);
 };
 
 }

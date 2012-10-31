@@ -246,13 +246,13 @@ GumpMenu* XmlLoader::fromXml(pugi::xml_document& doc) {
     ret->setClosable(closable);
     ret->setDraggable(draggable);
 
-    if (action.length() > 0) {
-        ret->setAction(action);
-    }
+    //if (action.length() > 0) {
+        //ret->setAction(action);
+    //}
 
-    if (cancelAction.length() > 0) {
-        ret->setCancelAction(cancelAction);
-    }
+    //if (cancelAction.length() > 0) {
+        //ret->setCancelAction(cancelAction);
+    //}
 
     parseChildren(rootNode, ret, ret);
 
@@ -975,54 +975,7 @@ GumpComponent* XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& d
 }
 
 GumpComponent* XmlLoader::parseLineEdit(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    UnicodeString text = StringConverter::fromUtf8(getAttribute("text", node, defaultNode).value());
-    int numeric = getAttribute("numeric", node, defaultNode).as_int();
-    int password = getAttribute("password", node, defaultNode).as_int();
-    unsigned int maxlength = getAttribute("maxlength", node, defaultNode).as_uint();
-    unsigned int entryId = getAttribute("entryid", node, defaultNode).as_uint();
-    UnicodeString action = StringConverter::fromUtf8(getAttribute("action", node, defaultNode).value());
-    UnicodeString fontName = StringConverter::fromUtf8(getAttribute("font", node, defaultNode).value());
-    unsigned int fontHeight = getAttribute("font-height", node, defaultNode).as_uint();
-    std::string rgba = getAttribute("color", node, defaultNode).value();
-    unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
-    CL_Colorf color(rgba);
-
-    components::LineEdit* edit = new components::LineEdit(parent);
-    parseId(node, edit);
-    edit->setFont(fontName, fontHeight);
-    edit->set_geometry(bounds);
-
-    if (password) {
-        edit->setPasswordMode(true);
-    }
-    if (numeric) {
-        edit->setNumericMode(true);
-    }
-    if (maxlength) {
-        edit->setMaxLength(maxlength);
-    }
-
-    if (action.length() > 0) {
-        edit->setAction(action);
-    }
-
-    // if the node has its own color or hue property, don't use the template values
-    if (node.attribute("color")) {
-        edit->setColor(color);
-    } else if (node.attribute("hue")) {
-        edit->setHue(hue);
-    } else if (rgba.length() > 0) {
-        edit->setColor(color);
-    } else if (getAttribute("hue", node, defaultNode)) {
-        edit->setHue(hue);
-    }
-
-    edit->setText(text);
-    edit->setEntryId(entryId);
-
-    top->addToCurrentPage(edit);
-    return edit;
+    return nullptr;
 }
 
 GumpComponent* XmlLoader::parseScrollArea(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {

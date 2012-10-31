@@ -16,46 +16,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "pyclient.hpp"
 
-#ifndef FLUO_UI_PYTHON_SCRIPTLOADER_HPP
-#define FLUO_UI_PYTHON_SCRIPTLOADER_HPP
-
-#include <boost/python.hpp>
-#include <map>
-
-#include <misc/string.hpp>
-#include <misc/config.hpp>
+#include <client.hpp>
+#include <misc/log.hpp>
+#include <ui/gumpmenus.hpp>
 
 namespace fluo {
 namespace ui {
-
-class GumpMenu;
-
 namespace python {
 
-class ScriptLoader {
-public:
-    ScriptLoader();
-    ~ScriptLoader();
+bool PyClient::connect(const UnicodeString& host, unsigned int port, const UnicodeString& account, const UnicodeString& password) {
+    return Client::getSingleton()->connect(host, port, account, password);
+}
 
-    void init();
-    void setShardConfig(Config& config);
-    void unload();
-    void reload();
+UnicodeString PyClient::getConfig(const UnicodeString& key) {
+    if (Client::getSingleton()->getConfig().exists(key)) {
+        return Client::getSingleton()->getConfig()[key].asString();
+    } else {
+        LOG_WARN << "Requested unknown config value: " << key << std::endl;
+        return "";
+    }
+}
 
-    void logError() const;
+void PyClient::shutdown() {
+    Client::getSingleton()->shutdown();
+}
 
-    void openGump(const UnicodeString& name);
-
-private:
-    bool initialized_;
-
-    std::map<UnicodeString, boost::python::object> pythonModules_;
-};
+void PyClient::messagebox(const UnicodeString& msg) {
+    ui::GumpMenus::openMessageBox(msg);
+}
 
 }
 }
 }
-
-#endif
 

@@ -47,6 +47,7 @@ void ScriptLoader::init() {
 
     PyImport_AppendInittab("gumps", &initgumps);
     PyImport_AppendInittab("data", &initdata);
+    PyImport_AppendInittab("client", &initclient);
     Py_Initialize();
 
     // extend python path to the gumps directory
@@ -84,7 +85,7 @@ void ScriptLoader::reload() {
     init();
 }
 
-GumpMenu* ScriptLoader::openGump(const UnicodeString& name) {
+void ScriptLoader::openGump(const UnicodeString& name) {
     try {
         std::map<UnicodeString, bpy::object>::iterator iter = pythonModules_.find(name);
         bpy::object module;
@@ -96,21 +97,14 @@ GumpMenu* ScriptLoader::openGump(const UnicodeString& name) {
         }
 
         if (module.attr("create")) {
-            GumpMenu& menu = bpy::extract<GumpMenu&>(module.attr("create")());
-            ui::GumpMenu* ret = &menu;
-            ret->fitSizeToChildren();
-            ret->activateFirstPage();
-            return ret;
+            module.attr("create")();
         } else {
             LOG_WARN << "No function create in gump module " << name << std::endl;
-            return nullptr;
         }
 
     } catch (bpy::error_already_set const&) {
         logError();
     }
-
-    return nullptr;
 }
 
 void ScriptLoader::logError() const {

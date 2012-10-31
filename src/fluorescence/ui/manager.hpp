@@ -142,7 +142,7 @@ public:
     void handlePrompt(const UnicodeString& text);
     void cancelPrompt();
 
-    GumpMenu* openPythonGump(const UnicodeString& name);
+    void openPythonGump(const UnicodeString& name);
 
 private:
     static Manager* singleton_;
@@ -165,8 +165,10 @@ private:
 
     boost::shared_ptr<CursorManager> cursorManager_;
 
+    std::list<GumpMenu*> gumpNewList_;
     std::list<GumpMenu*> gumpList_;
     std::list<GumpMenu*> gumpCloseList_;
+    void processGumpNewList();
     void processGumpCloseList();
 
     CL_Slot slotCloseWindow;

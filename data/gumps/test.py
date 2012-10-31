@@ -16,8 +16,10 @@ def onButtonClick(button):
 	print button.gump.store["i2"]
 	button.gump.store["i2"].rgba = rgba(91)
 
+	button.gump.component("l2").halign = HAlign.RIGHT
+
 def create():
-	g = GumpMenu(30, 30)
+	g = GumpMenu("test", 30, 30)
 
 	b1 = g.addBackground((0, 0, 500, 500), 3000)
 	b1.rgba = rgba("#ff0000")
@@ -34,11 +36,11 @@ def create():
 	i2.hue = 2
 
 	but = g.addPythonButton((10, 10, 100, 60), Texture(TextureSource.THEME, "images/button.png"), onButtonClick)
-	but.mouseover.hue = 13
-	but.mousedown.rgba = (1.0, 1.0, 0.0)
+	but.mouseOver.hue = 13
+	but.mouseDown.rgba = (1.0, 1.0, 0.0)
 	but.text = "foooobert"
-	but.mousedown.fontRgba = rgba(4)
-	but.mouseover.fontRgba = rgba("#00ffff")
+	but.mouseDown.fontRgba = rgba(4)
+	but.mouseOver.fontRgba = rgba("#00ffff")
 	but.setFont("Arial", 8);
 	i1.name = "i1"
 	print g.store
@@ -57,5 +59,10 @@ def create():
 	print l1.halign
 	l1.halign = HAlign.RIGHT
 	print l1.halign
+	l1.rgba = rgba(13)
+
+	l2 = g.addLabel((5, 300, 200, 30), "centered")
+	l2.halign = HAlign.CENTER
+	l2.name = "l2"
 
 	return g

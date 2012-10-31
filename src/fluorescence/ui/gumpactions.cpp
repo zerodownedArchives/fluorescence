@@ -71,7 +71,6 @@ void GumpActions::buildBasicActionTable() {
 }
 
 void GumpActions::buildFullActionTable() {
-    actionTable_["connect"] = GumpAction(false, boost::bind(&net::Manager::connect, net::Manager::getSingleton(), _1, _2, _3, _4));
     actionTable_["disconnect"] = GumpAction(true, boost::bind(&Client::disconnect, Client::getSingleton(), _1, _2, _3, _4));
     actionTable_["selectserver"] = GumpAction(false, boost::bind(&net::Manager::selectServer, net::Manager::getSingleton(), _1, _2, _3, _4));
     actionTable_["selectserver-first"] = GumpAction(true, boost::bind(&GumpActions::selectServerFirst, _1, _2, _3, _4));
@@ -112,7 +111,7 @@ void GumpActions::doAction(GumpMenu* gump, const UnicodeString& action, unsigned
 }
 
 void GumpActions::doAction(components::Button* button) {
-    GumpMenu* gump = button->getGumpMenu();
+    const GumpMenu* gump = button->getGumpMenu();
     if (gump) {
         //doAction(gump, button->getAction(), components::Button::MAX_PARAMETER_COUNT, button->getParameterPtr());
     } else {

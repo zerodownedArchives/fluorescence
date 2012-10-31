@@ -186,47 +186,13 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
     return ret;
 }
 
-bool Manager::connect(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    UnicodeString host;
-    if (!menu->getComponentText<ui::components::LineEdit>("loginhost", host)) {
-        ui::GumpMenus::openMessageBox("Unable to find input field for the server host. Did you change the login gump template?");
-        return false;
-    }
-
-    ui::components::LineEdit* line = dynamic_cast<ui::components::LineEdit*>(menu->get_named_item("loginport"));
-    if (!line) {
-        ui::GumpMenus::openMessageBox("Unable to find input field for the server port. Did you change the login gump template?");
-        return false;
-    }
-
-    int port = line->getTextInt();
-    if (port <= 0) {
-        ui::GumpMenus::openMessageBox("Unable to parse port number");
-        return false;
-    }
-
-
-    UnicodeString accName;
-    if (!menu->getComponentText<ui::components::LineEdit>("loginaccount", accName)) {
-        ui::GumpMenus::openMessageBox("Unable to find input field for the account name. Did you change the login gump template?");
-        return false;
-    }
-
-    UnicodeString accPw;
-    if (!menu->getComponentText<ui::components::LineEdit>("loginpassword", accPw)) {
-        ui::GumpMenus::openMessageBox("Unable to find input field for the password. Did you change the login gump template?");
-        return false;
-    }
-
-
-
-
+bool Manager::connect(const UnicodeString& host, unsigned int port, const UnicodeString& account, const UnicodeString& password) {
     if (socket_.connect(host, port)) {
         Client* clientSing = Client::getSingleton();
         clientSing->setState(Client::STATE_LOGIN);
 
-        clientSing->getConfig()["/fluo/shard/account@name"].setString(accName);
-        clientSing->getConfig()["/fluo/shard/account@password"].setString(accPw);
+        clientSing->getConfig()["/fluo/shard/account@name"].setString(account);
+        clientSing->getConfig()["/fluo/shard/account@password"].setString(password);
         clientSing->getConfig()["/fluo/shard/address@host"].setString(host);
         clientSing->getConfig()["/fluo/shard/address@port"].setInt(port);
 
@@ -239,12 +205,11 @@ bool Manager::connect(ui::GumpMenu* menu, const UnicodeString& action, unsigned 
         send(seed);
 
         // send packet
-        packets::LoginRequest req(accName, accPw);
+        packets::LoginRequest req(account, password);
         send(req);
 
         return true;
     } else {
-        ui::GumpMenus::openMessageBox("Could not connect to server");
         return false;
     }
 }

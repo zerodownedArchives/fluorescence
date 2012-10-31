@@ -58,7 +58,7 @@ public:
     static boost::shared_ptr<Packet> createPacket(uint8_t id);
     static boost::shared_ptr<WalkPacketManager> getWalkPacketManager();
 
-    bool connect(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
+    bool connect(const UnicodeString& host, unsigned int port, const UnicodeString& account, const UnicodeString& password);
     void disconnect();
 
     bool selectServer(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);

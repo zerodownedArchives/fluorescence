@@ -73,12 +73,15 @@
 #include "stdlib.h"
 #endif
 
+#include <boost/python/extract.hpp>
+
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
 #include <misc/log.hpp>
 #include <ui/manager.hpp>
 #include <ui/gumpmenu.hpp>
 #include <ui/gumpactions.hpp>
+#include <ui/python/scriptloader.hpp>
 
 namespace fluo {
 namespace ui {
@@ -128,15 +131,12 @@ void LineEdit::setText(const UnicodeString& text) {
     set_text(StringConverter::toUtf8String(text));
 }
 
-void LineEdit::setAction(const UnicodeString& action) {
-    action_ = action;
-}
-
 void LineEdit::onEnterPressed() {
-    if (action_.length() > 0) {
-        GumpMenu* gump = dynamic_cast<GumpMenu*>(get_top_level_component());
-        if (gump) {
-            GumpActions::doAction(gump, action_, 0, NULL);
+    if (pyEnterCallback_) {
+        try {
+            pyEnterCallback_(boost::python::ptr(this));
+        } catch (boost::python::error_already_set const&) {
+            ui::Manager::getPythonLoader()->logError();
         }
     }
 }
@@ -150,24 +150,72 @@ unsigned int LineEdit::getEntryId() const {
 }
 
 void LineEdit::setFont(const UnicodeString& fontName, unsigned int fontHeight) {
-    CL_FontDescription desc;
-    desc.set_typeface_name(StringConverter::toUtf8String(fontName));
-    desc.set_height(fontHeight);
-    desc.set_subpixel(false);
-
-    font_ = ui::Manager::getSingleton()->getFont(desc);
-
-    isUoFont_ = fontName.indexOf("unifont") != -1;
+    setFontB(fontName, fontHeight, false);
 }
 
-void LineEdit::setColor(const CL_Colorf& color) {
-    fontColor_ = color;
+void LineEdit::setFontB(const UnicodeString& name, unsigned int height, bool border) {
+    fontDesc_.set_typeface_name(StringConverter::toUtf8String(name));
+    fontDesc_.set_height(height);
+    fontDesc_.set_weight(border ? 700 : 400); // weight values taken from clanlib
+    fontDesc_.set_subpixel(false);
+
+    cachedFont_ = ui::Manager::getSingleton()->getFont(fontDesc_);
+    overrideGumpFont_ = true;
+
+    isUoFont_ = name.indexOf("unifont") != -1;
+}
+
+CL_Font LineEdit::getFont() const {
+    return overrideGumpFont_ ? cachedFont_ : getGumpMenu()->getFont();
+}
+
+CL_Colorf LineEdit::getRgba() const {
+    return fontColor_;
+}
+
+void LineEdit::setRgba(const CL_Colorf& rgba) {
+    fontColor_ = rgba;
 }
 
 void LineEdit::setHue(unsigned int hue) {
     fontColor_ = data::Manager::getHuesLoader()->getFontClColor(hue);
 }
 
+void LineEdit::setRgba(float r, float g, float b, float a) {
+    setRgba(CL_Colorf(r, g, b, a));
+}
+
+void LineEdit::setRgba(float r, float g, float b) {
+    setRgba(CL_Colorf(r, g, b));
+}
+
+boost::python::tuple LineEdit::pyGetRgba() const {
+    CL_Colorf rgba = getRgba();
+    return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+void LineEdit::pySetRgba(const boost::python::tuple& rgba) {
+    namespace bpy = boost::python;
+
+    float r = bpy::extract<float>(rgba[0]);
+    float g = bpy::extract<float>(rgba[1]);
+    float b = bpy::extract<float>(rgba[2]);
+
+    if (bpy::len(rgba) > 3) {
+        float a = bpy::extract<float>(rgba[3]);
+        setRgba(r, g, b, a);
+    } else {
+        setRgba(r, g, b);
+    }
+}
+
+boost::python::object LineEdit::getPyEnterCallback() const {
+    return pyEnterCallback_;
+}
+
+void LineEdit::setPyEnterCallback(boost::python::object cb) {
+    pyEnterCallback_ = cb;
+}
 
 // clanlib stuff
 
@@ -208,12 +256,13 @@ int LineEdit::get_cursor_pos() const {
 
 CL_Size LineEdit::get_text_size() {
     CL_GraphicContext &gc = get_gc();
-    return get_visual_text_size(gc, font_);
+    CL_Font font = getFont();
+    return get_visual_text_size(gc, font);
 }
 
 CL_Size LineEdit::get_text_size(const CL_String &str) {
     CL_GraphicContext &gc = get_gc();
-    CL_Size text_size = font_.get_text_size(gc, str);
+    CL_Size text_size = getFont().get_text_size(gc, str);
     return text_size;
 }
 
@@ -229,6 +278,10 @@ void LineEdit::setPasswordMode(bool enable) {
     }
 }
 
+bool LineEdit::getPasswordMode() const {
+    return password_mode;
+}
+
 void LineEdit::setMaxLength(int length) {
     if (max_length != length) {
         max_length = length;
@@ -238,6 +291,10 @@ void LineEdit::setMaxLength(int length) {
         }
         request_repaint();
     }
+}
+
+int LineEdit::getMaxLength() const {
+    return max_length;
 }
 
 void LineEdit::set_text(const CL_StringRef &t) {
@@ -306,6 +363,10 @@ void LineEdit::set_input_mask( const CL_StringRef &mask ) {
 
 void LineEdit::setNumericMode( bool enable ) {
     numeric_mode = enable;
+}
+
+bool LineEdit::getNumericMode() const {
+    return numeric_mode;
 }
 
 void LineEdit::set_decimal_character( const CL_StringRef &dc ) {
@@ -677,13 +738,14 @@ int LineEdit::get_character_index(int mouse_x_wincoords) {
     int seek_center = (seek_start + seek_end) / 2;
 
     //fast search
+    CL_Font font = getFont();
     while (true) {
         utf8_reader.set_position(seek_center);
         utf8_reader.move_to_leadbyte();
 
         seek_center = utf8_reader.get_position();
 
-        CL_Size text_size = get_visual_text_size(gc, font_, clip_start_offset, seek_center - clip_start_offset);
+        CL_Size text_size = get_visual_text_size(gc, font, clip_start_offset, seek_center - clip_start_offset);
 
         if (text_size.width > mouse_x)
             seek_end = seek_center;
@@ -703,7 +765,7 @@ int LineEdit::get_character_index(int mouse_x_wincoords) {
     while (true) {
         seek_center = utf8_reader.get_position();
 
-        CL_Size text_size = get_visual_text_size(gc, font_, clip_start_offset, seek_center - clip_start_offset);
+        CL_Size text_size = get_visual_text_size(gc, font, clip_start_offset, seek_center - clip_start_offset);
         if (text_size.width > mouse_x || utf8_reader.is_end())
             break;
 
@@ -716,7 +778,7 @@ int LineEdit::get_character_index(int mouse_x_wincoords) {
 void LineEdit::update_text_clipping() {
     CL_GraphicContext &gc = get_gc();
 
-    //CL_Size text_size = get_visual_text_size(gc, font_, clip_start_offset, text.size() - clip_start_offset);
+    //CL_Size text_size = get_visual_text_size(gc, getFont(), clip_start_offset, text.size() - clip_start_offset);
 
     if (cursor_pos < clip_start_offset)
         clip_start_offset = cursor_pos;
@@ -737,6 +799,7 @@ void LineEdit::update_text_clipping() {
     int search_upper = text.size();
     int search_lower = clip_start_offset;
 
+    CL_Font font = getFont();
     while (true) {
         int midpoint = (search_lower + search_upper) / 2;
 
@@ -749,7 +812,7 @@ void LineEdit::update_text_clipping() {
         if (midpoint == search_lower || midpoint == search_upper)
             break;
 
-        CL_Size midpoint_size = get_visual_text_size(gc, font_, clip_start_offset, midpoint-clip_start_offset);
+        CL_Size midpoint_size = get_visual_text_size(gc, font, clip_start_offset, midpoint-clip_start_offset);
 
         if (get_width() < midpoint_size.width)
             search_upper = midpoint;
@@ -779,7 +842,7 @@ CL_Rect LineEdit::get_cursor_rect() {
         clipped_text = create_password(clipped_text.utf8_length());
     }
 
-    CL_Size text_size_before_cursor = font_.get_text_size(gc, clipped_text);
+    CL_Size text_size_before_cursor = getFont().get_text_size(gc, clipped_text);
 
 
     // hack. uo fonts always add 2 for border size. border is not drawn when color is not black (gnarf!)
@@ -794,7 +857,7 @@ CL_Rect LineEdit::get_cursor_rect() {
     cursor_rect.right = cursor_rect.left + 1;
 
 
-    CL_FontMetrics metrics = font_.get_font_metrics();
+    CL_FontMetrics metrics = getFont().get_font_metrics();
     float align_height = metrics.get_ascent() - metrics.get_internal_leading();
     cursor_rect.top = ((get_height() - align_height) / 2.0f) - metrics.get_internal_leading();
     cursor_rect.bottom = cursor_rect.top + metrics.get_ascent() + metrics.get_descent();
@@ -807,11 +870,11 @@ CL_Rect LineEdit::get_selection_rect() {
 
     // text before selection:
     CL_String txt_before = get_visible_text_before_selection();
-    CL_Size text_size_before_selection = font_.get_text_size(gc, txt_before);
+    CL_Size text_size_before_selection = getFont().get_text_size(gc, txt_before);
 
     // selection text:
     CL_String txt_selected = get_visible_selected_text();
-    CL_Size text_size_selection = font_.get_text_size(gc, txt_selected);
+    CL_Size text_size_selection = getFont().get_text_size(gc, txt_selected);
 
     // hack. uo fonts always add 2 for border size. border is not drawn when color is not black (gnarf!)
     if (isUoFont_) {
@@ -829,7 +892,7 @@ CL_Rect LineEdit::get_selection_rect() {
     selection_rect.left = text_size_before_selection.width;
     selection_rect.right = selection_rect.left + text_size_selection.width;
 
-    CL_FontMetrics metrics = font_.get_font_metrics();
+    CL_FontMetrics metrics = getFont().get_font_metrics();
     float align_height = metrics.get_ascent() - metrics.get_internal_leading();
     selection_rect.top = ((get_height() - align_height) / 2.0f) - metrics.get_internal_leading();
     selection_rect.bottom = selection_rect.top + metrics.get_ascent() + metrics.get_descent();
@@ -970,8 +1033,8 @@ void LineEdit::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
             txt_after = create_password(txt_after.utf8_length());
     }
 
-    CL_Size size_before = font_.get_text_size(gc, txt_before);
-    CL_Size size_selected = font_.get_text_size(gc, txt_selected);
+    CL_Size size_before = getFont().get_text_size(gc, txt_before);
+    CL_Size size_selected = getFont().get_text_size(gc, txt_selected);
 
     // hack. uo fonts always add 2 for border size. border is not drawn when color is not black (gnarf!)
     if (isUoFont_) {
@@ -983,14 +1046,14 @@ void LineEdit::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
         }
     }
 
-    CL_FontMetrics metrics = font_.get_font_metrics();
+    CL_FontMetrics metrics = getFont().get_font_metrics();
     float align_height = metrics.get_ascent() - metrics.get_internal_leading();
     int y = align_height + ((get_height() - align_height) / 2.0f);
 
 
     // Draw text before selection
     if (!txt_before.empty()) {
-        font_.draw_text(gc, 0, y, txt_before, fontColor_);
+        getFont().draw_text(gc, 0, y, txt_before, fontColor_);
         //CL_Rect text_rect = content_rect;
         //text_rect.top = g.top;
         //text_rect.bottom = g.bottom;
@@ -1002,7 +1065,7 @@ void LineEdit::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
         CL_Draw::fill(gc, selection_rect, CL_Colorf::grey);
         //part_selection.render_box(gc, selection_rect, update_rect);
 
-        font_.draw_text(gc, size_before.width, y, txt_selected, fontColor_);
+        getFont().draw_text(gc, size_before.width, y, txt_selected, fontColor_);
 
         //CL_Rect text_rect = content_rect;
         //text_rect.left += (size_before.width);
@@ -1011,7 +1074,7 @@ void LineEdit::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
         //part_selection.render_text(gc, txt_selected, text_rect, update_rect);
     }
     if (!txt_after.empty()) {
-        font_.draw_text(gc, size_before.width + size_selected.width, y, txt_after, fontColor_);
+        getFont().draw_text(gc, size_before.width + size_selected.width, y, txt_after, fontColor_);
         //CL_Rect text_rect = content_rect;
         //text_rect.left += (size_before.width + size_selected.width);
         //text_rect.top = g.top;
@@ -1054,9 +1117,6 @@ CL_Size LineEdit::get_visual_text_size(CL_GraphicContext &gc, CL_Font &font, int
 CL_Size LineEdit::get_visual_text_size(CL_GraphicContext &gc, CL_Font &font) const {
     return password_mode ? font.get_text_size(gc, create_password(text.utf8_length())) : font.get_text_size(gc, text);
 }
-
-
-
 
 }
 }

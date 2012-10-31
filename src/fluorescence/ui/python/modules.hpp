@@ -22,6 +22,7 @@
 
 #include "pygumpcomponentcontainer.hpp"
 #include "pydata.hpp"
+#include "pyclient.hpp"
 
 #include <data/manager.hpp>
 
@@ -74,6 +75,14 @@ BOOST_PYTHON_MODULE(data) {
 }
 
 
+BOOST_PYTHON_MODULE(client) {
+    bpy::def("connect", PyClient::connect);
+    bpy::def("getConfig", PyClient::getConfig);
+    bpy::def("shutdown", PyClient::shutdown);
+    bpy::def("messagebox", PyClient::messagebox);
+}
+
+
 BOOST_PYTHON_MODULE(gumps) {
     // alignment for labels, etc
     bpy::enum_<ui::HAlign>("HAlign")
@@ -97,14 +106,19 @@ BOOST_PYTHON_MODULE(gumps) {
         .def("addPageButton", &PyGumpComponentContainer::addPageButton, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addServerButton", &PyGumpComponentContainer::addServerButton, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addPythonButton", &PyGumpComponentContainer::addPythonButton, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("addLineEdit", &PyGumpComponentContainer::addLineEdit, bpy::return_value_policy<bpy::reference_existing_object>())
     ;
 
     // non-instanciable wrapper class for gump menus
     bpy::class_<GumpMenu, bpy::bases<CL_GUIComponent>, boost::noncopyable>("GumpMenuWrapper", bpy::no_init)
+        .add_property("closable", &GumpMenu::isClosable, &GumpMenu::setClosable)
+        .add_property("draggable", &GumpMenu::isDraggable, &GumpMenu::setDraggable)
+        .add_property("store", &GumpMenu::getPythonStore)
+        .add_property("onEnter", &GumpMenu::getPyEnterCallback, &GumpMenu::setPyEnterCallback)
+        .add_property("onEscape", &GumpMenu::getPyEscapeCallback, &GumpMenu::setPyEscapeCallback)
         .def("setFont", &GumpMenu::setFont)
-
+        .def("setFont", &GumpMenu::setFontB)
         .def("component", &GumpMenu::getNamedComponent, bpy::return_value_policy<bpy::reference_existing_object>())
-        .add_property("store", &GumpMenu::getPythonStore);
     ;
 
     // factory functions for gump menus
@@ -118,9 +132,9 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("width", &GumpComponent::getWidth, &GumpComponent::setWidth)
         .add_property("height", &GumpComponent::getHeight, &GumpComponent::setHeight)
         .add_property("geometry", &GumpComponent::pyGetGeometry, &GumpComponent::pySetGeometry)
-        .def("setGeometry", &GumpComponent::setGeometry)
-        .add_property("gump", bpy::make_function(&GumpComponent::getGumpMenu, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("gump", bpy::make_function(&GumpComponent::pyGetGumpMenu, bpy::return_value_policy<bpy::reference_existing_object>()))
         .add_property("name", &GumpComponent::getName, &GumpComponent::setName)
+        .def("setGeometry", &GumpComponent::setGeometry)
     ;
 
     // image component
@@ -158,10 +172,11 @@ BOOST_PYTHON_MODULE(gumps) {
 
     // button component
     bpy::class_<components::Button, bpy::bases<components::Image>, boost::noncopyable>("ButtonWrapper", bpy::no_init)
-        .add_property("mouseover", make_function(&components::Button::getStateMouseOver, bpy::return_value_policy<bpy::reference_existing_object>()))
-        .add_property("mousedown", make_function(&components::Button::getStateMouseDown, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("mouseOver", make_function(&components::Button::getStateMouseOver, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("mouseDown", make_function(&components::Button::getStateMouseDown, bpy::return_value_policy<bpy::reference_existing_object>()))
         .add_property("page", &components::Button::getPage, &components::Button::setPage)
         .add_property("id", &components::Button::getButtonId, &components::Button::setButtonId)
+        .add_property("onClick", &components::Button::getPyClickCallback, &components::Button::setPyClickCallback)
     ;
 
     // background component
@@ -183,6 +198,21 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("text", &components::Label::getText, &components::Label::setText)
         .add_property("valign", &components::Label::getVAlign, &components::Label::setVAlign)
         .add_property("halign", &components::Label::getHAlign, &components::Label::setHAlign)
+        .add_property("rgba", &components::Label::pyGetRgba, &components::Label::pySetRgba)
+        .def("setFont", &components::Label::setFont)
+        .def("setFont", &components::Label::setFontB)
+    ;
+
+    // lineedit component
+    bpy::class_<components::LineEdit, bpy::bases<GumpComponent>, boost::noncopyable>("LineEditWrapper", bpy::no_init)
+        .add_property("text", &components::LineEdit::getText, &components::LineEdit::setText)
+        .add_property("rgba", &components::LineEdit::pyGetRgba, &components::LineEdit::pySetRgba)
+        .add_property("numeric", &components::LineEdit::getNumericMode, &components::LineEdit::setNumericMode)
+        .add_property("password", &components::LineEdit::getPasswordMode, &components::LineEdit::setPasswordMode)
+        .add_property("id", &components::LineEdit::getEntryId, &components::LineEdit::setEntryId)
+        .add_property("onEnter", &components::LineEdit::getPyEnterCallback, &components::LineEdit::setPyEnterCallback)
+        .def("setFont", &components::LineEdit::setFont)
+        .def("setFont", &components::LineEdit::setFontB)
     ;
 }
 

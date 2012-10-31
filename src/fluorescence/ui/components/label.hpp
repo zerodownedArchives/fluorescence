@@ -41,7 +41,13 @@ public:
     UnicodeString getText();
 
     void setFont(const UnicodeString& name, unsigned int height);
-    void setColor(const CL_Colorf& color);
+    void setFontB(const UnicodeString& name, unsigned int height, bool border);
+
+    void setRgba(float r, float g, float b, float a);
+    void setRgba(float r, float g, float b);
+    void setRgba(const CL_Colorf& color);
+    CL_Colorf getRgba() const;
+
     void setHue(unsigned int hue);
 
     void setHtmlText(const UnicodeString& string);
@@ -54,12 +60,16 @@ public:
 
     virtual void setAutoResize(bool value);
 
+    // python specific api
+    boost::python::tuple pyGetRgba() const;
+    void pySetRgba(const boost::python::tuple& rgba);
+
 protected:
     CL_SpanLayout span_;
     bool overrideGumpFont_;
     CL_FontDescription fontDesc_;
     CL_Font cachedFont_;
-    CL_Colorf fontColor_;
+    CL_Colorf rgba_;
 
 private:
     UnicodeString text_;
