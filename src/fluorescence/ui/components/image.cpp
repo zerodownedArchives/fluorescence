@@ -23,6 +23,7 @@
 #include <ClanLib/Core/Math/rect.h>
 #include <ClanLib/Display/Render/program_object.h>
 #include <ClanLib/Display/2D/span_layout.h>
+#include <boost/python/extract.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/render/shadermanager.hpp>
@@ -173,6 +174,48 @@ CL_Texture ImageState::getTileableTexture() {
     return tileableTexture_;
 }
 
+boost::python::tuple ImageState::pyGetRgba() const {
+    CL_Colorf rgba = getRgba();
+    return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+void ImageState::pySetRgba(const boost::python::tuple& rgba) {
+    namespace bpy = boost::python;
+
+    float r = bpy::extract<float>(rgba[0]);
+    float g = bpy::extract<float>(rgba[1]);
+    float b = bpy::extract<float>(rgba[2]);
+
+    if (bpy::len(rgba) > 3) {
+        float a = bpy::extract<float>(rgba[3]);
+        setRgba(r, g, b, a);
+    } else {
+        setRgba(r, g, b);
+    }
+}
+
+boost::python::tuple ImageState::pyGetFontRgba() const {
+    CL_Colorf rgba = getFontRgba();
+    return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+void ImageState::pySetFontRgba(const boost::python::tuple& rgba) {
+    namespace bpy = boost::python;
+
+    float r = bpy::extract<float>(rgba[0]);
+    float g = bpy::extract<float>(rgba[1]);
+    float b = bpy::extract<float>(rgba[2]);
+
+    if (bpy::len(rgba) > 3) {
+        float a = bpy::extract<float>(rgba[3]);
+        setFontRgba(r, g, b, a);
+    } else {
+        setFontRgba(r, g, b);
+    }
+}
+
+
+
 
 
 Image::Image(CL_GUIComponent* parent) : GumpComponent(parent),
@@ -198,55 +241,53 @@ Image::Image(CL_GUIComponent* parent) : GumpComponent(parent),
 void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     CL_Rectf geom = get_geometry();
     boost::shared_ptr<ui::Texture> tex = getTexture();
-    if (!tex || !tex->isReadComplete()) {
-        ui::Manager::getSingleton()->queueComponentRepaint(this);
-        return;
-    } else if (autoResize_ && (geom.get_width() != tex->getWidth() || geom.get_height() != tex->getHeight())) {
-        geom.set_width(tex->getWidth());
-        geom.set_height(tex->getHeight());
+    if (tex) {
+        if (!tex->isReadComplete()) {
+            // texture not loaded yet
+            ui::Manager::getSingleton()->queueComponentRepaint(this);
+            return;
+        } else if (autoResize_ && (geom.get_width() != tex->getWidth() || geom.get_height() != tex->getHeight())) {
+            geom.set_width(tex->getWidth());
+            geom.set_height(tex->getHeight());
 
-        ui::Manager::getSingleton()->queueComponentResize(this, geom);
-        // repainted automatically after resize
-        return;
+            ui::Manager::getSingleton()->queueComponentResize(this, geom);
+            // repainted automatically after resize
+            return;
+        }
+
+        // component is ready to be rendered
+        if (!getTiled()) {
+            if (useRgba()) {
+                CL_Draw::texture(gc, tex->getTexture(), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), getRgba(), tex->getNormalizedTextureCoords());
+            } else {
+                renderShader(gc, clipRect);
+            }
+        } else {
+            if (useRgba()) {
+                CL_Draw::texture(gc, getTileableTexture(),
+                        CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())),
+                        getRgba(),
+                        CL_Rectf(0.0f, 0.0f, get_width() / tex->getWidth(), get_height() / tex->getHeight()));
+            } else {
+                renderShader(gc, clipRect);
+            }
+        }
     }
 
-    // component is ready to be rendered
-    if (!getTiled()) {
-        if (useRgba()) {
-            CL_Draw::texture(gc, tex->getTexture(), CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())), getRgba(), tex->getNormalizedTextureCoords());
-        } else {
-            renderShader(gc, clipRect);
-        }
-    } else {
-        if (useRgba()) {
-            CL_Draw::texture(gc, getTileableTexture(),
-                    CL_Quadf(CL_Rectf(0, 0, get_width(), get_height())),
-                    getRgba(),
-                    CL_Rectf(0.0f, 0.0f, get_width() / tex->getWidth(), get_height() / tex->getHeight()));
-        } else {
-            renderShader(gc, clipRect);
-        }
-    }
-
+    // paint text
     UnicodeString txt = getText();
     if (txt.length() > 0) {
         CL_SpanLayout span;
-        CL_FontDescription fd;
-        if (overrideGumpFont_) {
-            fd = fontDesc_;
-        } else {
-            fd = (dynamic_cast<GumpMenu*>(get_top_level_component()))->getFontDescription();
-        }
-        CL_Font font = ui::Manager::getSingleton()->getFont(fd);
+        CL_Font font = overrideGumpFont_ ? cachedFont_ : getGumpMenu()->getFont();
         span.add_text(StringConverter::toUtf8String(txt), font, getFontRgba());
         span.set_align((CL_SpanAlign)getHAlign());
+
+        span.layout(gc, get_geometry().get_width());
+        CL_Size spanSize = span.get_size();
 
         if (!hasScrollareaParent_) {
             gc.push_cliprect(get_geometry());
         }
-
-        span.layout(gc, get_geometry().get_width());
-        CL_Size spanSize = span.get_size();
         // span aligns only horizontally. vertical alignment needs to be done manually
         switch (getVAlign()) {
         case TOP:
@@ -528,13 +569,18 @@ void Image::setText(const UnicodeString& text) {
     request_repaint();
 }
 
-void Image::setFont(const UnicodeString& name, unsigned int height, bool border) {
+void Image::setFontB(const UnicodeString& name, unsigned int height, bool border) {
     fontDesc_.set_typeface_name(StringConverter::toUtf8String(name));
     fontDesc_.set_height(height);
     fontDesc_.set_weight(border ? 700 : 400); // weight values taken from clanlib
     fontDesc_.set_subpixel(false);
 
+    cachedFont_ = ui::Manager::getSingleton()->getFont(fontDesc_);
     overrideGumpFont_ = true;
+}
+
+void Image::setFont(const UnicodeString& name, unsigned int height) {
+    setFontB(name, height, false);
 }
 
 void Image::setVAlign(VAlign align) {
@@ -555,6 +601,46 @@ void Image::setHAlign(HAlign align) {
 
 HAlign Image::getHAlign() const {
     return hAlign_;
+}
+
+boost::python::tuple Image::pyGetRgba() const {
+    CL_Colorf rgba = getRgba();
+    return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+void Image::pySetRgba(const boost::python::tuple& rgba) {
+    namespace bpy = boost::python;
+
+    float r = bpy::extract<float>(rgba[0]);
+    float g = bpy::extract<float>(rgba[1]);
+    float b = bpy::extract<float>(rgba[2]);
+
+    if (bpy::len(rgba) > 3) {
+        float a = bpy::extract<float>(rgba[3]);
+        setRgba(r, g, b, a);
+    } else {
+        setRgba(r, g, b);
+    }
+}
+
+boost::python::tuple Image::pyGetFontRgba() const {
+    CL_Colorf rgba = getFontRgba();
+    return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+void Image::pySetFontRgba(const boost::python::tuple& rgba) {
+    namespace bpy = boost::python;
+
+    float r = bpy::extract<float>(rgba[0]);
+    float g = bpy::extract<float>(rgba[1]);
+    float b = bpy::extract<float>(rgba[2]);
+
+    if (bpy::len(rgba) > 3) {
+        float a = bpy::extract<float>(rgba[3]);
+        setFontRgba(r, g, b, a);
+    } else {
+        setFontRgba(r, g, b);
+    }
 }
 
 }

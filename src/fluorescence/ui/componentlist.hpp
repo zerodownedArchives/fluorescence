@@ -24,7 +24,6 @@
 #include "components/background.hpp"
 #include "components/button.hpp"
 #include "components/checkbox.hpp"
-#include "components/clicklabel.hpp"
 #include "components/containerview.hpp"
 #include "components/image.hpp"
 #include "components/label.hpp"
@@ -35,7 +34,6 @@
 #include "components/scrollarea.hpp"
 #include "components/scrollbar.hpp"
 #include "components/sysloglabel.hpp"
-#include "components/warmodebutton.hpp"
 #include "components/worldview.hpp"
 
 #endif

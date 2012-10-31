@@ -28,6 +28,7 @@
 #include <data/huesloader.hpp>
 #include <ui/uofont.hpp>
 #include <ui/manager.hpp>
+#include <ui/gumpmenu.hpp>
 #include <misc/log.hpp>
 
 #include "scrollarea.hpp"
@@ -36,7 +37,8 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-Label::Label(CL_GUIComponent* parent) : GumpComponent(parent), fontColor_(CL_Colorf::black), alignment_(Alignment::LEFT), autoResize_(false) {
+Label::Label(CL_GUIComponent* parent) : GumpComponent(parent),
+        overrideGumpFont_(false), fontColor_(CL_Colorf::black), vAlign_(VAlign::MIDDLE), hAlign_(HAlign::LEFT), autoResize_(false) {
     func_render().set(this, &Label::onRender);
 
     fontDesc_.set_height(12);
@@ -63,17 +65,7 @@ void Label::setText(const UnicodeString& text) {
     text_ = text;
     text_.findAndReplace("\\n", "\n");
 
-    span_ = CL_SpanLayout();
-    span_.add_text(StringConverter::toUtf8String(text_), cachedFont_, fontColor_);
-    span_.set_align((CL_SpanAlign)alignment_);
-
-    if (autoResize_) {
-        adjustSize();
-    }
-}
-
-void Label::setAlignment(Alignment align) {
-    alignment_ = align;
+    layout();
 }
 
 void Label::setFont(const UnicodeString& name, unsigned int height) {
@@ -81,6 +73,9 @@ void Label::setFont(const UnicodeString& name, unsigned int height) {
     fontDesc_.set_height(height);
 
     cachedFont_ = ui::Manager::getSingleton()->getFont(fontDesc_);
+    overrideGumpFont_ = true;
+
+    layout();
 }
 
 void Label::setColor(const CL_Colorf& color) {
@@ -89,33 +84,6 @@ void Label::setColor(const CL_Colorf& color) {
 
 void Label::setHue(unsigned int hue) {
     fontColor_ = data::Manager::getHuesLoader()->getFontClColor(hue);
-}
-
-void Label::adjustSize() {
-    CL_Rectf geom = get_geometry();
-    int width = geom.get_width();
-    int height = geom.get_height();
-
-    if (width > 1) {
-        span_.layout(ui::Manager::getGraphicContext(), width);
-    } else {
-        // adjust width automatically
-        span_.layout(ui::Manager::getGraphicContext(), 999999);
-        width = span_.get_size().width;
-    }
-
-    if (height <= 1) {
-        // ajust height automatically
-        height = span_.get_size().height;
-    }
-
-    geom.set_width(width);
-    geom.set_height(height);
-    set_geometry(geom);
-    span_.set_position(CL_Point(0, 0));
-    span_.set_component_geometry();
-
-    request_repaint();
 }
 
 void Label::onRender(CL_GraphicContext& gc, const CL_Rect& update_rect) {
@@ -130,6 +98,38 @@ void Label::onRender(CL_GraphicContext& gc, const CL_Rect& update_rect) {
     }
 }
 
+void Label::layout() {
+    CL_Font font = overrideGumpFont_ ? cachedFont_ : getGumpMenu()->getFont();
+    span_ = CL_SpanLayout();
+    span_.add_text(StringConverter::toUtf8String(text_), font, fontColor_);
+
+    if (!autoResize_) {
+        span_.set_align((CL_SpanAlign)hAlign_);
+    }
+
+    if (autoResize_) {
+        CL_Rectf geom = get_geometry();
+
+        // adjust width automatically
+        span_.layout(ui::Manager::getGraphicContext(), 999999);
+        int width = span_.get_size().width;
+        int height = span_.get_size().height;
+
+        geom.set_width(width);
+        geom.set_height(height);
+        set_geometry(geom);
+
+        //valign
+        span_.set_position(CL_Point(0, 0));
+
+        span_.set_component_geometry();
+    } else {
+        span_.layout(ui::Manager::getGraphicContext(), get_geometry().get_width());
+    }
+
+    request_repaint();
+}
+
 
 
 void Label::setHtmlText(const UnicodeString& text) {
@@ -137,7 +137,7 @@ void Label::setHtmlText(const UnicodeString& text) {
 
     static RegexMatcher basefontMatcher("basefont\\s+color=\"{0,1}([0-9a-fA-F#]+)\"{0,1}", 0, status);
 
-    CL_Font curFont = cachedFont_;
+    CL_Font curFont = overrideGumpFont_ ? cachedFont_ : getGumpMenu()->getFont();
     CL_Colorf curColor = fontColor_;
 
     std::stack<CL_Font> fontStack;
@@ -199,19 +199,34 @@ void Label::setHtmlText(const UnicodeString& text) {
         curIndex = endIndex + 1;
     } while (curIndex < text.length());
 
-    adjustSize();
-}
-
-Label::Alignment Label::getAlignment() const {
-    return alignment_;
+    layout();
 }
 
 void Label::setAutoResize(bool value) {
     autoResize_ = value;
 
     if (value) {
-        adjustSize();
+        layout();
     }
+}
+
+void Label::setVAlign(VAlign align) {
+    vAlign_ = align;
+
+    request_repaint();
+}
+
+VAlign Label::getVAlign() const {
+    return vAlign_;
+}
+
+void Label::setHAlign(HAlign align) {
+    hAlign_ = align;
+    layout();
+}
+
+HAlign Label::getHAlign() const {
+    return hAlign_;
 }
 
 }

@@ -22,6 +22,7 @@
 #include <ClanLib/Core/Math/quad.h>
 #include <ClanLib/Core/Math/rect.h>
 #include <ClanLib/Display/Render/program_object.h>
+#include <boost/python/extract.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/render/shadermanager.hpp>
@@ -175,6 +176,26 @@ void Background::setPartialHue(bool value) {
 
 bool Background::getPartialHue() const {
     return images_[0]->getPartialHue();
+}
+
+boost::python::tuple Background::pyGetRgba() const {
+    CL_Colorf rgba = getRgba();
+    return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+void Background::pySetRgba(const boost::python::tuple& rgba) {
+    namespace bpy = boost::python;
+
+    float r = bpy::extract<float>(rgba[0]);
+    float g = bpy::extract<float>(rgba[1]);
+    float b = bpy::extract<float>(rgba[2]);
+
+    if (bpy::len(rgba) > 3) {
+        float a = bpy::extract<float>(rgba[3]);
+        setRgba(r, g, b, a);
+    } else {
+        setRgba(r, g, b);
+    }
 }
 
 }

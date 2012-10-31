@@ -89,6 +89,7 @@ public:
     static boost::shared_ptr<AudioManager> getAudioManager();
     static boost::shared_ptr<CommandManager> getCommandManager();
     static boost::shared_ptr<MacroManager> getMacroManager();
+    static boost::shared_ptr<python::ScriptLoader> getPythonLoader();
 
     static CL_Font getFont(const CL_FontDescription& desc);
     static UoFont& getUnifont(unsigned int index);

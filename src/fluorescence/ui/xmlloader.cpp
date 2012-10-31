@@ -38,7 +38,6 @@
 #include "components/scrollbar.hpp"
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
-#include "components/clicklabel.hpp"
 #include "components/worldview.hpp"
 #include "components/propertylabel.hpp"
 #include "components/paperdollview.hpp"
@@ -47,7 +46,6 @@
 #include "components/background.hpp"
 #include "components/checkbox.hpp"
 #include "components/sysloglabel.hpp"
-#include "components/warmodebutton.hpp"
 #include "components/radiobutton.hpp"
 #include "components/alpharegion.hpp"
 
@@ -73,7 +71,6 @@ XmlLoader::XmlLoader() {
     functionTable_["label"] = boost::bind(&XmlLoader::parseLabel, this, _1, _2, _3, _4);
     functionTable_["propertylabel"] = boost::bind(&XmlLoader::parsePropertyLabel, this, _1, _2, _3, _4);
     functionTable_["sysloglabel"] = boost::bind(&XmlLoader::parseSysLogLabel, this, _1, _2, _3, _4);
-    functionTable_["clicklabel"] = boost::bind(&XmlLoader::parseClickLabel, this, _1, _2, _3, _4);
     functionTable_["lineedit"] = boost::bind(&XmlLoader::parseLineEdit, this, _1, _2, _3, _4);
     functionTable_["scrollarea"] = boost::bind(&XmlLoader::parseScrollArea, this, _1, _2, _3, _4);
     functionTable_["htmllabel"] = boost::bind(&XmlLoader::parseHtmlLabel, this, _1, _2, _3, _4);
@@ -82,7 +79,6 @@ XmlLoader::XmlLoader() {
     functionTable_["worldview"] = boost::bind(&XmlLoader::parseWorldView, this, _1, _2, _3, _4);
     functionTable_["paperdoll"] = boost::bind(&XmlLoader::parsePaperdoll, this, _1, _2, _3, _4);
     functionTable_["container"] = boost::bind(&XmlLoader::parseContainer, this, _1, _2, _3, _4);
-    functionTable_["warmodebutton"] = boost::bind(&XmlLoader::parseWarModeButton, this, _1, _2, _3, _4);
 }
 
 
@@ -354,69 +350,69 @@ bool XmlLoader::parseMultiTextureImage(pugi::xml_node& node, pugi::xml_node& def
 }
 
 bool XmlLoader::parseButtonText(pugi::xml_node& node, pugi::xml_node& defaultNode, components::Button* button, unsigned int index) {
-    unsigned int hue = getAttribute("font-hue", node, defaultNode).as_uint();
-    std::string rgba = getAttribute("font-color", node, defaultNode).value();
-    UnicodeString text = getAttribute("text", node, defaultNode).value();
-    CL_Colorf color(rgba);
+    //unsigned int hue = getAttribute("font-hue", node, defaultNode).as_uint();
+    //std::string rgba = getAttribute("font-color", node, defaultNode).value();
+    //UnicodeString text = getAttribute("text", node, defaultNode).value();
+    //CL_Colorf color(rgba);
 
-    if (text.length() > 0) {
-        button->setText(index, text);
-    }
+    //if (text.length() > 0) {
+        //button->setText(index, text);
+    //}
 
-    // if the node has its own color or hue property, don't use the template values
-    if (node.attribute("font-color")) {
-        button->setFontColor(index, color);
-    } else if (node.attribute("font-hue")) {
-        button->setFontHue(index, hue);
-    } else if (rgba.length() > 0) {
-        button->setFontColor(index, color);
-    } else {
-        button->setFontHue(index, hue);
-    }
+    //// if the node has its own color or hue property, don't use the template values
+    //if (node.attribute("font-color")) {
+        //button->setFontColor(index, color);
+    //} else if (node.attribute("font-hue")) {
+        //button->setFontHue(index, hue);
+    //} else if (rgba.length() > 0) {
+        //button->setFontColor(index, color);
+    //} else {
+        //button->setFontHue(index, hue);
+    //}
 
     return true;
 }
 
 bool XmlLoader::parseLabelHelper(components::Label* label, pugi::xml_node& node, pugi::xml_node& defaultNode) {
-    std::string align = getAttribute("align", node, defaultNode).value();
-    UnicodeString fontName = getAttribute("font", node, defaultNode).value();
-    unsigned int fontHeight = getAttribute("font-height", node, defaultNode).as_uint();
-    unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
-    std::string rgba = getAttribute("color", node, defaultNode).value();
-    CL_Colorf color(rgba);
+    //std::string align = getAttribute("align", node, defaultNode).value();
+    //UnicodeString fontName = getAttribute("font", node, defaultNode).value();
+    //unsigned int fontHeight = getAttribute("font-height", node, defaultNode).as_uint();
+    //unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
+    //std::string rgba = getAttribute("color", node, defaultNode).value();
+    //CL_Colorf color(rgba);
 
-    parseId(node, label);
+    //parseId(node, label);
 
-    if (align.length() == 0 || align == "left") {
-        label->setAlignment(components::Label::Alignment::LEFT);
-    } else if (align == "right") {
-        label->setAlignment(components::Label::Alignment::RIGHT);
-    } else if (align == "center") {
-        label->setAlignment(components::Label::Alignment::CENTER);
-    } else {
-        LOG_WARN << "Unknown label align: " << align << std::endl;
-        return false;
-    }
+    //if (align.length() == 0 || align == "left") {
+        //label->setAlignment(components::Label::Alignment::LEFT);
+    //} else if (align == "right") {
+        //label->setAlignment(components::Label::Alignment::RIGHT);
+    //} else if (align == "center") {
+        //label->setAlignment(components::Label::Alignment::CENTER);
+    //} else {
+        //LOG_WARN << "Unknown label align: " << align << std::endl;
+        //return false;
+    //}
 
-    if (label->getAlignment() != components::Label::Alignment::LEFT && label->get_width() == 0) {
-        LOG_WARN << "Label with alignment != left, but no width detected. Setting width to 100" << std::endl;
-        CL_Rectf geom(label->get_geometry());
-        geom.set_width(100);
-        label->set_geometry(geom);
-    }
+    //if (label->getAlignment() != components::Label::Alignment::LEFT && label->get_width() == 0) {
+        //LOG_WARN << "Label with alignment != left, but no width detected. Setting width to 100" << std::endl;
+        //CL_Rectf geom(label->get_geometry());
+        //geom.set_width(100);
+        //label->set_geometry(geom);
+    //}
 
-    label->setFont(fontName, fontHeight);
+    //label->setFont(fontName, fontHeight);
 
-    // if the node has its own color or hue property, don't use the template values
-    if (node.attribute("color")) {
-        label->setColor(color);
-    } else if (node.attribute("hue")) {
-        label->setHue(hue);
-    } else if (rgba.length() > 0) {
-        label->setColor(color);
-    } else if (getAttribute("hue", node, defaultNode)) { // does it even have a hue attribute?
-        label->setHue(hue);
-    }
+    //// if the node has its own color or hue property, don't use the template values
+    //if (node.attribute("color")) {
+        //label->setColor(color);
+    //} else if (node.attribute("hue")) {
+        //label->setHue(hue);
+    //} else if (rgba.length() > 0) {
+        //label->setColor(color);
+    //} else if (getAttribute("hue", node, defaultNode)) { // does it even have a hue attribute?
+        //label->setHue(hue);
+    //}
 
     return true;
 }
@@ -886,54 +882,6 @@ GumpComponent* XmlLoader::parseSysLogLabel(pugi::xml_node& node, pugi::xml_node&
     return label;
 }
 
-GumpComponent* XmlLoader::parseClickLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    UnicodeString text = getAttribute("text", node, defaultNode).value();
-
-    unsigned int cliloc = getAttribute("cliloc", node, defaultNode).as_uint();
-    if (cliloc) {
-        UnicodeString args = getAttribute("args", node, defaultNode).value();
-        args.findAndReplace("\\t", "\t");
-        text = data::Manager::getClilocLoader()->get(cliloc, args);
-    }
-
-    unsigned int buttonId = node.attribute("buttonid").as_uint();
-    unsigned int pageId = node.attribute("page").as_uint();
-    UnicodeString action = StringConverter::fromUtf8(getAttribute("action", node, defaultNode).value());
-    UnicodeString param = StringConverter::fromUtf8(getAttribute("param", node, defaultNode).value());
-    UnicodeString param2 = StringConverter::fromUtf8(getAttribute("param2", node, defaultNode).value());
-    UnicodeString param3 = StringConverter::fromUtf8(getAttribute("param3", node, defaultNode).value());
-    UnicodeString param4 = StringConverter::fromUtf8(getAttribute("param4", node, defaultNode).value());
-    UnicodeString param5 = StringConverter::fromUtf8(getAttribute("param5", node, defaultNode).value());
-
-    components::ClickLabel* label = new components::ClickLabel(parent);
-    label->set_geometry(bounds);
-    if (!parseLabelHelper(label, node, defaultNode)) {
-        return nullptr;
-    }
-
-    if (action.length() > 0) {
-        label->setLocalButton(action);
-        label->setParameter(param, 0);
-        label->setParameter(param2, 1);
-        label->setParameter(param3, 2);
-        label->setParameter(param4, 3);
-        label->setParameter(param5, 4);
-    } else if (!node.attribute("buttonid").empty()) {
-        label->setServerButton(buttonId);
-    } else if (!node.attribute("page").empty()) {
-        label->setPageButton(pageId);
-    } else {
-        LOG_WARN << "ClickLabel without action, id or page" << std::endl;
-        return nullptr;
-    }
-
-    label->setText(text);
-
-    top->addToCurrentPage(label);
-    return label;
-}
-
 GumpComponent* XmlLoader::parseHtmlLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
     CL_Rect bounds = getBoundsFromNode(node, defaultNode);
     pugi::xml_text textNode = node.text();
@@ -1148,68 +1096,6 @@ GumpComponent* XmlLoader::parseContainer(pugi::xml_node& node, pugi::xml_node& d
 
     return contView;
 }
-
-GumpComponent* XmlLoader::parseWarModeButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-
-    components::WarModeButton* button = new components::WarModeButton(parent);
-    parseId(node, button);
-
-    pugi::xml_node normalNode = node.child("normal");
-    pugi::xml_node mouseOverNode = node.child("mouseover");
-    pugi::xml_node mouseDownNode = node.child("mousedown");
-
-    pugi::xml_node defaultNormalNode = defaultNode.child("normal");
-    pugi::xml_node defaultMouseOverNode = defaultNode.child("mouseover");
-    pugi::xml_node defaultMouseDownNode = defaultNode.child("mousedown");
-
-    if (normalNode || defaultNormalNode) {
-        parseMultiTextureImage(normalNode, defaultNormalNode, button, components::WarModeButton::TEX_INDEX_UP);
-    } else {
-        LOG_ERROR << "Normal image for warmode button not defined" << std::endl;
-        return nullptr;
-    }
-
-    if (mouseOverNode || defaultMouseOverNode) {
-        parseMultiTextureImage(mouseOverNode, defaultMouseOverNode, button, components::WarModeButton::TEX_INDEX_MOUSEOVER);
-    }
-    if (mouseDownNode || defaultMouseDownNode) {
-        parseMultiTextureImage(mouseDownNode, defaultMouseDownNode, button, components::WarModeButton::TEX_INDEX_DOWN);
-    }
-
-
-    pugi::xml_node warmodeNormalNode = node.child("warmode-normal");
-    pugi::xml_node warmodeMouseOverNode = node.child("warmode-mouseover");
-    pugi::xml_node warmodeMouseDownNode = node.child("warmode-mousedown");
-
-    pugi::xml_node warmodeDefaultNormalNode = defaultNode.child("warmode-normal");
-    pugi::xml_node warmodeDefaultMouseOverNode = defaultNode.child("warmode-mouseover");
-    pugi::xml_node warmodeDefaultMouseDownNode = defaultNode.child("warmode-mousedown");
-
-    if (warmodeNormalNode || warmodeDefaultNormalNode) {
-        parseMultiTextureImage(warmodeNormalNode, warmodeDefaultNormalNode, button, components::WarModeButton::WARMODE_TEX_INDEX_UP);
-    }
-    if (warmodeMouseOverNode || warmodeDefaultMouseOverNode) {
-        parseMultiTextureImage(warmodeMouseOverNode, warmodeDefaultMouseOverNode, button, components::WarModeButton::WARMODE_TEX_INDEX_MOUSEOVER);
-    }
-    if (warmodeMouseDownNode || warmodeDefaultMouseDownNode) {
-        parseMultiTextureImage(warmodeMouseDownNode, warmodeDefaultMouseDownNode, button, components::WarModeButton::WARMODE_TEX_INDEX_DOWN);
-    }
-
-    if (bounds.get_width() == 0 || bounds.get_height() == 0) {
-        button->setAutoResize(true);
-        bounds.set_width(1);
-        bounds.set_height(1);
-    }
-
-    button->updateTexture();
-
-    button->set_geometry(bounds);
-
-    top->addToCurrentPage(button);
-    return button;
-}
-
 
 
 bool XmlLoader::parsePage(pugi::xml_node& node, CL_GUIComponent* parent, GumpMenu* top) {

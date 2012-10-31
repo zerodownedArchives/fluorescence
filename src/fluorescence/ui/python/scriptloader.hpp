@@ -43,6 +43,8 @@ public:
     void unload();
     void reload();
 
+    void logError() const;
+
     GumpMenu* openGump(const UnicodeString& name);
 
 private:

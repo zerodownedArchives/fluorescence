@@ -20,14 +20,12 @@
 #ifndef FLUO_UI_PYTHON_MODULES_HPP
 #define FLUO_UI_PYTHON_MODULES_HPP
 
-
-#include "pygumpmenu.hpp"
-#include "pygumpcomponent.hpp"
 #include "pygumpcomponentcontainer.hpp"
 #include "pydata.hpp"
 
 #include <data/manager.hpp>
 
+#include <ui/gumpmenu.hpp>
 #include <ui/enums.hpp>
 #include <ui/componentlist.hpp>
 
@@ -96,17 +94,22 @@ BOOST_PYTHON_MODULE(gumps) {
         .def("addBackground", &PyGumpComponentContainer::addBackground, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addAlphaRegion", &PyGumpComponentContainer::addAlphaRegion, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addLabel", &PyGumpComponentContainer::addLabel, bpy::return_value_policy<bpy::reference_existing_object>())
-        .def("addButton", &PyGumpComponentContainer::addButton, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("addPageButton", &PyGumpComponentContainer::addPageButton, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("addServerButton", &PyGumpComponentContainer::addServerButton, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("addPythonButton", &PyGumpComponentContainer::addPythonButton, bpy::return_value_policy<bpy::reference_existing_object>())
     ;
 
     // non-instanciable wrapper class for gump menus
     bpy::class_<GumpMenu, bpy::bases<CL_GUIComponent>, boost::noncopyable>("GumpMenuWrapper", bpy::no_init)
-        //.def("setClosable", &GumpMenu::setClosable)
+        .def("setFont", &GumpMenu::setFont)
+
+        .def("component", &GumpMenu::getNamedComponent, bpy::return_value_policy<bpy::reference_existing_object>())
+        .add_property("store", &GumpMenu::getPythonStore);
     ;
 
     // factory functions for gump menus
-    bpy::def("GumpMenu", &PyGumpMenu::create, bpy::return_value_policy<bpy::reference_existing_object>());
-    bpy::def("GumpMenu", &PyGumpMenu::createBackground, bpy::return_value_policy<bpy::reference_existing_object>());
+    bpy::def("GumpMenu", &GumpMenu::create, bpy::return_value_policy<bpy::reference_existing_object>());
+    bpy::def("GumpMenu", &GumpMenu::createBackground, bpy::return_value_policy<bpy::reference_existing_object>());
 
     // base class for gump components
     bpy::class_<GumpComponent, boost::noncopyable>("GumpComponentWrapper", bpy::no_init)
@@ -114,8 +117,10 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("y", &GumpComponent::getY, &GumpComponent::setY)
         .add_property("width", &GumpComponent::getWidth, &GumpComponent::setWidth)
         .add_property("height", &GumpComponent::getHeight, &GumpComponent::setHeight)
-        .add_property("geometry", &PyGumpComponent::getGeometry, &PyGumpComponent::setGeometry)
+        .add_property("geometry", &GumpComponent::pyGetGeometry, &GumpComponent::pySetGeometry)
         .def("setGeometry", &GumpComponent::setGeometry)
+        .add_property("gump", bpy::make_function(&GumpComponent::getGumpMenu, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("name", &GumpComponent::getName, &GumpComponent::setName)
     ;
 
     // image component
@@ -127,8 +132,8 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("usePartialHue", &components::Image::getPartialHue, &components::Image::setPartialHue)
         .add_property("tiled", &components::Image::getTiled, &components::Image::setTiled)
         .add_property("text", &components::Image::getText, &components::Image::setText)
-        .add_property("rgba", &PyGumpComponent::getRgbaImage, &PyGumpComponent::setRgbaImage)
-        .add_property("fontRgba", &PyGumpComponent::getFontRgbaImage, &PyGumpComponent::setFontRgbaImage)
+        .add_property("rgba", &components::Image::pyGetRgba, &components::Image::pySetRgba)
+        .add_property("fontRgba", &components::Image::pyGetFontRgba, &components::Image::pySetFontRgba)
 
         // these functions are really part of the image class
         .add_property("valign", &components::Image::getVAlign, &components::Image::setVAlign)
@@ -136,6 +141,7 @@ BOOST_PYTHON_MODULE(gumps) {
         .def("state", &components::Image::getState, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("setState", &components::Image::setCurrentState)
         .def("setFont", &components::Image::setFont)
+        .def("setFont", &components::Image::setFontB)
     ;
 
     // image states
@@ -146,23 +152,25 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("usePartialHue", &components::ImageState::getPartialHue, &components::ImageState::setPartialHue)
         .add_property("tiled", &components::ImageState::getTiled, &components::ImageState::setTiled)
         .add_property("text", &components::ImageState::getText, &components::ImageState::setText)
-        .add_property("rgba", &PyGumpComponent::getRgbaImageState, &PyGumpComponent::setRgbaImageState)
-        .add_property("fontRgba", &PyGumpComponent::getFontRgbaImageState, &PyGumpComponent::setFontRgbaImageState)
+        .add_property("rgba", &components::ImageState::pyGetRgba, &components::ImageState::pySetRgba)
+        .add_property("fontRgba", &components::ImageState::pyGetFontRgba, &components::ImageState::pySetFontRgba)
     ;
 
     // button component
     bpy::class_<components::Button, bpy::bases<components::Image>, boost::noncopyable>("ButtonWrapper", bpy::no_init)
         .add_property("mouseover", make_function(&components::Button::getStateMouseOver, bpy::return_value_policy<bpy::reference_existing_object>()))
         .add_property("mousedown", make_function(&components::Button::getStateMouseDown, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("page", &components::Button::getPage, &components::Button::setPage)
+        .add_property("id", &components::Button::getButtonId, &components::Button::setButtonId)
     ;
 
     // background component
     bpy::class_<components::Background, bpy::bases<GumpComponent>, boost::noncopyable>("BackgroundWrapper", bpy::no_init)
         .add_property("baseId", &components::Background::getBaseId, &components::Background::setBaseId)
-        .add_property("hue", &components::Image::getHue, &components::Image::setHue)
-        .add_property("alpha", &components::Image::getAlpha, &components::Image::setAlpha)
-        .add_property("usePartialHue", &components::Image::getPartialHue, &components::Image::setPartialHue)
-        .add_property("rgba", &PyGumpComponent::getRgbaBackground, &PyGumpComponent::setRgbaBackground)
+        .add_property("hue", &components::Background::getHue, &components::Background::setHue)
+        .add_property("alpha", &components::Background::getAlpha, &components::Background::setAlpha)
+        .add_property("usePartialHue", &components::Background::getPartialHue, &components::Background::setPartialHue)
+        .add_property("rgba", &components::Background::pyGetRgba, &components::Background::pySetRgba)
     ;
 
     // alpha region component
@@ -173,7 +181,8 @@ BOOST_PYTHON_MODULE(gumps) {
     // label component
     bpy::class_<components::Label, bpy::bases<GumpComponent>, boost::noncopyable>("LabelWrapper", bpy::no_init)
         .add_property("text", &components::Label::getText, &components::Label::setText)
-        .add_property("align", &components::Label::getAlignment, &components::Label::setAlignment)
+        .add_property("valign", &components::Label::getVAlign, &components::Label::setVAlign)
+        .add_property("halign", &components::Label::getHAlign, &components::Label::setHAlign)
     ;
 }
 

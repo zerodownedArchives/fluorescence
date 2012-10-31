@@ -20,11 +20,15 @@
 
 #include "gumpcomponent.hpp"
 
+#include "gumpmenu.hpp"
+
+#include <boost/python/extract.hpp>
+
 namespace fluo {
 namespace ui {
 
 GumpComponent::GumpComponent(CL_GUIComponent* parent) :
-    CL_GUIComponent(parent) {
+        CL_GUIComponent(parent) {
     set_double_click_enabled(false);
 }
 
@@ -80,6 +84,45 @@ void GumpComponent::setGeometry(int x, int y, int w, int h) {
 }
 
 void GumpComponent::setAutoResize(bool value) {
+}
+
+boost::python::tuple GumpComponent::pyGetGeometry() const {
+    CL_Rectf geom = get_geometry();
+    return boost::python::make_tuple(geom.left, geom.top, geom.get_width(), geom.get_height());
+}
+
+void GumpComponent::pySetGeometry(boost::python::tuple& geom) {
+    namespace bpy = boost::python;
+
+    int x = bpy::extract<int>(geom[0]);
+    int y = bpy::extract<int>(geom[1]);
+
+    int width = 1;
+    int height = 1;
+    if (bpy::len(geom) > 3) {
+        width = bpy::extract<int>(geom[2]);
+        height = bpy::extract<int>(geom[3]);
+
+        setAutoResize(false);
+    } else {
+        setAutoResize(true);
+    }
+
+    CL_Rectf rect(x, y, CL_Sizef(width, height));
+    set_geometry(rect);
+}
+
+GumpMenu* GumpComponent::getGumpMenu() {
+    CL_GUIComponent* topLevel = get_top_level_component();
+    return dynamic_cast<GumpMenu*>(topLevel);
+}
+
+UnicodeString GumpComponent::getName() const {
+    return StringConverter::fromUtf8(get_id_name().c_str());
+}
+
+void GumpComponent::setName(const UnicodeString& name) {
+    set_id_name(StringConverter::toUtf8String(name));
 }
 
 }

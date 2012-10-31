@@ -51,7 +51,6 @@ set (GUMPMENU_HPP
     ui/componentlist.hpp
 
     ui/components/multitextureimage.hpp
-    ui/components/basebutton.hpp
     ui/components/button.hpp
     ui/components/scrollarea.hpp
     ui/components/lineedit.hpp
@@ -65,8 +64,6 @@ set (GUMPMENU_HPP
     ui/components/checkbox.hpp
     ui/components/radiobutton.hpp
     ui/components/sysloglabel.hpp
-    ui/components/warmodebutton.hpp
-    ui/components/clicklabel.hpp
     ui/components/scrollbar.hpp
     ui/components/alpharegion.hpp
     )
@@ -78,7 +75,6 @@ set (GUMPMENU_CPP
     ui/gumpcomponent.cpp
 
     ui/components/multitextureimage.cpp
-    ui/components/basebutton.cpp
     ui/components/button.cpp
     ui/components/scrollarea.cpp
     ui/components/lineedit.cpp
@@ -92,8 +88,6 @@ set (GUMPMENU_CPP
     ui/components/checkbox.cpp
     ui/components/radiobutton.cpp
     ui/components/sysloglabel.cpp
-    ui/components/warmodebutton.cpp
-    ui/components/clicklabel.cpp
     ui/components/scrollbar.cpp
     ui/components/alpharegion.cpp
     )
@@ -215,8 +209,6 @@ set (PYTHON_HPP
     ui/python/modules.hpp
     ui/python/pystring.hpp
     ui/python/pygumpcomponentcontainer.hpp
-    ui/python/pygumpmenu.hpp
-    ui/python/pygumpcomponent.hpp
     ui/python/pydata.hpp
     )
 
@@ -224,8 +216,6 @@ set (PYTHON_CPP
     ui/python/scriptloader.cpp
     ui/python/pystring.cpp
     ui/python/pygumpcomponentcontainer.cpp
-    ui/python/pygumpmenu.cpp
-    ui/python/pygumpcomponent.cpp
     ui/python/pydata.cpp
     )
 

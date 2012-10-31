@@ -27,6 +27,7 @@
 #include <ClanLib/Display/Font/font_description.h>
 
 #include <misc/string.hpp>
+#include <ui/enums.hpp>
 
 namespace fluo {
 namespace ui {
@@ -34,12 +35,6 @@ namespace components {
 
 class Label : public GumpComponent {
 public:
-    enum Alignment {
-        LEFT = CL_SpanAlign::cl_left,
-        CENTER = CL_SpanAlign::cl_center,
-        RIGHT = CL_SpanAlign::cl_right,
-    };
-
     Label(CL_GUIComponent* parent);
 
     void setText(const UnicodeString& string);
@@ -51,23 +46,28 @@ public:
 
     void setHtmlText(const UnicodeString& string);
 
-    void setAlignment(Alignment align);
-    Alignment getAlignment() const;
+    void setVAlign(VAlign align);
+    VAlign getVAlign() const;
+
+    void setHAlign(HAlign align);
+    HAlign getHAlign() const;
 
     virtual void setAutoResize(bool value);
 
 protected:
     CL_SpanLayout span_;
+    bool overrideGumpFont_;
     CL_FontDescription fontDesc_;
     CL_Font cachedFont_;
     CL_Colorf fontColor_;
 
 private:
     UnicodeString text_;
-    Alignment alignment_;
+    VAlign vAlign_;
+    HAlign hAlign_;
 
     bool autoResize_;
-    void adjustSize();
+    void layout();
 
     void onRender(CL_GraphicContext& gc, const CL_Rect& update_rect);
 

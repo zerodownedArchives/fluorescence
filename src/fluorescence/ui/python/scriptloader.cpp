@@ -107,22 +107,26 @@ GumpMenu* ScriptLoader::openGump(const UnicodeString& name) {
         }
 
     } catch (bpy::error_already_set const&) {
-        LOG_ERROR << "Python error: " << std::endl;
-
-#ifdef DEBUG
-        PyErr_Print();
-#else
-
-        PyObject *errType = NULL, *errValue = NULL, *errTraceback = NULL;
-        PyErr_Fetch(&errType, &errValue, &errTraceback);
-
-        char* errValueStr = PyString_AsString(errValue);
-        char* errTypeStr = PyString_AsString(PyObject_Str(errType));
-        LOG_ERROR << errTypeStr << ": " << errValueStr <<std::endl;
-#endif
+        logError();
     }
 
     return nullptr;
+}
+
+void ScriptLoader::logError() const {
+    LOG_ERROR << "Python error: " << std::endl;
+
+#ifdef DEBUG
+    PyErr_Print();
+#else
+
+    PyObject *errType = NULL, *errValue = NULL, *errTraceback = NULL;
+    PyErr_Fetch(&errType, &errValue, &errTraceback);
+
+    char* errValueStr = PyString_AsString(errValue);
+    char* errTypeStr = PyString_AsString(PyObject_Str(errType));
+    LOG_ERROR << errTypeStr << ": " << errValueStr <<std::endl;
+#endif
 }
 
 }

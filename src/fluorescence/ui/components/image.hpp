@@ -25,6 +25,7 @@
 #include <ClanLib/Display/Font/font.h>
 #include <ClanLib/Display/Font/font_description.h>
 #include <boost/shared_ptr.hpp>
+#include <boost/python/tuple.hpp>
 
 #include <misc/string.hpp>
 #include <ui/enums.hpp>
@@ -77,6 +78,12 @@ public:
 
     UnicodeString getText() const;
     void setText(const UnicodeString& text);
+
+    // python specific interface
+    boost::python::tuple pyGetRgba() const;
+    void pySetRgba(const boost::python::tuple& rgba);
+    boost::python::tuple pyGetFontRgba() const;
+    void pySetFontRgba(const boost::python::tuple& rgba);
 
 private:
     Image* owner_;
@@ -158,13 +165,21 @@ public:
     UnicodeString getText() const;
     void setText(const UnicodeString& text);
 
-    void setFont(const UnicodeString& name, unsigned int height, bool border);
+    void setFont(const UnicodeString& name, unsigned int height);
+    void setFontB(const UnicodeString& name, unsigned int height, bool border);
 
     void setVAlign(VAlign align);
     VAlign getVAlign() const;
 
     void setHAlign(HAlign align);
     HAlign getHAlign() const;
+
+
+    // python specific interface
+    boost::python::tuple pyGetRgba() const;
+    void pySetRgba(const boost::python::tuple& rgba);
+    boost::python::tuple pyGetFontRgba() const;
+    void pySetFontRgba(const boost::python::tuple& rgba);
 
 private:
     bool autoResize_;
@@ -178,6 +193,7 @@ private:
 
     bool overrideGumpFont_;
     CL_FontDescription fontDesc_;
+    CL_Font cachedFont_;
 
     bool hasScrollareaParent_;
 

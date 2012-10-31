@@ -21,6 +21,9 @@
 #define FLUO_UI_GUMPCOMPONENT_HPP
 
 #include <ClanLib/GUI/gui_component.h>
+#include <boost/python/tuple.hpp>
+
+#include <misc/string.hpp>
 
 namespace fluo {
 namespace ui {
@@ -46,8 +49,16 @@ public:
     CL_Rectf getGeometry() const;
     void setGeometry(int x, int y, int w, int h);
 
-
     virtual void setAutoResize(bool value);
+
+    GumpMenu* getGumpMenu();
+
+    UnicodeString getName() const;
+    void setName(const UnicodeString& name);
+
+    // python specific functions
+    boost::python::tuple pyGetGeometry() const;
+    void pySetGeometry(boost::python::tuple& geom);
 };
 
 }

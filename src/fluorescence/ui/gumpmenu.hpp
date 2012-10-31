@@ -21,14 +21,14 @@
 #define FLUO_UI_GUMPMENU_HPP
 
 #include <ClanLib/GUI/Components/window.h>
-#include <ClanLib/Display/Font/font_description.h>
+#include <ClanLib/Display/Font/font.h>
 #include <map>
 #include <boost/function.hpp>
+#include <boost/python/dict.hpp>
 
 #include <typedefs.hpp>
 #include <misc/config.hpp>
 
-#include "components/basebutton.hpp"
 #include "gumpmenus.hpp"
 #include "gumpcomponent.hpp"
 
@@ -137,8 +137,16 @@ public:
 
 
     void setFont(const UnicodeString& name, unsigned int height, bool border);
-    CL_FontDescription getFontDescription() const;
+    CL_Font getFont() const;
 
+    GumpComponent* getNamedComponent(const UnicodeString& name);
+
+
+    // python specific
+    static GumpMenu* create(int x, int y);
+    static GumpMenu* createBackground(int x, int y, bool inBackground);
+
+    boost::python::dict getPythonStore();
 
 private:
     Serial serial_;
@@ -174,6 +182,9 @@ private:
     boost::function<void()> closeCallback_;
 
     CL_FontDescription fontDesc_;
+    CL_Font cachedFont_;
+
+    boost::python::dict pythonStore_;
 };
 
 }

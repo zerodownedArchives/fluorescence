@@ -24,6 +24,7 @@
 #include <data/huesloader.hpp>
 #include <ui/gumpmenu.hpp>
 #include <ui/manager.hpp>
+#include <ui/python/scriptloader.hpp>
 
 #include "scrollarea.hpp"
 
@@ -32,37 +33,24 @@ namespace ui {
 namespace components {
 
 Button::Button(CL_GUIComponent* parent) : Image(parent),
-        mouseOver_(false), mouseDown_(false) {
+        mouseOver_(false), mouseDown_(false),
+        type_(SERVER), buttonId_(0), pageId_(0) {
 
     func_input_pressed().set(this, &Button::onInputPressed);
     func_input_released().set(this, &Button::onInputReleased);
     func_pointer_enter().set(this, &Button::onPointerEnter);
     func_pointer_exit().set(this, &Button::onPointerExit);
-    //func_render().set(this, &Button::render);
 
     set_double_click_enabled(false);
 
     set_type_name("button");
-
-    hasScrollareaParent_ = false;
-    CL_GUIComponent* comp = parent;
-    while (comp) {
-        if (dynamic_cast<components::ScrollArea*>(comp)) {
-            hasScrollareaParent_ = true;
-            break;
-        }
-        comp = comp->get_parent_component();
-    }
-
-    fontDesc_.set_height(12);
-    fontDesc_.set_subpixel(false);
 }
 
 bool Button::onInputReleased(const CL_InputEvent & e) {
     if (e.id == CL_MOUSE_LEFT) {
         mouseDown_ = false;
         updateState();
-        //handleClick();
+        handleClick();
         return true;
     } else {
         return false;
@@ -77,11 +65,6 @@ bool Button::onInputPressed(const CL_InputEvent & e) {
     } else {
         return false;
     }
-}
-
-GumpMenu* Button::getTopLevelMenu() {
-    CL_GUIComponent* topLevel = get_top_level_component();
-    return dynamic_cast<GumpMenu*>(topLevel);
 }
 
 bool Button::onPointerEnter() {
@@ -111,55 +94,94 @@ void Button::updateState() {
     }
 }
 
-void Button::activateText(unsigned int index) {
-    if (texts_[index].length() > 0) {
-        span_ = CL_SpanLayout();
-
-        CL_Font font = ui::Manager::getSingleton()->getFont(fontDesc_);
-        span_.add_text(StringConverter::toUtf8String(texts_[index]), font, fontColors_[index]);
-
-        span_.set_align((CL_SpanAlign)alignment_);
-
-        displayText_ = true;
-    } else {
-        displayText_ = false;
-    }
-}
-
-void Button::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {
-    // render base image
-    //MultiTextureImage::render(gc, clipRect);
-
-
-}
-
-void Button::setText(unsigned int index, const UnicodeString& text) {
-    texts_[index] = text;
-}
-
-void Button::setFontColor(unsigned int index, const CL_Colorf& color) {
-    fontColors_[index] = color;
-}
-
-void Button::setFontHue(unsigned int index, unsigned int hue) {
-    fontColors_[index] = data::Manager::getHuesLoader()->getFontClColor(hue);
-}
-
-void Button::setFont(const UnicodeString& name, unsigned int height) {
-    fontDesc_.set_typeface_name(StringConverter::toUtf8String(name));
-    fontDesc_.set_height(height);
-}
-
-void Button::setFontAlignment(unsigned int align) {
-    alignment_ = align;
-}
-
 ImageState* Button::getStateMouseOver() {
     return getState("mouseover");
 }
 
 ImageState* Button::getStateMouseDown() {
     return getState("mousedown");
+}
+
+Button::ButtonType Button::getButtonType() const {
+    return type_;
+}
+
+void Button::setButtonType(Button::ButtonType type) {
+    type_ = type;
+}
+
+unsigned int Button::getButtonId() const {
+    return buttonId_;
+}
+
+void Button::setButtonId(unsigned int id) {
+    buttonId_ = id;
+    type_ = SERVER;
+}
+
+unsigned int Button::getPage() const {
+    return pageId_;
+}
+
+void Button::setPage(unsigned int id) {
+    pageId_ = id;
+    type_ = PAGE;
+}
+
+void Button::handleClick() {
+    switch (type_) {
+    case PAGE:
+        onClickPage();
+        break;
+    case SERVER:
+        onClickServer();
+        break;
+    case PYTHON:
+        onClickPython();
+        break;
+    }
+}
+
+void Button::onClickPage() {
+    GumpMenu* gump = getGumpMenu();
+    if (gump) {
+        gump->activatePage(pageId_);
+    } else {
+        LOG_ERROR << "BaseButton inside something other than GumpMenu" << std::endl;
+    }
+}
+
+void Button::onClickServer() {
+    GumpMenu* gump = getGumpMenu();
+    if (gump) {
+        if (buttonId_ == 0) {
+            ui::Manager::getSingleton()->closeGumpMenu(gump);
+        } else {
+            // send gump reply to server
+            gump->sendReply(buttonId_);
+        }
+    } else {
+        LOG_ERROR << "BaseButton inside something other than GumpMenu" << std::endl;
+    }
+}
+
+void Button::onClickPython() {
+    if (pyClickCallback_) {
+        try {
+            pyClickCallback_(boost::python::ptr(this));
+        } catch (boost::python::error_already_set const&) {
+            ui::Manager::getPythonLoader()->logError();
+        }
+    }
+}
+
+boost::python::object Button::getPyClickCallback() const {
+    return pyClickCallback_;
+}
+
+void Button::setPyClickCallback(boost::python::object& obj) {
+    pyClickCallback_ = obj;
+    type_ = PYTHON;
 }
 
 }

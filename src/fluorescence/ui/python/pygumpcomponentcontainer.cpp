@@ -18,8 +18,6 @@
 
 #include "pygumpcomponentcontainer.hpp"
 
-#include "pygumpcomponent.hpp"
-
 #include <misc/log.hpp>
 
 #include <ui/gumpmenu.hpp>
@@ -33,7 +31,7 @@ namespace bpy = boost::python;
 
 components::Image* PyGumpComponentContainer::addImage(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex) {
     components::Image* img = new components::Image(self);
-    PyGumpComponent::setGeometry(img, geom);
+    img->pySetGeometry(geom);
     img->setTexture(tex);
 
     static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(img);
@@ -43,7 +41,7 @@ components::Image* PyGumpComponentContainer::addImage(CL_GUIComponent* self, boo
 
 components::Background* PyGumpComponentContainer::addBackground(CL_GUIComponent* self, boost::python::tuple& geom, unsigned int baseId) {
     components::Background* bg = new components::Background(self);
-    PyGumpComponent::setGeometry(bg, geom);
+    bg->pySetGeometry(geom);
     bg->setBaseId(baseId);
 
     static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(bg);
@@ -53,7 +51,7 @@ components::Background* PyGumpComponentContainer::addBackground(CL_GUIComponent*
 
 components::AlphaRegion* PyGumpComponentContainer::addAlphaRegion(CL_GUIComponent* self, boost::python::tuple& geom, float alpha) {
     components::AlphaRegion* region = new components::AlphaRegion(self);
-    PyGumpComponent::setGeometry(region, geom);
+    region->pySetGeometry(geom);
     region->setAlpha(alpha);
 
     static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(region);
@@ -63,7 +61,7 @@ components::AlphaRegion* PyGumpComponentContainer::addAlphaRegion(CL_GUIComponen
 
 components::Label* PyGumpComponentContainer::addLabel(CL_GUIComponent* self, boost::python::tuple& geom, const UnicodeString& text) {
     components::Label* label = new components::Label(self);
-    PyGumpComponent::setGeometry(label, geom);
+    label->pySetGeometry(geom);
     label->setText(text);
 
     static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(label);
@@ -71,10 +69,33 @@ components::Label* PyGumpComponentContainer::addLabel(CL_GUIComponent* self, boo
     return label;
 }
 
-components::Button* PyGumpComponentContainer::addButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex) {
+components::Button* PyGumpComponentContainer::addPageButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, unsigned int page) {
     components::Button* but = new components::Button(self);
-    PyGumpComponent::setGeometry(but, geom);
+    but->pySetGeometry(geom);
     but->setTexture(tex);
+    but->setPage(page);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(but);
+
+    return but;
+}
+
+components::Button* PyGumpComponentContainer::addServerButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, unsigned int id) {
+    components::Button* but = new components::Button(self);
+    but->pySetGeometry(geom);
+    but->setTexture(tex);
+    but->setButtonId(id);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(but);
+
+    return but;
+}
+
+components::Button* PyGumpComponentContainer::addPythonButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, boost::python::object& func) {
+    components::Button* but = new components::Button(self);
+    but->pySetGeometry(geom);
+    but->setTexture(tex);
+    but->setPyClickCallback(func);
 
     static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(but);
 

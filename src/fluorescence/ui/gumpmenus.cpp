@@ -49,7 +49,6 @@
 #include "xmlloader.hpp"
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
-#include "components/basebutton.hpp"
 
 namespace fluo {
 namespace ui {
@@ -75,16 +74,17 @@ GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int para
     if (menu) {
         menu->setComponentText<components::Label>("messagetext", parameters[0]);
 
-        components::BaseButton* yesButton = dynamic_cast<components::BaseButton*>(menu->get_named_item("yes"));
-        if (yesButton) {
-            yesButton->setLocalButton(parameters[1]);
+        // TODO: gui rework
+        //components::BaseButton* yesButton = dynamic_cast<components::BaseButton*>(menu->get_named_item("yes"));
+        //if (yesButton) {
+            //yesButton->setLocalButton(parameters[1]);
 
-            for (unsigned int i = 2; i < parameterCount; ++i) {
-                yesButton->setParameter(parameters[i], i-2);
-            }
-        } else {
-            LOG_ERROR << "Unable to find yes button in yesnobox" << std::endl;
-        }
+            //for (unsigned int i = 2; i < parameterCount; ++i) {
+                //yesButton->setParameter(parameters[i], i-2);
+            //}
+        //} else {
+            //LOG_ERROR << "Unable to find yes button in yesnobox" << std::endl;
+        //}
     }
 
     LOG_INFO << "YesNoBox: " << parameters[0] << std::endl;

@@ -25,6 +25,7 @@
 #include <ClanLib/Display/Render/graphic_context.h>
 #include <ClanLib/Display/Render/texture.h>
 #include <boost/shared_ptr.hpp>
+#include <boost/python/tuple.hpp>
 
 #include <ui/gumpcomponent.hpp>
 
@@ -61,6 +62,10 @@ public:
 
     float getAlpha() const;
     void setAlpha(float alpha);
+
+    // python specific interface
+    boost::python::tuple pyGetRgba() const;
+    void pySetRgba(const boost::python::tuple& rgba);
 
 private:
     unsigned int baseId_;

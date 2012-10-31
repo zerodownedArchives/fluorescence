@@ -29,9 +29,9 @@
 
 #include <ui/manager.hpp>
 #include <ui/commandmanager.hpp>
+#include <ui/components/button.hpp>
 #include <ui/components/lineedit.hpp>
 #include <ui/components/checkbox.hpp>
-#include <ui/components/basebutton.hpp>
 
 #include <net/manager.hpp>
 #include <net/packets/00_createcharacter.hpp>
@@ -111,12 +111,12 @@ void GumpActions::doAction(GumpMenu* gump, const UnicodeString& action, unsigned
     }
 }
 
-void GumpActions::doAction(components::BaseButton* button) {
-    GumpMenu* gump = button->getTopLevelMenu();
+void GumpActions::doAction(components::Button* button) {
+    GumpMenu* gump = button->getGumpMenu();
     if (gump) {
-        doAction(gump, button->getAction(), components::BaseButton::MAX_PARAMETER_COUNT, button->getParameterPtr());
+        //doAction(gump, button->getAction(), components::Button::MAX_PARAMETER_COUNT, button->getParameterPtr());
     } else {
-        LOG_ERROR << "BaseButton inside something other than GumpMenu" << std::endl;
+        LOG_ERROR << "Button inside something other than GumpMenu" << std::endl;
     }
 }
 
@@ -126,7 +126,7 @@ bool GumpActions::closeHelper(GumpMenu* menu, const UnicodeString& action, unsig
 }
 
 bool GumpActions::selectShardFirst(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    components::BaseButton* button = dynamic_cast<components::BaseButton*>(menu->get_named_item("selectshard"));
+    components::Button* button = dynamic_cast<components::Button*>(menu->get_named_item("selectshard"));
     if (!button) {
         LOG_DEBUG << "No shard found for quickselect" << std::endl;
     } else {
@@ -136,7 +136,7 @@ bool GumpActions::selectShardFirst(GumpMenu* menu, const UnicodeString& action, 
 }
 
 bool GumpActions::selectServerFirst(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    components::BaseButton* button = dynamic_cast<components::BaseButton*>(menu->get_named_item("selectserver"));
+    components::Button* button = dynamic_cast<components::Button*>(menu->get_named_item("selectserver"));
     if (!button) {
         LOG_DEBUG << "No server found for quickselect" << std::endl;
     } else {
@@ -146,7 +146,7 @@ bool GumpActions::selectServerFirst(GumpMenu* menu, const UnicodeString& action,
 }
 
 bool GumpActions::selectCharacterFirst(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    components::BaseButton* button = dynamic_cast<components::BaseButton*>(menu->get_named_item("selectcharacter"));
+    components::Button* button = dynamic_cast<components::Button*>(menu->get_named_item("selectcharacter"));
     if (!button) {
         LOG_DEBUG << "No character found for quickselect" << std::endl;
     } else {

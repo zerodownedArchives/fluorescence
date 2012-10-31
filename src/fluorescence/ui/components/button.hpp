@@ -25,6 +25,7 @@
 #include <ClanLib/Display/2D/span_layout.h>
 #include <ClanLib/Display/Font/font.h>
 #include <ClanLib/Display/Font/font_description.h>
+#include <boost/python/object.hpp>
 
 #include <misc/string.hpp>
 
@@ -36,9 +37,13 @@ namespace components {
 
 class Button : public Image {
 public:
-    Button(CL_GUIComponent* parent);
+    enum ButtonType {
+        PAGE = 1,
+        SERVER = 2,
+        PYTHON = 3,
+    };
 
-    virtual GumpMenu* getTopLevelMenu();
+    Button(CL_GUIComponent* parent);
 
     void setFont(const UnicodeString& name, unsigned int height);
     void setFontAlignment(unsigned int align);
@@ -48,6 +53,19 @@ public:
 
     ImageState* getStateMouseOver();
     ImageState* getStateMouseDown();
+
+    ButtonType getButtonType() const;
+    void setButtonType(ButtonType type);
+
+    unsigned int getButtonId() const;
+    void setButtonId(unsigned int id);
+
+    unsigned int getPage() const;
+    void setPage(unsigned int id);
+
+    // python specific api
+    boost::python::object getPyClickCallback() const;
+    void setPyClickCallback(boost::python::object& obj);
 
 private:
     bool onInputPressed(const CL_InputEvent & e);
@@ -60,19 +78,20 @@ private:
     bool mouseDown_;
     void updateState();
 
-    unsigned int calcTextureId() const;
+    ButtonType type_;
 
-    bool displayText_;
-    CL_SpanLayout span_;
-    CL_FontDescription fontDesc_;
-    unsigned int alignment_;
-    CL_Colorf fontColors_[3];
-    UnicodeString texts_[3];
-    void activateText(unsigned int index);
+    // for server button
+    unsigned int buttonId_;
 
-    void render(CL_GraphicContext& gc, const CL_Rect& clipRect);
+    // for page button
+    unsigned int pageId_;
 
-    bool hasScrollareaParent_;
+    void handleClick();
+    void onClickPage();
+    void onClickServer();
+    void onClickPython();
+
+    boost::python::object pyClickCallback_;
 };
 
 }

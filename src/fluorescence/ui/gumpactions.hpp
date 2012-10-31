@@ -29,7 +29,7 @@ namespace fluo {
 namespace ui {
 
 namespace components {
-class BaseButton;
+class Button;
 }
 
 typedef boost::function<bool (GumpMenu*, const UnicodeString&, unsigned int, const UnicodeString*)> GumpActionCallback;
@@ -40,7 +40,7 @@ public:
     static void buildFullActionTable();
 
     static void doAction(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
-    static void doAction(components::BaseButton* button);
+    static void doAction(components::Button* button);
 
 private:
 

@@ -26,7 +26,6 @@
 #include "components/lineedit.hpp"
 #include "components/propertylabel.hpp"
 #include "components/checkbox.hpp"
-#include "components/warmodebutton.hpp"
 
 #include <client.hpp>
 #include <misc/log.hpp>
@@ -282,10 +281,10 @@ void GumpMenu::updateMobilePropertiesRec(CL_GUIComponent* comp) {
         if (lbl) {
             lbl->update(linkedMobile_);
         } else {
-            components::WarModeButton* wmbut = dynamic_cast<components::WarModeButton*>(*iter);
-            if (wmbut) {
-                wmbut->setWarMode(linkedMobile_->isWarMode());
-            }
+            //components::WarModeButton* wmbut = dynamic_cast<components::WarModeButton*>(*iter);
+            //if (wmbut) {
+                //wmbut->setWarMode(linkedMobile_->isWarMode());
+            //}
         }
 
         updateMobilePropertiesRec(*iter);
@@ -418,10 +417,33 @@ void GumpMenu::setFont(const UnicodeString& name, unsigned int height, bool bord
     fontDesc_.set_height(height);
     fontDesc_.set_weight(border ? 700 : 400); // weight values taken from clanlib
     fontDesc_.set_subpixel(false);
+
+    cachedFont_ = ui::Manager::getSingleton()->getFont(fontDesc_);
 }
 
-CL_FontDescription GumpMenu::getFontDescription() const {
-    return fontDesc_;
+CL_Font GumpMenu::getFont() const {
+    return cachedFont_;
+}
+
+GumpMenu* GumpMenu::create(int x, int y) {
+    return createBackground(x, y, false);
+}
+
+GumpMenu* GumpMenu::createBackground(int x, int y, bool inBackground) {
+    CL_GUITopLevelDescription desc(CL_Rect(x, y, CL_Size(1, 1)), false);
+    desc.set_decorations(false);
+    desc.set_in_background(inBackground);
+
+    return new GumpMenu(desc);
+}
+
+GumpComponent* GumpMenu::getNamedComponent(const UnicodeString& name) {
+    CL_GUIComponent* cmp = get_named_item(StringConverter::toUtf8String(name));
+    return dynamic_cast<GumpComponent*>(cmp);
+}
+
+boost::python::dict GumpMenu::getPythonStore() {
+    return pythonStore_;
 }
 
 }

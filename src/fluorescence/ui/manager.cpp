@@ -621,5 +621,9 @@ void Manager::showSpeechEntry(bool clearText) {
     }
 }
 
+boost::shared_ptr<python::ScriptLoader> Manager::getPythonLoader() {
+    return getSingleton()->pythonLoader_;
+}
+
 }
 }
