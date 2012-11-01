@@ -72,6 +72,13 @@ public:
     Serial getSerial() const;
     unsigned int getTypeId() const;
 
+    void setCurrentRadioGroup(unsigned int groupId);
+    unsigned int getCurrentRadioGroup() const;
+
+    void setFont(const UnicodeString& name, unsigned int height);
+    void setFontB(const UnicodeString& name, unsigned int height, bool border);
+    CL_Font getFont() const;
+
     // mobile linking
     void updateMobileProperties();
     void setLinkedMobile(world::Mobile* mob);
@@ -81,62 +88,18 @@ public:
     // event stuff
     void onClose();
     void setCloseCallback(boost::function<void()> cb);
+    void sendReply(unsigned int buttonId_);
 
     // auto-resize
     void fitSizeToChildren();
 
 
-    void sendReply(unsigned int buttonId_);
-
-    void setCurrentRadioGroup(unsigned int groupId);
-    unsigned int getCurrentRadioGroup() const;
-
     virtual bool has_pixel(const CL_Point& p) const;
-
     void startDragging(const CL_Point& mousePos);
 
-
-
-    // TODO: rework template functions
-    template<class ComponentClass>
-    void setComponentTextFromConfig(const UnicodeString& componentName, const UnicodeString& configName, Config& config) {
-        if (config.exists(configName) > 0) {
-            setComponentText<ComponentClass>(componentName, config[configName].asString());
-        }
-    }
-
-    template<class ComponentClass>
-    void setComponentText(const UnicodeString& componentName, const UnicodeString& text) {
-        std::string utf8CompName = StringConverter::toUtf8String(componentName);
-        ComponentClass* component = dynamic_cast<ComponentClass*>(get_named_item(utf8CompName));
-        if (!component) {
-            UnicodeString errorMessage = UnicodeString("Unable to find field \"").append(componentName).append("\" in gump ").append(getName());
-            GumpMenus::openMessageBox(errorMessage);
-        } else {
-            component->setText(text);
-        }
-    }
-
-    template<class ComponentClass>
-    bool getComponentText(const UnicodeString& componentName, UnicodeString& result) {
-        std::string utf8CompName = StringConverter::toUtf8String(componentName);
-        ComponentClass* component = dynamic_cast<ComponentClass*>(get_named_item(utf8CompName));
-        if (!component) {
-            UnicodeString errorMessage = UnicodeString("Unable to find field \"").append(componentName).append("\" in gump ").append(getName());
-            GumpMenus::openMessageBox(errorMessage);
-            return false;
-        } else {
-            result = component->getText();
-            return true;
-        }
-    }
-
-
-    void setFont(const UnicodeString& name, unsigned int height);
-    void setFontB(const UnicodeString& name, unsigned int height, bool border);
-    CL_Font getFont() const;
-
     GumpComponent* getNamedComponent(const UnicodeString& name);
+
+    void close();
 
 
     // python specific

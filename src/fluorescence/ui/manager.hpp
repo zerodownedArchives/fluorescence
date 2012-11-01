@@ -29,6 +29,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/python/dict.hpp>
 
 #include <list>
 #include <queue>
@@ -143,6 +144,7 @@ public:
     void cancelPrompt();
 
     void openPythonGump(const UnicodeString& name);
+    void openPythonGump(const UnicodeString& name, boost::python::dict& args);
 
 private:
     static Manager* singleton_;

@@ -472,5 +472,9 @@ void GumpMenu::executePythonCallback(boost::python::object& cb) const {
     }
 }
 
+void GumpMenu::close() {
+    ui::Manager::getSingleton()->closeGumpMenu(this);
+}
+
 }
 }

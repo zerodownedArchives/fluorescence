@@ -84,10 +84,10 @@ bool Button::onPointerExit() {
 
 void Button::updateState() {
     if (mouseDown_) {
-        setCurrentState("mousedown");
+        setCurrentState("mouseDown");
     } else {
         if (mouseOver_) {
-            setCurrentState("mouseover");
+            setCurrentState("mouseOver");
         } else {
             setCurrentState("normal");
         }
@@ -95,11 +95,11 @@ void Button::updateState() {
 }
 
 ImageState* Button::getStateMouseOver() {
-    return getState("mouseover");
+    return getState("mouseOver");
 }
 
 ImageState* Button::getStateMouseDown() {
-    return getState("mousedown");
+    return getState("mouseDown");
 }
 
 Button::ButtonType Button::getButtonType() const {

@@ -19,6 +19,7 @@
 #include "scriptloader.hpp"
 
 #include <misc/log.hpp>
+#include <ui/manager.hpp>
 #include <ui/gumpmenu.hpp>
 
 #include <ui/python/pystring.hpp>
@@ -57,6 +58,12 @@ void ScriptLoader::init() {
     initialized_ = true;
 }
 
+void ScriptLoader::setThemePath(const boost::filesystem::path& themePath) {
+    // extend python path to the theme directory
+    PyObject* sysPath = PySys_GetObject((char*)"path");
+    PyList_Insert(sysPath, 0, PyString_FromString(themePath.string().c_str()));
+}
+
 void ScriptLoader::setShardConfig(Config& config) {
     // there might be some overrides in the shards gump directory, so we need to reload
     // python. otherwise, things might be "stuck" in the bytecode cache.
@@ -66,6 +73,8 @@ void ScriptLoader::setShardConfig(Config& config) {
     PyObject* sysPath = PySys_GetObject((char*)"path");
     boost::filesystem::path path = config.getShardPath() / "data/gumps/";
     PyList_Insert(sysPath, 0, PyString_FromString(path.string().c_str()));
+
+    setThemePath(ui::Manager::getSingleton()->getThemePath());
 }
 
 void ScriptLoader::unload() {
@@ -86,6 +95,11 @@ void ScriptLoader::reload() {
 }
 
 void ScriptLoader::openGump(const UnicodeString& name) {
+    boost::python::dict args;
+    openGump(name, args);
+}
+
+void ScriptLoader::openGump(const UnicodeString& name, boost::python::dict& args) {
     try {
         std::map<UnicodeString, bpy::object>::iterator iter = pythonModules_.find(name);
         bpy::object module;
@@ -97,7 +111,7 @@ void ScriptLoader::openGump(const UnicodeString& name) {
         }
 
         if (module.attr("create")) {
-            module.attr("create")();
+            module.attr("create")(args);
         } else {
             LOG_WARN << "No function create in gump module " << name << std::endl;
         }

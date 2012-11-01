@@ -119,6 +119,7 @@ BOOST_PYTHON_MODULE(gumps) {
         .def("setFont", &GumpMenu::setFont)
         .def("setFont", &GumpMenu::setFontB)
         .def("component", &GumpMenu::getNamedComponent, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("close", &GumpMenu::close)
     ;
 
     // factory functions for gump menus

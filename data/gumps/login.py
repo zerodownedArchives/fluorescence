@@ -2,10 +2,13 @@
 from gumps import *
 from data import *
 import client
+import theme
 
-def create():
+def create(args):
+    theme.themeTest()
+
     g = GumpMenu("login", 337, 289, True)
-    g.setFont("Devinne Swash", 16)
+    theme.setFont(g)
     g.closable = False
 
     g.addImage((0, 0), Texture(TextureSource.THEME, "images/background_350x190.png"))
@@ -40,14 +43,10 @@ def create():
     le.name = "password"
     le.onEnter = connect
 
-    btnExit = g.addPythonButton((30, 150, 130, 25), Texture(TextureSource.THEME, "images/button.png"), shutdown)
-    btnExit.state("mouseover").rgba = rgba("#cceecc")
-    btnExit.state("mousedown").rgba = rgba("#ccffcc")
+    btnExit = theme.addPythonButton(g, (30, 150, 130, 25), shutdown)
     btnExit.text = "Exit"
 
-    btnConnect = g.addPythonButton((190, 150, 130, 25), Texture(TextureSource.THEME, "images/button.png"), connect)
-    btnConnect.state("mouseover").rgba = rgba("#cceecc")
-    btnConnect.state("mousedown").rgba = rgba("#ccffcc")
+    btnConnect = theme.addPythonButton(g, (190, 150, 130, 25), connect)
     btnConnect.text = "Connect"
 
 def shutdown(component):

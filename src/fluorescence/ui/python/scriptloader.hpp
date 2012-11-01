@@ -21,6 +21,7 @@
 #define FLUO_UI_PYTHON_SCRIPTLOADER_HPP
 
 #include <boost/python.hpp>
+#include <boost/filesystem/path.hpp>
 #include <map>
 
 #include <misc/string.hpp>
@@ -39,6 +40,7 @@ public:
     ~ScriptLoader();
 
     void init();
+    void setThemePath(const boost::filesystem::path& themePath);
     void setShardConfig(Config& config);
     void unload();
     void reload();
@@ -46,6 +48,7 @@ public:
     void logError() const;
 
     void openGump(const UnicodeString& name);
+    void openGump(const UnicodeString& name, boost::python::dict& args);
 
 private:
     bool initialized_;

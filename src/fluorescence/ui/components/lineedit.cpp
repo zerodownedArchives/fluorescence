@@ -80,7 +80,6 @@
 #include <misc/log.hpp>
 #include <ui/manager.hpp>
 #include <ui/gumpmenu.hpp>
-#include <ui/gumpactions.hpp>
 #include <ui/python/scriptloader.hpp>
 
 namespace fluo {
@@ -390,7 +389,7 @@ void LineEdit::on_process_message(CL_GUIMessage &msg) {
         if (e.device.get_type() == CL_InputDevice::keyboard) {
             if (e.type == CL_InputEvent::pressed &&
                     (e.id == CL_KEY_ENTER || e.id == CL_KEY_RETURN || e.id == CL_KEY_NUMPAD_ENTER) &&
-                    action_.length() > 0) {
+                    pyEnterCallback_) {
                 onEnterPressed();
                 msg.set_consumed();
                 return;

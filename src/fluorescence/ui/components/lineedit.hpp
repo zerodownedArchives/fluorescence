@@ -105,8 +105,6 @@ public:
     void setPyEnterCallback(boost::python::object cb);
 
 private:
-    UnicodeString action_;
-
     unsigned int entryId_;
 
     CL_FontDescription fontDesc_;

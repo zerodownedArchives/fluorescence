@@ -121,6 +121,7 @@ Manager::Manager() : worldView_(nullptr), promptSerial_(0) {
     LOG_DEBUG << "Initializing Python" << std::endl;
     pythonLoader_.reset(new python::ScriptLoader());
     pythonLoader_->init();
+    pythonLoader_->setThemePath(getThemePath());
 }
 
 bool Manager::setShardConfig(Config& config) {
@@ -377,6 +378,10 @@ void Manager::loadFontDirectory(const boost::filesystem::path& path) {
 
 void Manager::openPythonGump(const UnicodeString& name) {
     pythonLoader_->openGump(name);
+}
+
+void Manager::openPythonGump(const UnicodeString& name, boost::python::dict& args) {
+    pythonLoader_->openGump(name, args);
 }
 
 GumpMenu* Manager::openXmlGump(const UnicodeString& name) {

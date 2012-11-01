@@ -9,6 +9,8 @@ def onButtonClick(button):
 	print "onButtonClick"
 	button.rgba = (1.0, 0.0, 1.0)
 	print button.name
+	button.halign = HAlign.RIGHT
+	button.valign = VAlign.TOP
 
 	button.gump.component("i1").hue = 90
 
@@ -18,7 +20,7 @@ def onButtonClick(button):
 
 	button.gump.component("l2").halign = HAlign.RIGHT
 
-def create():
+def create(args):
 	g = GumpMenu("test", 30, 30)
 
 	b1 = g.addBackground((0, 0, 500, 500), 3000)
@@ -43,8 +45,6 @@ def create():
 	but.mouseOver.fontRgba = rgba("#00ffff")
 	but.setFont("Arial", 8);
 	i1.name = "i1"
-	print g.store
-	print i2
 	g.store["i2"] = i2
 
 	# cliloc test
@@ -56,13 +56,9 @@ def create():
 	g.addAlphaRegion((50, 50, 100, 100), 0.9)
 
 	l1 = g.addLabel((300, 300), str2)
-	print l1.halign
 	l1.halign = HAlign.RIGHT
-	print l1.halign
 	l1.rgba = rgba(13)
 
 	l2 = g.addLabel((5, 300, 200, 30), "centered")
 	l2.halign = HAlign.CENTER
 	l2.name = "l2"
-
-	return g

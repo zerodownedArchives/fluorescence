@@ -55,9 +55,15 @@ namespace fluo {
 namespace ui {
 
 void GumpMenus::openMessageBox(const UnicodeString& message) {
-    ui::Manager::getSingleton()->openPythonGump("messagebox");
+    boost::python::dict args;
+    args["message"] = message;
+    ui::Manager::getSingleton()->openPythonGump("messagebox", args);
     LOG_INFO << "MessageBox: " << message << std::endl;
 }
+
+
+
+// rework to python ui below this point
 
 GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     if (parameterCount < 2) {
@@ -67,9 +73,9 @@ GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int para
 
     GumpMenu* menu = XmlLoader::fromXmlFile("yesnobox");
     if (menu) {
-        menu->setComponentText<components::Label>("messagetext", parameters[0]);
-
         // TODO: gui rework
+        //menu->setComponentText<components::Label>("messagetext", parameters[0]);
+
         //components::BaseButton* yesButton = dynamic_cast<components::BaseButton*>(menu->get_named_item("yes"));
         //if (yesButton) {
             //yesButton->setLocalButton(parameters[1]);
@@ -374,7 +380,7 @@ GumpMenu* GumpMenus::openObjectPicker(const net::packets::ObjectPicker* pkt) {
 
     XmlLoader::removeRepeatContext("answers");
 
-    menu->setComponentText<components::Label>("questionlabel", pkt->title_);
+    //menu->setComponentText<components::Label>("questionlabel", pkt->title_);
 
     return menu;
 }
