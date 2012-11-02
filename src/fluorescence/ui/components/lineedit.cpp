@@ -90,6 +90,7 @@ LineEdit::LineEdit(CL_GUIComponent* parent) :
         GumpComponent(parent),
         entryId_(0xFFFFFFFFu),
         fontColor_(CL_Colorf::black),
+        overrideGumpFont_(false),
 
         cursor_pos(0),
         max_length(-1),
@@ -856,7 +857,8 @@ CL_Rect LineEdit::get_cursor_rect() {
     cursor_rect.right = cursor_rect.left + 1;
 
 
-    CL_FontMetrics metrics = getFont().get_font_metrics();
+    CL_Font font = getFont();
+    CL_FontMetrics metrics = font.get_font_metrics();
     float align_height = metrics.get_ascent() - metrics.get_internal_leading();
     cursor_rect.top = ((get_height() - align_height) / 2.0f) - metrics.get_internal_leading();
     cursor_rect.bottom = cursor_rect.top + metrics.get_ascent() + metrics.get_descent();
@@ -867,13 +869,14 @@ CL_Rect LineEdit::get_cursor_rect() {
 CL_Rect LineEdit::get_selection_rect() {
     CL_GraphicContext &gc = get_gc();
 
+    CL_Font font = getFont();
     // text before selection:
     CL_String txt_before = get_visible_text_before_selection();
-    CL_Size text_size_before_selection = getFont().get_text_size(gc, txt_before);
+    CL_Size text_size_before_selection = font.get_text_size(gc, txt_before);
 
     // selection text:
     CL_String txt_selected = get_visible_selected_text();
-    CL_Size text_size_selection = getFont().get_text_size(gc, txt_selected);
+    CL_Size text_size_selection = font.get_text_size(gc, txt_selected);
 
     // hack. uo fonts always add 2 for border size. border is not drawn when color is not black (gnarf!)
     if (isUoFont_) {

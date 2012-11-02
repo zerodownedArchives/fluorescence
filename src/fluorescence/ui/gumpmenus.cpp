@@ -61,6 +61,34 @@ void GumpMenus::openMessageBox(const UnicodeString& message) {
     LOG_INFO << "MessageBox: " << message << std::endl;
 }
 
+void GumpMenus::openShardSelectionGump() {
+    namespace bfs = boost::filesystem;
+
+    bfs::path path("shards");
+
+    if (!bfs::exists(path) || !bfs::is_directory(path)) {
+        LOG_EMERGENCY << "Unable to list shards directory" << std::endl;
+        openMessageBox("Unable to list shards directory");
+        return;
+    }
+
+    boost::python::list nameList;
+
+    bfs::directory_iterator nameIter(path);
+    bfs::directory_iterator nameEnd;
+    for (; nameIter != nameEnd; ++nameIter) {
+        if (bfs::is_directory(nameIter->status()) && nameIter->leaf() != ".svn") {
+            nameList.append(StringConverter::fromUtf8(nameIter->path().filename()));
+        }
+    }
+
+    nameList.sort();
+
+    boost::python::dict args;
+    args["shards"] = nameList;
+
+    ui::Manager::getSingleton()->openPythonGump("shardselection", args);
+}
 
 
 // rework to python ui below this point
@@ -89,41 +117,6 @@ GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int para
     }
 
     LOG_INFO << "YesNoBox: " << parameters[0] << std::endl;
-
-    return menu;
-}
-
-GumpMenu* GumpMenus::openShardSelectionGump() {
-    namespace bfs = boost::filesystem;
-
-    bfs::path path("shards");
-
-    if (!bfs::exists(path) || !bfs::is_directory(path)) {
-        LOG_EMERGENCY << "Unable to list shards directory" << std::endl;
-        return NULL;
-    }
-
-    std::vector<UnicodeString> nameList;
-
-    bfs::directory_iterator nameIter(path);
-    bfs::directory_iterator nameEnd;
-
-    for (; nameIter != nameEnd; ++nameIter) {
-        if (bfs::is_directory(nameIter->status()) && nameIter->leaf() != ".svn") {
-            nameList.push_back(StringConverter::fromUtf8(nameIter->path().filename()));
-        }
-    }
-
-    std::sort(nameList.begin(), nameList.end());
-
-    XmlLoader::RepeatContext context;
-    context.repeatCount_ = nameList.size();
-    context.keywordReplacements_["shardname"] = nameList;
-    context.keywordReplacements_["shardname"] = nameList;
-
-    XmlLoader::addRepeatContext("shardlist", context);
-    GumpMenu* menu = XmlLoader::fromXmlFile("shardselection");
-    XmlLoader::removeRepeatContext("shardlist");
 
     return menu;
 }

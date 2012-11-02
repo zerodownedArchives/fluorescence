@@ -134,5 +134,9 @@ GumpMenu* GumpComponent::pyGetGumpMenu() {
     return getGumpMenu();
 }
 
+boost::python::dict GumpComponent::getPythonStore() const {
+    return pythonStore_;
+}
+
 }
 }

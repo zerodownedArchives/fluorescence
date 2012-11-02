@@ -84,9 +84,23 @@ void ScriptLoader::unload() {
 
     pythonModules_.clear();
 
-    Py_Finalize();
-
-    initialized_ = false;
+    /*
+     * This is a bit tricky. As boost::python cannot handle repeated calls to Py_Finalize and Py_Initialize,
+     * we have to manually unload all python modules inside the client directory.
+     * To do this, iterate over sys.modules and del all modules whose path starts with the current working directory
+     */
+    try {
+        bpy::object main = bpy::import("__main__");
+        bpy::object mainDict = main.attr("__dict__");
+        bpy::exec(  "import sys,os\n"
+                    "cwd = os.getcwd()\n"
+                    "for name, mod in sys.modules.items():\n"
+                    "    if hasattr(mod, \"__file__\") and os.path.abspath(mod.__file__).startswith(cwd):\n"
+                    "        print \"%s: %s\" % (name, mod.__file__)\n"
+                    "        del sys.modules[name]\n", mainDict, mainDict);
+    } catch (bpy::error_already_set const&) {
+        logError();
+    }
 }
 
 void ScriptLoader::reload() {

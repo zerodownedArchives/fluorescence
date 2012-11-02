@@ -2,7 +2,7 @@
 from data import *
 
 def themeTest():
-    print "I am the default theme!"
+    print "I am the preshard theme!"
 
 def setFont(obj):
     obj.setFont("Devinne Swash", 16)
@@ -23,7 +23,6 @@ def addServerButton(gump, coordinates, buttonId):
     return b
 
 def styleButton(b):
-    b.rgba = rgba("#ff0000")
     b.state("mouseOver").rgba = rgba("#cceecc")
     b.state("mouseDown").rgba = rgba("#ccffcc")
     b.setFont("Devinne Swash", 18)

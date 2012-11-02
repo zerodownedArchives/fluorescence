@@ -76,6 +76,7 @@ BOOST_PYTHON_MODULE(data) {
 
 
 BOOST_PYTHON_MODULE(client) {
+    bpy::def("setShard", PyClient::setShard);
     bpy::def("connect", PyClient::connect);
     bpy::def("getConfig", PyClient::getConfig);
     bpy::def("shutdown", PyClient::shutdown);
@@ -136,6 +137,7 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("gump", bpy::make_function(&GumpComponent::pyGetGumpMenu, bpy::return_value_policy<bpy::reference_existing_object>()))
         .add_property("name", &GumpComponent::getName, &GumpComponent::setName)
         .def("setGeometry", &GumpComponent::setGeometry)
+        .add_property("store", &GumpComponent::getPythonStore)
     ;
 
     // image component

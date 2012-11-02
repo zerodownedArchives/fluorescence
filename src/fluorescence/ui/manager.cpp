@@ -125,6 +125,8 @@ Manager::Manager() : worldView_(nullptr), promptSerial_(0) {
 }
 
 bool Manager::setShardConfig(Config& config) {
+    destroyAllGumpMenus();
+
     boost::filesystem::path path = "fonts";
     loadFontDirectory(path);
 

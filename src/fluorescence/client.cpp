@@ -293,18 +293,12 @@ int Client::main(const std::vector<CL_String8>& args) {
         return 1;
     }
 
-    //UnicodeString selectedShard;
     // if we already have a command line argument, take it
     if (config_.isLoaded()) {
         setState(STATE_PRE_LOGIN);
     } else {
-        if (!ui::GumpMenus::openShardSelectionGump()) {
-            LOG_EMERGENCY << "No shard chosen, and unable to select through ui" << std::endl;
-            cleanUp();
-            return 1;
-        } else {
-            LOG_INFO << "Selecting shard through user interface" << std::endl;
-        }
+        ui::GumpMenus::openShardSelectionGump();
+        LOG_INFO << "Selecting shard through user interface" << std::endl;
     }
 
     timeval lastTime;

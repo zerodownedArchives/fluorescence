@@ -26,6 +26,10 @@ namespace fluo {
 namespace ui {
 namespace python {
 
+void PyClient::setShard(const UnicodeString& name) {
+    Client::getSingleton()->selectShard(name);
+}
+
 bool PyClient::connect(const UnicodeString& host, unsigned int port, const UnicodeString& account, const UnicodeString& password) {
     return Client::getSingleton()->connect(host, port, account, password);
 }

@@ -22,6 +22,7 @@
 
 #include <ClanLib/GUI/gui_component.h>
 #include <boost/python/tuple.hpp>
+#include <boost/python/dict.hpp>
 
 #include <misc/string.hpp>
 
@@ -61,6 +62,10 @@ public:
     boost::python::tuple pyGetGeometry() const;
     void pySetGeometry(boost::python::tuple& geom);
     GumpMenu* pyGetGumpMenu();
+    boost::python::dict getPythonStore() const;
+
+private:
+    boost::python::dict pythonStore_;
 };
 
 }

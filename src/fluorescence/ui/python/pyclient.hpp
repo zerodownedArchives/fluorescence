@@ -28,6 +28,7 @@ namespace python {
 
 class PyClient {
 public:
+    static void setShard(const UnicodeString& name);
     static bool connect(const UnicodeString& host, unsigned int port, const UnicodeString& account, const UnicodeString& password);
     static UnicodeString getConfig(const UnicodeString& key);
     static void shutdown();

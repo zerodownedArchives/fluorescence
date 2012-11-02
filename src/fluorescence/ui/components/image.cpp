@@ -490,7 +490,9 @@ void Image::setRgba(float r, float g, float b) {
 }
 
 bool Image::useRgba() const {
-    if (currentState_->overrideRgba_) {
+    if (getHue() == 0) {
+        return true;
+    } else if (currentState_->overrideRgba_) {
         return true;
     } else if (currentState_->overrideHue_) {
         return false;
