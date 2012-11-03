@@ -73,46 +73,37 @@ ScrollBar::ScrollBar(CL_GUIComponent* parent) : GumpComponent(parent),
     page_step(10), position(0), mouse_down_mode(mouse_down_none),
     thumb_start_position(0), thumb_start_pixel_position(0) {
 
-    for (unsigned int i = 0; i < 3; ++i) {
-        incrementColors_[i] = CL_Colorf::white;
-        incrementHueInfos_[i] = CL_Vec3f(0, 0, 1);
-
-        decrementColors_[i] = CL_Colorf::white;
-        decrementHueInfos_[i] = CL_Vec3f(0, 0, 1);
-
-        thumbColors_[i] = CL_Colorf::white;
-        thumbHueInfos_[i] = CL_Vec3f(0, 0, 1);
-    }
-
-    trackColor_ = CL_Colorf::white;
-    trackHueInfo_ = CL_Vec3f(0, 0, 1);
-
     set_type_name("scrollbar");
 
     func_process_message().set(this, &ScrollBar::on_process_message);
     func_render().set(this, &ScrollBar::on_render);
 
     mouse_down_timer.func_expired().set(this, &ScrollBar::on_timer_expired);
+
+    for (unsigned int i = 0; i < 3; ++i) {
+        incrementImageStates_[i].setOwner(this);
+        decrementImageStates_[i].setOwner(this);
+        thumbImageStates_[i].setOwner(this);
+    }
+    trackImageState_.setOwner(this);
+
+    // set size to make sure it is not skipped at rendering
+    setWidth(1);
+    setHeight(1);
 }
 
 ScrollBar::~ScrollBar() {
 }
 
-void ScrollBar::setTrackTexture(boost::shared_ptr<ui::Texture> texture, unsigned int hue, const std::string& rgba) {
-    trackTexture_ = texture;
-
-    if (rgba.length() > 0) {
-        trackColor_ = CL_Colorf(rgba);
-    }
-
-    trackHueInfo_[1u] = hue;
-}
-
 void ScrollBar::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
-    if (!incrementTextures_[incrementIndex_]->isReadComplete() ||
-            !decrementTextures_[decrementIndex_]->isReadComplete() ||
-            !thumbTextures_[thumbIndex_]->isReadComplete() ||
-            !trackTexture_->isReadComplete()) {
+    boost::shared_ptr<ui::Texture> incTex = getPartTexture(incrementImageStates_, incrementIndex_);
+    boost::shared_ptr<ui::Texture> decTex = getPartTexture(decrementImageStates_, decrementIndex_);
+    boost::shared_ptr<ui::Texture> thumbTex = getPartTexture(thumbImageStates_, thumbIndex_);
+    boost::shared_ptr<ui::Texture> trackTex = trackImageState_.getTexture();
+    if (!incTex || !incTex->isReadComplete() ||
+            !decTex || !decTex->isReadComplete() ||
+            !thumbTex || !thumbTex->isReadComplete() ||
+            !trackTex || !trackTex->isReadComplete()) {
         ui::Manager::getSingleton()->queueComponentRepaint(this);
         return;
     }
@@ -124,15 +115,14 @@ void ScrollBar::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
     }
 
     CL_Rectf centeredTrack(
-            (get_width() - trackTexture_->getWidth()) / 2, rect_track_decrement.top,
-            CL_Sizef(trackTexture_->getWidth(), trackTexture_->getHeight())
+            (get_width() - trackTex->getWidth()) / 2, rect_track_decrement.top,
+            CL_Sizef(trackTex->getWidth(), trackTex->getHeight())
     );
-    CL_Rectf trackTexCoords = trackTexture_->getNormalizedTextureCoords();
+    CL_Rectf trackTexCoords = trackTex->getNormalizedTextureCoords();
     if (vertical) {
         while (centeredTrack.bottom <= rect_button_increment.top) {
-            renderTexture(gc, trackTexture_.get(), centeredTrack,
-                    trackColor_, trackHueInfo_);
-            centeredTrack.translate(0, trackTexture_->getHeight() - 1);
+            renderTexture(gc, &trackImageState_, 0, centeredTrack);
+            centeredTrack.translate(0, trackTex->getHeight() - 1);
         }
 
         // draw rest
@@ -140,13 +130,11 @@ void ScrollBar::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
         float factor = heightLeft / centeredTrack.get_height();
         centeredTrack.bottom = centeredTrack.top + (centeredTrack.get_height() * factor);
         trackTexCoords.bottom = trackTexCoords.top + (trackTexCoords.get_height() * factor);
-        renderTexture(gc, trackTexture_.get(), centeredTrack,
-                    trackColor_, trackHueInfo_);
+        renderTexture(gc, &trackImageState_, 0, centeredTrack);
     } else {
         while (centeredTrack.right <= rect_button_increment.left) {
-            renderTexture(gc, trackTexture_.get(), centeredTrack,
-                    trackColor_, trackHueInfo_);
-            centeredTrack.translate(trackTexture_->getWidth() - 1, 0);
+            renderTexture(gc, &trackImageState_, 0, centeredTrack);
+            centeredTrack.translate(trackTex->getWidth() - 1, 0);
         }
 
         // draw rest
@@ -154,30 +142,26 @@ void ScrollBar::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
         float factor = widthLeft / centeredTrack.get_width();
         centeredTrack.left = centeredTrack.right + (centeredTrack.get_width() * factor);
         trackTexCoords.left = trackTexCoords.right + (trackTexCoords.get_width() * factor);
-        renderTexture(gc, trackTexture_.get(), centeredTrack,
-                    trackColor_, trackHueInfo_);
+        centeredTrack.translate(trackTex->getWidth() - 1, 0);
     }
 
     CL_Rectf centeredDec(
-            (get_width() - decrementTextures_[decrementIndex_]->getWidth()) / 2, rect_button_decrement.top,
-            CL_Sizef(decrementTextures_[decrementIndex_]->getWidth(), decrementTextures_[decrementIndex_]->getHeight())
+            (get_width() - decTex->getWidth()) / 2, rect_button_decrement.top,
+            CL_Sizef(decTex->getWidth(), decTex->getHeight())
     );
-    renderTexture(gc, decrementTextures_[decrementIndex_].get(), centeredDec,
-            decrementColors_[decrementIndex_], decrementHueInfos_[decrementIndex_]);
+    renderTexture(gc, decrementImageStates_, decrementIndex_, centeredDec);
 
     CL_Rectf centeredInc(
-            (get_width() - incrementTextures_[incrementIndex_]->getWidth()) / 2, rect_button_increment.top,
-            CL_Sizef(incrementTextures_[incrementIndex_]->getWidth(), incrementTextures_[incrementIndex_]->getHeight())
+            (get_width() - incTex->getWidth()) / 2, rect_button_increment.top,
+            CL_Sizef(incTex->getWidth(), incTex->getHeight())
     );
-    renderTexture(gc, incrementTextures_[incrementIndex_].get(), centeredInc,
-            incrementColors_[incrementIndex_], incrementHueInfos_[incrementIndex_]);
+    renderTexture(gc, incrementImageStates_, incrementIndex_, centeredInc);
 
     CL_Rectf centeredThumb(
-            (get_width() - thumbTextures_[thumbIndex_]->getWidth()) / 2, rect_thumb.top,
-            CL_Sizef(thumbTextures_[thumbIndex_]->getWidth(), thumbTextures_[thumbIndex_]->getHeight())
+            (get_width() - thumbTex->getWidth()) / 2, rect_thumb.top,
+            CL_Sizef(thumbTex->getWidth(), thumbTex->getHeight())
     );
-    renderTexture(gc, thumbTextures_[thumbIndex_].get(), centeredThumb,
-            thumbColors_[thumbIndex_], thumbHueInfos_[thumbIndex_]);
+    renderTexture(gc, thumbImageStates_, thumbIndex_, centeredThumb);
 
     // clean up renderer if necessary
     if (shaderInitialized_) {
@@ -187,10 +171,12 @@ void ScrollBar::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect) {
     }
 }
 
-void ScrollBar::renderTexture(CL_GraphicContext& gc, ui::Texture* tex, const CL_Rect& vertexRect, const CL_Colorf& color, const CL_Vec3f& hueInfo) {
-    if (hueInfo[1u] == 0) {
+void ScrollBar::renderTexture(CL_GraphicContext& gc, ImageState* states, unsigned int currentState, const CL_Rect& vertexRect) {
+    unsigned int hue = getPartHue(states, currentState);
+    boost::shared_ptr<ui::Texture> tex = getPartTexture(states, currentState);
+    if (hue == 0) {
         // no need for the shader
-        CL_Draw::texture(gc, tex->getTexture(), CL_Quadf(vertexRect), color, tex->getNormalizedTextureCoords());
+        CL_Draw::texture(gc, tex->getTexture(), CL_Quadf(vertexRect), getPartRgba(states, currentState), tex->getNormalizedTextureCoords());
         return;
     }
 
@@ -233,12 +219,91 @@ void ScrollBar::renderTexture(CL_GraphicContext& gc, ui::Texture* tex, const CL_
     primarray.set_attributes(0, vertexCoords);
     primarray.set_attributes(1, tex1_coords);
 
-    primarray.set_attribute(2, hueInfo);
+    CL_Vec3f hueVec = CL_Vec3f((getPartPartialHue(states, currentState) ? 1 : 0), hue, getPartAlpha(states, currentState));
+    primarray.set_attribute(2, hueVec);
 
     gc.draw_primitives(cl_triangles, 6, primarray);
 }
 
+boost::shared_ptr<ui::Texture> ScrollBar::getPartTexture(ImageState* states, unsigned int currentState) {
+    if (currentState != 0 && states[currentState].overrideTexture_) {
+        return states[currentState].getTexture();
+    } else {
+        return states[0].getTexture();
+    }
+}
 
+unsigned int ScrollBar::getPartHue(ImageState* states, unsigned int currentState) {
+    if (currentState != 0 && states[currentState].overrideHue_) {
+        return states[currentState].getHue();
+    } else {
+        return states[0].getHue();
+    }
+}
+
+CL_Colorf ScrollBar::getPartRgba(ImageState* states, unsigned int currentState) {
+    if (currentState != 0 && states[currentState].overrideRgba_) {
+        return states[currentState].getRgba();
+    } else {
+        return states[0].getRgba();
+    }
+}
+
+float ScrollBar::getPartAlpha(ImageState* states, unsigned int currentState) {
+    if (currentState != 0 && states[currentState].overrideAlpha_) {
+        return states[currentState].getAlpha();
+    } else {
+        return states[0].getAlpha();
+    }
+}
+
+bool ScrollBar::getPartPartialHue(ImageState* states, unsigned int currentState) {
+    if (currentState != 0 && states[currentState].overridePartialHue_) {
+        return states[currentState].getPartialHue();
+    } else {
+        return states[0].getPartialHue();
+    }
+}
+
+ImageState* ScrollBar::getIncrementNormal()  {
+    return &incrementImageStates_[STATE_INDEX_UP];
+}
+
+ImageState* ScrollBar::getIncrementMouseOver()  {
+    return &incrementImageStates_[STATE_INDEX_MOUSEOVER];
+}
+
+ImageState* ScrollBar::getIncrementMouseDown()  {
+    return &incrementImageStates_[STATE_INDEX_DOWN];
+}
+
+ImageState* ScrollBar::getDecrementNormal()  {
+    return &decrementImageStates_[STATE_INDEX_UP];
+}
+
+ImageState* ScrollBar::getDecrementMouseOver()  {
+    return &decrementImageStates_[STATE_INDEX_MOUSEOVER];
+}
+
+ImageState* ScrollBar::getDecrementMouseDown()  {
+    return &decrementImageStates_[STATE_INDEX_DOWN];
+}
+
+ImageState* ScrollBar::getThumbNormal()  {
+    return &thumbImageStates_[STATE_INDEX_UP];
+}
+
+ImageState* ScrollBar::getThumbMouseOver() {
+    return &thumbImageStates_[STATE_INDEX_MOUSEOVER];
+}
+
+ImageState* ScrollBar::getThumbMouseDown()  {
+    return &thumbImageStates_[STATE_INDEX_DOWN];
+}
+
+ImageState* ScrollBar::getTrack()  {
+    return &trackImageState_;
+}
 
 // clanlib stuff
 
@@ -357,7 +422,7 @@ void ScrollBar::on_process_message(CL_GUIMessage &msg) {
 void ScrollBar::on_mouse_move(CL_GUIMessage_Input &input, CL_InputEvent &input_event) {
     CL_Point pos = input_event.mouse_pos;
 
-    updateTextureIndices(pos);
+    updateTextureStates(pos);
 
     if (mouse_down_mode == mouse_down_thumb_drag) {
         CL_Rect geom = get_window_geometry();
@@ -469,7 +534,7 @@ void ScrollBar::on_mouse_lbutton_down(CL_GUIMessage_Input &input, CL_InputEvent 
     mouse_down_timer.start(100,false);
 
     update_part_positions();
-    updateTextureIndices(pos);
+    updateTextureStates(pos);
 
     request_repaint();
     capture_mouse(true);
@@ -480,7 +545,7 @@ void ScrollBar::on_mouse_lbutton_up(CL_GUIMessage_Input &input, CL_InputEvent &i
     mouse_down_mode = mouse_down_none;
     mouse_down_timer.stop();
 
-    updateTextureIndices(input_event.mouse_pos);
+    updateTextureStates(input_event.mouse_pos);
 
     request_repaint();
     capture_mouse(false);
@@ -488,28 +553,32 @@ void ScrollBar::on_mouse_lbutton_up(CL_GUIMessage_Input &input, CL_InputEvent &i
 }
 
 void ScrollBar::on_mouse_leave() {
-    updateTextureIndices(CL_Point(-1, -1));
+    updateTextureStates(CL_Point(-1, -1));
     request_repaint();
 }
 
 // Calculates positions of all parts. Returns true if thumb position was changed compared to previously, false otherwise.
 bool ScrollBar::update_part_positions() {
+    boost::shared_ptr<ui::Texture> incTex = getPartTexture(incrementImageStates_, incrementIndex_);
+    boost::shared_ptr<ui::Texture> decTex = getPartTexture(decrementImageStates_, decrementIndex_);
+    boost::shared_ptr<ui::Texture> thumbTex = getPartTexture(thumbImageStates_, thumbIndex_);
+    boost::shared_ptr<ui::Texture> trackTex = trackImageState_.getTexture();
     // textures not set yet, or not fully loaded (size information might not be available)
-    if (!trackTexture_ ||
-            !incrementTextures_[incrementIndex_]->isReadComplete() ||
-            !decrementTextures_[decrementIndex_]->isReadComplete() ||
-            !thumbTextures_[thumbIndex_]->isReadComplete() ||
-            !trackTexture_->isReadComplete()) {
+    if (!incTex || !incTex->isReadComplete() ||
+            !decTex || !decTex->isReadComplete() ||
+            !thumbTex || !thumbTex->isReadComplete() ||
+            !trackTex || !trackTex->isReadComplete()) {
+        ui::Manager::getSingleton()->queueComponentRepaint(this);
         return false;
     }
 
     CL_Rect rect(CL_Point(0,0), get_geometry().get_size());
 
-    int decr_height = decrementTextures_[decrementIndex_]->getHeight();
-    int incr_height = incrementTextures_[incrementIndex_]->getHeight();
+    int decr_height = decTex->getHeight();
+    int incr_height = incTex->getHeight();
     int total_height = vertical ? rect.get_height() : rect.get_width();
     int track_height = cl_max(0, total_height - decr_height - incr_height);
-    int thumb_height = thumbTextures_[thumbIndex_]->getHeight(); //calculate_thumb_size(track_height);
+    int thumb_height = thumbTex->getHeight(); //calculate_thumb_size(track_height);
 
     int thumb_offset = decr_height + calculate_thumb_position(thumb_height, track_height);
 
@@ -581,15 +650,15 @@ void ScrollBar::invoke_scroll_event() {
         func_scroll_.invoke();
 }
 
-void ScrollBar::updateTextureIndices(const CL_Point& pos) {
+void ScrollBar::updateTextureStates(const CL_Point& pos) {
     if (pos.x == -1 && pos.y == -1) {
-        incrementIndex_ = TEX_INDEX_UP;
-        decrementIndex_ = TEX_INDEX_UP;
-        thumbIndex_ = TEX_INDEX_UP;
+        incrementIndex_ = STATE_INDEX_UP;
+        decrementIndex_ = STATE_INDEX_UP;
+        thumbIndex_ = STATE_INDEX_UP;
     } else {
-        thumbIndex_ = rect_thumb.contains(pos) ? (mouse_down_mode == mouse_down_none ? TEX_INDEX_MOUSEOVER : TEX_INDEX_DOWN) : TEX_INDEX_UP;
-        incrementIndex_ = rect_button_increment.contains(pos) ? (mouse_down_mode == mouse_down_none ? TEX_INDEX_MOUSEOVER : TEX_INDEX_DOWN) : TEX_INDEX_UP;
-        decrementIndex_ = rect_button_decrement.contains(pos) ? (mouse_down_mode == mouse_down_none ? TEX_INDEX_MOUSEOVER : TEX_INDEX_DOWN) : TEX_INDEX_UP;
+        thumbIndex_ = rect_thumb.contains(pos) ? (mouse_down_mode == mouse_down_none ? STATE_INDEX_MOUSEOVER : STATE_INDEX_DOWN) : STATE_INDEX_UP;
+        incrementIndex_ = rect_button_increment.contains(pos) ? (mouse_down_mode == mouse_down_none ? STATE_INDEX_MOUSEOVER : STATE_INDEX_DOWN) : STATE_INDEX_UP;
+        decrementIndex_ = rect_button_decrement.contains(pos) ? (mouse_down_mode == mouse_down_none ? STATE_INDEX_MOUSEOVER : STATE_INDEX_DOWN) : STATE_INDEX_UP;
     }
 }
 

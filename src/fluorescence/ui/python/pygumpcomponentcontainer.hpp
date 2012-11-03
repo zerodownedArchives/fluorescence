@@ -39,6 +39,7 @@ class AlphaRegion;
 class Label;
 class Button;
 class LineEdit;
+class ScrollArea;
 }
 
 namespace python {
@@ -53,6 +54,12 @@ public:
     static components::Button* addServerButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, unsigned int id);
     static components::Button* addPythonButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, boost::python::object& func);
     static components::LineEdit* addLineEdit(CL_GUIComponent* self, boost::python::tuple& geom);
+    static components::ScrollArea* addScrollArea(CL_GUIComponent* self, boost::python::tuple& geom);
+
+private:
+    // when adding to a scrollarea, the components are not added directly to the area but to a child component
+    // this function checks if comp is a scrollbar, and returns the content component
+    static CL_GUIComponent* getParentHelper(CL_GUIComponent* comp);
 };
 
 }

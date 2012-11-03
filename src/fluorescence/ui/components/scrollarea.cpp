@@ -126,6 +126,8 @@ void ScrollArea::updateScrollbars() {
     verticalScrollBar_->calculate_ranges(viewSizeHeight, childHeight);
 
     clientArea_->set_clip_children(true);
+
+    setupResizeHandler();
 }
 
 void ScrollArea::onScroll() {
@@ -161,6 +163,39 @@ void ScrollArea::setupResizeHandler() {
 
 void ScrollArea::onChildComponentResized() {
     updateScrollbars();
+}
+
+
+void ScrollArea::setMarginLeft(unsigned int margin) {
+    marginLeft_ = margin;
+}
+
+unsigned int ScrollArea::getMarginLeft() const {
+    return marginLeft_;
+}
+
+void ScrollArea::setMarginRight(unsigned int margin) {
+    marginRight_ = margin;
+}
+
+unsigned int ScrollArea::getMarginRight() const {
+    return marginRight_;
+}
+
+void ScrollArea::setMarginTop(unsigned int margin) {
+    marginTop_ = margin;
+}
+
+unsigned int ScrollArea::getMarginTop() const {
+    return marginTop_;
+}
+
+void ScrollArea::setMarginBottom(unsigned int margin) {
+    marginBottom_ = margin;
+}
+
+unsigned int ScrollArea::getMarginBottom() const {
+    return marginBottom_;
 }
 
 }

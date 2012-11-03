@@ -27,3 +27,18 @@ def styleButton(b):
     b.state("mouseOver").rgba = rgba("#cceecc")
     b.state("mouseDown").rgba = rgba("#ccffcc")
     b.setFont("Devinne Swash", 18)
+
+def addScrollArea(gump, coordinates):
+    scroll = gump.addScrollArea(coordinates)
+    scroll.vertical.width = 15
+    scroll.vertical.increment.texture = Texture(TextureSource.THEME, "images/scroll_increment.png")
+    scroll.vertical.incrementMouseOver.rgba = rgba("#cceecc")
+    scroll.vertical.incrementMouseDown.rgba = rgba("#ccffcc")
+    scroll.vertical.decrement.texture = Texture(TextureSource.THEME, "images/scroll_decrement.png")
+    scroll.vertical.decrementMouseOver.rgba = rgba("#cceecc")
+    scroll.vertical.decrementMouseDown.rgba = rgba("#ccffcc")
+    scroll.vertical.thumb.texture = Texture(TextureSource.THEME, "images/scroll_thumb.png")
+    scroll.vertical.thumbMouseOver.rgba = rgba("#cceecc")
+    scroll.vertical.thumbMouseDown.rgba = rgba("#ccffcc")
+    scroll.vertical.track.texture = Texture(TextureSource.THEME, "images/scroll_track.png")
+    return scroll

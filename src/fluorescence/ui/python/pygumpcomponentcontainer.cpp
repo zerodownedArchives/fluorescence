@@ -29,8 +29,16 @@ namespace python {
 
 namespace bpy = boost::python;
 
+CL_GUIComponent* PyGumpComponentContainer::getParentHelper(CL_GUIComponent* comp) {
+    components::ScrollArea* area = dynamic_cast<components::ScrollArea*>(comp);
+    if (area) {
+        return area->getClientArea();
+    }
+    return comp;
+}
+
 components::Image* PyGumpComponentContainer::addImage(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex) {
-    components::Image* img = new components::Image(self);
+    components::Image* img = new components::Image(getParentHelper(self));
     img->pySetGeometry(geom);
     img->setTexture(tex);
 
@@ -40,7 +48,7 @@ components::Image* PyGumpComponentContainer::addImage(CL_GUIComponent* self, boo
 }
 
 components::Background* PyGumpComponentContainer::addBackground(CL_GUIComponent* self, boost::python::tuple& geom, unsigned int baseId) {
-    components::Background* bg = new components::Background(self);
+    components::Background* bg = new components::Background(getParentHelper(self));
     bg->pySetGeometry(geom);
     bg->setBaseId(baseId);
 
@@ -50,7 +58,7 @@ components::Background* PyGumpComponentContainer::addBackground(CL_GUIComponent*
 }
 
 components::AlphaRegion* PyGumpComponentContainer::addAlphaRegion(CL_GUIComponent* self, boost::python::tuple& geom, float alpha) {
-    components::AlphaRegion* region = new components::AlphaRegion(self);
+    components::AlphaRegion* region = new components::AlphaRegion(getParentHelper(self));
     region->pySetGeometry(geom);
     region->setAlpha(alpha);
 
@@ -60,7 +68,7 @@ components::AlphaRegion* PyGumpComponentContainer::addAlphaRegion(CL_GUIComponen
 }
 
 components::Label* PyGumpComponentContainer::addLabel(CL_GUIComponent* self, boost::python::tuple& geom, const UnicodeString& text) {
-    components::Label* label = new components::Label(self);
+    components::Label* label = new components::Label(getParentHelper(self));
     label->pySetGeometry(geom);
     label->setText(text);
 
@@ -70,7 +78,7 @@ components::Label* PyGumpComponentContainer::addLabel(CL_GUIComponent* self, boo
 }
 
 components::Button* PyGumpComponentContainer::addPageButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, unsigned int page) {
-    components::Button* but = new components::Button(self);
+    components::Button* but = new components::Button(getParentHelper(self));
     but->pySetGeometry(geom);
     but->setTexture(tex);
     but->setPage(page);
@@ -81,7 +89,7 @@ components::Button* PyGumpComponentContainer::addPageButton(CL_GUIComponent* sel
 }
 
 components::Button* PyGumpComponentContainer::addServerButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, unsigned int id) {
-    components::Button* but = new components::Button(self);
+    components::Button* but = new components::Button(getParentHelper(self));
     but->pySetGeometry(geom);
     but->setTexture(tex);
     but->setButtonId(id);
@@ -92,7 +100,7 @@ components::Button* PyGumpComponentContainer::addServerButton(CL_GUIComponent* s
 }
 
 components::Button* PyGumpComponentContainer::addPythonButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, boost::python::object& func) {
-    components::Button* but = new components::Button(self);
+    components::Button* but = new components::Button(getParentHelper(self));
     but->pySetGeometry(geom);
     but->setTexture(tex);
     but->setPyClickCallback(func);
@@ -103,12 +111,21 @@ components::Button* PyGumpComponentContainer::addPythonButton(CL_GUIComponent* s
 }
 
 components::LineEdit* PyGumpComponentContainer::addLineEdit(CL_GUIComponent* self, boost::python::tuple& geom) {
-    components::LineEdit* edit = new components::LineEdit(self);
+    components::LineEdit* edit = new components::LineEdit(getParentHelper(self));
     edit->pySetGeometry(geom);
 
     static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(edit);
 
     return edit;
+}
+
+components::ScrollArea* PyGumpComponentContainer::addScrollArea(CL_GUIComponent* self, boost::python::tuple& geom) {
+    components::ScrollArea* area = new components::ScrollArea(getParentHelper(self));
+    area->pySetGeometry(geom);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(area);
+
+    return area;
 }
 
 }

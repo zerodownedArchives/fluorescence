@@ -418,124 +418,85 @@ bool XmlLoader::parseLabelHelper(components::Label* label, pugi::xml_node& node,
 }
 
 bool XmlLoader::parseScrollBarTextures(boost::shared_ptr<ui::Texture>* textures, CL_Colorf* colors, CL_Vec3f* hueInfos, pugi::xml_node& node, pugi::xml_node& defaultNode) {
-    pugi::xml_node normalNode = node.child("normal");
-    pugi::xml_node mouseOverNode = node.child("mouseover");
-    pugi::xml_node mouseDownNode = node.child("mousedown");
-
-    pugi::xml_node defaultNormalNode = defaultNode.child("normal");
-    pugi::xml_node defaultMouseOverNode = defaultNode.child("mouseover");
-    pugi::xml_node defaultMouseDownNode = defaultNode.child("mousedown");
-
-    if ((normalNode || defaultNormalNode) && (mouseOverNode || defaultMouseOverNode) && (mouseDownNode || defaultMouseDownNode)) {
-        textures[components::ScrollBar::TEX_INDEX_UP] = parseTexture(normalNode, defaultNormalNode);
-        hueInfos[components::ScrollBar::TEX_INDEX_UP][1u] = getAttribute("hue", normalNode, defaultNormalNode).as_uint();
-        std::string rgba = getAttribute("color", normalNode, defaultNormalNode).value();
-        if (rgba.length() > 0) {
-            colors[components::ScrollBar::TEX_INDEX_UP] = CL_Colorf(rgba);
-        }
-
-        textures[components::ScrollBar::TEX_INDEX_MOUSEOVER] = parseTexture(mouseOverNode, defaultMouseOverNode);
-        hueInfos[components::ScrollBar::TEX_INDEX_MOUSEOVER][1u] = getAttribute("hue", mouseOverNode, defaultMouseOverNode).as_uint();
-        rgba = getAttribute("color", mouseOverNode, defaultMouseOverNode).value();
-        if (rgba.length() > 0) {
-            colors[components::ScrollBar::TEX_INDEX_MOUSEOVER] = CL_Colorf(rgba);
-        }
-
-        textures[components::ScrollBar::TEX_INDEX_DOWN] = parseTexture(mouseDownNode, defaultMouseDownNode);
-        hueInfos[components::ScrollBar::TEX_INDEX_DOWN][1u] = getAttribute("hue", mouseDownNode, defaultMouseDownNode).as_uint();
-        rgba = getAttribute("color", mouseDownNode, defaultMouseDownNode).value();
-        if (rgba.length() > 0) {
-            colors[components::ScrollBar::TEX_INDEX_DOWN] = CL_Colorf(rgba);
-        }
-    } else {
-        LOG_ERROR << "Scrollbar needs definitions for normal, mouseover and mousedown textures for all components" << std::endl;
-        return false;
-    }
-
-    if (!textures[components::ScrollBar::TEX_INDEX_UP] || !textures[components::ScrollBar::TEX_INDEX_MOUSEOVER] || !textures[components::ScrollBar::TEX_INDEX_DOWN]) {
-        LOG_ERROR << "Invalid scrollbar texture (texture not found)" << std::endl;
-        return false;
-    }
-
     return true;
 }
 
 bool XmlLoader::parseScrollBar(components::ScrollBar* bar, components::ScrollArea* parent, bool vertical, pugi::xml_node node, pugi::xml_node defaultNode) {
-    bool visible = getAttribute("visible", node, defaultNode).as_bool();
-    bar->set_visible(visible);
+    //bool visible = getAttribute("visible", node, defaultNode).as_bool();
+    //bar->set_visible(visible);
 
-    // don't bother parsing if it is not visible anyway
-    if (!visible) {
-        return true;
-    }
+    //// don't bother parsing if it is not visible anyway
+    //if (!visible) {
+        //return true;
+    //}
 
-    if (vertical) {
-        unsigned int width = getAttribute("width", node, defaultNode).as_uint();
-        if (width == 0) {
-            LOG_ERROR << "Vertical scrollbar without width is not possible" << std::endl;
-            return false;
-        }
-        // only need to set the final width here, position and height is calculated in scrollarea
-        bar->set_geometry(CL_Rectf(0, 0, CL_Sizef(width, 1)));
-    } else {
-        unsigned int height = getAttribute("height", node, defaultNode).as_uint();
-        if (height == 0) {
-            LOG_ERROR << "Horizontal scrollbar without height is not possible" << std::endl;
-            return false;
-        }
-        // only need to set the final height here, position and width is calculated in scrollarea
-        bar->set_geometry(CL_Rectf(0, 0, CL_Sizef(1, height)));
-    }
+    //if (vertical) {
+        //unsigned int width = getAttribute("width", node, defaultNode).as_uint();
+        //if (width == 0) {
+            //LOG_ERROR << "Vertical scrollbar without width is not possible" << std::endl;
+            //return false;
+        //}
+        //// only need to set the final width here, position and height is calculated in scrollarea
+        //bar->set_geometry(CL_Rectf(0, 0, CL_Sizef(width, 1)));
+    //} else {
+        //unsigned int height = getAttribute("height", node, defaultNode).as_uint();
+        //if (height == 0) {
+            //LOG_ERROR << "Horizontal scrollbar without height is not possible" << std::endl;
+            //return false;
+        //}
+        //// only need to set the final height here, position and width is calculated in scrollarea
+        //bar->set_geometry(CL_Rectf(0, 0, CL_Sizef(1, height)));
+    //}
 
-    pugi::xml_node thumbNode = node.child("thumb");
-    pugi::xml_node defaultThumbNode = defaultNode.child("thumb");
-    if (thumbNode || defaultThumbNode) {
-        if (!parseScrollBarTextures(bar->thumbTextures_, bar->thumbColors_, bar->thumbHueInfos_, thumbNode, defaultThumbNode)) {
-            LOG_ERROR << "Error parsing scrollbar thumb" << std::endl;
-            return false;
-        }
-    } else {
-        LOG_ERROR << "No thumb node given for scrollbar" << std::endl;
-        return false;
-    }
+    //pugi::xml_node thumbNode = node.child("thumb");
+    //pugi::xml_node defaultThumbNode = defaultNode.child("thumb");
+    //if (thumbNode || defaultThumbNode) {
+        //if (!parseScrollBarTextures(bar->thumbTextures_, bar->thumbColors_, bar->thumbHueInfos_, thumbNode, defaultThumbNode)) {
+            //LOG_ERROR << "Error parsing scrollbar thumb" << std::endl;
+            //return false;
+        //}
+    //} else {
+        //LOG_ERROR << "No thumb node given for scrollbar" << std::endl;
+        //return false;
+    //}
 
-    pugi::xml_node incNode = node.child("increment");
-    pugi::xml_node defaultIncNode = defaultNode.child("increment");
-    if (incNode || defaultIncNode) {
-        if (!parseScrollBarTextures(bar->incrementTextures_, bar->incrementColors_, bar->incrementHueInfos_, incNode, defaultIncNode)) {
-            LOG_ERROR << "Error parsing scrollbar increment" << std::endl;
-            return false;
-        }
-    } else {
-        LOG_ERROR << "No increment node given for scrollbar" << std::endl;
-        return false;
-    }
+    //pugi::xml_node incNode = node.child("increment");
+    //pugi::xml_node defaultIncNode = defaultNode.child("increment");
+    //if (incNode || defaultIncNode) {
+        //if (!parseScrollBarTextures(bar->incrementTextures_, bar->incrementColors_, bar->incrementHueInfos_, incNode, defaultIncNode)) {
+            //LOG_ERROR << "Error parsing scrollbar increment" << std::endl;
+            //return false;
+        //}
+    //} else {
+        //LOG_ERROR << "No increment node given for scrollbar" << std::endl;
+        //return false;
+    //}
 
-    pugi::xml_node decNode = node.child("decrement");
-    pugi::xml_node defaultDecNode = defaultNode.child("decrement");
-    if (decNode || defaultDecNode) {
-        if (!parseScrollBarTextures(bar->decrementTextures_, bar->decrementColors_, bar->decrementHueInfos_, decNode, defaultDecNode)) {
-            LOG_ERROR << "Error parsing scrollbar decrement" << std::endl;
-            return false;
-        }
-    } else {
-        LOG_ERROR << "No decrement node given for scrollbar" << std::endl;
-        return false;
-    }
+    //pugi::xml_node decNode = node.child("decrement");
+    //pugi::xml_node defaultDecNode = defaultNode.child("decrement");
+    //if (decNode || defaultDecNode) {
+        //if (!parseScrollBarTextures(bar->decrementTextures_, bar->decrementColors_, bar->decrementHueInfos_, decNode, defaultDecNode)) {
+            //LOG_ERROR << "Error parsing scrollbar decrement" << std::endl;
+            //return false;
+        //}
+    //} else {
+        //LOG_ERROR << "No decrement node given for scrollbar" << std::endl;
+        //return false;
+    //}
 
-    pugi::xml_node trackNode = node.child("track");
-    pugi::xml_node defaultTrackNode = defaultNode.child("track");
-    if (trackNode || defaultTrackNode) {
-        bar->trackTexture_ = parseTexture(trackNode, defaultTrackNode);
-        bar->trackHueInfo_[1u] = getAttribute("hue", trackNode, defaultTrackNode).as_uint();
-        std::string rgba = getAttribute("color", trackNode, defaultTrackNode).value();
-        if (rgba.length() > 0) {
-            bar->trackColor_ = CL_Colorf(rgba);
-        }
-    } else {
-        LOG_ERROR << "No track node given for scrollbar" << std::endl;
-        return false;
-    }
+    //pugi::xml_node trackNode = node.child("track");
+    //pugi::xml_node defaultTrackNode = defaultNode.child("track");
+    //if (trackNode || defaultTrackNode) {
+        //bar->trackTexture_ = parseTexture(trackNode, defaultTrackNode);
+        //bar->trackHueInfo_[1u] = getAttribute("hue", trackNode, defaultTrackNode).as_uint();
+        //std::string rgba = getAttribute("color", trackNode, defaultTrackNode).value();
+        //if (rgba.length() > 0) {
+            //bar->trackColor_ = CL_Colorf(rgba);
+        //}
+    //} else {
+        //LOG_ERROR << "No track node given for scrollbar" << std::endl;
+        //return false;
+    //}
 
     //unsigned int lineStep = node.attribute("linestep").as_uint();
     //unsigned int pageStep = node.attribute("pagestep").as_uint();

@@ -66,29 +66,22 @@
 
 #include <ui/gumpcomponent.hpp>
 #include <ui/texture.hpp>
+#include "imagestate.hpp"
 
 namespace fluo {
 namespace ui {
-
-class XmlLoader;
-
 namespace components {
 
 class ScrollBar : public GumpComponent {
-
-friend class fluo::ui::XmlLoader;
-
 public:
-    enum TextureIndex {
-        TEX_INDEX_UP = 0,
-        TEX_INDEX_MOUSEOVER = 1,
-        TEX_INDEX_DOWN = 2,
+    enum StateIndex {
+        STATE_INDEX_UP = 0,
+        STATE_INDEX_MOUSEOVER = 1,
+        STATE_INDEX_DOWN = 2,
     };
 
     ScrollBar(CL_GUIComponent* parent);
     ~ScrollBar();
-
-    void setTrackTexture(boost::shared_ptr<ui::Texture> texture, unsigned int hue = 0, const std::string& rgba = "");
 
     // clanlib stuff
     bool is_vertical() const;
@@ -113,29 +106,43 @@ public:
 
     CL_Callback_v0 &func_scroll();
 
+
+    ImageState* getIncrementNormal() ;
+    ImageState* getIncrementMouseOver() ;
+    ImageState* getIncrementMouseDown() ;
+
+    ImageState* getDecrementNormal() ;
+    ImageState* getDecrementMouseOver() ;
+    ImageState* getDecrementMouseDown() ;
+
+    ImageState* getThumbNormal() ;
+    ImageState* getThumbMouseOver() ;
+    ImageState* getThumbMouseDown() ;
+
+    ImageState* getTrack() ;
+
 private:
     unsigned int incrementIndex_;
-    boost::shared_ptr<ui::Texture> incrementTextures_[3];
-    CL_Colorf incrementColors_[3];
-    CL_Vec3f incrementHueInfos_[3];
+    ImageState incrementImageStates_[3];
 
     unsigned int decrementIndex_;
-    boost::shared_ptr<ui::Texture> decrementTextures_[3];
-    CL_Colorf decrementColors_[3];
-    CL_Vec3f decrementHueInfos_[3];
+    ImageState decrementImageStates_[3];
 
     unsigned int thumbIndex_;
-    boost::shared_ptr<ui::Texture> thumbTextures_[3];
-    CL_Colorf thumbColors_[3];
-    CL_Vec3f thumbHueInfos_[3];
+    ImageState thumbImageStates_[3];
 
-    boost::shared_ptr<ui::Texture> trackTexture_;
-    CL_Colorf trackColor_;
-    CL_Vec3f trackHueInfo_;
+    ImageState trackImageState_;
 
-    void updateTextureIndices(const CL_Point& pos);
+    void updateTextureStates(const CL_Point& pos);
     bool shaderInitialized_;
-    void renderTexture(CL_GraphicContext& gc, ui::Texture* tex, const CL_Rect& vertexRect, const CL_Colorf& color, const CL_Vec3f& hueInfo);
+    void renderTexture(CL_GraphicContext& gc, ImageState* states, unsigned int currentState, const CL_Rect& vertexRect);
+
+
+    boost::shared_ptr<ui::Texture> getPartTexture(ImageState* states, unsigned int currentState);
+    unsigned int getPartHue(ImageState* states, unsigned int currentState);
+    CL_Colorf getPartRgba(ImageState* states, unsigned int currentState);
+    float getPartAlpha(ImageState* states, unsigned int currentState);
+    bool getPartPartialHue(ImageState* states, unsigned int currentState);
 
 
     // clanlib stuff

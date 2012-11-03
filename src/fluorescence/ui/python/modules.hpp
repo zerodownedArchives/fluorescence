@@ -108,6 +108,7 @@ BOOST_PYTHON_MODULE(gumps) {
         .def("addServerButton", &PyGumpComponentContainer::addServerButton, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addPythonButton", &PyGumpComponentContainer::addPythonButton, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addLineEdit", &PyGumpComponentContainer::addLineEdit, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("addScrollArea", &PyGumpComponentContainer::addScrollArea, bpy::return_value_policy<bpy::reference_existing_object>())
     ;
 
     // non-instanciable wrapper class for gump menus
@@ -216,6 +217,33 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("onEnter", &components::LineEdit::getPyEnterCallback, &components::LineEdit::setPyEnterCallback)
         .def("setFont", &components::LineEdit::setFont)
         .def("setFont", &components::LineEdit::setFontB)
+    ;
+
+    // scrollbar component. can not be added directly, only through scrollarea
+    bpy::class_<components::ScrollBar, boost::noncopyable>("ScrollBarWrapper", bpy::no_init)
+        .add_property("width", &components::ScrollBar::getWidth, &components::ScrollBar::setWidth)
+        .add_property("height", &components::ScrollBar::getHeight, &components::ScrollBar::setHeight)
+        .add_property("increment", bpy::make_function(&components::ScrollBar::getIncrementNormal, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("incrementMouseOver", bpy::make_function(&components::ScrollBar::getIncrementMouseOver, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("incrementMouseDown", bpy::make_function(&components::ScrollBar::getIncrementMouseDown, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("decrement", bpy::make_function(&components::ScrollBar::getDecrementNormal, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("decrementMouseOver", bpy::make_function(&components::ScrollBar::getDecrementMouseOver, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("decrementMouseDown", bpy::make_function(&components::ScrollBar::getDecrementMouseDown, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("thumb", bpy::make_function(&components::ScrollBar::getThumbNormal, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("thumbMouseOver", bpy::make_function(&components::ScrollBar::getThumbMouseOver, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("thumbMouseDown", bpy::make_function(&components::ScrollBar::getThumbMouseDown, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("track", bpy::make_function(&components::ScrollBar::getTrack, bpy::return_value_policy<bpy::reference_existing_object>()))
+    ;
+
+    // scrollarea component
+    bpy::class_<components::ScrollArea, bpy::bases<GumpComponent, CL_GUIComponent>, boost::noncopyable>("ScrollAreaWrapper", bpy::no_init)
+        .add_property("marginLeft", &components::ScrollArea::getMarginLeft, &components::ScrollArea::setMarginLeft)
+        .add_property("marginRight", &components::ScrollArea::getMarginRight, &components::ScrollArea::setMarginRight)
+        .add_property("marginTop", &components::ScrollArea::getMarginTop, &components::ScrollArea::setMarginTop)
+        .add_property("marginBottom", &components::ScrollArea::getMarginBottom, &components::ScrollArea::setMarginBottom)
+        .add_property("vertical", bpy::make_function(&components::ScrollArea::getVerticalScrollBar, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .add_property("horizontal", bpy::make_function(&components::ScrollArea::getHorizontalScrollBar, bpy::return_value_policy<bpy::reference_existing_object>()))
+        .def("updateScrollbars", &components::ScrollArea::updateScrollbars)
     ;
 }
 

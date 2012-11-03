@@ -45,6 +45,20 @@ public:
     void setupResizeHandler();
     void onChildComponentResized();
 
+    unsigned int getMarginLeft() const;
+    void setMarginLeft(unsigned int margin);
+
+    unsigned int getMarginRight() const;
+    void setMarginRight(unsigned int margin);
+
+    unsigned int getMarginTop() const;
+    void setMarginTop(unsigned int margin);
+
+    unsigned int getMarginBottom() const;
+    void setMarginBottom(unsigned int margin);
+
+    void setup();
+
 private:
     ScrollBar* verticalScrollBar_;
     ScrollBar* horizontalScrollBar_;

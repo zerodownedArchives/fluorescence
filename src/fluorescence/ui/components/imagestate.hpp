@@ -17,42 +17,34 @@
  */
 
 
-#ifndef FLUO_UI_COMPONENTS_IMAGE_HPP
-#define FLUO_UI_COMPONENTS_IMAGE_HPP
+#ifndef FLUO_UI_COMPONENTS_IMAGESTATE_HPP
+#define FLUO_UI_COMPONENTS_IMAGESTATE_HPP
 
-#include <ClanLib/Display/Render/graphic_context.h>
-#include <ClanLib/Display/Render/texture.h>
-#include <ClanLib/Display/Font/font.h>
-#include <ClanLib/Display/Font/font_description.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/python/tuple.hpp>
-
+#include <ClanLib/Display/Render/texture.h>
 #include <misc/string.hpp>
-#include <ui/enums.hpp>
-#include <ui/gumpcomponent.hpp>
-
-#include "imagestate.hpp"
 
 namespace fluo {
 namespace ui {
 
 class Texture;
+class GumpComponent;
 
 namespace components {
 
-class Image : public GumpComponent {
+class Image;
+class ScrollBar;
+
+class ImageState {
+
+friend class Image;
+friend class ScrollBar;
+
 public:
-    Image(CL_GUIComponent* parent);
+    ImageState();
 
-    void render(CL_GraphicContext& gc, const CL_Rect& clipRect);
-
-    virtual void setAutoResize(bool value);
-
-    virtual bool has_pixel(const CL_Point& p) const;
-
-    void setCurrentState(const UnicodeString& name);
-    UnicodeString getCurrentStateName() const;
-    ImageState* getState(const UnicodeString& name);
+    void setOwner(GumpComponent* owner);
 
     boost::shared_ptr<ui::Texture> getTexture() const;
     void setTexture(boost::shared_ptr<ui::Texture> tex);
@@ -69,12 +61,8 @@ public:
     void setRgba(float r, float g, float b, float a);
     void setRgba(float r, float g, float b);
 
-    bool useRgba() const;
-
     bool getPartialHue() const;
     void setPartialHue(bool value);
-
-    CL_Vec3f getHueVector() const;
 
     float getAlpha() const;
     void setAlpha(float alpha);
@@ -87,16 +75,6 @@ public:
     UnicodeString getText() const;
     void setText(const UnicodeString& text);
 
-    void setFont(const UnicodeString& name, unsigned int height);
-    void setFontB(const UnicodeString& name, unsigned int height, bool border);
-
-    void setVAlign(VAlign align);
-    VAlign getVAlign() const;
-
-    void setHAlign(HAlign align);
-    HAlign getHAlign() const;
-
-
     // python specific interface
     boost::python::tuple pyGetRgba() const;
     void pySetRgba(const boost::python::tuple& rgba);
@@ -104,23 +82,33 @@ public:
     void pySetFontRgba(const boost::python::tuple& rgba);
 
 private:
-    bool autoResize_;
+    GumpComponent* owner_;
 
-    void renderShader(CL_GraphicContext& gc, const CL_Rect& clipRect);
+    bool overrideTexture_;
+    boost::shared_ptr<ui::Texture> texture_;
 
-    std::map<UnicodeString, ImageState> states_;
-    ImageState* defaultState_;
-    ImageState* currentState_;
-    UnicodeString currentStateName_;
+    bool overrideHue_;
+    unsigned int hue_;
 
-    bool overrideGumpFont_;
-    CL_FontDescription fontDesc_;
-    CL_Font cachedFont_;
+    bool overrideRgba_;
+    CL_Colorf rgba_;
 
-    bool hasScrollareaParent_;
+    bool overrideAlpha_;
+    float alpha_;
 
-    VAlign vAlign_;
-    HAlign hAlign_;
+    bool overrideFontRgba_;
+    CL_Colorf fontRgba_;
+
+    bool overrideText_;
+    UnicodeString text_;
+
+    bool overrideTiled_;
+    bool tiled_;
+
+    CL_Texture tileableTexture_;
+
+    bool overridePartialHue_;
+    bool partialHue_;
 };
 
 }

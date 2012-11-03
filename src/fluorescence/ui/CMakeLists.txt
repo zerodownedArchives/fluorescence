@@ -59,6 +59,7 @@ set (GUMPMENU_HPP
     ui/components/propertylabel.hpp
     ui/components/paperdollview.hpp
     ui/components/containerview.hpp
+    ui/components/imagestate.hpp
     ui/components/image.hpp
     ui/components/background.hpp
     ui/components/checkbox.hpp
@@ -83,6 +84,7 @@ set (GUMPMENU_CPP
     ui/components/propertylabel.cpp
     ui/components/paperdollview.cpp
     ui/components/containerview.cpp
+    ui/components/imagestate.cpp
     ui/components/image.cpp
     ui/components/background.cpp
     ui/components/checkbox.cpp
