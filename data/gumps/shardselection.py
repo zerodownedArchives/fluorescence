@@ -37,7 +37,8 @@ def create(args):
     btnExit.text = "Exit"
 
 def createShard(button):
-    print "todo"
+    client.openGump("createshard")
+    # don't close the gump, shard creation can be cancelled
     return False
 
 def shutdown(button):

@@ -42,3 +42,13 @@ def addScrollArea(gump, coordinates):
     scroll.vertical.thumbMouseDown.rgba = rgba("#ccffcc")
     scroll.vertical.track.texture = Texture(TextureSource.THEME, "images/scroll_track.png")
     return scroll
+
+def addCheckbox(gump, coordinates):
+    cb = gump.addCheckbox(coordinates)
+    cb.state("checked").texture = Texture(TextureSource.THEME, "images/checkbox_checked.png")
+    cb.state("checkedMouseOver").texture = Texture(TextureSource.THEME, "images/checkbox_checked.png")
+    cb.state("checkedMouseOver").rgba = rgba("#cceecc")
+    cb.state("unchecked").texture = Texture(TextureSource.THEME, "images/checkbox.png")
+    cb.state("uncheckedMouseOver").texture = Texture(TextureSource.THEME, "images/checkbox.png")
+    cb.state("uncheckedMouseOver").rgba = rgba("#cceecc")
+    return cb

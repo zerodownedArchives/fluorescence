@@ -29,10 +29,12 @@ namespace python {
 class PyClient {
 public:
     static void setShard(const UnicodeString& name);
+    static bool createShard(const UnicodeString& name, const UnicodeString& path, bool highSeas);
     static bool connect(const UnicodeString& host, unsigned int port, const UnicodeString& account, const UnicodeString& password);
     static UnicodeString getConfig(const UnicodeString& key);
     static void shutdown();
     static void messagebox(const UnicodeString& msg);
+    static void openGump(const UnicodeString& name);
 };
 
 }

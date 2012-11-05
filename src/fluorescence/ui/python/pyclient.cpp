@@ -20,6 +20,7 @@
 
 #include <client.hpp>
 #include <misc/log.hpp>
+#include <ui/manager.hpp>
 #include <ui/gumpmenus.hpp>
 
 namespace fluo {
@@ -28,6 +29,10 @@ namespace python {
 
 void PyClient::setShard(const UnicodeString& name) {
     Client::getSingleton()->selectShard(name);
+}
+
+bool PyClient::createShard(const UnicodeString& name, const UnicodeString& path, bool highSeas) {
+    return Client::getSingleton()->createShard(name, path, highSeas);
 }
 
 bool PyClient::connect(const UnicodeString& host, unsigned int port, const UnicodeString& account, const UnicodeString& password) {
@@ -49,6 +54,10 @@ void PyClient::shutdown() {
 
 void PyClient::messagebox(const UnicodeString& msg) {
     ui::GumpMenus::openMessageBox(msg);
+}
+
+void PyClient::openGump(const UnicodeString& name) {
+    ui::Manager::getSingleton()->openPythonGump(name);
 }
 
 }

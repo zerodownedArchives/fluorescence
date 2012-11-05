@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <boost/filesystem/fstream.hpp>
 
 #include <misc/config.hpp>
 #include <misc/log.hpp>
@@ -75,11 +76,6 @@ void Client::shutdown() {
 
 bool Client::shutdown(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     shutdown();
-    return true;
-}
-
-bool Client::selectShard(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    selectShard(parameters[0]);
     return true;
 }
 
@@ -430,6 +426,87 @@ timeval Client::getElapsedTime() const {
     }
 
     return t;
+}
+
+bool Client::createShard(const UnicodeString& name, const UnicodeString& pathStr, bool highSeas) {
+    boost::filesystem::path path(StringConverter::toUtf8String(pathStr));
+
+    boost::filesystem::path clientPath = path / "client.exe";
+    if (!boost::filesystem::exists(clientPath)) {
+        clientPath = path / "Client.exe";
+        if (!boost::filesystem::exists(clientPath)) {
+            LOG_ERROR << "Invalid Ultima Online directory" << std::endl;
+            ui::GumpMenus::openMessageBox("Invalid Ultima Online directory");
+            return false;
+        }
+    }
+
+    boost::filesystem::path shardPath(StringConverter::toUtf8String(name));
+    shardPath = "shards" / shardPath;
+    if (boost::filesystem::exists(shardPath)) {
+        LOG_ERROR << "Shard already exists" << std::endl;
+        ui::GumpMenus::openMessageBox("Shard already exists");
+        return false;
+    }
+
+    try {
+        if (!boost::filesystem::create_directory(shardPath)) {
+            LOG_ERROR << "Failed to create shard directory: " << std::endl;
+            ui::GumpMenus::openMessageBox("Failed to create shard directory");
+            return false;
+        }
+    } catch (std::exception& ex) {
+        LOG_ERROR << "Failed to create shard directory: " << ex.what() << std::endl;
+        ui::GumpMenus::openMessageBox("Failed to create shard directory");
+        return false;
+    }
+
+    boost::filesystem::path configPath = shardPath / "config.xml";
+    boost::filesystem::ofstream configStream(configPath);
+    if (!configStream) {
+        LOG_ERROR << "Failed to create shard config file: " << std::endl;
+        ui::GumpMenus::openMessageBox("Failed to create shard config file");
+        boost::filesystem::remove(shardPath);
+        return false;
+    } else {
+        configStream << "<?xml version=\"1.0\"?>\n<fluo>\n<files";
+        if (highSeas) {
+            configStream << " format=\"mul-hs\"";
+        }
+        configStream << ">\n<mul-directory path=\"" << path.string();
+        configStream << "\" />\n</files>\n</fluo>";
+        configStream.close();
+    }
+
+    boost::filesystem::path macroPath = shardPath / "macros.xml";
+    boost::filesystem::ofstream macroStream(macroPath);
+    if (!macroStream) {
+        LOG_ERROR << "Failed to create macros file: " << std::endl;
+        ui::GumpMenus::openMessageBox("Failed to create macros file");
+        boost::filesystem::remove(shardPath);
+        return false;
+    } else {
+        macroStream << "<?xml version=\"1.0\"?>\n<macros>\n";
+        macroStream << "<macro key=\"return\">\n\t<command name=\"speechentry\" />\n</macro>\n";
+        macroStream << "<macro key=\"q\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"countdown\" />\n</macro>\n";
+        macroStream << "<macro key=\"w\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"badsmell\" />\n</macro>\n";
+        macroStream << "<macro key=\"e\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"deadlyfog\" />\n</macro>\n";
+        macroStream << "<macro key=\"r\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"explosion\" />\n</macro>\n";
+        macroStream << "<macro key=\"t\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"rain\" />\n</macro>\n";
+        macroStream << "<macro key=\"a\" ctrl=\"true\">\n\t<command name=\"directionlight\" param=\"on\" />\n</macro>\n";
+        macroStream << "<macro key=\"s\" ctrl=\"true\">\n\t<command name=\"directionlight\" param=\"off\" />\n</macro>\n";
+        macroStream << "<macro key=\"s\" ctrl=\"true\">\n\t<command name=\"directionlight\" param=\"off\" />\n</macro>\n";
+        macroStream << "<macro key=\"add\">\n\t<command name=\"zoom\" param=\"in\" />\n</macro>\n";
+        macroStream << "<macro key=\"subtract\">\n\t<command name=\"zoom\" param=\"out\" />\n</macro>\n";
+        macroStream << "<macro key=\"multiply\">\n\t<command name=\"zoom\" param=\"reset\" />\n</macro>\n";
+        macroStream << "<macro key=\"tab\">\n\t<command name=\"togglewarmode\" />\n</macro>\n";
+        macroStream << "<macro key=\"escape\">\n\t<command name=\"cancel\" />\n</macro>\n";
+        macroStream << "</macros>";
+        macroStream.close();
+    }
+
+    selectShard(name);
+    return true;
 }
 
 }

@@ -38,7 +38,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-Image::Image(CL_GUIComponent* parent) : GumpComponent(parent),
+Image::Image(CL_GUIComponent* parent, const char* defaultStateName) : GumpComponent(parent),
         autoResize_(false), defaultState_(nullptr), overrideGumpFont_(false),
         vAlign_(MIDDLE), hAlign_(CENTER) {
     func_render().set(this, &Image::render);
@@ -55,7 +55,7 @@ Image::Image(CL_GUIComponent* parent) : GumpComponent(parent),
         comp = comp->get_parent_component();
     }
 
-    setCurrentState("normal");
+    setCurrentState(defaultStateName);
 }
 
 void Image::render(CL_GraphicContext& gc, const CL_Rect& clipRect) {

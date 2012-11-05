@@ -419,60 +419,64 @@ bool StringParser::parseButton(const UnicodeString& params, const std::vector<Un
         //return false;
     //}
 
-    return true;
+    return false;
 }
 
 bool StringParser::parseCheckbox(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
     // { checkbox {x} {y} {uncheckedId} {checkedId} {checked} {switchId} }
-    UErrorCode status = U_ZERO_ERROR;
-    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
-    matcher.reset(params);
 
-    if (matcher.find() && matcher.groupCount() == 6) {
-        int x = StringConverter::toInt(matcher.group(1, status));
-        int y = StringConverter::toInt(matcher.group(2, status));
-        int uncheckedId = StringConverter::toInt(matcher.group(3, status));
-        int checkedId = StringConverter::toInt(matcher.group(4, status));
-        int checked = StringConverter::toInt(matcher.group(5, status));
-        int switchId = StringConverter::toInt(matcher.group(6, status));
+    // TODO: new gui
+    //UErrorCode status = U_ZERO_ERROR;
+    //static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    //matcher.reset(params);
 
-        boost::shared_ptr<ui::Texture> uncheckedTex = data::Manager::getTexture(data::TextureSource::GUMPART, uncheckedId);
-        boost::shared_ptr<ui::Texture> checkedTex = data::Manager::getTexture(data::TextureSource::GUMPART, checkedId);
+    //if (matcher.find() && matcher.groupCount() == 6) {
+        //int x = StringConverter::toInt(matcher.group(1, status));
+        //int y = StringConverter::toInt(matcher.group(2, status));
+        //int uncheckedId = StringConverter::toInt(matcher.group(3, status));
+        //int checkedId = StringConverter::toInt(matcher.group(4, status));
+        //int checked = StringConverter::toInt(matcher.group(5, status));
+        //int switchId = StringConverter::toInt(matcher.group(6, status));
 
-        if (!uncheckedTex) {
-            LOG_WARN << "Unable to display checkbox with unchecked id " << uncheckedId << std::endl;
-            return true;
-        }
+        //boost::shared_ptr<ui::Texture> uncheckedTex = data::Manager::getTexture(data::TextureSource::GUMPART, uncheckedId);
+        //boost::shared_ptr<ui::Texture> checkedTex = data::Manager::getTexture(data::TextureSource::GUMPART, checkedId);
 
-        if (!checkedTex) {
-            LOG_WARN << "Unable to display checkbox with checked id " << checkedId << std::endl;
-            return true;
-        }
+        //if (!uncheckedTex) {
+            //LOG_WARN << "Unable to display checkbox with unchecked id " << uncheckedId << std::endl;
+            //return true;
+        //}
 
-        components::Checkbox* cb = new components::Checkbox(menu);
-        CL_Rectf bounds(x, y, CL_Sizef(checkedTex->getWidth(), checkedTex->getHeight()));
-        cb->set_geometry(bounds);
+        //if (!checkedTex) {
+            //LOG_WARN << "Unable to display checkbox with checked id " << checkedId << std::endl;
+            //return true;
+        //}
 
-        cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED, uncheckedTex);
-        cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED_MOUSEOVER, uncheckedTex);
-        cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED, checkedTex);
-        cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED_MOUSEOVER, checkedTex);
-        cb->updateTexture();
-        cb->setAutoResize(true);
+        //components::Checkbox* cb = new components::Checkbox(menu);
+        //CL_Rectf bounds(x, y, CL_Sizef(checkedTex->getWidth(), checkedTex->getHeight()));
+        //cb->set_geometry(bounds);
 
-        cb->setSwitchId(switchId);
+        //cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED, uncheckedTex);
+        //cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED_MOUSEOVER, uncheckedTex);
+        //cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED, checkedTex);
+        //cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED_MOUSEOVER, checkedTex);
+        //cb->updateTexture();
+        //cb->setAutoResize(true);
 
-        if (checked) {
-            cb->setChecked(true);
-        }
+        //cb->setSwitchId(switchId);
 
-        menu->addToCurrentPage(cb);
+        //if (checked) {
+            //cb->setChecked(true);
+        //}
 
-        return true;
-    } else {
-        LOG_ERROR << "Unable to parse checkbox, params " << params << std::endl;
-        return false;
-    }
+        //menu->addToCurrentPage(cb);
+
+        //return true;
+    //} else {
+        //LOG_ERROR << "Unable to parse checkbox, params " << params << std::endl;
+        //return false;
+    //}
+
+    return false;
 }
 
 bool StringParser::setNoMove(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
@@ -699,56 +703,60 @@ bool StringParser::parseCheckerTrans(const UnicodeString& params, const std::vec
 
 bool StringParser::parseRadio(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
     // { radio {x} {y} {uncheckedId} {checkedId} {checked} {switchId} }
-    UErrorCode status = U_ZERO_ERROR;
-    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
-    matcher.reset(params);
 
-    if (matcher.find() && matcher.groupCount() == 6) {
-        int x = StringConverter::toInt(matcher.group(1, status));
-        int y = StringConverter::toInt(matcher.group(2, status));
-        int uncheckedId = StringConverter::toInt(matcher.group(3, status));
-        int checkedId = StringConverter::toInt(matcher.group(4, status));
-        int checked = StringConverter::toInt(matcher.group(5, status));
-        int switchId = StringConverter::toInt(matcher.group(6, status));
+    //TODO: new gui
+    //UErrorCode status = U_ZERO_ERROR;
+    //static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    //matcher.reset(params);
 
-        boost::shared_ptr<ui::Texture> uncheckedTex = data::Manager::getTexture(data::TextureSource::GUMPART, uncheckedId);
-        boost::shared_ptr<ui::Texture> checkedTex = data::Manager::getTexture(data::TextureSource::GUMPART, checkedId);
+    //if (matcher.find() && matcher.groupCount() == 6) {
+        //int x = StringConverter::toInt(matcher.group(1, status));
+        //int y = StringConverter::toInt(matcher.group(2, status));
+        //int uncheckedId = StringConverter::toInt(matcher.group(3, status));
+        //int checkedId = StringConverter::toInt(matcher.group(4, status));
+        //int checked = StringConverter::toInt(matcher.group(5, status));
+        //int switchId = StringConverter::toInt(matcher.group(6, status));
 
-        if (!uncheckedTex) {
-            LOG_WARN << "Unable to display radio with unchecked id " << uncheckedId << std::endl;
-            return true;
-        }
+        //boost::shared_ptr<ui::Texture> uncheckedTex = data::Manager::getTexture(data::TextureSource::GUMPART, uncheckedId);
+        //boost::shared_ptr<ui::Texture> checkedTex = data::Manager::getTexture(data::TextureSource::GUMPART, checkedId);
 
-        if (!checkedTex) {
-            LOG_WARN << "Unable to display radio with checked id " << checkedId << std::endl;
-            return true;
-        }
+        //if (!uncheckedTex) {
+            //LOG_WARN << "Unable to display radio with unchecked id " << uncheckedId << std::endl;
+            //return true;
+        //}
 
-        components::RadioButton* cb = new components::RadioButton(menu);
-        CL_Rectf bounds(x, y, CL_Sizef(checkedTex->getWidth(), checkedTex->getHeight()));
-        cb->set_geometry(bounds);
+        //if (!checkedTex) {
+            //LOG_WARN << "Unable to display radio with checked id " << checkedId << std::endl;
+            //return true;
+        //}
 
-        cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED, uncheckedTex);
-        cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED_MOUSEOVER, uncheckedTex);
-        cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED, checkedTex);
-        cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED_MOUSEOVER, checkedTex);
-        cb->updateTexture();
-        cb->setAutoResize(true);
+        //components::RadioButton* cb = new components::RadioButton(menu);
+        //CL_Rectf bounds(x, y, CL_Sizef(checkedTex->getWidth(), checkedTex->getHeight()));
+        //cb->set_geometry(bounds);
 
-        cb->setSwitchId(switchId);
-        cb->setRadioGroupId(menu->getCurrentRadioGroup());
+        //cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED, uncheckedTex);
+        //cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED_MOUSEOVER, uncheckedTex);
+        //cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED, checkedTex);
+        //cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED_MOUSEOVER, checkedTex);
+        //cb->updateTexture();
+        //cb->setAutoResize(true);
 
-        if (checked) {
-            cb->setChecked(true);
-        }
+        //cb->setSwitchId(switchId);
+        //cb->setRadioGroupId(menu->getCurrentRadioGroup());
 
-        menu->addToCurrentPage(cb);
+        //if (checked) {
+            //cb->setChecked(true);
+        //}
 
-        return true;
-    } else {
-        LOG_ERROR << "Unable to parse radio, params " << params << std::endl;
-        return false;
-    }
+        //menu->addToCurrentPage(cb);
+
+        //return true;
+    //} else {
+        //LOG_ERROR << "Unable to parse radio, params " << params << std::endl;
+        //return false;
+    //}
+
+    return false;
 }
 
 bool StringParser::parseGroup(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {

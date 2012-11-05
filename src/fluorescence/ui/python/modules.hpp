@@ -81,6 +81,8 @@ BOOST_PYTHON_MODULE(client) {
     bpy::def("getConfig", PyClient::getConfig);
     bpy::def("shutdown", PyClient::shutdown);
     bpy::def("messagebox", PyClient::messagebox);
+    bpy::def("createShard", PyClient::createShard);
+    bpy::def("openGump", PyClient::openGump);
 }
 
 
@@ -109,6 +111,7 @@ BOOST_PYTHON_MODULE(gumps) {
         .def("addPythonButton", &PyGumpComponentContainer::addPythonButton, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addLineEdit", &PyGumpComponentContainer::addLineEdit, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addScrollArea", &PyGumpComponentContainer::addScrollArea, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("addCheckbox", &PyGumpComponentContainer::addCheckbox, bpy::return_value_policy<bpy::reference_existing_object>())
     ;
 
     // non-instanciable wrapper class for gump menus
@@ -176,8 +179,6 @@ BOOST_PYTHON_MODULE(gumps) {
 
     // button component
     bpy::class_<components::Button, bpy::bases<components::Image>, boost::noncopyable>("ButtonWrapper", bpy::no_init)
-        .add_property("mouseOver", make_function(&components::Button::getStateMouseOver, bpy::return_value_policy<bpy::reference_existing_object>()))
-        .add_property("mouseDown", make_function(&components::Button::getStateMouseDown, bpy::return_value_policy<bpy::reference_existing_object>()))
         .add_property("page", &components::Button::getPage, &components::Button::setPage)
         .add_property("id", &components::Button::getButtonId, &components::Button::setButtonId)
         .add_property("onClick", &components::Button::getPyClickCallback, &components::Button::setPyClickCallback)
@@ -244,6 +245,12 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("vertical", bpy::make_function(&components::ScrollArea::getVerticalScrollBar, bpy::return_value_policy<bpy::reference_existing_object>()))
         .add_property("horizontal", bpy::make_function(&components::ScrollArea::getHorizontalScrollBar, bpy::return_value_policy<bpy::reference_existing_object>()))
         .def("updateScrollbars", &components::ScrollArea::updateScrollbars)
+    ;
+
+    // checkbox component
+    bpy::class_<components::Checkbox, bpy::bases<components::Image>, boost::noncopyable>("CheckboxWrapper", bpy::no_init)
+        .add_property("checked", &components::Checkbox::isChecked, &components::Checkbox::setChecked)
+        .add_property("id", &components::Checkbox::getSwitchId, &components::Checkbox::setSwitchId)
     ;
 }
 

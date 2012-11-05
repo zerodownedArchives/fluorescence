@@ -690,103 +690,106 @@ GumpComponent* XmlLoader::parseBackground(pugi::xml_node& node, pugi::xml_node& 
 }
 
 GumpComponent* XmlLoader::parseCheckbox(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    unsigned int switchId = getAttribute("switchid", node, defaultNode).as_uint();
-    bool isChecked = getAttribute("checked", node, defaultNode).as_bool();
+    //CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    //unsigned int switchId = getAttribute("switchid", node, defaultNode).as_uint();
+    //bool isChecked = getAttribute("checked", node, defaultNode).as_bool();
 
-    components::Checkbox* cb = new components::Checkbox(parent);
-    cb->setSwitchId(switchId);
+    //components::Checkbox* cb = new components::Checkbox(parent);
+    //cb->setSwitchId(switchId);
 
-    parseId(node, cb);
+    //parseId(node, cb);
 
-    pugi::xml_node uncheckedNode = node.child("unchecked");
-    pugi::xml_node uncheckedMoNode = node.child("unchecked-mouseover");
-    pugi::xml_node checkedNode = node.child("checked");
-    pugi::xml_node checkedMoNode = node.child("checked-mouseover");
+    //pugi::xml_node uncheckedNode = node.child("unchecked");
+    //pugi::xml_node uncheckedMoNode = node.child("unchecked-mouseover");
+    //pugi::xml_node checkedNode = node.child("checked");
+    //pugi::xml_node checkedMoNode = node.child("checked-mouseover");
 
-    pugi::xml_node defUncheckedNode = defaultNode.child("unchecked");
-    pugi::xml_node defUncheckedMoNode = defaultNode.child("unchecked-mouseover");
-    pugi::xml_node defCheckedNode = defaultNode.child("checked");
-    pugi::xml_node defCheckedMoNode = defaultNode.child("checked-mouseover");
+    //pugi::xml_node defUncheckedNode = defaultNode.child("unchecked");
+    //pugi::xml_node defUncheckedMoNode = defaultNode.child("unchecked-mouseover");
+    //pugi::xml_node defCheckedNode = defaultNode.child("checked");
+    //pugi::xml_node defCheckedMoNode = defaultNode.child("checked-mouseover");
 
-    if ((checkedNode || defCheckedNode) && (uncheckedNode || defUncheckedNode)) {
-        parseMultiTextureImage(uncheckedNode, defUncheckedNode, cb, components::Checkbox::TEX_INDEX_UNCHECKED);
-        parseMultiTextureImage(checkedNode, defCheckedNode, cb, components::Checkbox::TEX_INDEX_CHECKED);
-    } else {
-        LOG_ERROR << "Checkbox needs to have checked and unchecked image node" << std::endl;
-        return nullptr;
-    }
+    //if ((checkedNode || defCheckedNode) && (uncheckedNode || defUncheckedNode)) {
+        //parseMultiTextureImage(uncheckedNode, defUncheckedNode, cb, components::Checkbox::TEX_INDEX_UNCHECKED);
+        //parseMultiTextureImage(checkedNode, defCheckedNode, cb, components::Checkbox::TEX_INDEX_CHECKED);
+    //} else {
+        //LOG_ERROR << "Checkbox needs to have checked and unchecked image node" << std::endl;
+        //return nullptr;
+    //}
 
-    if (uncheckedMoNode || defUncheckedMoNode) {
-        parseMultiTextureImage(uncheckedMoNode, defUncheckedMoNode, cb, components::Checkbox::TEX_INDEX_UNCHECKED_MOUSEOVER);
-    }
-    if (checkedMoNode || defCheckedMoNode) {
-        parseMultiTextureImage(checkedMoNode, defCheckedMoNode, cb, components::Checkbox::TEX_INDEX_CHECKED_MOUSEOVER);
-    }
+    //if (uncheckedMoNode || defUncheckedMoNode) {
+        //parseMultiTextureImage(uncheckedMoNode, defUncheckedMoNode, cb, components::Checkbox::TEX_INDEX_UNCHECKED_MOUSEOVER);
+    //}
+    //if (checkedMoNode || defCheckedMoNode) {
+        //parseMultiTextureImage(checkedMoNode, defCheckedMoNode, cb, components::Checkbox::TEX_INDEX_CHECKED_MOUSEOVER);
+    //}
 
-    if (bounds.get_width() == 0 || bounds.get_height() == 0) {
-        cb->setAutoResize(true);
-        bounds.set_width(1);
-        bounds.set_height(1);
-    }
+    //if (bounds.get_width() == 0 || bounds.get_height() == 0) {
+        //cb->setAutoResize(true);
+        //bounds.set_width(1);
+        //bounds.set_height(1);
+    //}
 
-    cb->setChecked(isChecked);
+    //cb->setChecked(isChecked);
 
-    cb->set_geometry(bounds);
+    //cb->set_geometry(bounds);
 
-    top->addToCurrentPage(cb);
-    return cb;
+    //top->addToCurrentPage(cb);
+    //return cb;
+    return nullptr;
 }
 
 GumpComponent* XmlLoader::parseRadioButton(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    unsigned int switchId = getAttribute("switchid", node, defaultNode).as_uint();
-    bool isChecked = getAttribute("checked", node, defaultNode).as_bool();
-    unsigned int groupId = getAttribute("group", node, defaultNode).as_uint();
+    //CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    //unsigned int switchId = getAttribute("switchid", node, defaultNode).as_uint();
+    //bool isChecked = getAttribute("checked", node, defaultNode).as_bool();
+    //unsigned int groupId = getAttribute("group", node, defaultNode).as_uint();
 
-    components::RadioButton* rb = new components::RadioButton(parent);
-    rb->setSwitchId(switchId);
-    rb->setRadioGroupId(groupId);
+    //components::RadioButton* rb = new components::RadioButton(parent);
+    //rb->setSwitchId(switchId);
+    //rb->setRadioGroupId(groupId);
 
-    parseId(node, rb);
+    //parseId(node, rb);
 
-    pugi::xml_node uncheckedNode = node.child("unchecked");
-    pugi::xml_node uncheckedMoNode = node.child("unchecked-mouseover");
-    pugi::xml_node checkedNode = node.child("checked");
-    pugi::xml_node checkedMoNode = node.child("checked-mouseover");
+    //pugi::xml_node uncheckedNode = node.child("unchecked");
+    //pugi::xml_node uncheckedMoNode = node.child("unchecked-mouseover");
+    //pugi::xml_node checkedNode = node.child("checked");
+    //pugi::xml_node checkedMoNode = node.child("checked-mouseover");
 
-    pugi::xml_node defUncheckedNode = defaultNode.child("unchecked");
-    pugi::xml_node defUncheckedMoNode = defaultNode.child("unchecked-mouseover");
-    pugi::xml_node defCheckedNode = defaultNode.child("checked");
-    pugi::xml_node defCheckedMoNode = defaultNode.child("checked-mouseover");
+    //pugi::xml_node defUncheckedNode = defaultNode.child("unchecked");
+    //pugi::xml_node defUncheckedMoNode = defaultNode.child("unchecked-mouseover");
+    //pugi::xml_node defCheckedNode = defaultNode.child("checked");
+    //pugi::xml_node defCheckedMoNode = defaultNode.child("checked-mouseover");
 
-    if ((checkedNode || defCheckedNode) && (uncheckedNode || defUncheckedNode)) {
-        parseMultiTextureImage(uncheckedNode, defUncheckedNode, rb, components::Checkbox::TEX_INDEX_UNCHECKED);
-        parseMultiTextureImage(checkedNode, defCheckedNode, rb, components::Checkbox::TEX_INDEX_CHECKED);
-    } else {
-        LOG_ERROR << "radiobutton needs to have checked and unchecked image node" << std::endl;
-        return nullptr;
-    }
+    //if ((checkedNode || defCheckedNode) && (uncheckedNode || defUncheckedNode)) {
+        //parseMultiTextureImage(uncheckedNode, defUncheckedNode, rb, components::Checkbox::TEX_INDEX_UNCHECKED);
+        //parseMultiTextureImage(checkedNode, defCheckedNode, rb, components::Checkbox::TEX_INDEX_CHECKED);
+    //} else {
+        //LOG_ERROR << "radiobutton needs to have checked and unchecked image node" << std::endl;
+        //return nullptr;
+    //}
 
-    if (uncheckedMoNode || defUncheckedMoNode) {
-        parseMultiTextureImage(uncheckedMoNode, defUncheckedMoNode, rb, components::Checkbox::TEX_INDEX_UNCHECKED_MOUSEOVER);
-    }
-    if (checkedMoNode || defCheckedMoNode) {
-        parseMultiTextureImage(checkedMoNode, defCheckedMoNode, rb, components::Checkbox::TEX_INDEX_CHECKED_MOUSEOVER);
-    }
+    //if (uncheckedMoNode || defUncheckedMoNode) {
+        //parseMultiTextureImage(uncheckedMoNode, defUncheckedMoNode, rb, components::Checkbox::TEX_INDEX_UNCHECKED_MOUSEOVER);
+    //}
+    //if (checkedMoNode || defCheckedMoNode) {
+        //parseMultiTextureImage(checkedMoNode, defCheckedMoNode, rb, components::Checkbox::TEX_INDEX_CHECKED_MOUSEOVER);
+    //}
 
-    if (bounds.get_width() == 0 || bounds.get_height() == 0) {
-        rb->setAutoResize(true);
-        bounds.set_width(1);
-        bounds.set_height(1);
-    }
+    //if (bounds.get_width() == 0 || bounds.get_height() == 0) {
+        //rb->setAutoResize(true);
+        //bounds.set_width(1);
+        //bounds.set_height(1);
+    //}
 
-    rb->setChecked(isChecked);
+    //rb->setChecked(isChecked);
 
-    rb->set_geometry(bounds);
+    //rb->set_geometry(bounds);
 
-    top->addToCurrentPage(rb);
-    return rb;
+    //top->addToCurrentPage(rb);
+    //return rb;
+
+    return nullptr;
 }
 
 GumpComponent* XmlLoader::parseLabel(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {

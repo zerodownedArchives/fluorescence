@@ -5,8 +5,6 @@ import client
 import theme
 
 def create(args):
-    theme.themeTest()
-
     g = GumpMenu("login", 337, 289, True)
     theme.setFont(g)
     g.closable = False

@@ -51,9 +51,6 @@ public:
     void setFontColor(unsigned int index, const CL_Colorf& color);
     void setFontHue(unsigned int index, unsigned int hue);
 
-    ImageState* getStateMouseOver();
-    ImageState* getStateMouseDown();
-
     ButtonType getButtonType() const;
     void setButtonType(ButtonType type);
 

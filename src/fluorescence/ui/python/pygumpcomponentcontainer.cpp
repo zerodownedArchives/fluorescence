@@ -128,6 +128,15 @@ components::ScrollArea* PyGumpComponentContainer::addScrollArea(CL_GUIComponent*
     return area;
 }
 
+components::Checkbox* PyGumpComponentContainer::addCheckbox(CL_GUIComponent* self, boost::python::tuple& geom) {
+    components::Checkbox* cb = new components::Checkbox(getParentHelper(self));
+    cb->pySetGeometry(geom);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(cb);
+
+    return cb;
+}
+
 }
 }
 }

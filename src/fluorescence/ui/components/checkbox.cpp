@@ -26,7 +26,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-Checkbox::Checkbox(CL_GUIComponent* parent) : MultiTextureImage(parent, 4), mouseOver_(false), checked_(false), switchId_(0) {
+Checkbox::Checkbox(CL_GUIComponent* parent) : Image(parent, "unchecked"), mouseOver_(false), checked_(false), switchId_(0) {
     func_input_pressed().set(this, &Checkbox::onInputPressed);
     func_pointer_enter().set(this, &Checkbox::onPointerEnter);
     func_pointer_exit().set(this, &Checkbox::onPointerExit);
@@ -34,6 +34,8 @@ Checkbox::Checkbox(CL_GUIComponent* parent) : MultiTextureImage(parent, 4), mous
     set_double_click_enabled(false);
 
     set_type_name("checkbox");
+
+    updateState();
 }
 
 bool Checkbox::onInputPressed(const CL_InputEvent & e) {
@@ -47,42 +49,37 @@ bool Checkbox::onInputPressed(const CL_InputEvent & e) {
 
 bool Checkbox::onPointerEnter() {
     mouseOver_ = true;
-    updateTexture();
+    updateState();
 
     return true;
 }
 
 bool Checkbox::onPointerExit() {
     mouseOver_ = false;
-    updateTexture();
+    updateState();
 
     return true;
 }
 
-void Checkbox::updateTexture() {
-    unsigned int idx = calcTextureId();
-    activateTexture(idx);
-}
-
-unsigned int Checkbox::calcTextureId() const {
+void Checkbox::updateState() {
     if (checked_) {
         if (mouseOver_) {
-            return TEX_INDEX_CHECKED_MOUSEOVER;
+            setCurrentState("checkedMouseOver");
         } else {
-            return TEX_INDEX_CHECKED;
+            setCurrentState("checked");
         }
     } else {
         if (mouseOver_) {
-            return TEX_INDEX_UNCHECKED_MOUSEOVER;
+            setCurrentState("uncheckedMouseOver");
         } else {
-            return TEX_INDEX_UNCHECKED;
+            setCurrentState("unchecked");
         }
     }
 }
 
 void Checkbox::setChecked(bool value) {
     checked_ = value;
-    updateTexture();
+    updateState();
 }
 
 bool Checkbox::isChecked() const {

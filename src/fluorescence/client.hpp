@@ -63,11 +63,11 @@ public:
     unsigned int getState();
     void loginComplete(); /// < called when the game window should be displayed => setState(playing)
     void selectShard(const UnicodeString& shardName);
+    bool createShard(const UnicodeString& name, const UnicodeString& path, bool highSeas);
 
     // gump callbacks
     bool disconnect(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
     bool shutdown(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
-    bool selectShard(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
     bool selectCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
     bool deleteCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
 

@@ -23,25 +23,15 @@
 #include <boost/shared_ptr.hpp>
 #include <ClanLib/Display/Window/input_event.h>
 
-#include "multitextureimage.hpp"
+#include "image.hpp"
 
 namespace fluo {
 namespace ui {
 namespace components {
 
-class Checkbox : public MultiTextureImage {
-
+class Checkbox : public Image {
 public:
-    enum TextureIndex {
-        TEX_INDEX_UNCHECKED = 0,
-        TEX_INDEX_UNCHECKED_MOUSEOVER = 1,
-        TEX_INDEX_CHECKED = 2,
-        TEX_INDEX_CHECKED_MOUSEOVER = 3,
-    };
-
     Checkbox(CL_GUIComponent* parent);
-
-    void updateTexture();
 
     void setChecked(bool value);
     bool isChecked() const;
@@ -57,10 +47,9 @@ private:
 
     bool mouseOver_;
     bool checked_;
+    void updateState();
 
     unsigned int switchId_;
-
-    unsigned int calcTextureId() const;
 };
 
 }

@@ -42,7 +42,7 @@ namespace components {
 
 class Image : public GumpComponent {
 public:
-    Image(CL_GUIComponent* parent);
+    Image(CL_GUIComponent* parent, const char* defaultStateName = "normal");
 
     void render(CL_GraphicContext& gc, const CL_Rect& clipRect);
 

@@ -38,11 +38,11 @@ def create(args):
 	i2.hue = 2
 
 	but = g.addPythonButton((10, 10, 100, 60), Texture(TextureSource.THEME, "images/button.png"), onButtonClick)
-	but.mouseOver.hue = 13
-	but.mouseDown.rgba = (1.0, 1.0, 0.0)
+	but.state("mouseOver").hue = 13
+	but.state("mouseDown").rgba = (1.0, 1.0, 0.0)
 	but.text = "foooobert"
-	but.mouseDown.fontRgba = rgba(4)
-	but.mouseOver.fontRgba = rgba("#00ffff")
+	but.state("mouseDown").fontRgba = rgba(4)
+	but.state("mouseOver").fontRgba = rgba("#00ffff")
 	but.setFont("Arial", 8);
 	i1.name = "i1"
 	g.store["i2"] = i2

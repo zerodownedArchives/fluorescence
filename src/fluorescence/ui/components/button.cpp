@@ -94,14 +94,6 @@ void Button::updateState() {
     }
 }
 
-ImageState* Button::getStateMouseOver() {
-    return getState("mouseOver");
-}
-
-ImageState* Button::getStateMouseDown() {
-    return getState("mouseDown");
-}
-
 Button::ButtonType Button::getButtonType() const {
     return type_;
 }

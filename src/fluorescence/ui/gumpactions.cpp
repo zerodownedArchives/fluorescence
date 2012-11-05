@@ -62,12 +62,7 @@ std::map<UnicodeString, GumpActions::GumpAction> GumpActions::actionTable_ = std
 
 void GumpActions::buildBasicActionTable() {
     actionTable_["shutdown"] = GumpAction(false, boost::bind(&Client::shutdown, Client::getSingleton(), _1, _2, _3, _4));
-    actionTable_["selectshard"] = GumpAction(true, boost::bind(&Client::selectShard, Client::getSingleton(), _1, _2, _3, _4));
-    actionTable_["selectshard-first"] = GumpAction(true, boost::bind(&GumpActions::selectShardFirst, _1, _2, _3, _4));
     actionTable_["close"] = GumpAction(true, boost::bind(&GumpActions::closeHelper, _1, _2, _3, _4));
-
-    actionTable_["opengump"] = GumpAction(true, boost::bind(&GumpActions::openGump, _1, _2, _3, _4));
-    actionTable_["createshard"] = GumpAction(true, boost::bind(&GumpActions::createShard, _1, _2, _3, _4));
 }
 
 void GumpActions::buildFullActionTable() {
@@ -122,16 +117,6 @@ void GumpActions::doAction(components::Button* button) {
 
 bool GumpActions::closeHelper(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     return true;
-}
-
-bool GumpActions::selectShardFirst(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    components::Button* button = dynamic_cast<components::Button*>(menu->get_named_item("selectshard"));
-    if (!button) {
-        LOG_DEBUG << "No shard found for quickselect" << std::endl;
-    } else {
-        doAction(button);
-    }
-    return false; // because another action is called in sequence
 }
 
 bool GumpActions::selectServerFirst(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
@@ -246,97 +231,6 @@ bool GumpActions::castSpell(GumpMenu* menu, const UnicodeString& action, unsigne
 
 bool GumpActions::yesNoGump(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     GumpMenus::openYesNoBox(action, parameterCount, parameters);
-    return true;
-}
-
-bool GumpActions::openGump(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    ui::Manager::getSingleton()->openXmlGump(parameters[0]);
-    return true;
-}
-
-bool GumpActions::createShard(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    components::LineEdit* nameEdit = dynamic_cast<components::LineEdit*>(menu->get_named_item("shardname"));
-    components::LineEdit* pathEdit = dynamic_cast<components::LineEdit*>(menu->get_named_item("uopath"));
-    components::Checkbox* highSeasCheckBox = dynamic_cast<components::Checkbox*>(menu->get_named_item("highseas"));
-
-    UnicodeString name = nameEdit->getText();
-    boost::filesystem::path path(StringConverter::toUtf8String(pathEdit->getText()));
-
-    boost::filesystem::path clientPath = path / "client.exe";
-    if (!boost::filesystem::exists(clientPath)) {
-        clientPath = path / "Client.exe";
-        if (!boost::filesystem::exists(clientPath)) {
-            LOG_ERROR << "Invalid Ultima Online directory" << std::endl;
-            GumpMenus::openMessageBox("Invalid Ultima Online directory");
-            return false;
-        }
-    }
-
-    boost::filesystem::path shardPath(StringConverter::toUtf8String(nameEdit->getText()));
-    shardPath = "shards" / shardPath;
-    if (boost::filesystem::exists(shardPath)) {
-        LOG_ERROR << "Shard already exists" << std::endl;
-        GumpMenus::openMessageBox("Shard already exists");
-        return false;
-    }
-
-    try {
-        if (!boost::filesystem::create_directory(shardPath)) {
-            LOG_ERROR << "Failed to create shard directory: " << std::endl;
-            GumpMenus::openMessageBox("Failed to create shard directory");
-            return false;
-        }
-    } catch (std::exception& ex) {
-        LOG_ERROR << "Failed to create shard directory: " << ex.what() << std::endl;
-        GumpMenus::openMessageBox("Failed to create shard directory");
-        return false;
-    }
-
-    boost::filesystem::path configPath = shardPath / "config.xml";
-    boost::filesystem::ofstream configStream(configPath);
-    if (!configStream) {
-        LOG_ERROR << "Failed to create shard config file: " << std::endl;
-        GumpMenus::openMessageBox("Failed to create shard config file");
-        boost::filesystem::remove(shardPath);
-        return false;
-    } else {
-        configStream << "<?xml version=\"1.0\"?>\n<fluo>\n<files";
-        if (highSeasCheckBox->isChecked()) {
-            configStream << " format=\"mul-hs\"";
-        }
-        configStream << ">\n<mul-directory path=\"" << path.string();
-        configStream << "\" />\n</files>\n</fluo>";
-        configStream.close();
-    }
-
-    boost::filesystem::path macroPath = shardPath / "macros.xml";
-    boost::filesystem::ofstream macroStream(macroPath);
-    if (!macroStream) {
-        LOG_ERROR << "Failed to create macros file: " << std::endl;
-        GumpMenus::openMessageBox("Failed to create macros file");
-        boost::filesystem::remove(shardPath);
-        return false;
-    } else {
-        macroStream << "<?xml version=\"1.0\"?>\n<macros>\n";
-        macroStream << "<macro key=\"return\">\n\t<command name=\"speechentry\" />\n</macro>\n";
-        macroStream << "<macro key=\"q\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"countdown\" />\n</macro>\n";
-        macroStream << "<macro key=\"w\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"badsmell\" />\n</macro>\n";
-        macroStream << "<macro key=\"e\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"deadlyfog\" />\n</macro>\n";
-        macroStream << "<macro key=\"r\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"explosion\" />\n</macro>\n";
-        macroStream << "<macro key=\"t\" ctrl=\"true\">\n\t<command name=\"effect\" param=\"rain\" />\n</macro>\n";
-        macroStream << "<macro key=\"a\" ctrl=\"true\">\n\t<command name=\"directionlight\" param=\"on\" />\n</macro>\n";
-        macroStream << "<macro key=\"s\" ctrl=\"true\">\n\t<command name=\"directionlight\" param=\"off\" />\n</macro>\n";
-        macroStream << "<macro key=\"s\" ctrl=\"true\">\n\t<command name=\"directionlight\" param=\"off\" />\n</macro>\n";
-        macroStream << "<macro key=\"add\">\n\t<command name=\"zoom\" param=\"in\" />\n</macro>\n";
-        macroStream << "<macro key=\"subtract\">\n\t<command name=\"zoom\" param=\"out\" />\n</macro>\n";
-        macroStream << "<macro key=\"multiply\">\n\t<command name=\"zoom\" param=\"reset\" />\n</macro>\n";
-        macroStream << "<macro key=\"tab\">\n\t<command name=\"togglewarmode\" />\n</macro>\n";
-        macroStream << "<macro key=\"escape\">\n\t<command name=\"cancel\" />\n</macro>\n";
-        macroStream << "</macros>";
-        macroStream.close();
-    }
-
-    Client::getSingleton()->selectShard(name);
     return true;
 }
 
