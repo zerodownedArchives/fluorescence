@@ -111,8 +111,7 @@ bool CharacterList::read(const int8_t* buf, unsigned int len, unsigned int& inde
 }
 
 void CharacterList::onReceive() {
-    ui::Manager::getSingleton()->closeGumpMenu("serverlist");
-    ui::GumpMenus::openCharacterListGump(charCount_, charNames_, charPasswords_);
+    ui::GumpMenus::openCharacterList(charCount_, charNames_, charPasswords_);
 }
 
 }

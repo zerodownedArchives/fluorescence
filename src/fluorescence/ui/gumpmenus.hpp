@@ -51,11 +51,11 @@ class GumpMenu;
 class GumpMenus {
 public:
     static void openMessageBox(const UnicodeString& message);
-    static void openShardSelectionGump();
+    static void openShardList();
+    static void openServerList(const net::packets::ServerList* list);
+    static void openCharacterList(unsigned int charCount, const UnicodeString* charNames, const UnicodeString* charPasswords);
 
     static GumpMenu* openYesNoBox(const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
-    static GumpMenu* openServerListGump(const net::packets::ServerList* list);
-    static GumpMenu* openCharacterListGump(unsigned int charCount, const UnicodeString* charNames, const UnicodeString* charPasswords);
     static GumpMenu* openContextMenu(const net::packets::bf::OpenContextMenu* pkt);
     static GumpMenu* openSpellbook(const world::DynamicItem* itm);
     static GumpMenu* openSkills(const world::Mobile* mob);

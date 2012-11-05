@@ -77,11 +77,14 @@ BOOST_PYTHON_MODULE(data) {
 
 BOOST_PYTHON_MODULE(client) {
     bpy::def("setShard", PyClient::setShard);
+    bpy::def("createShard", PyClient::createShard);
     bpy::def("connect", PyClient::connect);
+    bpy::def("disconnect", PyClient::disconnect);
+    bpy::def("selectServer", PyClient::selectServer);
+    bpy::def("selectCharacter", PyClient::selectCharacter);
     bpy::def("getConfig", PyClient::getConfig);
     bpy::def("shutdown", PyClient::shutdown);
     bpy::def("messagebox", PyClient::messagebox);
-    bpy::def("createShard", PyClient::createShard);
     bpy::def("openGump", PyClient::openGump);
 }
 
@@ -112,6 +115,7 @@ BOOST_PYTHON_MODULE(gumps) {
         .def("addLineEdit", &PyGumpComponentContainer::addLineEdit, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addScrollArea", &PyGumpComponentContainer::addScrollArea, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addCheckbox", &PyGumpComponentContainer::addCheckbox, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("addWorldView", &PyGumpComponentContainer::addWorldView, bpy::return_value_policy<bpy::reference_existing_object>())
     ;
 
     // non-instanciable wrapper class for gump menus
@@ -251,6 +255,10 @@ BOOST_PYTHON_MODULE(gumps) {
     bpy::class_<components::Checkbox, bpy::bases<components::Image>, boost::noncopyable>("CheckboxWrapper", bpy::no_init)
         .add_property("checked", &components::Checkbox::isChecked, &components::Checkbox::setChecked)
         .add_property("id", &components::Checkbox::getSwitchId, &components::Checkbox::setSwitchId)
+    ;
+
+    // worldview component
+    bpy::class_<components::WorldView, bpy::bases<GumpComponent>, boost::noncopyable>("WorldView", bpy::no_init)
     ;
 }
 

@@ -218,12 +218,15 @@ void Manager::disconnect() {
     socket_.close();
 }
 
-bool Manager::selectServer(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    unsigned int index = StringConverter::toInt(parameters[0]);
-
+bool Manager::selectServer(unsigned int index) {
     packets::GameServerSelect pkt(index);
     send(pkt);
+    return true;
+}
 
+bool Manager::selectCharacter(unsigned int index, const UnicodeString& name, const UnicodeString& password) {
+    packets::CharacterSelect reply(name, password, index, getSeed());
+    send(reply);
     return true;
 }
 

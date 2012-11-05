@@ -47,10 +47,9 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-WorldView::WorldView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpComponent(parent),
+WorldView::WorldView(CL_GUIComponent* parent) : GumpComponent(parent),
         centerTileX_(0), centerTileY_(0), centerTileZ_(0),
         lastCenterPixelX_(0), lastCenterPixelY_(0), zoom_(1) {
-    this->set_geometry(bounds);
     renderer_.reset(new render::WorldRenderer(this));
 
     world::Manager::getSectorManager()->registerWorldView(this);

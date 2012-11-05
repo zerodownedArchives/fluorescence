@@ -52,7 +52,7 @@ bool CharacterListUpdate::read(const int8_t* buf, unsigned int len, unsigned int
 
 void CharacterListUpdate::onReceive() {
     ui::Manager::getSingleton()->closeGumpMenu("characterlist");
-    ui::GumpMenus::openCharacterListGump(charCount_, charNames_, charPasswords_);
+    ui::GumpMenus::openCharacterList(charCount_, charNames_, charPasswords_);
 }
 
 }

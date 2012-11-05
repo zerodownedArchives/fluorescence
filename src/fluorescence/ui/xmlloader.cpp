@@ -988,12 +988,13 @@ GumpComponent* XmlLoader::parseAlphaRegion(pugi::xml_node& node, pugi::xml_node&
 }
 
 GumpComponent* XmlLoader::parseWorldView(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    ui::components::WorldView* worldView = new ui::components::WorldView(parent, bounds);
-    parseId(node, worldView);
-    top->addToCurrentPage(worldView);
+    //CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    //ui::components::WorldView* worldView = new ui::components::WorldView(parent, bounds);
+    //parseId(node, worldView);
+    //top->addToCurrentPage(worldView);
 
-    return worldView;
+    //return worldView;
+    return nullptr;
 }
 
 GumpComponent* XmlLoader::parsePaperdoll(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {

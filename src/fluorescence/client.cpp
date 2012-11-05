@@ -41,7 +41,6 @@
 #include <world/sector.hpp>
 
 #include <net/manager.hpp>
-#include <net/packets/5d_characterselect.hpp>
 #include <net/packets/83_characterdelete.hpp>
 
 namespace fluo {
@@ -74,19 +73,9 @@ void Client::shutdown() {
     setState(STATE_SHUTDOWN);
 }
 
-bool Client::shutdown(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    shutdown();
-    return true;
-}
-
 void Client::selectShard(const UnicodeString& shardName) {
     config_.setShardName(shardName);
     setState(STATE_PRE_LOGIN);
-}
-
-bool Client::disconnect(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    disconnect();
-    return true;
 }
 
 void Client::disconnect() {
@@ -140,7 +129,7 @@ bool Client::handleStateChange() {
         break;
 
     case STATE_PLAYING:
-        uiManager->openXmlGump("gamewindow");
+        uiManager->openPythonGump("gamewindow");
         uiManager->installMacros();
 
         break;
@@ -293,7 +282,7 @@ int Client::main(const std::vector<CL_String8>& args) {
     if (config_.isLoaded()) {
         setState(STATE_PRE_LOGIN);
     } else {
-        ui::GumpMenus::openShardSelectionGump();
+        ui::GumpMenus::openShardList();
         LOG_INFO << "Selecting shard through user interface" << std::endl;
     }
 
@@ -391,13 +380,6 @@ void Client::doStateLogin() {
     uiManager->stepDraw();
 
     CL_System::sleep(10);
-}
-
-bool Client::selectCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    net::packets::CharacterSelect reply(parameters[2], parameters[1], StringConverter::toInt(parameters[0]), net::Manager::getSingleton()->getSeed());
-    net::Manager::getSingleton()->send(reply);
-
-    return true;
 }
 
 bool Client::deleteCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {

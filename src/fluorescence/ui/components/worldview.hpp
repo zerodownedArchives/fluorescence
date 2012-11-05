@@ -42,7 +42,7 @@ namespace components {
 
 class WorldView : public GumpComponent {
 public:
-    WorldView(CL_GUIComponent* parent, const CL_Rect& bounds);
+    WorldView(CL_GUIComponent* parent);
     ~WorldView();
 
     void setCenterObject(boost::shared_ptr<world::IngameObject> obj);

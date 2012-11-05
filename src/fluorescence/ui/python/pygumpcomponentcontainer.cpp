@@ -137,6 +137,15 @@ components::Checkbox* PyGumpComponentContainer::addCheckbox(CL_GUIComponent* sel
     return cb;
 }
 
+components::WorldView* PyGumpComponentContainer::addWorldView(CL_GUIComponent* self, boost::python::tuple& geom) {
+    components::WorldView* view = new components::WorldView(getParentHelper(self));
+    view->pySetGeometry(geom);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(view);
+
+    return view;
+}
+
 }
 }
 }

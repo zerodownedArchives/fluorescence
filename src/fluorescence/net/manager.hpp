@@ -61,7 +61,8 @@ public:
     bool connect(const UnicodeString& host, unsigned int port, const UnicodeString& account, const UnicodeString& password);
     void disconnect();
 
-    bool selectServer(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
+    bool selectServer(unsigned int index);
+    bool selectCharacter(unsigned int index, const UnicodeString& name, const UnicodeString& password);
 
     void handleServerRedirect(const packets::ServerRedirect* packet);
 

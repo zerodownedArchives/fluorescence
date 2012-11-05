@@ -41,6 +41,7 @@ class Button;
 class LineEdit;
 class ScrollArea;
 class Checkbox;
+class WorldView;
 }
 
 namespace python {
@@ -57,6 +58,7 @@ public:
     static components::LineEdit* addLineEdit(CL_GUIComponent* self, boost::python::tuple& geom);
     static components::ScrollArea* addScrollArea(CL_GUIComponent* self, boost::python::tuple& geom);
     static components::Checkbox* addCheckbox(CL_GUIComponent* self, boost::python::tuple& geom);
+    static components::WorldView* addWorldView(CL_GUIComponent* self, boost::python::tuple& geom);
 
 private:
     // when adding to a scrollarea, the components are not added directly to the area but to a child component

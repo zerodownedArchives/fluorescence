@@ -7,10 +7,10 @@ import theme
 # In case you want to redesign this gump, keep in mind that at this point, you can not
 # access any uo data (e.g. art.mul graphics, hues), as the mul files are not loaded yet.
 def create(args):
-    g = GumpMenu("shardselection", 400, 300)
+    g = GumpMenu("shardlist", 400, 300)
     g.closable = False
 
-    shardlist = args["shards"]
+    shardlist = args["shardlist"]
     if len(shardlist) > 0:
         g.onEnter = selectFirst
         g.store["firstName"] = shardlist[0]

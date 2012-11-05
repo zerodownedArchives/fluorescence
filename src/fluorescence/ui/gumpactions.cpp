@@ -61,16 +61,10 @@ GumpActions::GumpAction::GumpAction(bool closeGumpMenu, GumpActionCallback callb
 std::map<UnicodeString, GumpActions::GumpAction> GumpActions::actionTable_ = std::map<UnicodeString, GumpActions::GumpAction>();
 
 void GumpActions::buildBasicActionTable() {
-    actionTable_["shutdown"] = GumpAction(false, boost::bind(&Client::shutdown, Client::getSingleton(), _1, _2, _3, _4));
     actionTable_["close"] = GumpAction(true, boost::bind(&GumpActions::closeHelper, _1, _2, _3, _4));
 }
 
 void GumpActions::buildFullActionTable() {
-    actionTable_["disconnect"] = GumpAction(true, boost::bind(&Client::disconnect, Client::getSingleton(), _1, _2, _3, _4));
-    actionTable_["selectserver"] = GumpAction(false, boost::bind(&net::Manager::selectServer, net::Manager::getSingleton(), _1, _2, _3, _4));
-    actionTable_["selectserver-first"] = GumpAction(true, boost::bind(&GumpActions::selectServerFirst, _1, _2, _3, _4));
-    actionTable_["selectcharacter"] = GumpAction(true, boost::bind(&Client::selectCharacter, Client::getSingleton(), _1, _2, _3, _4));
-    actionTable_["selectcharacter-first"] = GumpAction(true, boost::bind(&GumpActions::selectCharacterFirst, _1, _2, _3, _4));
     actionTable_["deletecharacter"] = GumpAction(true, boost::bind(&Client::deleteCharacter, Client::getSingleton(), _1, _2, _3, _4));
 
     actionTable_["sendspeech"] = GumpAction(false, boost::bind(&GumpActions::sendSpeech, _1, _2, _3, _4));
@@ -117,26 +111,6 @@ void GumpActions::doAction(components::Button* button) {
 
 bool GumpActions::closeHelper(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     return true;
-}
-
-bool GumpActions::selectServerFirst(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    components::Button* button = dynamic_cast<components::Button*>(menu->get_named_item("selectserver"));
-    if (!button) {
-        LOG_DEBUG << "No server found for quickselect" << std::endl;
-    } else {
-        doAction(button);
-    }
-    return false; // because another action is called in sequence
-}
-
-bool GumpActions::selectCharacterFirst(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    components::Button* button = dynamic_cast<components::Button*>(menu->get_named_item("selectcharacter"));
-    if (!button) {
-        LOG_DEBUG << "No character found for quickselect" << std::endl;
-    } else {
-        doAction(button);
-    }
-    return false; // because another action is called in sequence
 }
 
 bool GumpActions::sendSpeech(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {

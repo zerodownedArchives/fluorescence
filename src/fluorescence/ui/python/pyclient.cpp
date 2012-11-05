@@ -20,6 +20,7 @@
 
 #include <client.hpp>
 #include <misc/log.hpp>
+#include <net/manager.hpp>
 #include <ui/manager.hpp>
 #include <ui/gumpmenus.hpp>
 
@@ -58,6 +59,18 @@ void PyClient::messagebox(const UnicodeString& msg) {
 
 void PyClient::openGump(const UnicodeString& name) {
     ui::Manager::getSingleton()->openPythonGump(name);
+}
+
+void PyClient::disconnect() {
+    Client::getSingleton()->disconnect();
+}
+
+void PyClient::selectServer(unsigned int index) {
+    net::Manager::getSingleton()->selectServer(index);
+}
+
+void PyClient::selectCharacter(unsigned int index, const UnicodeString& name, const UnicodeString& password) {
+    net::Manager::getSingleton()->selectCharacter(index, name, password);
 }
 
 }

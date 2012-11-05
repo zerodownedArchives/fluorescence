@@ -60,14 +60,14 @@ bool ServerList::read(const int8_t* buf, unsigned int len, unsigned int& index) 
 void ServerList::onReceive() {
     ui::Manager::getSingleton()->closeGumpMenu("login");
 
-    if (listEntries_.size() == 1) {
+    if (false && listEntries_.size() == 1) {
         // only one server to select => go for it
         LOG_DEBUG << "Automatically selecting game server " << listEntries_.front().name_ << " (only one available)" << std::endl;
         net::packets::GameServerSelect pkt(listEntries_.front().index_);
         net::Manager::getSingleton()->send(pkt);
     } else {
         // let the user decide
-        ui::GumpMenus::openServerListGump(this);
+        ui::GumpMenus::openServerList(this);
     }
 }
 

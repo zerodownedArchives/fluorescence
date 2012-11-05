@@ -61,7 +61,7 @@ void GumpMenus::openMessageBox(const UnicodeString& message) {
     LOG_INFO << "MessageBox: " << message << std::endl;
 }
 
-void GumpMenus::openShardSelectionGump() {
+void GumpMenus::openShardList() {
     namespace bfs = boost::filesystem;
 
     bfs::path path("shards");
@@ -85,11 +85,39 @@ void GumpMenus::openShardSelectionGump() {
     nameList.sort();
 
     boost::python::dict args;
-    args["shards"] = nameList;
+    args["shardlist"] = nameList;
 
-    ui::Manager::getSingleton()->openPythonGump("shardselection", args);
+    ui::Manager::getSingleton()->openPythonGump("shardlist", args);
 }
 
+void GumpMenus::openServerList(const net::packets::ServerList* list) {
+    boost::python::list serverList;
+
+    std::list<net::packets::ServerList::ServerListEntry>::const_iterator entryIter = list->listEntries_.begin();
+    std::list<net::packets::ServerList::ServerListEntry>::const_iterator entryEnd = list->listEntries_.end();
+
+    for (; entryIter != entryEnd; ++entryIter) {
+        serverList.append(boost::python::make_tuple(entryIter->index_, entryIter->name_));
+    }
+
+    boost::python::dict args;
+    args["serverlist"] = serverList;
+    ui::Manager::getSingleton()->openPythonGump("serverlist", args);
+}
+
+void GumpMenus::openCharacterList(unsigned int charCount, const UnicodeString* charNames, const UnicodeString* charPasswords) {
+    boost::python::list charList;
+
+    for (unsigned int i = 0; i < charCount; ++i) {
+        charList.append(
+            boost::python::make_tuple(i, charNames[i], charPasswords[i])
+        );
+    }
+
+    boost::python::dict args;
+    args["characterlist"] = charList;
+    ui::Manager::getSingleton()->openPythonGump("characterlist", args);
+}
 
 // rework to python ui below this point
 
@@ -121,55 +149,6 @@ GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int para
     return menu;
 }
 
-GumpMenu* GumpMenus::openServerListGump(const net::packets::ServerList* list) {
-    std::vector<UnicodeString> nameList;
-    std::vector<UnicodeString> indexList;
-
-    std::list<net::packets::ServerList::ServerListEntry>::const_iterator entryIter = list->listEntries_.begin();
-    std::list<net::packets::ServerList::ServerListEntry>::const_iterator entryEnd = list->listEntries_.end();
-
-
-    for (; entryIter != entryEnd; ++entryIter) {
-        nameList.push_back(entryIter->name_);
-
-        indexList.push_back(StringConverter::fromNumber(entryIter->index_));
-    }
-
-    XmlLoader::RepeatContext context;
-    context.repeatCount_ = nameList.size();
-    context.keywordReplacements_["serverindex"] = indexList;
-    context.keywordReplacements_["servername"] = nameList;
-
-    XmlLoader::addRepeatContext("serverlist", context);
-    GumpMenu* menu = XmlLoader::fromXmlFile("serverlist");
-    XmlLoader::removeRepeatContext("serverlist");
-
-    return menu;
-}
-
-GumpMenu* GumpMenus::openCharacterListGump(unsigned int charCount, const UnicodeString* charNames, const UnicodeString* charPasswords) {
-    std::vector<UnicodeString> nameList;
-    std::vector<UnicodeString> indexList;
-    std::vector<UnicodeString> passwordList;
-
-    for (unsigned int i = 0; i < charCount; ++i) {
-        nameList.push_back(charNames[i]);
-        indexList.push_back(StringConverter::fromNumber(i));
-        passwordList.push_back(charPasswords[i]);
-    }
-
-    XmlLoader::RepeatContext context;
-    context.repeatCount_ = nameList.size();
-    context.keywordReplacements_["characterindex"] = indexList;
-    context.keywordReplacements_["charactername"] = nameList;
-    context.keywordReplacements_["characterpassword"] = nameList;
-
-    XmlLoader::addRepeatContext("characterlist", context);
-    GumpMenu* menu = XmlLoader::fromXmlFile("characterlist");
-    XmlLoader::removeRepeatContext("characterlist");
-
-    return menu;
-}
 
 GumpMenu* GumpMenus::openContextMenu(const net::packets::bf::OpenContextMenu* pkt) {
     std::vector<UnicodeString> nameList;

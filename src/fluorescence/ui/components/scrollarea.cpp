@@ -28,7 +28,8 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-ScrollArea::ScrollArea(CL_GUIComponent* parent) : GumpComponent(parent), lastScrollVertical_(0), lastScrollHorizontal_(0) {
+ScrollArea::ScrollArea(CL_GUIComponent* parent) : GumpComponent(parent), lastScrollVertical_(0), lastScrollHorizontal_(0),
+        marginLeft_(0), marginTop_(0), marginRight_(0), marginBottom_(0) {
     horizontalScrollBar_ = new ScrollBar(this);
     horizontalScrollBar_->set_horizontal();
     horizontalScrollBar_->set_position(0);
@@ -124,6 +125,8 @@ void ScrollArea::updateScrollbars() {
 
     horizontalScrollBar_->calculate_ranges(viewSizeWidth, childWidth);
     verticalScrollBar_->calculate_ranges(viewSizeHeight, childHeight);
+
+    //LOG_DEBUG << "scrollarea client: " << viewSizeWidth << "/" << viewSizeHeight << std::endl;
 
     clientArea_->set_clip_children(true);
 
