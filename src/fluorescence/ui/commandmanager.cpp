@@ -90,12 +90,6 @@ void CommandManager::execute(const UnicodeString& command, const UnicodeString& 
 }
 
 void CommandManager::handleTextInput(const UnicodeString& text) {
-    // if a prompt is currently active, send response
-    if (ui::Manager::getSingleton()->hasPrompt()) {
-        ui::Manager::getSingleton()->handlePrompt(text);
-        return;
-    }
-
     boost::shared_ptr<commands::ClientCommand> command;
 
     char cmdChar = text.charAt(0);

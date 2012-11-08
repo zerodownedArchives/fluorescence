@@ -67,7 +67,6 @@ void GumpActions::buildBasicActionTable() {
 void GumpActions::buildFullActionTable() {
     actionTable_["deletecharacter"] = GumpAction(true, boost::bind(&Client::deleteCharacter, Client::getSingleton(), _1, _2, _3, _4));
 
-    actionTable_["sendspeech"] = GumpAction(false, boost::bind(&GumpActions::sendSpeech, _1, _2, _3, _4));
     actionTable_["contextmenureply"] = GumpAction(true, boost::bind(&GumpActions::contextMenuReply, _1, _2, _3, _4));
 
     actionTable_["createdummychar"] = GumpAction(true, boost::bind(&GumpActions::createDummyCharacter, _1, _2, _3, _4));
@@ -110,22 +109,6 @@ void GumpActions::doAction(components::Button* button) {
 
 
 bool GumpActions::closeHelper(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    return true;
-}
-
-bool GumpActions::sendSpeech(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    components::LineEdit* line = dynamic_cast<components::LineEdit*>(menu->get_named_item("speechtext"));
-    if (line) {
-        UnicodeString speechText = line->getText();
-        if (speechText.length() > 0) {
-            ui::Manager::getCommandManager()->handleTextInput(speechText);
-            line->setText("");
-        }
-        line->set_focus(false);
-        menu->activatePage(0);
-    } else {
-        LOG_ERROR << "Line element \"speechtext\" not found in gamewindow gump" << std::endl;
-    }
     return true;
 }
 

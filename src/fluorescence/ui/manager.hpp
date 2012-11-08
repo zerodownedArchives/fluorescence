@@ -111,6 +111,11 @@ public:
     void destroyAllGumpMenus(); // needed for final cleanup
     void closeAllNonMessageGumps(); // called on disconnect
 
+    std::list<GumpMenu*>::iterator gumpsBegin();
+    std::list<GumpMenu*>::iterator gumpsEnd();
+    // may only be called by the python loader!
+    void processGumpCloseList();
+
     GumpMenu* getGumpMenu(const UnicodeString& name);
 
     void registerGumpMenu(GumpMenu* menu);
@@ -146,6 +151,8 @@ public:
     void openPythonGump(const UnicodeString& name);
     void openPythonGump(const UnicodeString& name, boost::python::dict& args);
 
+    void handleTextInput(const UnicodeString& text);
+
 private:
     static Manager* singleton_;
 
@@ -171,7 +178,6 @@ private:
     std::list<GumpMenu*> gumpList_;
     std::list<GumpMenu*> gumpCloseList_;
     void processGumpNewList();
-    void processGumpCloseList();
 
     CL_Slot slotCloseWindow;
 

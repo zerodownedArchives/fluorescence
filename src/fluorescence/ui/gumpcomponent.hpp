@@ -58,6 +58,8 @@ public:
     UnicodeString getName() const;
     void setName(const UnicodeString& name);
 
+    void focus();
+
     // python specific functions
     boost::python::tuple pyGetGeometry() const;
     void pySetGeometry(boost::python::tuple& geom);

@@ -181,6 +181,8 @@ void Manager::stepInput(unsigned int elapsedMillis) {
 
     processGumpNewList();
 
+    pythonLoader_->step(elapsedMillis);
+
     // waiting for a doubleclick?
     if (singleClickWait_.first) {
         if (singleClickWait_.second <= elapsedMillis) {
@@ -645,6 +647,27 @@ void Manager::showSpeechEntry(bool clearText) {
 
 boost::shared_ptr<python::ScriptLoader> Manager::getPythonLoader() {
     return getSingleton()->pythonLoader_;
+}
+
+void Manager::handleTextInput(const UnicodeString& text) {
+    if (text.length() <= 0) {
+        return;
+    }
+
+    // if a prompt is currently active, send response
+    if (hasPrompt()) {
+        handlePrompt(text);
+    } else {
+        commandManager_->handleTextInput(text);
+    }
+}
+
+std::list<GumpMenu*>::iterator Manager::gumpsBegin() {
+    return gumpList_.begin();
+}
+
+std::list<GumpMenu*>::iterator Manager::gumpsEnd() {
+    return gumpList_.end();
 }
 
 }

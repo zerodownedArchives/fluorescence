@@ -86,6 +86,7 @@ BOOST_PYTHON_MODULE(client) {
     bpy::def("shutdown", PyClient::shutdown);
     bpy::def("messagebox", PyClient::messagebox);
     bpy::def("openGump", PyClient::openGump);
+    bpy::def("handleTextInput", PyClient::handleTextInput);
 }
 
 
@@ -122,6 +123,8 @@ BOOST_PYTHON_MODULE(gumps) {
     bpy::class_<GumpMenu, bpy::bases<CL_GUIComponent>, boost::noncopyable>("GumpMenuWrapper", bpy::no_init)
         .add_property("closable", &GumpMenu::isClosable, &GumpMenu::setClosable)
         .add_property("draggable", &GumpMenu::isDraggable, &GumpMenu::setDraggable)
+        .add_property("x", &GumpMenu::getX, &GumpMenu::setX)
+        .add_property("y", &GumpMenu::getY, &GumpMenu::setY)
         .add_property("store", &GumpMenu::getPythonStore)
         .add_property("onEnter", &GumpMenu::getPyEnterCallback, &GumpMenu::setPyEnterCallback)
         .add_property("onEscape", &GumpMenu::getPyEscapeCallback, &GumpMenu::setPyEscapeCallback)
@@ -129,6 +132,8 @@ BOOST_PYTHON_MODULE(gumps) {
         .def("setFont", &GumpMenu::setFontB)
         .def("component", &GumpMenu::getNamedComponent, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("close", &GumpMenu::close)
+        .def("addPage", &GumpMenu::addPage)
+        .add_property("page", &GumpMenu::getActivePageId, &GumpMenu::activatePage)
     ;
 
     // factory functions for gump menus
@@ -146,6 +151,7 @@ BOOST_PYTHON_MODULE(gumps) {
         .add_property("name", &GumpComponent::getName, &GumpComponent::setName)
         .def("setGeometry", &GumpComponent::setGeometry)
         .add_property("store", &GumpComponent::getPythonStore)
+        .def("focus", &GumpComponent::focus)
     ;
 
     // image component

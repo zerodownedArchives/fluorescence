@@ -138,5 +138,9 @@ boost::python::dict GumpComponent::getPythonStore() const {
     return pythonStore_;
 }
 
+void GumpComponent::focus() {
+    set_focus(true);
+}
+
 }
 }

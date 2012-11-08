@@ -19,6 +19,8 @@
 #include "reload.hpp"
 
 #include <data/manager.hpp>
+#include <ui/manager.hpp>
+#include <ui/python/scriptloader.hpp>
 #include <world/manager.hpp>
 
 namespace fluo {
@@ -32,6 +34,8 @@ void Reload::execute(const UnicodeString& args) {
     if (args == "overrides") {
         data::Manager::reloadOverrides();
         world::Manager::getSingleton()->invalidateAllTextures();
+    } else if (args == "gumps") {
+        ui::Manager::getPythonLoader()->requestReload();
     } else {
         UnicodeString msg("Unknown parameter to reload command: ");
         msg += args;

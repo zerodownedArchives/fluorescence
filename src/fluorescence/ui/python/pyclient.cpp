@@ -22,6 +22,7 @@
 #include <misc/log.hpp>
 #include <net/manager.hpp>
 #include <ui/manager.hpp>
+#include <ui/commandmanager.hpp>
 #include <ui/gumpmenus.hpp>
 
 namespace fluo {
@@ -71,6 +72,10 @@ void PyClient::selectServer(unsigned int index) {
 
 void PyClient::selectCharacter(unsigned int index, const UnicodeString& name, const UnicodeString& password) {
     net::Manager::getSingleton()->selectCharacter(index, name, password);
+}
+
+void PyClient::handleTextInput(const UnicodeString& text) {
+    ui::Manager::getSingleton()->handleTextInput(text);
 }
 
 }

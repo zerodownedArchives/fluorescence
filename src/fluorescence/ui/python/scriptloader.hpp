@@ -42,8 +42,10 @@ public:
     void init();
     void setThemePath(const boost::filesystem::path& themePath);
     void setShardConfig(Config& config);
-    void unload();
-    void reload();
+
+    void requestReload();
+
+    void step(unsigned int elapsedMillis);
 
     void logError() const;
 
@@ -53,7 +55,12 @@ public:
 private:
     bool initialized_;
 
+    boost::python::object loadModule(const UnicodeString& name);
     std::map<UnicodeString, boost::python::object> pythonModules_;
+
+    bool shouldReload_;
+    void unload();
+    void reload();
 };
 
 }

@@ -123,7 +123,7 @@ bool Client::handleStateChange() {
     // start new state
     switch(requestedState_) {
     case STATE_PRE_LOGIN:
-        uiManager->openPythonGump("test");
+        //uiManager->openPythonGump("test");
         uiManager->openPythonGump("login");
 
         break;

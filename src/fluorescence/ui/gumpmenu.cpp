@@ -476,5 +476,27 @@ void GumpMenu::close() {
     ui::Manager::getSingleton()->closeGumpMenu(this);
 }
 
+int GumpMenu::getX() const {
+    return get_geometry().left;
+}
+
+void GumpMenu::setX(int x) {
+    CL_Rectf geom = get_geometry();
+    int diff = x - geom.left;
+    geom.translate(diff, 0);
+    set_geometry(geom);
+}
+
+int GumpMenu::getY() const {
+    return get_geometry().top;
+}
+
+void GumpMenu::setY(int y) {
+    CL_Rectf geom = get_geometry();
+    int diff = y - geom.top;
+    geom.translate(0, diff);
+    set_geometry(geom);
+}
+
 }
 }

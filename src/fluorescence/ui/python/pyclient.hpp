@@ -41,6 +41,8 @@ public:
 
     static void messagebox(const UnicodeString& msg);
     static void openGump(const UnicodeString& name);
+
+    static void handleTextInput(const UnicodeString& text);
 };
 
 }

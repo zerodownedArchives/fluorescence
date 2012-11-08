@@ -44,6 +44,11 @@ public:
     GumpMenu(const CL_GUITopLevelDescription& desc);
     ~GumpMenu();
 
+    int getX() const;
+    void setX(int x);
+    int getY() const;
+    void setY(int y);
+
     // add/remove components
     void removeFromPages(const GumpComponent* component);
     void addToCurrentPage(GumpComponent* component);
