@@ -117,6 +117,7 @@ BOOST_PYTHON_MODULE(gumps) {
         .def("addScrollArea", &PyGumpComponentContainer::addScrollArea, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addCheckbox", &PyGumpComponentContainer::addCheckbox, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addWorldView", &PyGumpComponentContainer::addWorldView, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("addRadioButton", &PyGumpComponentContainer::addRadioButton, bpy::return_value_policy<bpy::reference_existing_object>())
     ;
 
     // non-instanciable wrapper class for gump menus
@@ -261,6 +262,11 @@ BOOST_PYTHON_MODULE(gumps) {
     bpy::class_<components::Checkbox, bpy::bases<components::Image>, boost::noncopyable>("CheckboxWrapper", bpy::no_init)
         .add_property("checked", &components::Checkbox::isChecked, &components::Checkbox::setChecked)
         .add_property("id", &components::Checkbox::getSwitchId, &components::Checkbox::setSwitchId)
+    ;
+
+    // radiobutton component
+    bpy::class_<components::RadioButton, bpy::bases<components::Checkbox>, boost::noncopyable>("RadioButtonWrapper", bpy::no_init)
+        .add_property("group", &components::RadioButton::getRadioGroupId, &components::RadioButton::setRadioGroupId)
     ;
 
     // worldview component

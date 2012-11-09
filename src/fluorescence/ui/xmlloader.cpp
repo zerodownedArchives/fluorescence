@@ -330,25 +330,6 @@ boost::shared_ptr<ui::Texture> XmlLoader::parseTexture(pugi::xml_node& node, pug
     return texture;
 }
 
-bool XmlLoader::parseMultiTextureImage(pugi::xml_node& node, pugi::xml_node& defaultNode, components::MultiTextureImage* img, unsigned int index) {
-    boost::shared_ptr<ui::Texture> texture = parseTexture(node, defaultNode);
-
-    if (!texture) {
-        LOG_ERROR << "Unable to parse gump image, source=" << getAttribute("source", node, defaultNode) << " id=" << getAttribute("id", node, defaultNode) << std::endl;
-        return false;
-    }
-
-    unsigned int hue = getAttribute("hue", node, defaultNode).as_uint();
-    std::string rgba = getAttribute("color", node, defaultNode).value();
-    float alpha = getAttribute("alpha", node, defaultNode).as_float();
-
-    bool tiled = getAttribute("tiled", node, defaultNode).as_bool();
-
-    img->addTexture(index, texture, hue, rgba, alpha, tiled);
-
-    return true;
-}
-
 bool XmlLoader::parseButtonText(pugi::xml_node& node, pugi::xml_node& defaultNode, components::Button* button, unsigned int index) {
     //unsigned int hue = getAttribute("font-hue", node, defaultNode).as_uint();
     //std::string rgba = getAttribute("font-color", node, defaultNode).value();

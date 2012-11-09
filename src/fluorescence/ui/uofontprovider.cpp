@@ -35,7 +35,7 @@
 namespace fluo {
 namespace ui {
 
-UoFontProvider::UoFontProvider(unsigned int unifontId) : unifontId_(unifontId),
+UoFontProvider::UoFontProvider(unsigned int unifontId, bool border) : unifontId_(unifontId), borderWidth_(border ? 1 : 0),
         historyIndex_(0), historySize_(0) {
     fontLoader_ = data::Manager::getUniFontLoader(unifontId);
 
@@ -207,7 +207,7 @@ void UoFontProvider::applyBorder(CL_PixelBuffer pxBuf, const CL_Colorf& clcolor,
     }
 }
 
-boost::shared_ptr<ui::Texture> UoFontProvider::getTexture(CL_GraphicContext& gc, const CL_StringRef& cltext, const CL_Colorf& clcolor, unsigned int borderWidth, const CL_Colorf& clborderColor) {
+boost::shared_ptr<ui::Texture> UoFontProvider::getTexture(CL_GraphicContext& gc, const CL_StringRef& cltext, const CL_Colorf& clcolor) {
     UnicodeString text(cltext.c_str());
 
     // check history first!
@@ -228,8 +228,8 @@ boost::shared_ptr<ui::Texture> UoFontProvider::getTexture(CL_GraphicContext& gc,
     tex->initPixelBuffer(width, height);
     uint32_t* pixBufPtr = tex->getPixelBufferData();
 
-    unsigned int curX = borderWidth;
-    unsigned int curY = borderWidth;
+    unsigned int curX = borderWidth_;
+    unsigned int curY = borderWidth_;
 
     StringCharacterIterator iter(text);
     while (iter.hasNext()) {
@@ -254,8 +254,8 @@ boost::shared_ptr<ui::Texture> UoFontProvider::getTexture(CL_GraphicContext& gc,
     }
 
 
-    if (borderWidth > 0 && clcolor != CL_Colorf::black) {
-        applyBorder(tex->getPixelBuffer(), clcolor, borderWidth, clborderColor);
+    if (borderWidth_ > 0) {
+        applyBorder(tex->getPixelBuffer(), clcolor, borderWidth_, CL_Colorf::black);
     }
 
     tex->setReadComplete();

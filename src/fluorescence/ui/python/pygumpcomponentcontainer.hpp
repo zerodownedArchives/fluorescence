@@ -41,6 +41,7 @@ class Button;
 class LineEdit;
 class ScrollArea;
 class Checkbox;
+class RadioButton;
 class WorldView;
 }
 
@@ -58,6 +59,7 @@ public:
     static components::LineEdit* addLineEdit(CL_GUIComponent* self, boost::python::tuple& geom);
     static components::ScrollArea* addScrollArea(CL_GUIComponent* self, boost::python::tuple& geom);
     static components::Checkbox* addCheckbox(CL_GUIComponent* self, boost::python::tuple& geom);
+    static components::RadioButton* addRadioButton(CL_GUIComponent* self, boost::python::tuple& geom, unsigned int group);
     static components::WorldView* addWorldView(CL_GUIComponent* self, boost::python::tuple& geom);
 
 private:

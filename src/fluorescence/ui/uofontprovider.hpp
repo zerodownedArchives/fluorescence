@@ -43,7 +43,7 @@ class Texture;
 
 class UoFontProvider : public CL_FontProvider {
 public:
-    UoFontProvider(unsigned int unifontId);
+    UoFontProvider(unsigned int unifontId, bool border);
 
     virtual CL_FontMetrics get_font_metrics();
 
@@ -56,7 +56,7 @@ public:
 private:
     unsigned int unifontId_;
     static const unsigned int spaceWidth_ = 1;
-    static const unsigned int borderWidth_ = 1;
+    const unsigned int borderWidth_;
 
     boost::shared_ptr<data::UniFontLoader> fontLoader_;
 
@@ -64,7 +64,7 @@ private:
     CL_FontMetrics fontMetrics_;
 
 
-    boost::shared_ptr<ui::Texture> getTexture(CL_GraphicContext& gc, const CL_StringRef& text, const CL_Colorf& clcolor, unsigned int borderWidth = 1, const CL_Colorf& clborderColor = CL_Colorf::black);
+    boost::shared_ptr<ui::Texture> getTexture(CL_GraphicContext& gc, const CL_StringRef& text, const CL_Colorf& clcolor);
     void applyBorder(CL_PixelBuffer pxBuf, const CL_Colorf& clcolor, unsigned int borderWidth, const CL_Colorf& clborderColor);
 
     uint32_t clToUintColor(const CL_Colorf& clcolor) const;

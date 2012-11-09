@@ -23,8 +23,8 @@
 namespace fluo {
 namespace ui {
 
-UoFont::UoFont(unsigned int unifontId) : CL_Font(new UoFontProvider(unifontId)) {
-}    
+UoFont::UoFont(unsigned int unifontId, bool border) : CL_Font(new UoFontProvider(unifontId, border)) {
+}
 
 }
 }

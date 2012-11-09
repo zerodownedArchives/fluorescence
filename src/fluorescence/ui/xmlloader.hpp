@@ -31,7 +31,6 @@
 
 #include <data/manager.hpp>
 #include "gumpmenu.hpp"
-#include "components/multitextureimage.hpp"
 
 namespace fluo {
 namespace ui {
@@ -103,7 +102,6 @@ private:
     CL_Rect getBoundsFromNode(pugi::xml_node& node, pugi::xml_node& defaultNode);
     bool parseId(pugi::xml_node& node, CL_GUIComponent* component);
     boost::shared_ptr<ui::Texture> parseTexture(pugi::xml_node& node, pugi::xml_node& defaultNode);
-    bool parseMultiTextureImage(pugi::xml_node& node, pugi::xml_node& defaultNode, components::MultiTextureImage* button, unsigned int index);
     bool parseButtonText(pugi::xml_node& node, pugi::xml_node& defaultNode, components::Button* button, unsigned int index);
     bool parseLabelHelper(components::Label* label, pugi::xml_node& node, pugi::xml_node& defaultNode);
     bool parseScrollBar(components::ScrollBar* bar, components::ScrollArea* area, bool vertical, pugi::xml_node node, pugi::xml_node defaultNode);

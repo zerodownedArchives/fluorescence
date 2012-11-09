@@ -23,10 +23,10 @@
 
 namespace fluo {
 namespace ui {
-    
+
 class UoFont : public CL_Font {
 public:
-    UoFont(unsigned int unifontId);
+    UoFont(unsigned int unifontId, bool border);
 };
 
 }

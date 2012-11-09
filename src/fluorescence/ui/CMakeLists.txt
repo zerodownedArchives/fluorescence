@@ -50,7 +50,6 @@ set (GUMPMENU_HPP
     ui/gumpcomponent.hpp
     ui/componentlist.hpp
 
-    ui/components/multitextureimage.hpp
     ui/components/button.hpp
     ui/components/scrollarea.hpp
     ui/components/lineedit.hpp
@@ -75,7 +74,6 @@ set (GUMPMENU_CPP
     ui/gumpmenu.cpp
     ui/gumpcomponent.cpp
 
-    ui/components/multitextureimage.cpp
     ui/components/button.cpp
     ui/components/scrollarea.cpp
     ui/components/lineedit.cpp

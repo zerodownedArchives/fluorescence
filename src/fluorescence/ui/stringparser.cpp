@@ -91,6 +91,8 @@ GumpMenu* StringParser::innerFromString(const UnicodeString& commands, const std
     ret->setClosable(true);
     // TODO: defaults for resizable, disposable
 
+    ret->setFont("unifont1", 12);
+
     UErrorCode status = U_ZERO_ERROR;
     bool parseSuccess = true;
 
@@ -210,12 +212,7 @@ bool StringParser::parseCroppedText(const UnicodeString& params, const std::vect
         int hue = StringConverter::toInt(matcher.group(5, status));
         int textId = StringConverter::toInt(matcher.group(6, status));
 
-        components::Label* label = dynamic_cast<components::Label*>(XmlLoader::getServerGumpComponent("ssglabel", menu));
-        if (!label) {
-            LOG_ERROR << "Error reading template ssglabel from theme" << std::endl;
-            return false;
-        }
-
+        components::Label* label = new components::Label(menu);
         CL_Rectf bounds(x, y, CL_Sizef(width, height));
         label->set_geometry(bounds);
         label->setHue(hue);
@@ -240,12 +237,7 @@ bool StringParser::parseText(const UnicodeString& params, const std::vector<Unic
         int hue = StringConverter::toInt(matcher.group(3, status));
         int textId = StringConverter::toInt(matcher.group(4, status));
 
-        components::Label* label = dynamic_cast<components::Label*>(XmlLoader::getServerGumpComponent("ssglabel", menu));
-        if (!label) {
-            LOG_ERROR << "Error reading template ssglabel from theme" << std::endl;
-            return false;
-        }
-
+        components::Label* label = new components::Label(menu);
         CL_Rectf bounds(x, y, CL_Sizef(0, 0)); // auto resize
         label->set_geometry(bounds);
         label->setHue(hue);
@@ -366,117 +358,110 @@ bool StringParser::parseTilePicHue(const UnicodeString& params, const std::vecto
 
 bool StringParser::parseButton(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
     // { button {x} {y} {upId} {downId} {type} {pageId} {buttonId} }
-    // TODO: new gui
 
-    //UErrorCode status = U_ZERO_ERROR;
-    //static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
-    //matcher.reset(params);
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
 
-    //if (matcher.find() && matcher.groupCount() == 7) {
-        //int x = StringConverter::toInt(matcher.group(1, status));
-        //int y = StringConverter::toInt(matcher.group(2, status));
-        //int upId = StringConverter::toInt(matcher.group(3, status));
-        //int downId = StringConverter::toInt(matcher.group(4, status));
-        //int type = StringConverter::toInt(matcher.group(5, status));
-        //int pageId = StringConverter::toInt(matcher.group(6, status));
-        //int buttonId = StringConverter::toInt(matcher.group(7, status));
+    if (matcher.find() && matcher.groupCount() == 7) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int upId = StringConverter::toInt(matcher.group(3, status));
+        int downId = StringConverter::toInt(matcher.group(4, status));
+        int type = StringConverter::toInt(matcher.group(5, status));
+        int pageId = StringConverter::toInt(matcher.group(6, status));
+        int buttonId = StringConverter::toInt(matcher.group(7, status));
 
-        //boost::shared_ptr<ui::Texture> upTex = data::Manager::getTexture(data::TextureSource::GUMPART, upId);
-        //boost::shared_ptr<ui::Texture> downTex = data::Manager::getTexture(data::TextureSource::GUMPART, downId);
+        boost::shared_ptr<ui::Texture> upTex = data::Manager::getTexture(data::TextureSource::GUMPART, upId);
+        boost::shared_ptr<ui::Texture> downTex = data::Manager::getTexture(data::TextureSource::GUMPART, downId);
 
-        //if (!upTex) {
-            //LOG_ERROR << "Unable to add button with up id " << upId << std::endl;
-            //return true;
-        //}
+        if (!upTex) {
+            LOG_ERROR << "Unable to add button with up id " << upId << std::endl;
+            return true;
+        }
 
-        //if (!downTex) {
-            //LOG_WARN << "Unable to set button down id " << downId << std::endl;
-            //return true;
-        //}
+        if (!downTex) {
+            LOG_WARN << "Unable to set button down id " << downId << std::endl;
+            return true;
+        }
 
-        //components::Button* but = new components::Button(menu);
-        //CL_Rectf bounds(x, y, CL_Sizef(upTex->getWidth(), upTex->getHeight()));
-        //but->set_geometry(bounds);
+        components::Button* but = new components::Button(menu);
+        CL_Rectf bounds(x, y, CL_Sizef(upTex->getWidth(), upTex->getHeight()));
+        but->set_geometry(bounds);
 
-        //but->addTexture(components::Button::TEX_INDEX_UP, upTex);
-        //but->addTexture(components::Button::TEX_INDEX_MOUSEOVER, upTex);
-        //but->addTexture(components::Button::TEX_INDEX_DOWN, downTex);
-        //but->updateTexture();
+        but->getState("normal")->setTexture(upTex);
+        but->getState("mouseOver")->setTexture(upTex);
+        but->getState("mouseDown")->setTexture(downTex);
 
-        //if (type == 0) {
-            //but->setPageButton(pageId);
-        //} else {
-            //but->setServerButton(buttonId);
-        //}
+        if (type == 0) {
+            but->setPage(pageId);
+        } else {
+            but->setButtonId(buttonId);
+        }
 
-        //but->setAutoResize(true);
+        but->setAutoResize(true);
 
-        //menu->addToCurrentPage(but);
+        menu->addToCurrentPage(but);
 
-        //return true;
-    //} else {
-        //LOG_ERROR << "Unable to parse button, params " << params << std::endl;
-        //return false;
-    //}
-
-    return false;
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse button, params " << params << std::endl;
+        return false;
+    }
 }
 
 bool StringParser::parseCheckbox(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
     // { checkbox {x} {y} {uncheckedId} {checkedId} {checked} {switchId} }
 
-    // TODO: new gui
-    //UErrorCode status = U_ZERO_ERROR;
-    //static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
-    //matcher.reset(params);
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
 
-    //if (matcher.find() && matcher.groupCount() == 6) {
-        //int x = StringConverter::toInt(matcher.group(1, status));
-        //int y = StringConverter::toInt(matcher.group(2, status));
-        //int uncheckedId = StringConverter::toInt(matcher.group(3, status));
-        //int checkedId = StringConverter::toInt(matcher.group(4, status));
-        //int checked = StringConverter::toInt(matcher.group(5, status));
-        //int switchId = StringConverter::toInt(matcher.group(6, status));
+    if (matcher.find() && matcher.groupCount() == 6) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int uncheckedId = StringConverter::toInt(matcher.group(3, status));
+        int checkedId = StringConverter::toInt(matcher.group(4, status));
+        int checked = StringConverter::toInt(matcher.group(5, status));
+        int switchId = StringConverter::toInt(matcher.group(6, status));
 
-        //boost::shared_ptr<ui::Texture> uncheckedTex = data::Manager::getTexture(data::TextureSource::GUMPART, uncheckedId);
-        //boost::shared_ptr<ui::Texture> checkedTex = data::Manager::getTexture(data::TextureSource::GUMPART, checkedId);
+        boost::shared_ptr<ui::Texture> uncheckedTex = data::Manager::getTexture(data::TextureSource::GUMPART, uncheckedId);
+        boost::shared_ptr<ui::Texture> checkedTex = data::Manager::getTexture(data::TextureSource::GUMPART, checkedId);
 
-        //if (!uncheckedTex) {
-            //LOG_WARN << "Unable to display checkbox with unchecked id " << uncheckedId << std::endl;
-            //return true;
-        //}
+        if (!uncheckedTex) {
+            LOG_WARN << "Unable to display checkbox with unchecked id " << uncheckedId << std::endl;
+            return true;
+        }
 
-        //if (!checkedTex) {
-            //LOG_WARN << "Unable to display checkbox with checked id " << checkedId << std::endl;
-            //return true;
-        //}
+        if (!checkedTex) {
+            LOG_WARN << "Unable to display checkbox with checked id " << checkedId << std::endl;
+            return true;
+        }
 
-        //components::Checkbox* cb = new components::Checkbox(menu);
-        //CL_Rectf bounds(x, y, CL_Sizef(checkedTex->getWidth(), checkedTex->getHeight()));
-        //cb->set_geometry(bounds);
+        components::Checkbox* cb = new components::Checkbox(menu);
+        CL_Rectf bounds(x, y, CL_Sizef(checkedTex->getWidth(), checkedTex->getHeight()));
+        cb->set_geometry(bounds);
 
-        //cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED, uncheckedTex);
-        //cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED_MOUSEOVER, uncheckedTex);
-        //cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED, checkedTex);
-        //cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED_MOUSEOVER, checkedTex);
-        //cb->updateTexture();
-        //cb->setAutoResize(true);
+        cb->getState("checked")->setTexture(checkedTex);
+        cb->getState("checkedMouseOver")->setTexture(checkedTex);
+        cb->getState("unchecked")->setTexture(uncheckedTex);
+        cb->getState("uncheckedMouseOver")->setTexture(uncheckedTex);
 
-        //cb->setSwitchId(switchId);
+        cb->setAutoResize(true);
 
-        //if (checked) {
-            //cb->setChecked(true);
-        //}
+        cb->setSwitchId(switchId);
 
-        //menu->addToCurrentPage(cb);
+        if (checked) {
+            cb->setChecked(true);
+        }
 
-        //return true;
-    //} else {
-        //LOG_ERROR << "Unable to parse checkbox, params " << params << std::endl;
-        //return false;
-    //}
+        menu->addToCurrentPage(cb);
 
-    return false;
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse checkbox, params " << params << std::endl;
+        return false;
+    }
 }
 
 bool StringParser::setNoMove(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
@@ -504,12 +489,7 @@ bool StringParser::parseTextEntry(const UnicodeString& params, const std::vector
         int entryId = StringConverter::toInt(matcher.group(6, status));
         int textIdx = StringConverter::toInt(matcher.group(7, status));
 
-        components::LineEdit* entry = dynamic_cast<components::LineEdit*>(XmlLoader::getServerGumpComponent("ssglineedit", menu));
-        if (!entry) {
-            LOG_ERROR << "Error reading template ssglineedit from theme" << std::endl;
-            return false;
-        }
-
+        components::LineEdit* entry = new components::LineEdit(menu);
         CL_Rectf bounds(x, y, CL_Sizef(width, height));
         entry->set_geometry(bounds);
 
@@ -704,59 +684,56 @@ bool StringParser::parseCheckerTrans(const UnicodeString& params, const std::vec
 bool StringParser::parseRadio(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {
     // { radio {x} {y} {uncheckedId} {checkedId} {checked} {switchId} }
 
-    //TODO: new gui
-    //UErrorCode status = U_ZERO_ERROR;
-    //static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
-    //matcher.reset(params);
+    UErrorCode status = U_ZERO_ERROR;
+    static RegexMatcher matcher("\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*(\\w+)\\s*", 0, status);
+    matcher.reset(params);
 
-    //if (matcher.find() && matcher.groupCount() == 6) {
-        //int x = StringConverter::toInt(matcher.group(1, status));
-        //int y = StringConverter::toInt(matcher.group(2, status));
-        //int uncheckedId = StringConverter::toInt(matcher.group(3, status));
-        //int checkedId = StringConverter::toInt(matcher.group(4, status));
-        //int checked = StringConverter::toInt(matcher.group(5, status));
-        //int switchId = StringConverter::toInt(matcher.group(6, status));
+    if (matcher.find() && matcher.groupCount() == 6) {
+        int x = StringConverter::toInt(matcher.group(1, status));
+        int y = StringConverter::toInt(matcher.group(2, status));
+        int uncheckedId = StringConverter::toInt(matcher.group(3, status));
+        int checkedId = StringConverter::toInt(matcher.group(4, status));
+        int checked = StringConverter::toInt(matcher.group(5, status));
+        int switchId = StringConverter::toInt(matcher.group(6, status));
 
-        //boost::shared_ptr<ui::Texture> uncheckedTex = data::Manager::getTexture(data::TextureSource::GUMPART, uncheckedId);
-        //boost::shared_ptr<ui::Texture> checkedTex = data::Manager::getTexture(data::TextureSource::GUMPART, checkedId);
+        boost::shared_ptr<ui::Texture> uncheckedTex = data::Manager::getTexture(data::TextureSource::GUMPART, uncheckedId);
+        boost::shared_ptr<ui::Texture> checkedTex = data::Manager::getTexture(data::TextureSource::GUMPART, checkedId);
 
-        //if (!uncheckedTex) {
-            //LOG_WARN << "Unable to display radio with unchecked id " << uncheckedId << std::endl;
-            //return true;
-        //}
+        if (!uncheckedTex) {
+            LOG_WARN << "Unable to display radio with unchecked id " << uncheckedId << std::endl;
+            return true;
+        }
 
-        //if (!checkedTex) {
-            //LOG_WARN << "Unable to display radio with checked id " << checkedId << std::endl;
-            //return true;
-        //}
+        if (!checkedTex) {
+            LOG_WARN << "Unable to display radio with checked id " << checkedId << std::endl;
+            return true;
+        }
 
-        //components::RadioButton* cb = new components::RadioButton(menu);
-        //CL_Rectf bounds(x, y, CL_Sizef(checkedTex->getWidth(), checkedTex->getHeight()));
-        //cb->set_geometry(bounds);
+        components::RadioButton* cb = new components::RadioButton(menu);
+        CL_Rectf bounds(x, y, CL_Sizef(checkedTex->getWidth(), checkedTex->getHeight()));
+        cb->set_geometry(bounds);
 
-        //cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED, uncheckedTex);
-        //cb->addTexture(components::Checkbox::TEX_INDEX_UNCHECKED_MOUSEOVER, uncheckedTex);
-        //cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED, checkedTex);
-        //cb->addTexture(components::Checkbox::TEX_INDEX_CHECKED_MOUSEOVER, checkedTex);
-        //cb->updateTexture();
-        //cb->setAutoResize(true);
+        cb->getState("checked")->setTexture(checkedTex);
+        cb->getState("checkedMouseOver")->setTexture(checkedTex);
+        cb->getState("unchecked")->setTexture(uncheckedTex);
+        cb->getState("uncheckedMouseOver")->setTexture(uncheckedTex);
 
-        //cb->setSwitchId(switchId);
-        //cb->setRadioGroupId(menu->getCurrentRadioGroup());
+        cb->setAutoResize(true);
 
-        //if (checked) {
-            //cb->setChecked(true);
-        //}
+        cb->setSwitchId(switchId);
+        cb->setRadioGroupId(menu->getCurrentRadioGroup());
 
-        //menu->addToCurrentPage(cb);
+        if (checked) {
+            cb->setChecked(true);
+        }
 
-        //return true;
-    //} else {
-        //LOG_ERROR << "Unable to parse radio, params " << params << std::endl;
-        //return false;
-    //}
+        menu->addToCurrentPage(cb);
 
-    return false;
+        return true;
+    } else {
+        LOG_ERROR << "Unable to parse radio, params " << params << std::endl;
+        return false;
+    }
 }
 
 bool StringParser::parseGroup(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const {

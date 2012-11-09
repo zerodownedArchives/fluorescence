@@ -458,26 +458,39 @@ UnicodeString Manager::getOpenGLRenderer() const {
 }
 
 void Manager::loadUnifonts() {
-    UoFont uni0(0);
+    UoFont uni0(0, false);
+    UoFont uni0Border(0, true);
     CL_FontDescription fontDesc;
     fontDesc.set_typeface_name("unifont");
     fontDesc.set_subpixel(false);
+    fontDesc.set_weight(400);
     LOG_DEBUG << "Registering font unifont" << std::endl;
     getGuiManager()->register_font(uni0, fontDesc);
+    CL_FontDescription fontDescBorder;
+    fontDescBorder.clone(fontDesc);
+    fontDesc.set_weight(700);
+    getGuiManager()->register_font(uni0Border, fontDescBorder);
 
     for (unsigned int i = 1; i <= 12; ++i) {
-        UoFont uniCur(i);
+        UoFont uniCur(i, false);
+        UoFont uniCurBorder(i, true);
         CL_FontDescription curDesc;
         std::stringstream sstr;
         sstr << "unifont" << i;
         curDesc.set_typeface_name(sstr.str());
         curDesc.set_subpixel(false);
+        curDesc.set_weight(400);
+        CL_FontDescription curDescBorder;
+        curDescBorder.clone(curDesc);
+        curDescBorder.set_weight(700);
 
         // check if this unifont file exists
         sstr << ".mul";
         if (data::Manager::hasPathFor(sstr.str())) {
             LOG_DEBUG << "Registering font " << sstr.str() << std::endl;
             getGuiManager()->register_font(uniCur, curDesc);
+            getGuiManager()->register_font(uniCurBorder, curDescBorder);
+
         }
     }
 }
@@ -592,8 +605,10 @@ const boost::filesystem::path& Manager::getThemePath() const {
 
 CL_Font Manager::getFont(const CL_FontDescription& desc) {
     // check if this is a special UO font (unifont)
+    LOG_DEBUG << "get font: " << desc.get_typeface_name().c_str() << " weight: " << desc.get_weight() << std::endl;
     CL_Font ret = getSingleton()->guiManager_->get_registered_font(desc);
     if (ret.is_null()) {
+        LOG_DEBUG << "not registered" << std::endl;
         // return system font if unknown
         ret = CL_Font_System(getSingleton()->getGraphicContext(), desc);
     }
