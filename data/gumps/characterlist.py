@@ -1,6 +1,6 @@
 
 from data import *
-from gumps import *
+from ui import *
 import client
 import theme
 

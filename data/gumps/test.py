@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from gumps import *
+from ui import *
 from data import *
 
 import time

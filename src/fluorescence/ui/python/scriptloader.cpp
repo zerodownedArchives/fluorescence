@@ -22,8 +22,11 @@
 #include <ui/manager.hpp>
 #include <ui/gumpmenu.hpp>
 
-#include <ui/python/pystring.hpp>
-#include <ui/python/modules.hpp>
+#include "pystring.hpp"
+#include "modclient.hpp"
+#include "moddata.hpp"
+#include "modui.hpp"
+#include "modworld.hpp"
 
 namespace fluo {
 namespace ui {
@@ -46,9 +49,10 @@ void ScriptLoader::init() {
     // create object to register converters with boost::python
     static PythonUnicodeStringConverter strconv;
 
-    PyImport_AppendInittab("gumps", &initgumps);
+    PyImport_AppendInittab("ui", &initui);
     PyImport_AppendInittab("data", &initdata);
     PyImport_AppendInittab("client", &initclient);
+    PyImport_AppendInittab("world", &initworld);
     Py_Initialize();
 
     // extend python path to the gumps directory

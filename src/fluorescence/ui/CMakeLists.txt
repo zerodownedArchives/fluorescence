@@ -206,7 +206,10 @@ set (CLIENTCOMMANDS_CPP
 
 set (PYTHON_HPP
     ui/python/scriptloader.hpp
-    ui/python/modules.hpp
+    ui/python/modclient.hpp
+    ui/python/moddata.hpp
+    ui/python/modui.hpp
+    ui/python/modworld.hpp
     ui/python/pystring.hpp
     ui/python/pygumpcomponentcontainer.hpp
     ui/python/pydata.hpp

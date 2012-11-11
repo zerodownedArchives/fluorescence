@@ -17,15 +17,12 @@
  */
 
 
-#ifndef FLUO_UI_PYTHON_MODULES_HPP
-#define FLUO_UI_PYTHON_MODULES_HPP
+#ifndef FLUO_UI_PYTHON_MODUI_HPP
+#define FLUO_UI_PYTHON_MODUI_HPP
+
+#include <boost/python.hpp>
 
 #include "pygumpcomponentcontainer.hpp"
-#include "pydata.hpp"
-#include "pyclient.hpp"
-
-#include <data/manager.hpp>
-
 #include <ui/gumpmenu.hpp>
 #include <ui/enums.hpp>
 #include <ui/componentlist.hpp>
@@ -36,61 +33,7 @@ namespace python {
 
 namespace bpy = boost::python;
 
-BOOST_PYTHON_MODULE(data) {
-    // register shared pointer conversions
-    bpy::register_ptr_to_python< boost::shared_ptr<ui::Texture> >();
-
-    bpy::enum_<data::TextureSource::TextureSourceEnum>("TextureSource")
-        .value("FILE", data::TextureSource::FILE)
-        .value("MAPART", data::TextureSource::MAPART)
-        .value("STATICART", data::TextureSource::STATICART)
-        .value("GUMPART", data::TextureSource::GUMPART)
-        .value("HTTP", data::TextureSource::HTTP)
-        .value("THEME", data::TextureSource::THEME)
-        .value("MAPTEX", data::TextureSource::MAPTEX)
-    ;
-
-    // non-instanciable wrapper class for textures
-    bpy::class_<ui::Texture, boost::noncopyable>("TextureWrapper", bpy::no_init)
-        .def_readonly("ready", &ui::Texture::isReadComplete)
-        .def_readonly("width", &ui::Texture::getWidth)
-        .def_readonly("height", &ui::Texture::getHeight)
-    ;
-
-    // factory functions for textures
-    bpy::def("Texture", &PyData::getTexture);
-    bpy::def("Texture", &PyData::getTextureInt);
-
-
-    // factory functions for cliloc strings
-    bpy::def("Cliloc", PyData::cliloc);
-    bpy::def("Cliloc", PyData::clilocArgs);
-
-    // convert hue value to rgba tuple
-    bpy::def("rgba", PyData::hueToRgba);
-    // create proper rgba tuples
-    bpy::def("rgba", PyData::rgba3);
-    bpy::def("rgba", PyData::rgba4);
-    bpy::def("rgba", PyData::rgbaString);
-}
-
-
-BOOST_PYTHON_MODULE(client) {
-    bpy::def("setShard", PyClient::setShard);
-    bpy::def("createShard", PyClient::createShard);
-    bpy::def("connect", PyClient::connect);
-    bpy::def("disconnect", PyClient::disconnect);
-    bpy::def("selectServer", PyClient::selectServer);
-    bpy::def("selectCharacter", PyClient::selectCharacter);
-    bpy::def("getConfig", PyClient::getConfig);
-    bpy::def("shutdown", PyClient::shutdown);
-    bpy::def("messagebox", PyClient::messagebox);
-    bpy::def("openGump", PyClient::openGump);
-    bpy::def("handleTextInput", PyClient::handleTextInput);
-}
-
-
-BOOST_PYTHON_MODULE(gumps) {
+BOOST_PYTHON_MODULE(ui) {
     // alignment for labels, etc
     bpy::enum_<ui::HAlign>("HAlign")
         .value("LEFT", ui::HAlign::LEFT)
@@ -121,7 +64,7 @@ BOOST_PYTHON_MODULE(gumps) {
     ;
 
     // non-instanciable wrapper class for gump menus
-    bpy::class_<GumpMenu, bpy::bases<CL_GUIComponent>, boost::noncopyable>("GumpMenuWrapper", bpy::no_init)
+    bpy::class_<GumpMenu, bpy::bases<CL_GUIComponent>, boost::noncopyable>("GumpMenu", bpy::no_init)
         .add_property("closable", &GumpMenu::isClosable, &GumpMenu::setClosable)
         .add_property("draggable", &GumpMenu::isDraggable, &GumpMenu::setDraggable)
         .add_property("x", &GumpMenu::getX, &GumpMenu::setX)
@@ -142,7 +85,7 @@ BOOST_PYTHON_MODULE(gumps) {
     bpy::def("GumpMenu", &GumpMenu::createBackground, bpy::return_value_policy<bpy::reference_existing_object>());
 
     // base class for gump components
-    bpy::class_<GumpComponent, boost::noncopyable>("GumpComponentWrapper", bpy::no_init)
+    bpy::class_<GumpComponent, boost::noncopyable>("GumpComponent", bpy::no_init)
         .add_property("x", &GumpComponent::getX, &GumpComponent::setX)
         .add_property("y", &GumpComponent::getY, &GumpComponent::setY)
         .add_property("width", &GumpComponent::getWidth, &GumpComponent::setWidth)
@@ -156,7 +99,7 @@ BOOST_PYTHON_MODULE(gumps) {
     ;
 
     // image component
-    bpy::class_<components::Image, bpy::bases<GumpComponent>, boost::noncopyable>("ImageWrapper", bpy::no_init)
+    bpy::class_<components::Image, bpy::bases<GumpComponent>, boost::noncopyable>("Image", bpy::no_init)
         // the functions in this block are just forwarded to the current ImageState
         .add_property("texture", &components::Image::getTexture, &components::Image::setTexture)
         .add_property("hue", &components::Image::getHue, &components::Image::setHue)
@@ -177,7 +120,7 @@ BOOST_PYTHON_MODULE(gumps) {
     ;
 
     // image states
-    bpy::class_<components::ImageState, boost::noncopyable>("ImageStateWrapper", bpy::no_init)
+    bpy::class_<components::ImageState, boost::noncopyable>("ImageState", bpy::no_init)
         .add_property("texture", &components::ImageState::getTexture, &components::ImageState::setTexture)
         .add_property("hue", &components::ImageState::getHue, &components::ImageState::setHue)
         .add_property("alpha", &components::ImageState::getAlpha, &components::ImageState::setAlpha)
@@ -189,14 +132,14 @@ BOOST_PYTHON_MODULE(gumps) {
     ;
 
     // button component
-    bpy::class_<components::Button, bpy::bases<components::Image>, boost::noncopyable>("ButtonWrapper", bpy::no_init)
+    bpy::class_<components::Button, bpy::bases<components::Image>, boost::noncopyable>("Button", bpy::no_init)
         .add_property("page", &components::Button::getPage, &components::Button::setPage)
         .add_property("id", &components::Button::getButtonId, &components::Button::setButtonId)
         .add_property("onClick", &components::Button::getPyClickCallback, &components::Button::setPyClickCallback)
     ;
 
     // background component
-    bpy::class_<components::Background, bpy::bases<GumpComponent>, boost::noncopyable>("BackgroundWrapper", bpy::no_init)
+    bpy::class_<components::Background, bpy::bases<GumpComponent>, boost::noncopyable>("Background", bpy::no_init)
         .add_property("baseId", &components::Background::getBaseId, &components::Background::setBaseId)
         .add_property("hue", &components::Background::getHue, &components::Background::setHue)
         .add_property("alpha", &components::Background::getAlpha, &components::Background::setAlpha)
@@ -205,12 +148,12 @@ BOOST_PYTHON_MODULE(gumps) {
     ;
 
     // alpha region component
-    bpy::class_<components::AlphaRegion, bpy::bases<GumpComponent>, boost::noncopyable>("AlphaRegionWrapper", bpy::no_init)
+    bpy::class_<components::AlphaRegion, bpy::bases<GumpComponent>, boost::noncopyable>("AlphaRegion", bpy::no_init)
         .add_property("alpha", &components::AlphaRegion::getAlpha, &components::AlphaRegion::setAlpha)
     ;
 
     // label component
-    bpy::class_<components::Label, bpy::bases<GumpComponent>, boost::noncopyable>("LabelWrapper", bpy::no_init)
+    bpy::class_<components::Label, bpy::bases<GumpComponent>, boost::noncopyable>("Label", bpy::no_init)
         .add_property("text", &components::Label::getText, &components::Label::setText)
         .add_property("valign", &components::Label::getVAlign, &components::Label::setVAlign)
         .add_property("halign", &components::Label::getHAlign, &components::Label::setHAlign)
@@ -220,7 +163,7 @@ BOOST_PYTHON_MODULE(gumps) {
     ;
 
     // lineedit component
-    bpy::class_<components::LineEdit, bpy::bases<GumpComponent>, boost::noncopyable>("LineEditWrapper", bpy::no_init)
+    bpy::class_<components::LineEdit, bpy::bases<GumpComponent>, boost::noncopyable>("LineEdit", bpy::no_init)
         .add_property("text", &components::LineEdit::getText, &components::LineEdit::setText)
         .add_property("rgba", &components::LineEdit::pyGetRgba, &components::LineEdit::pySetRgba)
         .add_property("numeric", &components::LineEdit::getNumericMode, &components::LineEdit::setNumericMode)
@@ -232,7 +175,7 @@ BOOST_PYTHON_MODULE(gumps) {
     ;
 
     // scrollbar component. can not be added directly, only through scrollarea
-    bpy::class_<components::ScrollBar, boost::noncopyable>("ScrollBarWrapper", bpy::no_init)
+    bpy::class_<components::ScrollBar, boost::noncopyable>("ScrollBar", bpy::no_init)
         .add_property("width", &components::ScrollBar::getWidth, &components::ScrollBar::setWidth)
         .add_property("height", &components::ScrollBar::getHeight, &components::ScrollBar::setHeight)
         .add_property("increment", bpy::make_function(&components::ScrollBar::getIncrementNormal, bpy::return_value_policy<bpy::reference_existing_object>()))
@@ -248,7 +191,7 @@ BOOST_PYTHON_MODULE(gumps) {
     ;
 
     // scrollarea component
-    bpy::class_<components::ScrollArea, bpy::bases<GumpComponent, CL_GUIComponent>, boost::noncopyable>("ScrollAreaWrapper", bpy::no_init)
+    bpy::class_<components::ScrollArea, bpy::bases<GumpComponent, CL_GUIComponent>, boost::noncopyable>("ScrollArea", bpy::no_init)
         .add_property("marginLeft", &components::ScrollArea::getMarginLeft, &components::ScrollArea::setMarginLeft)
         .add_property("marginRight", &components::ScrollArea::getMarginRight, &components::ScrollArea::setMarginRight)
         .add_property("marginTop", &components::ScrollArea::getMarginTop, &components::ScrollArea::setMarginTop)
@@ -259,13 +202,13 @@ BOOST_PYTHON_MODULE(gumps) {
     ;
 
     // checkbox component
-    bpy::class_<components::Checkbox, bpy::bases<components::Image>, boost::noncopyable>("CheckboxWrapper", bpy::no_init)
+    bpy::class_<components::Checkbox, bpy::bases<components::Image>, boost::noncopyable>("Checkbox", bpy::no_init)
         .add_property("checked", &components::Checkbox::isChecked, &components::Checkbox::setChecked)
         .add_property("id", &components::Checkbox::getSwitchId, &components::Checkbox::setSwitchId)
     ;
 
     // radiobutton component
-    bpy::class_<components::RadioButton, bpy::bases<components::Checkbox>, boost::noncopyable>("RadioButtonWrapper", bpy::no_init)
+    bpy::class_<components::RadioButton, bpy::bases<components::Checkbox>, boost::noncopyable>("RadioButton", bpy::no_init)
         .add_property("group", &components::RadioButton::getRadioGroupId, &components::RadioButton::setRadioGroupId)
     ;
 

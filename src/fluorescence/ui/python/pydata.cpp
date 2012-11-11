@@ -28,10 +28,6 @@ namespace fluo {
 namespace ui {
 namespace python {
 
-UnicodeString PyData::test() {
-    return UnicodeString("bertlüü ßß hallo");
-}
-
 UnicodeString PyData::cliloc(unsigned int id) {
     return data::Manager::getClilocLoader()->get(id);
 }
