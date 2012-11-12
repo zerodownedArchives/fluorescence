@@ -28,6 +28,11 @@
 class CL_GUIComponent;
 
 namespace fluo {
+
+namespace world {
+class Mobile;
+}
+
 namespace ui {
 
 class Texture;
@@ -43,6 +48,7 @@ class ScrollArea;
 class Checkbox;
 class RadioButton;
 class WorldView;
+class PaperdollView;
 }
 
 namespace python {
@@ -61,6 +67,7 @@ public:
     static components::Checkbox* addCheckbox(CL_GUIComponent* self, boost::python::tuple& geom);
     static components::RadioButton* addRadioButton(CL_GUIComponent* self, boost::python::tuple& geom, unsigned int group);
     static components::WorldView* addWorldView(CL_GUIComponent* self, boost::python::tuple& geom);
+    static components::PaperdollView* addPaperdollView(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<world::Mobile>& mob);
 
 private:
     // when adding to a scrollarea, the components are not added directly to the area but to a child component

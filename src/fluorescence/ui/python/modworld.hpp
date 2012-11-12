@@ -20,6 +20,8 @@
 #ifndef FLUO_UI_PYTHON_MODWORLD_HPP
 #define FLUO_UI_PYTHON_MODWORLD_HPP
 
+#include "pyworld.hpp"
+
 #include <world/mobile.hpp>
 
 namespace fluo {
@@ -32,12 +34,16 @@ BOOST_PYTHON_MODULE(world) {
     bpy::class_<world::IngameObject, boost::shared_ptr<world::IngameObject>, boost::noncopyable>("IngameObject", bpy::no_init)
     ;
 
-    bpy::class_<world::ServerObject, bpy::bases<world::IngameObject>, boost::noncopyable>("ServerObject", bpy::no_init)
+    bpy::class_<world::ServerObject, boost::shared_ptr<world::ServerObject>, bpy::bases<world::IngameObject>, boost::noncopyable>("ServerObject", bpy::no_init)
         .add_property("serial", &world::ServerObject::getSerial)
     ;
 
-    bpy::class_<world::Mobile, bpy::bases<world::ServerObject>, boost::noncopyable>("Mobile", bpy::no_init)
+    bpy::class_<world::Mobile, boost::shared_ptr<world::Mobile>, bpy::bases<world::ServerObject>, boost::noncopyable>("Mobile", bpy::no_init)
+        .add_property("warmode", &world::Mobile::isWarMode, &world::Mobile::setWarMode)
+        .def("__eq__", &world::Mobile::equalWrap)
     ;
+
+    bpy::def("getPlayer", &PyWorld::getPlayer);
 }
 
 }

@@ -32,7 +32,7 @@ PropertyLabel::PropertyLabel(CL_GUIComponent* parent, const UnicodeString& link)
     set_type_name("propertylabel");
 }
 
-void PropertyLabel::update(world::Mobile* mob) {
+void PropertyLabel::update(const boost::shared_ptr<world::Mobile>& mob) {
     if (mob->hasProperty(linkName_)) {
         setText(mob->getProperty(linkName_).asString());
     }

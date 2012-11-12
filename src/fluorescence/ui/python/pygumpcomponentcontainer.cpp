@@ -156,6 +156,16 @@ components::WorldView* PyGumpComponentContainer::addWorldView(CL_GUIComponent* s
     return view;
 }
 
+components::PaperdollView* PyGumpComponentContainer::addPaperdollView(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<world::Mobile>& mob) {
+    components::PaperdollView* view = new components::PaperdollView(getParentHelper(self));
+    view->pySetGeometry(geom);
+    view->setMobile(mob);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(view);
+
+    return view;
+}
+
 }
 }
 }

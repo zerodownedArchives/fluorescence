@@ -39,6 +39,7 @@
 #include <ui/components/paperdollview.hpp>
 #include <ui/singletextureprovider.hpp>
 #include <ui/animtextureprovider.hpp>
+#include <ui/python/scriptloader.hpp>
 
 #include "manager.hpp"
 #include "dynamicitem.hpp"
@@ -255,16 +256,10 @@ void Mobile::onPropertyUpdate() {
 }
 
 void Mobile::addLinkedGump(ui::GumpMenu* menu) {
-    if (!menu) {
-        return;
-    }
-
     linkedGumps_.push_back(menu);
-    menu->setLinkedMobile(this);
 }
 
 void Mobile::removeLinkedGump(ui::GumpMenu* menu) {
-    menu->setLinkedMobile(NULL);
     linkedGumps_.remove(menu);
 }
 
@@ -275,41 +270,26 @@ void Mobile::onStartDrag(const CL_Point& mousePos) {
 }
 
 void Mobile::openStatusGump(const CL_Point& mousePos) {
-    ui::GumpMenu* statsMenu;
-    if (isPlayer()) {
-        statsMenu = findOrCreateLinkedGump("status-self");
-    } else {
-        statsMenu = findOrCreateLinkedGump("status-other");
-    }
+    openLinkedGump("status");
 
-    CL_Size size = statsMenu->get_size();
-    statsMenu->set_window_geometry(CL_Rect(mousePos.x - 10, mousePos.y - 10, size));
+    // TODO: new gui
+    //CL_Size size = statsMenu->get_size();
+    //statsMenu->set_window_geometry(CL_Rect(mousePos.x - 10, mousePos.y - 10, size));
 
-    if (statsMenu->isDraggable()) {
-        statsMenu->startDragging(statsMenu->screen_to_component_coords(mousePos));
-    }
+    //if (statsMenu->isDraggable()) {
+        //statsMenu->startDragging(statsMenu->screen_to_component_coords(mousePos));
+    //}
 
     net::packets::StatSkillQuery queryPacket(getSerial(), net::packets::StatSkillQuery::QUERY_STATS);
     net::Manager::getSingleton()->send(queryPacket);
 }
 
 void Mobile::openProfile() {
-    if (isPlayer()) {
-        findOrCreateLinkedGump("profile-self");
-    } else {
-        findOrCreateLinkedGump("profile-other");
-    }
+    openLinkedGump("profile");
 }
 
 void Mobile::openSkillsGump() {
-    ui::GumpMenu* menu = findLinkedGump("skills");
-
-    if (!menu) {
-        menu = ui::GumpMenus::openSkills(this);
-        addLinkedGump(menu);
-    }
-
-    onPropertyUpdate();
+    openLinkedGump("skills");
 
     // not necessary, skills are always up to date
     //net::packets::StatSkillQuery queryPacket(getSerial(), net::packets::StatSkillQuery::QUERY_SKILLS);
@@ -322,7 +302,6 @@ ui::GumpMenu* Mobile::findLinkedGump(const UnicodeString& gumpName) {
 
     for (; iter != end; ++iter) {
         if ((*iter)->getName() == gumpName) {
-            (*iter)->bring_to_front();
             return *iter;
         }
     }
@@ -330,34 +309,27 @@ ui::GumpMenu* Mobile::findLinkedGump(const UnicodeString& gumpName) {
     return nullptr;
 }
 
-ui::GumpMenu* Mobile::findOrCreateLinkedGump(const UnicodeString& gumpName) {
+void Mobile::openLinkedGump(const UnicodeString& gumpName) {
     ui::GumpMenu* menu = findLinkedGump(gumpName);
 
     if (!menu) {
         // not found, create
-        menu = ui::Manager::getSingleton()->openXmlGump(gumpName);
-        addLinkedGump(menu);
+        try {
+            boost::python::dict args;
+            boost::shared_ptr<Mobile> sharedThis = boost::dynamic_pointer_cast<Mobile>(shared_from_this());
+            args["mobile"] = sharedThis;
+            ui::Manager::getSingleton()->openPythonGump(gumpName, args);
+        } catch (const boost::python::error_already_set& err) {
+            ui::Manager::getSingleton()->getPythonLoader()->logError();
+            throw;
+        }
+    } else {
+        menu->bring_to_front();
     }
-
-    return menu;
 }
 
 void Mobile::openPaperdoll() {
-    ui::GumpMenu* paperdoll;
-    if (isPlayer()) {
-        paperdoll = findOrCreateLinkedGump("paperdoll-self");
-    } else {
-        paperdoll = findOrCreateLinkedGump("paperdoll-other");
-    }
-
-    ui::components::PaperdollView* pdView = dynamic_cast<ui::components::PaperdollView*>(paperdoll->get_named_item("paperdoll"));
-    if (pdView) {
-        boost::shared_ptr<Mobile> sharedThis = boost::static_pointer_cast<Mobile>(shared_from_this());
-        pdView->addObject(sharedThis);
-        pdView->setMobile(sharedThis);
-    } else {
-        LOG_ERROR << "Unable to find paperdoll component in paperdoll gump" << std::endl;
-    }
+    openLinkedGump("paperdoll");
 }
 
 void Mobile::setRace(unsigned int race) {
@@ -388,14 +360,20 @@ bool Mobile::isPlayer() const {
 }
 
 void Mobile::onDelete() {
+    std::list<ui::GumpMenu*> copy(linkedGumps_);
+
     std::list<ui::GumpMenu*>::iterator iter = linkedGumps_.begin();
     std::list<ui::GumpMenu*>::iterator end = linkedGumps_.end();
-
     for (; iter != end; ++iter) {
         ui::Manager::getSingleton()->closeGumpMenu(*iter);
     }
-
     linkedGumps_.clear();
+
+    //iter = copy.begin();
+    //end = copy.end();
+    //for (; iter != end; ++iter) {
+        //(*iter)->setLinkedMobile(nullptr);
+    //}
 
     ServerObject::onDelete();
 }
@@ -680,6 +658,10 @@ void Mobile::resumeAnimationCallback() {
     } else {
         animate(moveAnim, 0, AnimRepeatMode::LOOP);
     }
+}
+
+bool Mobile::equalWrap(const boost::shared_ptr<world::Mobile>& other) {
+    return getSerial() == other->getSerial();
 }
 
 }

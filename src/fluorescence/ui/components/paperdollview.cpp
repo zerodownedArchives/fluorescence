@@ -47,8 +47,7 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-PaperdollView::PaperdollView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpComponent(parent) {
-    this->set_geometry(bounds);
+PaperdollView::PaperdollView(CL_GUIComponent* parent) : GumpComponent(parent) {
     boost::shared_ptr<PaperdollRenderQueue> rq(new PaperdollRenderQueue());
     renderer_.reset(new PaperdollRenderer(rq, this));
     renderer_->getRenderQueue()->setNotifyFunction(boost::bind(&PaperdollView::request_repaint, this));
@@ -166,12 +165,12 @@ bool PaperdollView::onDoubleClick(const CL_InputEvent& e) {
     return false;
 }
 
-void PaperdollView::addObject(boost::shared_ptr<world::IngameObject> obj) {
+void PaperdollView::addObject(const boost::shared_ptr<world::IngameObject>& obj) {
     obj->addToRenderQueue(renderer_->getRenderQueue());
     request_repaint();
 }
 
-void PaperdollView::removeObject(boost::shared_ptr<world::IngameObject> obj) {
+void PaperdollView::removeObject(const boost::shared_ptr<world::IngameObject>& obj) {
     obj->removeFromRenderQueue(renderer_->getRenderQueue());
     request_repaint();
 }
@@ -180,8 +179,9 @@ bool PaperdollView::has_pixel(const CL_Point& p) const {
     return (bool)renderer_->getRenderQueue()->getFirstObjectAt(p.x, p.y, false);
 }
 
-void PaperdollView::setMobile(boost::shared_ptr<world::Mobile> mob) {
+void PaperdollView::setMobile(const boost::shared_ptr<world::Mobile>& mob) {
     mobile_ = mob;
+    addObject(mob);
 }
 
 }

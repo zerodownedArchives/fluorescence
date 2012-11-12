@@ -35,7 +35,7 @@ class PropertyLabel : public Label {
 public:
     PropertyLabel(CL_GUIComponent* parent, const UnicodeString& linkName);
 
-    void update(world::Mobile* mob);
+    void update(const boost::shared_ptr<world::Mobile>& mob);
 
 private:
     UnicodeString linkName_;

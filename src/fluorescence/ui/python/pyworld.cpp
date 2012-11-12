@@ -24,6 +24,10 @@ namespace fluo {
 namespace ui {
 namespace python {
 
+boost::shared_ptr<world::Mobile> PyWorld::getPlayer() {
+    return world::Manager::getSingleton()->getPlayer();
+}
+
 }
 }
 }

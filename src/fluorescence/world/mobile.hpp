@@ -114,6 +114,8 @@ public:
     // depending on the difference to the current location, this is either done with smooth movement or a teleport
     void moveTo(unsigned int locX, unsigned int locY, int locZ, unsigned int direction);
 
+    bool equalWrap(const boost::shared_ptr<world::Mobile>& other);
+
 private:
     unsigned int baseBodyId_; // as sent by the server
     unsigned int bodyId_; // after transformation, e.g. by body.def
@@ -133,7 +135,7 @@ private:
 
     std::list<ui::GumpMenu*> linkedGumps_;
     ui::GumpMenu* findLinkedGump(const UnicodeString& gumpName);
-    ui::GumpMenu* findOrCreateLinkedGump(const UnicodeString& gumpName);
+    void openLinkedGump(const UnicodeString& gumpName);
 
     unsigned int race_;
     bool female_;

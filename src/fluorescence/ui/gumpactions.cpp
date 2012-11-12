@@ -135,22 +135,22 @@ bool GumpActions::createDummyCharacter(GumpMenu* menu, const UnicodeString& acti
 }
 
 bool GumpActions::openStatus(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    world::Mobile* mob = menu->getLinkedMobile();
-    if (mob) {
-        mob->openStatusGump(ui::Manager::getSingleton()->getMousePosition());
-    } else {
-        LOG_WARN << "openstatus gump action in unlinked gump" << std::endl;
-    }
+    //world::Mobile* mob = menu->getLinkedMobile();
+    //if (mob) {
+        //mob->openStatusGump(ui::Manager::getSingleton()->getMousePosition());
+    //} else {
+        //LOG_WARN << "openstatus gump action in unlinked gump" << std::endl;
+    //}
     return true;
 }
 
 bool GumpActions::openSkills(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    world::Mobile* mob = menu->getLinkedMobile();
-    if (mob) {
-        mob->openSkillsGump();
-    } else {
-        LOG_WARN << "openskills gump action in unlinked gump" << std::endl;
-    }
+    //world::Mobile* mob = menu->getLinkedMobile();
+    //if (mob) {
+        //mob->openSkillsGump();
+    //} else {
+        //LOG_WARN << "openskills gump action in unlinked gump" << std::endl;
+    //}
     return true;
 }
 
@@ -163,13 +163,13 @@ bool GumpActions::helpRequest(GumpMenu* menu, const UnicodeString& action, unsig
 }
 
 bool GumpActions::openProfile(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    world::Mobile* mob = menu->getLinkedMobile();
-    if (mob) {
-        net::packets::ProfileRequest pkt(mob->getSerial());
-        net::Manager::getSingleton()->send(pkt);
-    } else {
-        LOG_WARN << "openprofile gump action in unlinked gump" << std::endl;
-    }
+    //world::Mobile* mob = menu->getLinkedMobile();
+    //if (mob) {
+        //net::packets::ProfileRequest pkt(mob->getSerial());
+        //net::Manager::getSingleton()->send(pkt);
+    //} else {
+        //LOG_WARN << "openprofile gump action in unlinked gump" << std::endl;
+    //}
     return true;
 }
 

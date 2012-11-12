@@ -979,12 +979,13 @@ GumpComponent* XmlLoader::parseWorldView(pugi::xml_node& node, pugi::xml_node& d
 }
 
 GumpComponent* XmlLoader::parsePaperdoll(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {
-    CL_Rect bounds = getBoundsFromNode(node, defaultNode);
-    ui::components::PaperdollView* pdView = new ui::components::PaperdollView(parent, bounds);
-    parseId(node, pdView);
-    top->addToCurrentPage(pdView);
+    //CL_Rect bounds = getBoundsFromNode(node, defaultNode);
+    //ui::components::PaperdollView* pdView = new ui::components::PaperdollView(parent, bounds);
+    //parseId(node, pdView);
+    //top->addToCurrentPage(pdView);
 
-    return pdView;
+    //return pdView;
+    return nullptr;
 }
 
 GumpComponent* XmlLoader::parseContainer(pugi::xml_node& node, pugi::xml_node& defaultNode, CL_GUIComponent* parent, GumpMenu* top) {

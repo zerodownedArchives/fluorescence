@@ -42,7 +42,7 @@ GumpMenu::GumpMenu(const CL_GUITopLevelDescription& desc) :
     serial_(0), typeId_(0), activePageId_(0), firstPageId_(0),
     closable_(true),
     draggable_(true), isDragged_(false),
-    linkedMobile_(NULL), currentRadioGroup_(0) {
+    currentRadioGroup_(0) {
 
     addPage(0);
 
@@ -274,6 +274,7 @@ void GumpMenu::updateMobilePropertiesRec(CL_GUIComponent* comp) {
         if (lbl) {
             lbl->update(linkedMobile_);
         } else {
+            // TODO: new gui
             //components::WarModeButton* wmbut = dynamic_cast<components::WarModeButton*>(*iter);
             //if (wmbut) {
                 //wmbut->setWarMode(linkedMobile_->isWarMode());
@@ -284,14 +285,24 @@ void GumpMenu::updateMobilePropertiesRec(CL_GUIComponent* comp) {
     }
 }
 
-void GumpMenu::setLinkedMobile(world::Mobile* mob) {
-    linkedMobile_ = mob;
+void GumpMenu::setLinkedMobile(const boost::shared_ptr<world::Mobile>& mob) {
+    if (linkedMobile_ == mob) {
+        return;
+    }
+
     if (linkedMobile_) {
+        linkedMobile_->removeLinkedGump(this);
+    }
+
+    linkedMobile_ = mob;
+
+    if (linkedMobile_) {
+        linkedMobile_->addLinkedGump(this);
         updateMobileProperties();
     }
 }
 
-world::Mobile* GumpMenu::getLinkedMobile() const {
+boost::shared_ptr<world::Mobile> GumpMenu::getLinkedMobile() const {
     return linkedMobile_;
 }
 

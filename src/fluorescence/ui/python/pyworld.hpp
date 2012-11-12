@@ -20,11 +20,20 @@
 #ifndef FLUO_UI_PYTHON_PYWORLD_HPP
 #define FLUO_UI_PYTHON_PYWORLD_HPP
 
+#include <boost/shared_ptr.hpp>
+
 namespace fluo {
+
+namespace world {
+class Mobile;
+}
+
 namespace ui {
 namespace python {
 
 class PyWorld {
+public:
+    static boost::shared_ptr<world::Mobile> getPlayer();
 
 };
 

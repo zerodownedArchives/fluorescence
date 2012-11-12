@@ -86,8 +86,8 @@ public:
 
     // mobile linking
     void updateMobileProperties();
-    void setLinkedMobile(world::Mobile* mob);
-    world::Mobile* getLinkedMobile() const;
+    void setLinkedMobile(const boost::shared_ptr<world::Mobile>& mob);
+    boost::shared_ptr<world::Mobile> getLinkedMobile() const;
 
 
     // event stuff
@@ -141,7 +141,7 @@ private:
 
     UnicodeString name_;
 
-    world::Mobile* linkedMobile_;
+    boost::shared_ptr<world::Mobile> linkedMobile_;
     void updateMobilePropertiesRec(CL_GUIComponent* comp);
 
     unsigned int currentRadioGroup_;

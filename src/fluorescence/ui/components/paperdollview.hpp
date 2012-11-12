@@ -41,7 +41,7 @@ namespace components {
 
 class PaperdollView : public GumpComponent {
 public:
-    PaperdollView(CL_GUIComponent* parent, const CL_Rect& bounds);
+    PaperdollView(CL_GUIComponent* parent);
     ~PaperdollView();
 
     unsigned int getWidth();
@@ -49,12 +49,12 @@ public:
 
     void renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect);
 
-    void addObject(boost::shared_ptr<world::IngameObject> obj);
-    void removeObject(boost::shared_ptr<world::IngameObject> obj);
+    void addObject(const boost::shared_ptr<world::IngameObject>& obj);
+    void removeObject(const boost::shared_ptr<world::IngameObject>& obj);
 
     virtual bool has_pixel(const CL_Point& p) const;
 
-    void setMobile(boost::shared_ptr<world::Mobile> mob);
+    void setMobile(const boost::shared_ptr<world::Mobile>& mob);
 
 private:
     boost::shared_ptr<PaperdollRenderer> renderer_;
