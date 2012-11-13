@@ -49,6 +49,7 @@ class Checkbox;
 class RadioButton;
 class WorldView;
 class PaperdollView;
+class PropertyLabel;
 }
 
 namespace python {
@@ -68,6 +69,7 @@ public:
     static components::RadioButton* addRadioButton(CL_GUIComponent* self, boost::python::tuple& geom, unsigned int group);
     static components::WorldView* addWorldView(CL_GUIComponent* self, boost::python::tuple& geom);
     static components::PaperdollView* addPaperdollView(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<world::Mobile>& mob);
+    static components::PropertyLabel* addPropertyLabel(CL_GUIComponent* self, boost::python::tuple& geom, const UnicodeString& prop);
 
 private:
     // when adding to a scrollarea, the components are not added directly to the area but to a child component

@@ -166,6 +166,15 @@ components::PaperdollView* PyGumpComponentContainer::addPaperdollView(CL_GUIComp
     return view;
 }
 
+components::PropertyLabel* PyGumpComponentContainer::addPropertyLabel(CL_GUIComponent* self, boost::python::tuple& geom, const UnicodeString& prop) {
+    components::PropertyLabel* label = new components::PropertyLabel(getParentHelper(self), prop);
+    label->pySetGeometry(geom);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(label);
+
+    return label;
+}
+
 }
 }
 }

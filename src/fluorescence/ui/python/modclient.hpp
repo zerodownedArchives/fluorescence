@@ -31,17 +31,18 @@ namespace python {
 namespace bpy = boost::python;
 
 BOOST_PYTHON_MODULE(client) {
-    bpy::def("setShard", PyClient::setShard);
-    bpy::def("createShard", PyClient::createShard);
-    bpy::def("connect", PyClient::connect);
-    bpy::def("disconnect", PyClient::disconnect);
-    bpy::def("selectServer", PyClient::selectServer);
-    bpy::def("selectCharacter", PyClient::selectCharacter);
-    bpy::def("getConfig", PyClient::getConfig);
-    bpy::def("shutdown", PyClient::shutdown);
-    bpy::def("messagebox", PyClient::messagebox);
-    bpy::def("openGump", PyClient::openGump);
-    bpy::def("handleTextInput", PyClient::handleTextInput);
+    bpy::def("setShard", &PyClient::setShard);
+    bpy::def("createShard", &PyClient::createShard);
+    bpy::def("connect", &PyClient::connect);
+    bpy::def("disconnect", &PyClient::disconnect);
+    bpy::def("selectServer", &PyClient::selectServer);
+    bpy::def("selectCharacter", &PyClient::selectCharacter);
+    bpy::def("getConfig", &PyClient::getConfig);
+    bpy::def("shutdown", &PyClient::shutdown);
+    bpy::def("messagebox", &PyClient::messagebox);
+    bpy::def("openGump", &PyClient::openGump);
+    bpy::def("handleTextInput", &PyClient::handleTextInput);
+    bpy::def("sendHelpRequest", &PyClient::sendHelpRequest);
 }
 
 }

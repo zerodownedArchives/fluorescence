@@ -62,6 +62,7 @@ BOOST_PYTHON_MODULE(ui) {
         .def("addWorldView", &PyGumpComponentContainer::addWorldView, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addRadioButton", &PyGumpComponentContainer::addRadioButton, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addPaperdollView", &PyGumpComponentContainer::addPaperdollView, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("addPropertyLabel", &PyGumpComponentContainer::addPropertyLabel, bpy::return_value_policy<bpy::reference_existing_object>())
     ;
 
     // non-instanciable wrapper class for gump menus
@@ -218,7 +219,12 @@ BOOST_PYTHON_MODULE(ui) {
     bpy::class_<components::WorldView, bpy::bases<GumpComponent>, boost::noncopyable>("WorldView", bpy::no_init)
     ;
 
+    // paperdollview component
     bpy::class_<components::PaperdollView, bpy::bases<GumpComponent>, boost::noncopyable>("PaperdollView", bpy::no_init)
+    ;
+
+    // propertylabel component
+    bpy::class_<components::PropertyLabel, bpy::bases<components::Label>, boost::noncopyable>("PropertyLabel", bpy::no_init)
     ;
 }
 

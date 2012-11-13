@@ -255,8 +255,6 @@ const UnicodeString& GumpMenu::getName() {
 
 void GumpMenu::updateMobileProperties() {
     if (!linkedMobile_) {
-        LOG_WARN << "Calling updateMobileProperties on gump without linked mobile " << name_ << std::endl;
-        ui::Manager::getSingleton()->closeGumpMenu(this);
         return;
     }
 

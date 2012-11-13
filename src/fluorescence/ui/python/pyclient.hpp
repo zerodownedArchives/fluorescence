@@ -43,6 +43,8 @@ public:
     static void openGump(const UnicodeString& name);
 
     static void handleTextInput(const UnicodeString& text);
+
+    static void sendHelpRequest();
 };
 
 }

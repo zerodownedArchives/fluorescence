@@ -18,7 +18,10 @@
 
 #include "pyworld.hpp"
 
-#include "world/manager.hpp"
+#include <net/manager.hpp>
+#include <net/packets/b8_profile.hpp>
+#include <world/manager.hpp>
+#include <world/mobile.hpp>
 
 namespace fluo {
 namespace ui {
@@ -26,6 +29,11 @@ namespace python {
 
 boost::shared_ptr<world::Mobile> PyWorld::getPlayer() {
     return world::Manager::getSingleton()->getPlayer();
+}
+
+void PyWorld::openProfile(const boost::shared_ptr<world::Mobile>& self) {
+    net::packets::ProfileRequest pkt(self->getSerial());
+    net::Manager::getSingleton()->send(pkt);
 }
 
 }

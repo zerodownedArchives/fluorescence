@@ -100,7 +100,7 @@ public:
 
     bool hasItemOnLayer(unsigned int layer) const;
 
-    void openStatusGump(const CL_Point& mousePos);
+    void openStatusGump();
     void openProfile();
     void openSkillsGump();
 

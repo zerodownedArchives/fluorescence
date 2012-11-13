@@ -38,12 +38,16 @@ def create(args):
     btStatus.state("mouseOver").texture = Texture(TextureSource.GUMPART, 2029)
     btStatus.state("mouseDown").texture = Texture(TextureSource.GUMPART, 2028)
 
+    g.addPropertyLabel((20, 270, 180, 20), "paperdoll-name")
+
     return g
 
 def openProfile(button):
+    button.gump.mobile.openProfile()
     return False
 
 def sendHelpRequest(button):
+    client.sendHelpRequest()
     return False
 
 def disconnect(button):
@@ -51,6 +55,7 @@ def disconnect(button):
     return True
 
 def openSkills(button):
+    button.gump.mobile.openSkills()
     return False
 
 def toggleWarmode(button):
@@ -58,9 +63,5 @@ def toggleWarmode(button):
     mob.warmode = not mob.warmode
 
 def openStatus(button):
+    button.gump.mobile.openStatus()
     return False
-
-#<?xml version="1.0"?>
-#<gump draggable="1" closable="1">
-    #<propertylabel x="20" y="270" width="180" height="20" link="paperdoll-name" />
-#</gump>

@@ -37,9 +37,7 @@
 #include <net/packets/00_createcharacter.hpp>
 #include <net/packets/12_useskill.hpp>
 #include <net/packets/7d_objectpickerresponse.hpp>
-#include <net/packets/9b_helprequest.hpp>
 #include <net/packets/ad_speechrequest.hpp>
-#include <net/packets/b8_profile.hpp>
 #include <net/packets/bf.hpp>
 #include <net/packets/bf/15_contextmenureply.hpp>
 #include <net/packets/bf/1c_castspell.hpp>
@@ -71,10 +69,6 @@ void GumpActions::buildFullActionTable() {
 
     actionTable_["createdummychar"] = GumpAction(true, boost::bind(&GumpActions::createDummyCharacter, _1, _2, _3, _4));
 
-    actionTable_["openstatus"] = GumpAction(false, boost::bind(&GumpActions::openStatus, _1, _2, _3, _4));
-    actionTable_["helprequest"] = GumpAction(false, boost::bind(&GumpActions::helpRequest, _1, _2, _3, _4));
-    actionTable_["openprofile"] = GumpAction(false, boost::bind(&GumpActions::openProfile, _1, _2, _3, _4));
-    actionTable_["openskills"] = GumpAction(false, boost::bind(&GumpActions::openSkills, _1, _2, _3, _4));
     actionTable_["useskill"] = GumpAction(false, boost::bind(&GumpActions::useSkill, _1, _2, _3, _4));
 
     actionTable_["castspell"] = GumpAction(false, boost::bind(&GumpActions::castSpell, _1, _2, _3, _4));
@@ -134,44 +128,15 @@ bool GumpActions::createDummyCharacter(GumpMenu* menu, const UnicodeString& acti
     return true;
 }
 
-bool GumpActions::openStatus(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
+//bool GumpActions::openStatus(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     //world::Mobile* mob = menu->getLinkedMobile();
     //if (mob) {
         //mob->openStatusGump(ui::Manager::getSingleton()->getMousePosition());
     //} else {
         //LOG_WARN << "openstatus gump action in unlinked gump" << std::endl;
     //}
-    return true;
-}
-
-bool GumpActions::openSkills(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    //world::Mobile* mob = menu->getLinkedMobile();
-    //if (mob) {
-        //mob->openSkillsGump();
-    //} else {
-        //LOG_WARN << "openskills gump action in unlinked gump" << std::endl;
-    //}
-    return true;
-}
-
-bool GumpActions::helpRequest(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    LOG_DEBUG << "send help request" << std::endl;
-    net::packets::HelpRequest pkt;
-    net::Manager::getSingleton()->send(pkt);
-
-    return true;
-}
-
-bool GumpActions::openProfile(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    //world::Mobile* mob = menu->getLinkedMobile();
-    //if (mob) {
-        //net::packets::ProfileRequest pkt(mob->getSerial());
-        //net::Manager::getSingleton()->send(pkt);
-    //} else {
-        //LOG_WARN << "openprofile gump action in unlinked gump" << std::endl;
-    //}
-    return true;
-}
+    //return true;
+//}
 
 bool GumpActions::castSpell(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     if (parameterCount == 0) {

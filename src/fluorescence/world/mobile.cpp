@@ -266,10 +266,10 @@ void Mobile::removeLinkedGump(ui::GumpMenu* menu) {
 void Mobile::onStartDrag(const CL_Point& mousePos) {
     ui::Manager::getSingleton()->getCursorManager()->stopDragging();
 
-    openStatusGump(mousePos);
+    openStatusGump();
 }
 
-void Mobile::openStatusGump(const CL_Point& mousePos) {
+void Mobile::openStatusGump() {
     openLinkedGump("status");
 
     // TODO: new gui
@@ -360,20 +360,12 @@ bool Mobile::isPlayer() const {
 }
 
 void Mobile::onDelete() {
-    std::list<ui::GumpMenu*> copy(linkedGumps_);
-
     std::list<ui::GumpMenu*>::iterator iter = linkedGumps_.begin();
     std::list<ui::GumpMenu*>::iterator end = linkedGumps_.end();
     for (; iter != end; ++iter) {
         ui::Manager::getSingleton()->closeGumpMenu(*iter);
     }
     linkedGumps_.clear();
-
-    //iter = copy.begin();
-    //end = copy.end();
-    //for (; iter != end; ++iter) {
-        //(*iter)->setLinkedMobile(nullptr);
-    //}
 
     ServerObject::onDelete();
 }

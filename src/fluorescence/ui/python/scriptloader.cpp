@@ -135,11 +135,16 @@ bpy::object ScriptLoader::loadModule(const UnicodeString& name) {
 
 void ScriptLoader::openGump(const UnicodeString& name, boost::python::dict& args) {
     bpy::object module = loadModule(name);
+    if (!module) {
+        LOG_ERROR << "Python gump " << name << " not found" << std::endl;
+        return;
+    }
+
     try {
         if (module.attr("create")) {
             module.attr("create")(args);
         } else {
-            LOG_WARN << "No function create in gump module " << name << std::endl;
+            LOG_ERROR << "No function create in gump module " << name << std::endl;
         }
 
     } catch (bpy::error_already_set const&) {

@@ -20,7 +20,10 @@
 
 #include <client.hpp>
 #include <misc/log.hpp>
+
 #include <net/manager.hpp>
+#include <net/packets/9b_helprequest.hpp>
+
 #include <ui/manager.hpp>
 #include <ui/commandmanager.hpp>
 #include <ui/gumpmenus.hpp>
@@ -76,6 +79,11 @@ void PyClient::selectCharacter(unsigned int index, const UnicodeString& name, co
 
 void PyClient::handleTextInput(const UnicodeString& text) {
     ui::Manager::getSingleton()->handleTextInput(text);
+}
+
+void PyClient::sendHelpRequest() {
+    net::packets::HelpRequest pkt;
+    net::Manager::getSingleton()->send(pkt);
 }
 
 }

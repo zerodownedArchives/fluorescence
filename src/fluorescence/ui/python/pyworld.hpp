@@ -35,6 +35,7 @@ class PyWorld {
 public:
     static boost::shared_ptr<world::Mobile> getPlayer();
 
+    static void openProfile(const boost::shared_ptr<world::Mobile>& self);
 };
 
 }

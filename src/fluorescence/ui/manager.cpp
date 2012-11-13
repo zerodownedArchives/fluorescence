@@ -346,6 +346,7 @@ void Manager::processGumpNewList() {
     std::list<GumpMenu*>::iterator end = gumpNewList_.end();
 
     for (; iter != end; ++iter) {
+        (*iter)->updateMobileProperties();
         (*iter)->fitSizeToChildren();
         (*iter)->activateFirstPage();
         gumpList_.push_back(*iter);
