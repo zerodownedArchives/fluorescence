@@ -49,8 +49,16 @@ bool BaseText::mobileMessage() {
 
     if (mob) {
         mob->setBodyId(bodyId_);
-        mob->getProperty("name").setString(speaker_);
-        mob->onPropertyUpdate();
+        if (mob->hasProperty("name")) {
+            Variable& name = mob->getProperty("name");
+            if (name.asString() != speaker_) {
+                mob->getProperty("name").setString(speaker_);
+                mob->onPropertyUpdate();
+            }
+        } else {
+            mob->getProperty("name").setString(speaker_);
+            mob->onPropertyUpdate();
+        }
 
         boost::shared_ptr<world::OverheadMessage> msg(new world::OverheadMessage(text_, font_, hue_, false));
         world::Manager::getSingleton()->registerOverheadMessage(msg);

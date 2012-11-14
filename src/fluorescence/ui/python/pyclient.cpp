@@ -22,6 +22,7 @@
 #include <misc/log.hpp>
 
 #include <net/manager.hpp>
+#include <net/packets/12_useskill.hpp>
 #include <net/packets/9b_helprequest.hpp>
 
 #include <ui/manager.hpp>
@@ -83,6 +84,11 @@ void PyClient::handleTextInput(const UnicodeString& text) {
 
 void PyClient::sendHelpRequest() {
     net::packets::HelpRequest pkt;
+    net::Manager::getSingleton()->send(pkt);
+}
+
+void PyClient::useSkill(unsigned int id) {
+    net::packets::UseSkill pkt(id);
     net::Manager::getSingleton()->send(pkt);
 }
 

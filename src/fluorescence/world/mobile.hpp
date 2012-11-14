@@ -114,7 +114,9 @@ public:
     // depending on the difference to the current location, this is either done with smooth movement or a teleport
     void moveTo(unsigned int locX, unsigned int locY, int locZ, unsigned int direction);
 
+    // python specific stuff
     bool equalWrap(const boost::shared_ptr<world::Mobile>& other);
+    UnicodeString pyGetProperty(const UnicodeString& name);
 
 private:
     unsigned int baseBodyId_; // as sent by the server

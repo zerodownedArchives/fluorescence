@@ -55,15 +55,17 @@ BOOST_PYTHON_MODULE(data) {
 
 
     // factory functions for cliloc strings
-    bpy::def("Cliloc", PyData::cliloc);
-    bpy::def("Cliloc", PyData::clilocArgs);
+    bpy::def("Cliloc", &PyData::cliloc);
+    bpy::def("Cliloc", &PyData::clilocArgs);
 
     // convert hue value to rgba tuple
-    bpy::def("rgba", PyData::hueToRgba);
+    bpy::def("rgba", &PyData::hueToRgba);
     // create proper rgba tuples
-    bpy::def("rgba", PyData::rgba3);
-    bpy::def("rgba", PyData::rgba4);
-    bpy::def("rgba", PyData::rgbaString);
+    bpy::def("rgba", &PyData::rgba3);
+    bpy::def("rgba", &PyData::rgba4);
+    bpy::def("rgba", &PyData::rgbaString);
+
+    bpy::def("getSkillList", &PyData::getSkillList);
 }
 
 }

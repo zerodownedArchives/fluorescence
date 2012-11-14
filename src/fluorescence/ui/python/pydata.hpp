@@ -46,6 +46,8 @@ public:
     static boost::python::tuple rgba3(float r, float g, float b);
     static boost::python::tuple rgba4(float r, float g, float b, float a);
     static boost::python::tuple rgbaString(const UnicodeString& str);
+
+    static boost::python::list getSkillList();
 };
 
 }

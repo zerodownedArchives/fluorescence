@@ -656,5 +656,13 @@ bool Mobile::equalWrap(const boost::shared_ptr<world::Mobile>& other) {
     return getSerial() == other->getSerial();
 }
 
+UnicodeString Mobile::pyGetProperty(const UnicodeString& prop) {
+    if (hasProperty(prop)) {
+        return getProperty(prop).asString();
+    } else {
+        return "";
+    }
+}
+
 }
 }

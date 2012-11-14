@@ -21,6 +21,7 @@
 #include <data/manager.hpp>
 #include <data/clilocloader.hpp>
 #include <data/huesloader.hpp>
+#include <data/skillsloader.hpp>
 
 #include <boost/python/extract.hpp>
 
@@ -69,6 +70,23 @@ boost::python::tuple PyData::rgba3(float r, float g, float b) {
 boost::python::tuple PyData::rgbaString(const UnicodeString& str) {
     CL_Colorf rgba(StringConverter::toUtf8String(str));
     return boost::python::make_tuple(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+boost::python::list PyData::getSkillList() {
+    static boost::python::list ret;
+
+    if (boost::python::len(ret) == 0) {
+        boost::shared_ptr<data::SkillsLoader> ldr = data::Manager::getSkillsLoader();
+        unsigned int cnt = ldr->getSkillCount();
+        for (unsigned int i = 0; i < cnt; ++i) {
+            const data::SkillInfo* info = ldr->getSkillInfo(i);
+            if (info) {
+                ret.append(boost::python::make_tuple(info->skillId_, info->isUsable_, info->name_));
+            }
+        }
+    }
+
+    return ret;
 }
 
 }

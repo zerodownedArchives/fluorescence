@@ -259,6 +259,8 @@ void GumpMenu::updateMobileProperties() {
     }
 
     updateMobilePropertiesRec(this);
+
+    executePythonCallback(pyPropertyUpdateCallback_);
 }
 
 void GumpMenu::updateMobilePropertiesRec(CL_GUIComponent* comp) {
@@ -469,6 +471,14 @@ boost::python::object GumpMenu::getPyEscapeCallback() const {
 
 void GumpMenu::setPyEscapeCallback(boost::python::object cb) {
     pyEscapeCallback_ = cb;
+}
+
+boost::python::object GumpMenu::getPyPropertyUpdateCallback() const {
+    return pyPropertyUpdateCallback_;
+}
+
+void GumpMenu::setPyPropertyUpdateCallback(boost::python::object cb) {
+    pyPropertyUpdateCallback_ = cb;
 }
 
 void GumpMenu::executePythonCallback(boost::python::object& cb) const {

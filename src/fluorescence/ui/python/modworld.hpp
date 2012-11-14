@@ -44,6 +44,7 @@ BOOST_PYTHON_MODULE(world) {
         .def("openStatus", &world::Mobile::openStatusGump)
         .def("openSkills", &world::Mobile::openSkillsGump)
         .def("openProfile", &PyWorld::openProfile)
+        .def("getProperty", &world::Mobile::pyGetProperty)
     ;
 
     bpy::def("getPlayer", &PyWorld::getPlayer);

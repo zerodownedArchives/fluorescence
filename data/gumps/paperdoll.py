@@ -65,3 +65,17 @@ def toggleWarmode(button):
 def openStatus(button):
     button.gump.mobile.openStatus()
     return False
+
+def save(gump):
+    saveData = {
+        "x": gump.x,
+        "y": gump.y,
+        "mobile": gump.mobile
+    }
+    return saveData
+
+def load(saveData):
+    print saveData["mobile"]
+    gump = create(saveData)
+    gump.x = saveData["x"]
+    gump.y = saveData["y"]

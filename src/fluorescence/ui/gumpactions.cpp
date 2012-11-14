@@ -35,7 +35,6 @@
 
 #include <net/manager.hpp>
 #include <net/packets/00_createcharacter.hpp>
-#include <net/packets/12_useskill.hpp>
 #include <net/packets/7d_objectpickerresponse.hpp>
 #include <net/packets/ad_speechrequest.hpp>
 #include <net/packets/bf.hpp>
@@ -68,8 +67,6 @@ void GumpActions::buildFullActionTable() {
     actionTable_["contextmenureply"] = GumpAction(true, boost::bind(&GumpActions::contextMenuReply, _1, _2, _3, _4));
 
     actionTable_["createdummychar"] = GumpAction(true, boost::bind(&GumpActions::createDummyCharacter, _1, _2, _3, _4));
-
-    actionTable_["useskill"] = GumpAction(false, boost::bind(&GumpActions::useSkill, _1, _2, _3, _4));
 
     actionTable_["castspell"] = GumpAction(false, boost::bind(&GumpActions::castSpell, _1, _2, _3, _4));
 
@@ -153,15 +150,6 @@ bool GumpActions::castSpell(GumpMenu* menu, const UnicodeString& action, unsigne
 
 bool GumpActions::yesNoGump(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     GumpMenus::openYesNoBox(action, parameterCount, parameters);
-    return true;
-}
-
-bool GumpActions::useSkill(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    unsigned int skillId = StringConverter::toInt(parameters[0]);
-
-    net::packets::UseSkill pkt(skillId);
-    net::Manager::getSingleton()->send(pkt);
-
     return true;
 }
 

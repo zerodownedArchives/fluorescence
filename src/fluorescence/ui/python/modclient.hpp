@@ -43,6 +43,7 @@ BOOST_PYTHON_MODULE(client) {
     bpy::def("openGump", &PyClient::openGump);
     bpy::def("handleTextInput", &PyClient::handleTextInput);
     bpy::def("sendHelpRequest", &PyClient::sendHelpRequest);
+    bpy::def("useSkill", &PyClient::useSkill);
 }
 
 }

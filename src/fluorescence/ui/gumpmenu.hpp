@@ -117,6 +117,8 @@ public:
     void setPyEnterCallback(boost::python::object cb);
     boost::python::object getPyEscapeCallback() const;
     void setPyEscapeCallback(boost::python::object cb);
+    boost::python::object getPyPropertyUpdateCallback() const;
+    void setPyPropertyUpdateCallback(boost::python::object cb);
 
 private:
     Serial serial_;
@@ -154,6 +156,7 @@ private:
     boost::python::dict pythonStore_;
     boost::python::object pyEnterCallback_;
     boost::python::object pyEscapeCallback_;
+    boost::python::object pyPropertyUpdateCallback_;
 
     void executePythonCallback(boost::python::object& cb) const;
 };

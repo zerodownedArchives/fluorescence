@@ -45,6 +45,8 @@ public:
     static void handleTextInput(const UnicodeString& text);
 
     static void sendHelpRequest();
+
+    static void useSkill(unsigned int id);
 };
 
 }
