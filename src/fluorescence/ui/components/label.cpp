@@ -218,7 +218,6 @@ void Label::setHtmlText(const UnicodeString& text) {
     span_.layout(ui::Manager::getGraphicContext(), geom.get_width());
     int height = span_.get_size().height;
     geom.set_height(height);
-    LOG_DEBUG << "adjust auto: " << geom.get_width() << "/" << geom.get_height() << std::endl;
     set_geometry(geom);
 
     //valign

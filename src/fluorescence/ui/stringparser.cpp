@@ -663,11 +663,9 @@ void StringParser::handleHtmlLabelOptions(GumpMenu* menu, int x, int y, int widt
         }
     }
 
-    LOG_DEBUG << "Text: " << text << std::endl;
     components::Label* label = new components::Label(parent);
     label->setRgba(color);
     if (scrollComp) {
-        LOG_DEBUG << "scroll client: " << scrollComp->getClientArea()->get_geometry() << std::endl;
         CL_Rectf geom(0, 0, CL_Sizef(scrollComp->getClientArea()->get_width(), 1)); // auto height
         label->set_geometry(geom);
     } else {
