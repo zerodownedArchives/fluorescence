@@ -606,10 +606,8 @@ const boost::filesystem::path& Manager::getThemePath() const {
 
 CL_Font Manager::getFont(const CL_FontDescription& desc) {
     // check if this is a special UO font (unifont)
-    LOG_DEBUG << "get font: " << desc.get_typeface_name().c_str() << " weight: " << desc.get_weight() << std::endl;
     CL_Font ret = getSingleton()->guiManager_->get_registered_font(desc);
     if (ret.is_null()) {
-        LOG_DEBUG << "not registered" << std::endl;
         // return system font if unknown
         ret = CL_Font_System(getSingleton()->getGraphicContext(), desc);
     }

@@ -273,12 +273,6 @@ void GumpMenu::updateMobilePropertiesRec(CL_GUIComponent* comp) {
         components::PropertyLabel* lbl = dynamic_cast<components::PropertyLabel*>(*iter);
         if (lbl) {
             lbl->update(linkedMobile_);
-        } else {
-            // TODO: new gui
-            //components::WarModeButton* wmbut = dynamic_cast<components::WarModeButton*>(*iter);
-            //if (wmbut) {
-                //wmbut->setWarMode(linkedMobile_->isWarMode());
-            //}
         }
 
         updateMobilePropertiesRec(*iter);
@@ -481,6 +475,14 @@ void GumpMenu::setPyPropertyUpdateCallback(boost::python::object cb) {
     pyPropertyUpdateCallback_ = cb;
 }
 
+boost::python::object GumpMenu::getPyWarmodeChangedCallback() const {
+    return pyWarmodeChangeCallback_;
+}
+
+void GumpMenu::setPyWarmodeChangedCallback(boost::python::object cb) {
+    pyWarmodeChangeCallback_ = cb;
+}
+
 void GumpMenu::executePythonCallback(boost::python::object& cb) const {
     if (cb) {
         try {
@@ -515,6 +517,10 @@ void GumpMenu::setY(int y) {
     int diff = y - geom.top;
     geom.translate(0, diff);
     set_geometry(geom);
+}
+
+void GumpMenu::onWarmodeChanged() {
+    executePythonCallback(pyWarmodeChangeCallback_);
 }
 
 }

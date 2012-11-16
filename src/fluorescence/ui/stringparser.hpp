@@ -27,31 +27,34 @@
 
 #include <misc/string.hpp>
 
+class CL_GUIComponent;
+class CL_Colorf;
+
 namespace fluo {
 namespace ui {
-    
+
 class GumpMenu;
 
 class StringParser {
 public:
     static GumpMenu* fromString(const UnicodeString& commands, const std::vector<UnicodeString>& strings);
-    
+
 private:
     static StringParser* singleton_;
     static StringParser* getSingleton();
-    
+
     StringParser();
     StringParser(const StringParser& copy) { };
     StringParser& operator=(const StringParser& copy) { return *this; };
-    
+
     GumpMenu* innerFromString(const UnicodeString& commands, const std::vector<UnicodeString>& strings);
-    
+
     typedef boost::function<bool (const UnicodeString&, const std::vector<UnicodeString>& strings, GumpMenu*)> StringParseFunction;
     std::map<UnicodeString, StringParseFunction> functionTable_;
-    
+
     bool setNoMove(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
     bool setNoClose(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
-    
+
     bool parsePage(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
     bool parseResizepic(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
     bool parseGumpPicTiled(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
@@ -70,6 +73,8 @@ private:
     bool parseCheckerTrans(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
     bool parseRadio(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
     bool parseGroup(const UnicodeString& params, const std::vector<UnicodeString>& strings, GumpMenu* menu) const;
+
+    void handleHtmlLabelOptions(GumpMenu* menu, int x, int y, int width, int height, bool background, bool scroll, const CL_Colorf& color, const UnicodeString& text) const;
 };
 
 }

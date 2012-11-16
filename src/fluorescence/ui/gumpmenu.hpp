@@ -94,6 +94,7 @@ public:
     void onClose();
     void setCloseCallback(boost::function<void()> cb);
     void sendReply(unsigned int buttonId_);
+    void onWarmodeChanged();
 
     // auto-resize
     void fitSizeToChildren();
@@ -119,6 +120,8 @@ public:
     void setPyEscapeCallback(boost::python::object cb);
     boost::python::object getPyPropertyUpdateCallback() const;
     void setPyPropertyUpdateCallback(boost::python::object cb);
+    boost::python::object getPyWarmodeChangedCallback() const;
+    void setPyWarmodeChangedCallback(boost::python::object cb);
 
 private:
     Serial serial_;
@@ -157,6 +160,7 @@ private:
     boost::python::object pyEnterCallback_;
     boost::python::object pyEscapeCallback_;
     boost::python::object pyPropertyUpdateCallback_;
+    boost::python::object pyWarmodeChangeCallback_;
 
     void executePythonCallback(boost::python::object& cb) const;
 };

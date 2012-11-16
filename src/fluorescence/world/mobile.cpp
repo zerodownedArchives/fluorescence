@@ -527,7 +527,11 @@ void Mobile::setWarMode(bool warMode) {
             ui::Manager::getCursorManager()->setWarMode(isWarMode_);
         }
 
-        onPropertyUpdate();
+        std::list<ui::GumpMenu*>::iterator iter = linkedGumps_.begin();
+        std::list<ui::GumpMenu*>::iterator end = linkedGumps_.end();
+        for (; iter != end; ++iter) {
+            (*iter)->onWarmodeChanged();
+        }
     }
 }
 

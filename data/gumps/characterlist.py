@@ -8,8 +8,6 @@ def create(args):
     g = GumpMenu("characterlist", 400, 300)
     g.closable = False
 
-    print args
-
     charList = args["characterlist"]
     # characterlist is a list of tuples (index, name, password)
     if len(charList) > 0:

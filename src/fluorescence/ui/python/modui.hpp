@@ -75,6 +75,7 @@ BOOST_PYTHON_MODULE(ui) {
         .add_property("onEnter", &GumpMenu::getPyEnterCallback, &GumpMenu::setPyEnterCallback)
         .add_property("onEscape", &GumpMenu::getPyEscapeCallback, &GumpMenu::setPyEscapeCallback)
         .add_property("onPropertyUpdate", &GumpMenu::getPyPropertyUpdateCallback, &GumpMenu::setPyPropertyUpdateCallback)
+        .add_property("onWarmodeChanged", &GumpMenu::getPyWarmodeChangedCallback, &GumpMenu::setPyWarmodeChangedCallback)
         .def("setFont", &GumpMenu::setFont)
         .def("setFont", &GumpMenu::setFontB)
         .def("component", &GumpMenu::getNamedComponent, bpy::return_value_policy<bpy::reference_existing_object>())

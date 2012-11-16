@@ -7,6 +7,7 @@ import world
 def create(args):
     g = GumpMenu("paperdoll", 50, 50)
     g.mobile = args["mobile"]
+    g.onWarmodeChanged = onWarmodeChanged
 
     g.addImage((0, 0), Texture(TextureSource.GUMPART, 2000))
     g.addPaperdollView((3, 9, 240, 300), g.mobile)
@@ -33,6 +34,7 @@ def create(args):
             btnWarmode = g.addPythonButton((185, 205), Texture(TextureSource.GUMPART, 2021), toggleWarmode)
             btnWarmode.state("mouseOver").texture = Texture(TextureSource.GUMPART, 2023)
             btnWarmode.state("mouseDown").texture = Texture(TextureSource.GUMPART, 2022)
+        btnWarmode.name = "btnWarmode"
 
     btStatus = g.addPythonButton((185, 233), Texture(TextureSource.GUMPART, 2027), openStatus)
     btStatus.state("mouseOver").texture = Texture(TextureSource.GUMPART, 2029)
@@ -41,6 +43,17 @@ def create(args):
     g.addPropertyLabel((20, 270, 180, 20), "paperdoll-name")
 
     return g
+
+def onWarmodeChanged(gump):
+    btnWarmode = gump.component("btnWarmode")
+    if gump.mobile.warmode:
+        btnWarmode.texture = Texture(TextureSource.GUMPART, 2024)
+        btnWarmode.state("mouseOver").texture = Texture(TextureSource.GUMPART, 2026)
+        btnWarmode.state("mouseDown").texture = Texture(TextureSource.GUMPART, 2025)
+    else:
+        btnWarmode.texture = Texture(TextureSource.GUMPART, 2021)
+        btnWarmode.state("mouseOver").texture = Texture(TextureSource.GUMPART, 2023)
+        btnWarmode.state("mouseDown").texture = Texture(TextureSource.GUMPART, 2022)
 
 def openProfile(button):
     button.gump.mobile.openProfile()
@@ -75,7 +88,6 @@ def save(gump):
     return saveData
 
 def load(saveData):
-    print saveData["mobile"]
     gump = create(saveData)
     gump.x = saveData["x"]
     gump.y = saveData["y"]

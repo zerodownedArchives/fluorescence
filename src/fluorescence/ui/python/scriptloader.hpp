@@ -52,10 +52,11 @@ public:
     void openGump(const UnicodeString& name);
     void openGump(const UnicodeString& name, boost::python::dict& args);
 
+    boost::python::object loadModule(const UnicodeString& name);
+
 private:
     bool initialized_;
 
-    boost::python::object loadModule(const UnicodeString& name);
     std::map<UnicodeString, boost::python::object> pythonModules_;
 
     bool shouldReload_;

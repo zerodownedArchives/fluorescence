@@ -212,7 +212,20 @@ void Label::setHtmlText(const UnicodeString& text) {
         curIndex = endIndex + 1;
     } while (curIndex < text.length());
 
-    layout();
+    CL_Rectf geom = get_geometry();
+
+    // adjust height automatically
+    span_.layout(ui::Manager::getGraphicContext(), geom.get_width());
+    int height = span_.get_size().height;
+    geom.set_height(height);
+    LOG_DEBUG << "adjust auto: " << geom.get_width() << "/" << geom.get_height() << std::endl;
+    set_geometry(geom);
+
+    //valign
+    span_.set_position(CL_Point(0, 0));
+    span_.set_component_geometry();
+
+    request_repaint();
 }
 
 void Label::setAutoResize(bool value) {

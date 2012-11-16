@@ -28,7 +28,7 @@
 #include <data/clilocloader.hpp>
 
 #include "manager.hpp"
-#include "xmlloader.hpp"
+#include "python/scriptloader.hpp"
 #include "gumpmenu.hpp"
 #include "components/background.hpp"
 #include "components/image.hpp"
@@ -38,6 +38,7 @@
 #include "components/label.hpp"
 #include "components/radiobutton.hpp"
 #include "components/alpharegion.hpp"
+#include "components/scrollarea.hpp"
 
 namespace fluo {
 namespace ui {
@@ -520,15 +521,7 @@ bool StringParser::parseHtmlGump(const UnicodeString& params, const std::vector<
         int background = StringConverter::toInt(matcher.group(6, status));
         int scroll = StringConverter::toInt(matcher.group(7, status));
 
-        CL_Rectf bounds(x, y, CL_Sizef(width, height));
-
-        components::Label* label = dynamic_cast<components::Label*>(XmlLoader::getServerGumpHtmlLabel("ssghtmllabel", menu, bounds, scroll, background));
-        if (!label) {
-            LOG_ERROR << "Error reading template ssghtmllabel from theme" << std::endl;
-            return false;
-        }
-        label->setHtmlText(strings[stringId]);
-        menu->addToCurrentPage(label);
+        handleHtmlLabelOptions(menu, x, y, width, height, background, scroll, CL_Colorf::black, strings[stringId]);
 
         return true;
     } else {
@@ -551,17 +544,9 @@ bool StringParser::parseXmfHtmlGump(const UnicodeString& params, const std::vect
         int background = StringConverter::toInt(matcher.group(6, status));
         int scroll = StringConverter::toInt(matcher.group(7, status));
 
-        CL_Rectf bounds(x, y, CL_Sizef(width, height));
         UnicodeString text = data::Manager::getClilocLoader()->get(clilocId);
 
-        components::Label* label = dynamic_cast<components::Label*>(XmlLoader::getServerGumpHtmlLabel("ssghtmllabel", menu, bounds, scroll, background));
-        if (!label) {
-            LOG_ERROR << "Error reading template ssghtmllabel from theme" << std::endl;
-            return false;
-        }
-
-        label->setHtmlText(text);
-        menu->addToCurrentPage(label);
+        handleHtmlLabelOptions(menu, x, y, width, height, background, scroll, CL_Colorf::black, text);
 
         return true;
     } else {
@@ -585,7 +570,6 @@ bool StringParser::parseXmfHtmlGumpColor(const UnicodeString& params, const std:
         int scroll = StringConverter::toInt(matcher.group(7, status));
         int color = StringConverter::toInt(matcher.group(8, status));
 
-        CL_Rectf bounds(x, y, CL_Sizef(width, height));
         // hue is sent as 16 bit rgb. 5 bit each. same as format in hues.mul.
         uint16_t color16 = color & 0xFFFF;
         int r = data::Util::getColorR(color16);
@@ -595,15 +579,7 @@ bool StringParser::parseXmfHtmlGumpColor(const UnicodeString& params, const std:
 
         UnicodeString text = data::Manager::getClilocLoader()->get(clilocId);
 
-        components::Label* label = dynamic_cast<components::Label*>(XmlLoader::getServerGumpHtmlLabel("ssghtmllabel", menu, bounds, scroll, background));
-        if (!label) {
-            LOG_ERROR << "Error reading template ssghtmllabel from theme" << std::endl;
-            return false;
-        }
-
-        label->setRgba(colorDef);
-        label->setText(text);
-        menu->addToCurrentPage(label);
+        handleHtmlLabelOptions(menu, x, y, width, height, background, scroll, colorDef, text);
 
         return true;
     } else {
@@ -628,7 +604,6 @@ bool StringParser::parseXmfHtmlTok(const UnicodeString& params, const std::vecto
         int clilocId = StringConverter::toInt(matcher.group(8, status));
         UnicodeString args = matcher.group(9, status);
 
-        CL_Rectf bounds(x, y, CL_Sizef(width, height));
         // hue is sent as 16 bit rgb. 5 bit each. same as format in hues.mul.
         uint16_t color16 = color & 0xFFFF;
         int r = data::Util::getColorR(color16);
@@ -638,19 +613,72 @@ bool StringParser::parseXmfHtmlTok(const UnicodeString& params, const std::vecto
 
         UnicodeString text = data::Manager::getClilocLoader()->get(clilocId, args);
 
-        components::Label* label = dynamic_cast<components::Label*>(XmlLoader::getServerGumpHtmlLabel("ssghtmllabel", menu, bounds, scroll, background));
-        if (!label) {
-            LOG_ERROR << "Error reading template ssghtmllabel from theme" << std::endl;
-            return false;
-        }
-        label->setRgba(colorDef);
-        label->setHtmlText(text);
-        menu->addToCurrentPage(label);
+        handleHtmlLabelOptions(menu, x, y, width, height, background, scroll, colorDef, text);
 
         return true;
     } else {
         LOG_ERROR << "Unable to parse xmfhtmlgumpcolor, params " << params << std::endl;
         return false;
+    }
+}
+
+void StringParser::handleHtmlLabelOptions(GumpMenu* menu, int x, int y, int width, int height, bool background, bool scroll, const CL_Colorf& color, const UnicodeString& text) const {
+    CL_GUIComponent* parent = menu;
+    components::ScrollArea* scrollComp = nullptr;
+
+    if (background || scroll) {
+        namespace bpy = boost::python;
+        bpy::object sgModule = ui::Manager::getPythonLoader()->loadModule("servergump");
+        bpy::tuple geom = bpy::make_tuple(x, y, width, height);
+
+        if (background) {
+            if (!sgModule || !sgModule.attr("addHtmlBackground")) {
+                LOG_WARN << "Unable to load function addHtmlBackground or python module servergump, using default values for html label background" << std::endl;
+                components::Background* bg = new components::Background(menu);
+                bg->set_geometry(CL_Rectf(x, y, CL_Sizef(width, height)));
+                bg->setBaseId(3000);
+                menu->addToCurrentPage(bg);
+            } else {
+                try {
+                    sgModule.attr("addHtmlBackground")(bpy::ptr(menu), geom);
+                } catch (const bpy::error_already_set& e) {
+                     ui::Manager::getPythonLoader()->logError();
+                }
+            }
+        }
+
+        if (scroll) {
+            if (!sgModule || !sgModule.attr("addHtmlScrollbar")) {
+                LOG_WARN << "Unable to load function addHtmlScrollbar or python module servergump, using default values for html label scrollbar" << std::endl;
+            } else {
+                try {
+                    scrollComp = bpy::extract<components::ScrollArea*>(sgModule.attr("addHtmlScrollbar")(bpy::ptr(menu), geom));
+                    if (scrollComp) {
+                        parent = scrollComp->getClientArea();
+                    }
+                } catch (const bpy::error_already_set& e) {
+                    ui::Manager::getPythonLoader()->logError();
+                }
+            }
+        }
+    }
+
+    LOG_DEBUG << "Text: " << text << std::endl;
+    components::Label* label = new components::Label(parent);
+    label->setRgba(color);
+    if (scrollComp) {
+        LOG_DEBUG << "scroll client: " << scrollComp->getClientArea()->get_geometry() << std::endl;
+        CL_Rectf geom(0, 0, CL_Sizef(scrollComp->getClientArea()->get_width(), 1)); // auto height
+        label->set_geometry(geom);
+    } else {
+        CL_Rectf geom(x, y, CL_Sizef(width, height));
+        label->set_geometry(geom);
+    }
+    label->setHtmlText(text);
+    menu->addToCurrentPage(label);
+
+    if (scrollComp) {
+        scrollComp->updateScrollbars();
     }
 }
 
