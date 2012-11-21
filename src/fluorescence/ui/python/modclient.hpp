@@ -44,6 +44,9 @@ BOOST_PYTHON_MODULE(client) {
     bpy::def("handleTextInput", &PyClient::handleTextInput);
     bpy::def("sendHelpRequest", &PyClient::sendHelpRequest);
     bpy::def("useSkill", &PyClient::useSkill);
+
+    // functions sending a packet to the server in response to a special gump
+    bpy::def("objectPickerResponse", &PyClient::objectPickerResponse);
 }
 
 }

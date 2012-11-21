@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<gump x="387" y="320" closable="1" draggable="1" action="close" cancelaction="close">
-    <image source="theme" id="images/background_250x125.png" x="0" y="0" />
-    <label name="messagetext" x="10" y="15" width="230" height="80" align="center" />
-
-    <button template="themebutton" x="60" y="90" width="130" text="OK" action="close" />
-</gump>
