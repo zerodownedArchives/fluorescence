@@ -20,6 +20,7 @@
 #include "sysloglabel.hpp"
 
 #include <ClanLib/Display/2D/span_layout.h>
+#include <boost/python/extract.hpp>
 
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
@@ -55,6 +56,8 @@ void SysLogLabel::notify(std::list<world::SysLogEntry>::const_iterator iter, std
     for (; iter != end; ++iter) {
         span_.add_text("\n", font, CL_Colorf::white);
 
+        LOG_DEBUG << "syslog: hue=" << iter->hue_ << std::endl;
+
         // 0x3B2 is the default font used by runuo. use the custom color instead
         if (iter->hue_ == 0x3B2) {
             span_.add_text(StringConverter::toUtf8String(iter->text_), font, rgba_);
@@ -69,6 +72,20 @@ void SysLogLabel::notify(std::list<world::SysLogEntry>::const_iterator iter, std
     set_geometry(newGeom);
     span_.set_position(CL_Point(0, 0));
     span_.set_component_geometry();
+}
+
+void SysLogLabel::pySetMaxGeometry(const boost::python::tuple& geom) {
+    namespace bpy = boost::python;
+
+    int x = bpy::extract<int>(geom[0]);
+    int y = bpy::extract<int>(geom[1]);
+    int width = bpy::extract<int>(geom[2]);
+    int height = bpy::extract<int>(geom[3]);
+
+    setAutoResize(false);
+
+    CL_Rectf rect(x, y, CL_Sizef(width, height));
+    setMaxGeometry(rect);
 }
 
 }

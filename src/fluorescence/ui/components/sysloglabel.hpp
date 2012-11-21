@@ -23,6 +23,7 @@
 #include "label.hpp"
 
 #include <list>
+#include <boost/python/tuple.hpp>
 
 #include <world/syslog.hpp>
 
@@ -36,6 +37,7 @@ public:
     ~SysLogLabel();
 
     void setMaxGeometry(const CL_Rectf& rect);
+    void pySetMaxGeometry(const boost::python::tuple& geom);
 
     void notify(std::list<world::SysLogEntry>::const_iterator iter, std::list<world::SysLogEntry>::const_iterator end);
 private:

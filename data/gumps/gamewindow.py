@@ -8,10 +8,16 @@ def create(args):
     g.closable = False
     g.onEnter = showSpeechEntry
 
+    width = args.get("width", 800)
+    height = args.get("height", 600)
+
     g.addPage(0)
-    g.addBackground((0, 0, 810, 610), 2620)
-    wv = g.addWorldView((5, 5, 800, 600))
+    g.addBackground((0, 0, width + 10, height + 10), 2620)
+    wv = g.addWorldView((5, 5, width, height))
     wv.name = "worldview"
+    syslog = g.addSysLogLabel((7, 7, 250, height - 40))
+    syslog.setFont("unifont1", 12, True)
+    syslog.rgba = rgba("#dddddd") # default color
 
     # empty page to prevent the speech entry from being displayed at startup
     g.addPage(1)

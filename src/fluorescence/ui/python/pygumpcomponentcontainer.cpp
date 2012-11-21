@@ -175,6 +175,25 @@ components::PropertyLabel* PyGumpComponentContainer::addPropertyLabel(CL_GUIComp
     return label;
 }
 
+components::SysLogLabel* PyGumpComponentContainer::addSysLogLabel(CL_GUIComponent* self, boost::python::tuple& geom) {
+    components::SysLogLabel* label = new components::SysLogLabel(getParentHelper(self));
+    label->pySetMaxGeometry(geom);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(label);
+
+    return label;
+}
+
+components::Label* PyGumpComponentContainer::addHtmlLabel(CL_GUIComponent* self, boost::python::tuple& geom, const UnicodeString& html) {
+    components::Label* label = new components::Label(getParentHelper(self));
+    label->pySetGeometry(geom);
+    label->setHtmlText(html);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(label);
+
+    return label;
+}
+
 }
 }
 }
