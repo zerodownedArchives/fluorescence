@@ -31,10 +31,14 @@
 namespace fluo {
 
 namespace ui {
-    class Texture;
-    class TextureProvider;
-    class AnimTextureProvider;
-    class GumpMenu;
+class Texture;
+class TextureProvider;
+class AnimTextureProvider;
+class GumpMenu;
+
+namespace components {
+class ContainerView;
+}
 }
 
 namespace world {
@@ -75,8 +79,10 @@ public:
 
     virtual void onAddedToParent();
     virtual void onRemovedFromParent();
-    virtual void onChildObjectAdded(boost::shared_ptr<IngameObject> obj);
-    virtual void onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
+    virtual void onChildObjectAdded(const boost::shared_ptr<IngameObject>& obj);
+    virtual void onBeforeChildObjectRemoved(const boost::shared_ptr<IngameObject>& obj);
+
+    virtual void onDelete();
 
     void openContainerGump(unsigned int gumpId);
     void onContainerGumpClosed();
@@ -85,6 +91,8 @@ public:
     void setSpellbook(unsigned int scrollOffset, const uint8_t* spellBits);
     unsigned int getSpellbookScrollOffset() const;
     uint8_t getSpellbookSpellBits(unsigned int byteIndex) const;
+
+    void setContainerView(ui::components::ContainerView* view);
 
 private:
     unsigned int artId_;
@@ -106,7 +114,8 @@ private:
     unsigned int layer_;
     boost::shared_ptr<ui::AnimTextureProvider> animTextureProvider_;
 
-    ui::GumpMenu* containerGump_;
+    ui::GumpMenu* spellbookGump_;
+    ui::components::ContainerView* containerView_;
 
     unsigned int animType_; // only relevant when mounted
 

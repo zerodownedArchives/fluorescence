@@ -370,7 +370,7 @@ void Mobile::onDelete() {
     ServerObject::onDelete();
 }
 
-void Mobile::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
+void Mobile::onChildObjectAdded(const boost::shared_ptr<IngameObject>& obj) {
     // add this item to all render queues the mobile is in
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = rqBegin();
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator end = rqEnd();
@@ -390,7 +390,7 @@ void Mobile::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
     repaintRectangle(true);
 }
 
-void Mobile::onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
+void Mobile::onBeforeChildObjectRemoved(const boost::shared_ptr<IngameObject>& obj) {
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator iter = rqBegin();
     std::list<boost::shared_ptr<ui::RenderQueue> >::iterator end = rqEnd();
 

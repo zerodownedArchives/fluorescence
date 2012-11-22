@@ -402,13 +402,13 @@ void IngameObject::onAddedToParent() {
 void IngameObject::onRemovedFromParent() {
 }
 
-void IngameObject::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
+void IngameObject::onChildObjectAdded(const boost::shared_ptr<IngameObject>& obj) {
 }
 
 void IngameObject::onAfterChildObjectRemoved() {
 }
 
-void IngameObject::onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
+void IngameObject::onBeforeChildObjectRemoved(const boost::shared_ptr<IngameObject>& obj) {
 }
 
 void IngameObject::onAddedToSector(world::Sector* sector) {

@@ -85,8 +85,8 @@ public:
 
     virtual void onDelete();
 
-    virtual void onChildObjectAdded(boost::shared_ptr<IngameObject> obj);
-    virtual void onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj);
+    virtual void onChildObjectAdded(const boost::shared_ptr<IngameObject>& obj);
+    virtual void onBeforeChildObjectRemoved(const boost::shared_ptr<IngameObject>& obj);
     virtual void onAfterChildObjectRemoved();
 
     bool isPlayer() const;

@@ -42,7 +42,7 @@ namespace components {
 
 class ContainerView : public GumpComponent {
 public:
-    ContainerView(CL_GUIComponent* parent, const CL_Rect& bounds);
+    ContainerView(CL_GUIComponent* parent, const boost::shared_ptr<world::DynamicItem>& cont);
     ~ContainerView();
 
     unsigned int getWidth();
@@ -54,7 +54,7 @@ public:
     void removeObject(boost::shared_ptr<world::IngameObject> obj);
 
     void setBackgroundGumpId(unsigned int gumpId);
-    void setContainerObject(boost::shared_ptr<world::DynamicItem> cont);
+    unsigned int getBackgroundGumpId() const;
 
     boost::shared_ptr<ui::Texture> getBackgroundTexture();
 
@@ -70,6 +70,7 @@ private:
     bool onInputReleased(const CL_InputEvent & e);
     bool onDoubleClick(const CL_InputEvent& e);
 
+    unsigned int backgroundGumpId_;
     boost::shared_ptr<ui::Texture> backgroundTexture_;
     bool sizeAdjusted;
     boost::shared_ptr<world::DynamicItem> containerObject_;

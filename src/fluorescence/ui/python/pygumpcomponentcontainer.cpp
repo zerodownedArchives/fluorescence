@@ -37,7 +37,7 @@ CL_GUIComponent* PyGumpComponentContainer::getParentHelper(CL_GUIComponent* comp
     return comp;
 }
 
-components::Image* PyGumpComponentContainer::addImage(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex) {
+components::Image* PyGumpComponentContainer::addImage(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<ui::Texture>& tex) {
     components::Image* img = new components::Image(getParentHelper(self));
     img->pySetGeometry(geom);
     img->setTexture(tex);
@@ -77,7 +77,7 @@ components::Label* PyGumpComponentContainer::addLabel(CL_GUIComponent* self, boo
     return label;
 }
 
-components::Button* PyGumpComponentContainer::addPageButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, unsigned int page) {
+components::Button* PyGumpComponentContainer::addPageButton(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<ui::Texture>& tex, unsigned int page) {
     components::Button* but = new components::Button(getParentHelper(self));
     but->pySetGeometry(geom);
     but->setTexture(tex);
@@ -88,7 +88,7 @@ components::Button* PyGumpComponentContainer::addPageButton(CL_GUIComponent* sel
     return but;
 }
 
-components::Button* PyGumpComponentContainer::addServerButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, unsigned int id) {
+components::Button* PyGumpComponentContainer::addServerButton(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<ui::Texture>& tex, unsigned int id) {
     components::Button* but = new components::Button(getParentHelper(self));
     but->pySetGeometry(geom);
     but->setTexture(tex);
@@ -99,7 +99,7 @@ components::Button* PyGumpComponentContainer::addServerButton(CL_GUIComponent* s
     return but;
 }
 
-components::Button* PyGumpComponentContainer::addPythonButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, boost::python::object& func) {
+components::Button* PyGumpComponentContainer::addPythonButton(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<ui::Texture>& tex, boost::python::object& func) {
     components::Button* but = new components::Button(getParentHelper(self));
     but->pySetGeometry(geom);
     but->setTexture(tex);
@@ -192,6 +192,15 @@ components::Label* PyGumpComponentContainer::addHtmlLabel(CL_GUIComponent* self,
     static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(label);
 
     return label;
+}
+
+components::ContainerView* PyGumpComponentContainer::addContainerView(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<world::DynamicItem>& itm) {
+    components::ContainerView* cont = new components::ContainerView(getParentHelper(self), itm);
+    cont->pySetGeometry(geom);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(cont);
+
+    return cont;
 }
 
 }

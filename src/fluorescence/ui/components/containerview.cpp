@@ -39,8 +39,8 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-ContainerView::ContainerView(CL_GUIComponent* parent, const CL_Rect& bounds) : GumpComponent(parent), sizeAdjusted(false) {
-    this->set_geometry(bounds);
+ContainerView::ContainerView(CL_GUIComponent* parent, const boost::shared_ptr<world::DynamicItem>& cont) : GumpComponent(parent),
+        backgroundGumpId_(0), sizeAdjusted(false), containerObject_(cont) {
     boost::shared_ptr<ContainerRenderQueue> rq(new ContainerRenderQueue());
     renderer_.reset(new ContainerRenderer(rq, this));
 
@@ -52,6 +52,8 @@ ContainerView::ContainerView(CL_GUIComponent* parent, const CL_Rect& bounds) : G
     func_pointer_exit().set(this, &ContainerView::onPointerExit);
 
     set_type_name("containerview");
+
+    containerObject_->setContainerView(this);
 }
 
 ContainerView::~ContainerView() {
@@ -70,9 +72,14 @@ unsigned int ContainerView::getHeight() {
 
 void ContainerView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     if (!sizeAdjusted && backgroundTexture_ && backgroundTexture_->isReadComplete()) {
+        CL_Rectf geom = get_geometry();
+        geom.set_width(backgroundTexture_->getWidth());
+        geom.set_height(backgroundTexture_->getHeight());
+        ui::Manager::getSingleton()->queueComponentResize(this, geom);
         sizeAdjusted = true;
-
         renderer_->getRenderQueue()->forceRepaint();
+
+        return;
     }
 
     CL_Draw::texture(gc, renderer_->getTexture(gc), CL_Rectf(0, 0, CL_Sizef(getWidth(), getHeight())));
@@ -175,17 +182,18 @@ void ContainerView::removeObject(boost::shared_ptr<world::IngameObject> obj) {
 }
 
 void ContainerView::setBackgroundGumpId(unsigned int gumpId) {
+    backgroundGumpId_ = gumpId;
     backgroundTexture_ = data::Manager::getTexture(data::TextureSource::GUMPART, gumpId);
     sizeAdjusted = false;
     request_repaint();
 }
 
-boost::shared_ptr<ui::Texture> ContainerView::getBackgroundTexture() {
-    return backgroundTexture_;
+unsigned int ContainerView::getBackgroundGumpId() const {
+    return backgroundGumpId_;
 }
 
-void ContainerView::setContainerObject(boost::shared_ptr<world::DynamicItem> cont) {
-    containerObject_ = cont;
+boost::shared_ptr<ui::Texture> ContainerView::getBackgroundTexture() {
+    return backgroundTexture_;
 }
 
 bool ContainerView::onPointerEnter() {

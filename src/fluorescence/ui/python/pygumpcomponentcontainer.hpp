@@ -31,6 +31,7 @@ namespace fluo {
 
 namespace world {
 class Mobile;
+class DynamicItem;
 }
 
 namespace ui {
@@ -51,6 +52,7 @@ class WorldView;
 class PaperdollView;
 class PropertyLabel;
 class SysLogLabel;
+class ContainerView;
 }
 
 namespace python {
@@ -59,11 +61,11 @@ class PyGumpComponentContainer {
 public:
     static components::AlphaRegion* addAlphaRegion(CL_GUIComponent* self, boost::python::tuple& geom, float alpha);
     static components::Background* addBackground(CL_GUIComponent* self, boost::python::tuple& geom, unsigned int baseId);
-    static components::Image* addImage(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex);
+    static components::Image* addImage(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<ui::Texture>& tex);
     static components::Label* addLabel(CL_GUIComponent* self, boost::python::tuple& geom, const UnicodeString& text);
-    static components::Button* addPageButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, unsigned int page);
-    static components::Button* addServerButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, unsigned int id);
-    static components::Button* addPythonButton(CL_GUIComponent* self, boost::python::tuple& geom, boost::shared_ptr<ui::Texture> tex, boost::python::object& func);
+    static components::Button* addPageButton(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<ui::Texture>& tex, unsigned int page);
+    static components::Button* addServerButton(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<ui::Texture>& tex, unsigned int id);
+    static components::Button* addPythonButton(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<ui::Texture>& tex, boost::python::object& func);
     static components::LineEdit* addLineEdit(CL_GUIComponent* self, boost::python::tuple& geom);
     static components::ScrollArea* addScrollArea(CL_GUIComponent* self, boost::python::tuple& geom);
     static components::Checkbox* addCheckbox(CL_GUIComponent* self, boost::python::tuple& geom);
@@ -73,6 +75,7 @@ public:
     static components::PropertyLabel* addPropertyLabel(CL_GUIComponent* self, boost::python::tuple& geom, const UnicodeString& prop);
     static components::SysLogLabel* addSysLogLabel(CL_GUIComponent* self, boost::python::tuple& geom);
     static components::Label* addHtmlLabel(CL_GUIComponent* self, boost::python::tuple& geom, const UnicodeString& html);
+    static components::ContainerView* addContainerView(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<world::DynamicItem>& itm);
 
 private:
     // when adding to a scrollarea, the components are not added directly to the area but to a child component

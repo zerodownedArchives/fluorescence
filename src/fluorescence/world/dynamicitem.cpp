@@ -56,7 +56,7 @@ namespace fluo {
 namespace world {
 
 DynamicItem::DynamicItem(Serial serial) : ServerObject(serial, IngameObject::TYPE_DYNAMIC_ITEM),
-        artId_(0), tileDataInfo_(NULL), equipped_(false), containerGump_(NULL), isSpellbook_(false) {
+        artId_(0), tileDataInfo_(nullptr), equipped_(false), spellbookGump_(nullptr), containerView_(nullptr), isSpellbook_(false) {
 }
 
 boost::shared_ptr<ui::Texture> DynamicItem::getIngameTexture() const {
@@ -374,53 +374,42 @@ void DynamicItem::openContainerGump(unsigned int gumpId) {
     if (gumpId == 0xFFFF || isSpellbook()) {
         // spellbook
         // do nothing, open on spellbook content packet
-    } else if (containerGump_) {
-        containerGump_->bring_to_front();
+    } else if (spellbookGump_) {
+        spellbookGump_->bring_to_front();
+    } else if (containerView_) {
+        containerView_->getGumpMenu()->bring_to_front();
     } else {
-        containerGump_ = ui::Manager::getSingleton()->openXmlGump("container");
+        boost::python::dict args;
+        boost::shared_ptr<DynamicItem> sharedThis = boost::dynamic_pointer_cast<DynamicItem>(shared_from_this());
+        args["item"] = sharedThis;
+        args["background"] = gumpId;
+        ui::Manager::getSingleton()->openPythonGump("container", args);
 
-        ui::components::ContainerView* contView = dynamic_cast<ui::components::ContainerView*>(containerGump_->get_named_item("container"));
-        if (contView) {
-            contView->setBackgroundGumpId(gumpId);
-            boost::shared_ptr<DynamicItem> dynSelf = boost::static_pointer_cast<DynamicItem>(shared_from_this());
-            contView->setContainerObject(dynSelf);
-        } else {
-            LOG_ERROR << "Unable to find container component in container gump" << std::endl;
-            return;
-        }
+        // opening the container gump should set the containerView_ member
+        if (containerView_) {
+            std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
+            std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
 
-        std::list<boost::shared_ptr<IngameObject> >::iterator iter = childObjects_.begin();
-        std::list<boost::shared_ptr<IngameObject> >::iterator end = childObjects_.end();
-
-        for (; iter != end; ++iter) {
-            contView->addObject(*iter);
+            for (; iter != end; ++iter) {
+                containerView_->addObject(*iter);
+            }
         }
     }
 }
 
 void DynamicItem::onContainerGumpClosed() {
-    containerGump_ = NULL;
+    containerView_ = nullptr;
 }
 
-void DynamicItem::onChildObjectAdded(boost::shared_ptr<IngameObject> obj) {
-    if (containerGump_) {
-        ui::components::ContainerView* contView = dynamic_cast<ui::components::ContainerView*>(containerGump_->get_named_item("container"));
-        if (contView) {
-            contView->addObject(obj);
-        } else {
-            LOG_ERROR << "Unable to find container component in container gump" << std::endl;
-        }
+void DynamicItem::onChildObjectAdded(const boost::shared_ptr<IngameObject>& obj) {
+    if (containerView_) {
+        containerView_->addObject(obj);
     }
 }
 
-void DynamicItem::onBeforeChildObjectRemoved(boost::shared_ptr<IngameObject> obj) {
-    if (containerGump_) {
-        ui::components::ContainerView* contView = dynamic_cast<ui::components::ContainerView*>(containerGump_->get_named_item("container"));
-        if (contView) {
-            contView->removeObject(obj);
-        } else {
-            LOG_ERROR << "Unable to find container component in container gump" << std::endl;
-        }
+void DynamicItem::onBeforeChildObjectRemoved(const boost::shared_ptr<IngameObject>& obj) {
+    if (containerView_) {
+        containerView_->removeObject(obj);
     }
 }
 
@@ -435,12 +424,12 @@ void DynamicItem::setSpellbook(unsigned int scrollOffset, const uint8_t* spellBi
     }
     isSpellbook_ = true;
 
-    if (containerGump_) {
-        containerGump_->bring_to_front();
+    if (spellbookGump_) {
+        spellbookGump_->bring_to_front();
     } else {
-        containerGump_ = ui::GumpMenus::openSpellbook(this);
-        if (containerGump_) {
-            containerGump_->setCloseCallback(boost::bind(&DynamicItem::spellbookClosedCallback, this));
+        spellbookGump_ = ui::GumpMenus::openSpellbook(this);
+        if (spellbookGump_) {
+            spellbookGump_->setCloseCallback(boost::bind(&DynamicItem::spellbookClosedCallback, this));
         }
     }
 }
@@ -459,8 +448,24 @@ unsigned int DynamicItem::getSpellbookScrollOffset() const {
 }
 
 bool DynamicItem::spellbookClosedCallback() {
-    containerGump_ = nullptr;
+    spellbookGump_ = nullptr;
     return false;
+}
+
+void DynamicItem::setContainerView(ui::components::ContainerView* view) {
+    containerView_ = view;
+}
+
+void DynamicItem::onDelete() {
+    if (containerView_) {
+        containerView_->getGumpMenu()->close();
+    }
+
+    if (spellbookGump_) {
+        spellbookGump_->close();
+    }
+
+    ServerObject::onDelete();
 }
 
 }

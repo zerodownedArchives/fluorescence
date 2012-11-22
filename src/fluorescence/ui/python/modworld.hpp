@@ -23,6 +23,7 @@
 #include "pyworld.hpp"
 
 #include <world/mobile.hpp>
+#include <world/dynamicitem.hpp>
 
 namespace fluo {
 namespace ui {
@@ -48,6 +49,9 @@ BOOST_PYTHON_MODULE(world) {
     ;
 
     bpy::def("getPlayer", &PyWorld::getPlayer);
+
+    bpy::class_<world::DynamicItem, boost::shared_ptr<world::DynamicItem>, bpy::bases<world::ServerObject>, boost::noncopyable>("DynamicItem", bpy::no_init)
+    ;
 }
 
 }
