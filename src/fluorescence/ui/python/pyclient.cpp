@@ -25,6 +25,8 @@
 #include <net/packets/12_useskill.hpp>
 #include <net/packets/9b_helprequest.hpp>
 #include <net/packets/7d_objectpickerresponse.hpp>
+#include <net/packets/bf.hpp>
+#include <net/packets/bf/15_contextmenureply.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/commandmanager.hpp>
@@ -95,6 +97,12 @@ void PyClient::useSkill(unsigned int id) {
 
 void PyClient::objectPickerResponse(unsigned int serial, unsigned int menuId, unsigned int answerId, unsigned int artId, unsigned int hue) {
     net::packets::ObjectPickerResponse pkt(serial, menuId, answerId, artId, hue);
+    net::Manager::getSingleton()->send(pkt);
+}
+
+void PyClient::contextMenuReply(unsigned int serial, unsigned int replyId) {
+    boost::shared_ptr<net::Packet> subPacket(new net::packets::bf::ContextMenuReply(serial, replyId));
+    net::packets::BF pkt(subPacket);
     net::Manager::getSingleton()->send(pkt);
 }
 

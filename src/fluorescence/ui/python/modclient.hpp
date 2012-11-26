@@ -47,6 +47,7 @@ BOOST_PYTHON_MODULE(client) {
 
     // functions sending a packet to the server in response to a special gump
     bpy::def("objectPickerResponse", &PyClient::objectPickerResponse);
+    bpy::def("contextMenuReply", &PyClient::contextMenuReply);
 }
 
 }

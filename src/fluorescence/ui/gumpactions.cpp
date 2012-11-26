@@ -63,8 +63,6 @@ void GumpActions::buildBasicActionTable() {
 void GumpActions::buildFullActionTable() {
     actionTable_["deletecharacter"] = GumpAction(true, boost::bind(&Client::deleteCharacter, Client::getSingleton(), _1, _2, _3, _4));
 
-    actionTable_["contextmenureply"] = GumpAction(true, boost::bind(&GumpActions::contextMenuReply, _1, _2, _3, _4));
-
     actionTable_["createdummychar"] = GumpAction(true, boost::bind(&GumpActions::createDummyCharacter, _1, _2, _3, _4));
 
     actionTable_["castspell"] = GumpAction(false, boost::bind(&GumpActions::castSpell, _1, _2, _3, _4));
@@ -100,16 +98,6 @@ bool GumpActions::closeHelper(GumpMenu* menu, const UnicodeString& action, unsig
     return true;
 }
 
-bool GumpActions::contextMenuReply(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    Serial serial = StringConverter::toInt(parameters[0]);
-    unsigned int replyId = StringConverter::toInt(parameters[1]);
-    boost::shared_ptr<net::Packet> subPacket(new net::packets::bf::ContextMenuReply(serial, replyId));
-    net::packets::BF pkt(subPacket);
-    net::Manager::getSingleton()->send(pkt);
-
-    return true;
-}
-
 bool GumpActions::createDummyCharacter(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     net::packets::CreateCharacter pkt;
 
@@ -121,16 +109,6 @@ bool GumpActions::createDummyCharacter(GumpMenu* menu, const UnicodeString& acti
 
     return true;
 }
-
-//bool GumpActions::openStatus(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    //world::Mobile* mob = menu->getLinkedMobile();
-    //if (mob) {
-        //mob->openStatusGump(ui::Manager::getSingleton()->getMousePosition());
-    //} else {
-        //LOG_WARN << "openstatus gump action in unlinked gump" << std::endl;
-    //}
-    //return true;
-//}
 
 bool GumpActions::castSpell(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
     if (parameterCount == 0) {

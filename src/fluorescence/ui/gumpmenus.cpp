@@ -136,6 +136,22 @@ void GumpMenus::openObjectPicker(const net::packets::ObjectPicker* pkt) {
     ui::Manager::getSingleton()->openPythonGump("objectpicker", args);
 }
 
+void GumpMenus::openContextMenu(const net::packets::bf::OpenContextMenu* pkt) {
+    boost::python::list entries;
+
+    std::list<net::packets::bf::ContextMenuEntry>::const_iterator iter = pkt->entries_.begin();
+    std::list<net::packets::bf::ContextMenuEntry>::const_iterator end = pkt->entries_.end();
+    for (; iter != end; ++iter) {
+        entries.append(boost::python::make_tuple(iter->entryId_, iter->clilocId_));
+    }
+
+    boost::python::dict args;
+    args["serial"] = pkt->serial_;
+    args["entries"] = entries;
+    ui::Manager::getSingleton()->openPythonGump("contextmenu", args);
+}
+
+
 // rework to python ui below this point
 
 GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
@@ -166,34 +182,6 @@ GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int para
     return menu;
 }
 
-
-GumpMenu* GumpMenus::openContextMenu(const net::packets::bf::OpenContextMenu* pkt) {
-    std::vector<UnicodeString> nameList;
-    std::vector<UnicodeString> indexList;
-    std::vector<UnicodeString> serialList;
-
-    std::list<net::packets::bf::ContextMenuEntry>::const_iterator iter = pkt->entries_.begin();
-    std::list<net::packets::bf::ContextMenuEntry>::const_iterator end = pkt->entries_.end();
-
-    UnicodeString serialString = StringConverter::fromNumber(pkt->serial_);
-    for (; iter != end; ++iter) {
-        indexList.push_back(StringConverter::fromNumber(iter->entryId_));
-        nameList.push_back(data::Manager::getClilocLoader()->get(iter->clilocId_));
-        serialList.push_back(serialString);
-    }
-
-    XmlLoader::RepeatContext context;
-    context.repeatCount_ = nameList.size();
-    context.keywordReplacements_["entrytext"] = nameList;
-    context.keywordReplacements_["serial"] = serialList;
-    context.keywordReplacements_["entryindex"] = indexList;
-
-    XmlLoader::addRepeatContext("contextmenu", context);
-    GumpMenu* menu = XmlLoader::fromXmlFile("contextmenu");
-    XmlLoader::removeRepeatContext("contextmenu");
-
-    return menu;
-}
 
 GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
     const data::SpellbookInfo* book = data::Manager::getSpellbookInfo(itm->getSpellbookScrollOffset());
@@ -271,60 +259,6 @@ GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
 
     GumpMenu* menu = XmlLoader::fromXmlFile(book->gumpName_);
     XmlLoader::clearRepeatContexts();
-
-    return menu;
-}
-
-GumpMenu* GumpMenus::openSkills(const world::Mobile* mob) {
-    std::vector<UnicodeString> nameList;
-    std::vector<UnicodeString> valueList;
-    std::vector<UnicodeString> baseList;
-    std::vector<UnicodeString> capList;
-    std::vector<UnicodeString> usableList;
-    std::vector<UnicodeString> idList;
-
-    unsigned int skillCount = data::Manager::getSkillsLoader()->getSkillCount();
-
-    for (unsigned int i = 0; i < skillCount; ++i) {
-        const data::SkillInfo* curInfo = data::Manager::getSkillsLoader()->getSkillInfo(i);
-        nameList.push_back(curInfo->name_);
-
-        UnicodeString propNameBase("skills.");
-        propNameBase += curInfo->name_;
-
-        UnicodeString propNameCur(propNameBase);
-        propNameCur += ".value";
-        valueList.push_back(propNameCur);
-
-        propNameCur = propNameBase;
-        propNameCur += ".base";
-        baseList.push_back(propNameCur);
-
-        propNameCur = propNameBase;
-        propNameCur += ".cap";
-        capList.push_back(propNameCur);
-
-        if (curInfo->isUsable_) {
-            usableList.push_back("1");
-        } else {
-            usableList.push_back("0");
-        }
-
-        idList.push_back(StringConverter::fromNumber(curInfo->skillId_));
-    }
-
-    XmlLoader::RepeatContext context;
-    context.repeatCount_ = nameList.size();
-    context.keywordReplacements_["skillname"] = nameList;
-    context.keywordReplacements_["skillvalue"] = valueList;
-    context.keywordReplacements_["skillbase"] = baseList;
-    context.keywordReplacements_["skillcap"] = capList;
-    context.keywordReplacements_["skillusable"] = usableList;
-    context.keywordReplacements_["skillid"] = idList;
-
-    XmlLoader::addRepeatContext("skills", context);
-    GumpMenu* menu = XmlLoader::fromXmlFile("skills");
-    XmlLoader::removeRepeatContext("skills");
 
     return menu;
 }

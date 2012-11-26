@@ -55,11 +55,10 @@ public:
     static void openServerList(const net::packets::ServerList* list);
     static void openCharacterList(unsigned int charCount, const UnicodeString* charNames, const UnicodeString* charPasswords);
     static void openObjectPicker(const net::packets::ObjectPicker* pkt);
+    static void openContextMenu(const net::packets::bf::OpenContextMenu* pkt);
 
     static GumpMenu* openYesNoBox(const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
-    static GumpMenu* openContextMenu(const net::packets::bf::OpenContextMenu* pkt);
     static GumpMenu* openSpellbook(const world::DynamicItem* itm);
-    static GumpMenu* openSkills(const world::Mobile* mob);
 };
 
 }

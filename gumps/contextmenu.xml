@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<gump closable="1" draggable="0" y="50">
-    <repeat name="contextmenu" yincrease="25" xlimit="1">
-        <button template="themebutton" x="0" y="0" width="300" name="contextmenuentry" action="contextmenureply" param="serial" param2="entryindex" text="entrytext" />
-    </repeat>
-</gump>
-

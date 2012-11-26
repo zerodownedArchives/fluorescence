@@ -1,4 +1,0 @@
-<?xml version="1.0"?>
-<gump draggable="1" closable="1">
-    <container name="container" x="0" y="0" width="300" height="300" />
-</gump>
