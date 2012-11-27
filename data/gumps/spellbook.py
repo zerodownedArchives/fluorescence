@@ -107,13 +107,6 @@ def create(args):
             spellCount += 1
             x += 168
 
-            #<repeatif xindex="0">
-                #<label template="spellbooktitle" x="85" y="14" width="100" height="15" text="sectionname" />
-            #</repeatif>
-            #<repeatif xindex="1">
-                #<label template="spellbooktitle" x="65" y="14" width="100" height="15" text="sectionname" />
-            #</repeatif>
-
     args["item"].setSpellbookGump(g)
 
 def addTitleLabel(g, geom, text):

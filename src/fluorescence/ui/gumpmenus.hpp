@@ -57,8 +57,6 @@ public:
     static void openObjectPicker(const net::packets::ObjectPicker* pkt);
     static void openContextMenu(const net::packets::bf::OpenContextMenu* pkt);
     static void openSpellbook(const boost::shared_ptr<world::DynamicItem>& itm);
-
-    static GumpMenu* openYesNoBox(const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
 };
 
 }

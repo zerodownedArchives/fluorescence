@@ -24,9 +24,7 @@
 
 #include "cursormanager.hpp"
 #include "gumpmenu.hpp"
-#include "xmlloader.hpp"
 #include "gumpmenus.hpp"
-#include "gumpactions.hpp"
 #include "fontengine.hpp"
 #include "render/shadermanager.hpp"
 #include "uofont.hpp"
@@ -39,6 +37,8 @@
 #include "components/lineedit.hpp"
 
 #include <client.hpp>
+
+#include <data/manager.hpp>
 
 #include <misc/log.hpp>
 #include <misc/exception.hpp>
@@ -389,10 +389,6 @@ void Manager::openPythonGump(const UnicodeString& name, boost::python::dict& arg
     pythonLoader_->openGump(name, args);
 }
 
-GumpMenu* Manager::openXmlGump(const UnicodeString& name) {
-    return XmlLoader::fromXmlFile(name);
-}
-
 void Manager::registerGumpMenu(GumpMenu* menu) {
     gumpNewList_.push_back(menu);
 }
@@ -596,8 +592,6 @@ void Manager::setTheme(const UnicodeString& themeName) {
         LOG_ERROR << "Theme " << themeName << " was not found" << std::endl;
         throw Exception("Unable to load theme");
     }
-
-    XmlLoader::readTemplateFile(themePath_);
 }
 
 const boost::filesystem::path& Manager::getThemePath() const {

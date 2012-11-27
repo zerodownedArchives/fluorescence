@@ -65,9 +65,6 @@ public:
     void selectShard(const UnicodeString& shardName);
     bool createShard(const UnicodeString& name, const UnicodeString& path, bool highSeas);
 
-    // gump callbacks
-    bool deleteCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters);
-
     timeval getElapsedTime() const;
 
 private:

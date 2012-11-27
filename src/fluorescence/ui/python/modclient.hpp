@@ -37,10 +37,13 @@ BOOST_PYTHON_MODULE(client) {
     bpy::def("disconnect", &PyClient::disconnect);
     bpy::def("selectServer", &PyClient::selectServer);
     bpy::def("selectCharacter", &PyClient::selectCharacter);
+    bpy::def("deleteCharacter", &PyClient::deleteCharacter);
+    bpy::def("createDummyCharacter", &PyClient::createDummyCharacter);
     bpy::def("getConfig", &PyClient::getConfig);
     bpy::def("shutdown", &PyClient::shutdown);
     bpy::def("messagebox", &PyClient::messagebox);
     bpy::def("openGump", &PyClient::openGump);
+    bpy::def("openGump", &PyClient::openGumpArgs);
     bpy::def("handleTextInput", &PyClient::handleTextInput);
     bpy::def("sendHelpRequest", &PyClient::sendHelpRequest);
     bpy::def("useSkill", &PyClient::useSkill);

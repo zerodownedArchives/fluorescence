@@ -370,7 +370,7 @@ void Label::setPyClickCallback(boost::python::object& obj) {
 }
 
 bool Label::onInputPressed(const CL_InputEvent & e) {
-    if (e.id == CL_MOUSE_LEFT) {
+    if (e.id == CL_MOUSE_LEFT && type_ != NONE) {
         return true;
     } else {
         return false;
@@ -378,7 +378,7 @@ bool Label::onInputPressed(const CL_InputEvent & e) {
 }
 
 bool Label::onInputReleased(const CL_InputEvent & e) {
-    if (e.id == CL_MOUSE_LEFT) {
+    if (e.id == CL_MOUSE_LEFT && type_ != NONE) {
         handleClick();
         return true;
     } else {

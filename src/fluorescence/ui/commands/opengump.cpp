@@ -30,7 +30,7 @@ OpenGump::OpenGump() : ClientCommand("Usage: opengump <name>. Opens the gump wit
 
 void OpenGump::execute(const UnicodeString& args) {
     // TODO: make this also available for gumps needing a mobile link
-    ui::Manager::getSingleton()->openXmlGump(args);
+    ui::Manager::getSingleton()->openPythonGump(args);
 }
 
 }

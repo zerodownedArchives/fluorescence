@@ -21,7 +21,6 @@
 #include "gumpmenu.hpp"
 
 #include "manager.hpp"
-#include "gumpactions.hpp"
 #include "cursormanager.hpp"
 #include "python/scriptloader.hpp"
 #include "components/lineedit.hpp"

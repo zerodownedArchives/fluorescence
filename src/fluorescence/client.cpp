@@ -32,7 +32,6 @@
 #include <ui/gumpmenus.hpp>
 #include <ui/render/renderqueue.hpp>
 #include <ui/gumpmenu.hpp>
-#include <ui/gumpactions.hpp>
 
 #include <data/manager.hpp>
 
@@ -41,7 +40,6 @@
 #include <world/sector.hpp>
 
 #include <net/manager.hpp>
-#include <net/packets/83_characterdelete.hpp>
 
 namespace fluo {
 
@@ -187,8 +185,6 @@ bool Client::initBase(const std::vector<CL_String8>& args) {
         return false;
     }
 
-    ui::GumpActions::buildBasicActionTable();
-
     return true;
 }
 
@@ -224,9 +220,6 @@ bool Client::initFull() {
     if (!net::Manager::create(config_)) {
         return false;
     }
-
-    LOG_INFO << "Setting up gump event handlers" << std::endl;
-    ui::GumpActions::buildFullActionTable();
 
     return true;
 }
@@ -380,13 +373,6 @@ void Client::doStateLogin() {
     uiManager->stepDraw();
 
     CL_System::sleep(10);
-}
-
-bool Client::deleteCharacter(ui::GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    net::packets::CharacterDelete reply(parameters[1], StringConverter::toInt(parameters[0]), net::Manager::getSingleton()->getSeed());
-    net::Manager::getSingleton()->send(reply);
-
-    return true;
 }
 
 void Client::loginComplete() {

@@ -47,7 +47,6 @@
 
 #include "manager.hpp"
 #include "gumpmenu.hpp"
-#include "xmlloader.hpp"
 #include "components/lineedit.hpp"
 #include "components/label.hpp"
 
@@ -202,38 +201,6 @@ void GumpMenus::openSpellbook(const boost::shared_ptr<world::DynamicItem>& itm) 
     args["item"] = itm;
     ui::Manager::getSingleton()->openPythonGump(book->gumpName_, args);
 }
-
-
-// rework to python ui below this point
-
-GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    if (parameterCount < 2) {
-        LOG_ERROR << "No text or action given for YesNoBox" << std::endl;
-        return nullptr;
-    }
-
-    GumpMenu* menu = XmlLoader::fromXmlFile("yesnobox");
-    if (menu) {
-        // TODO: gui rework
-        //menu->setComponentText<components::Label>("messagetext", parameters[0]);
-
-        //components::BaseButton* yesButton = dynamic_cast<components::BaseButton*>(menu->get_named_item("yes"));
-        //if (yesButton) {
-            //yesButton->setLocalButton(parameters[1]);
-
-            //for (unsigned int i = 2; i < parameterCount; ++i) {
-                //yesButton->setParameter(parameters[i], i-2);
-            //}
-        //} else {
-            //LOG_ERROR << "Unable to find yes button in yesnobox" << std::endl;
-        //}
-    }
-
-    LOG_INFO << "YesNoBox: " << parameters[0] << std::endl;
-
-    return menu;
-}
-
 
 }
 }

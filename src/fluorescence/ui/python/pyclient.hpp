@@ -20,6 +20,8 @@
 #ifndef FLUO_UI_PYTHON_PYCLIENT_HPP
 #define FLUO_UI_PYTHON_PYCLIENT_HPP
 
+#include <boost/python/dict.hpp>
+
 #include <misc/string.hpp>
 
 namespace fluo {
@@ -35,12 +37,15 @@ public:
     static void disconnect();
     static void selectServer(unsigned int index);
     static void selectCharacter(unsigned int index, const UnicodeString& name, const UnicodeString& password);
+    static void deleteCharacter(unsigned int index, const UnicodeString& password);
+    static void createDummyCharacter();
 
     static UnicodeString getConfig(const UnicodeString& key);
     static void shutdown();
 
     static void messagebox(const UnicodeString& msg);
     static void openGump(const UnicodeString& name);
+    static void openGumpArgs(const UnicodeString& name, boost::python::dict args);
 
     static void handleTextInput(const UnicodeString& text);
 

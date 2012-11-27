@@ -22,9 +22,11 @@
 #include <misc/log.hpp>
 
 #include <net/manager.hpp>
+#include <net/packets/00_createcharacter.hpp>
 #include <net/packets/12_useskill.hpp>
 #include <net/packets/9b_helprequest.hpp>
 #include <net/packets/7d_objectpickerresponse.hpp>
+#include <net/packets/83_characterdelete.hpp>
 #include <net/packets/bf.hpp>
 #include <net/packets/bf/15_contextmenureply.hpp>
 #include <net/packets/bf/1c_castspell.hpp>
@@ -70,6 +72,10 @@ void PyClient::openGump(const UnicodeString& name) {
     ui::Manager::getSingleton()->openPythonGump(name);
 }
 
+void PyClient::openGumpArgs(const UnicodeString& name, boost::python::dict args) {
+    ui::Manager::getSingleton()->openPythonGump(name, args);
+}
+
 void PyClient::disconnect() {
     Client::getSingleton()->disconnect();
 }
@@ -80,6 +86,21 @@ void PyClient::selectServer(unsigned int index) {
 
 void PyClient::selectCharacter(unsigned int index, const UnicodeString& name, const UnicodeString& password) {
     net::Manager::getSingleton()->selectCharacter(index, name, password);
+}
+
+void PyClient::deleteCharacter(unsigned int index, const UnicodeString& password) {
+    net::packets::CharacterDelete reply(password, index, net::Manager::getSingleton()->getSeed());
+    net::Manager::getSingleton()->send(reply);
+}
+
+void PyClient::createDummyCharacter() {
+    net::packets::CreateCharacter pkt;
+
+    pkt.name_ = "Dummy";
+    pkt.slot_ = 0;
+    pkt.startCity_ = 1;
+
+    net::Manager::getSingleton()->send(pkt);
 }
 
 void PyClient::handleTextInput(const UnicodeString& text) {

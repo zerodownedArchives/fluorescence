@@ -12,7 +12,6 @@ set (UI_HPP
     ui/cursormanager.hpp
     ui/cursorimage.hpp
     ui/gumpmenus.hpp
-    ui/gumpactions.hpp
     ui/fontengine.hpp
     ui/uofont.hpp
     ui/uofontprovider.hpp
@@ -33,7 +32,6 @@ set (UI_CPP
     ui/cursormanager.cpp
     ui/cursorimage.cpp
     ui/gumpmenus.cpp
-    ui/gumpactions.cpp
     ui/fontengine.cpp
     ui/uofont.cpp
     ui/uofontprovider.cpp
@@ -44,7 +42,6 @@ set (UI_CPP
     )
 
 set (GUMPMENU_HPP
-    ui/xmlloader.hpp
     ui/stringparser.hpp
     ui/gumpmenu.hpp
     ui/gumpcomponent.hpp
@@ -69,7 +66,6 @@ set (GUMPMENU_HPP
     )
 
 set (GUMPMENU_CPP
-    ui/xmlloader.cpp
     ui/stringparser.cpp
     ui/gumpmenu.cpp
     ui/gumpcomponent.cpp
