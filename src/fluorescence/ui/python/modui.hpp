@@ -166,6 +166,9 @@ BOOST_PYTHON_MODULE(ui) {
         .add_property("valign", &components::Label::getVAlign, &components::Label::setVAlign)
         .add_property("halign", &components::Label::getHAlign, &components::Label::setHAlign)
         .add_property("rgba", &components::Label::pyGetRgba, &components::Label::pySetRgba)
+        .add_property("page", &components::Label::getPage, &components::Label::setPage)
+        .add_property("id", &components::Label::getButtonId, &components::Label::setButtonId)
+        .add_property("onClick", &components::Label::getPyClickCallback, &components::Label::setPyClickCallback)
         .def("setFont", &components::Label::setFont)
         .def("setFont", &components::Label::setFontB)
     ;

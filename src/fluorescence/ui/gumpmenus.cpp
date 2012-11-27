@@ -151,6 +151,58 @@ void GumpMenus::openContextMenu(const net::packets::bf::OpenContextMenu* pkt) {
     ui::Manager::getSingleton()->openPythonGump("contextmenu", args);
 }
 
+void GumpMenus::openSpellbook(const boost::shared_ptr<world::DynamicItem>& itm) {
+    const data::SpellbookInfo* book = data::Manager::getSpellbookInfo(itm->getSpellbookScrollOffset());
+    if (!book) {
+        LOG_WARN << "Unable to find spellbook data for spellbook " << itm->getSpellbookScrollOffset() << std::endl;
+        return;
+    }
+
+    namespace bpy = boost::python;
+    bpy::list circleList;
+
+    unsigned int spellCount = 0;
+    unsigned int curPage = 4; // index spreads over 4 pages
+
+    for (unsigned int i = 0; i < 8; ++i) {
+        bpy::list curSpellList;
+
+        uint8_t spellBits = itm->getSpellbookSpellBits(i);
+        for (unsigned int j = 0; j < 8; ++j) {
+            uint8_t test = (1 << j);
+            if (test & spellBits) {
+                // spell available
+                ++spellCount;
+                if (spellCount % 2 == 1) {
+                    ++curPage;
+                }
+
+                const data::SpellInfo& spell = book->sections_[i].spells_[j];
+                curSpellList.append(bpy::make_tuple(
+                    spell.spellId_,
+                    spell.name_,
+                    spell.wops_,
+                    spell.descriptionHeader_,
+                    spell.description_,
+                    spell.gumpId_
+                ));
+            }
+        }
+
+        bpy::dict curCircle;
+        curCircle["spells"] = curSpellList;
+        curCircle["id"] = i+1;
+        curCircle["name"] = book->sections_[i].name_;
+
+        circleList.append(curCircle);
+    }
+
+    bpy::dict args;
+    args["circles"] = circleList;
+    args["item"] = itm;
+    ui::Manager::getSingleton()->openPythonGump(book->gumpName_, args);
+}
+
 
 // rework to python ui below this point
 
@@ -182,86 +234,6 @@ GumpMenu* GumpMenus::openYesNoBox(const UnicodeString& action, unsigned int para
     return menu;
 }
 
-
-GumpMenu* GumpMenus::openSpellbook(const world::DynamicItem* itm) {
-    const data::SpellbookInfo* book = data::Manager::getSpellbookInfo(itm->getSpellbookScrollOffset());
-    if (!book) {
-        return nullptr;
-    }
-
-    XmlLoader::RepeatContext indexContexts[8];
-    std::vector<UnicodeString> circleIndexNamesTmp;
-    std::vector<UnicodeString> circleIndexPagesTmp;
-
-    std::vector<UnicodeString> allSpellsPreviousPage;
-    std::vector<UnicodeString> allSpellsCurrentPage;
-    std::vector<UnicodeString> allSpellsNextPage;
-    std::vector<UnicodeString> allSpellsSections;
-    std::vector<UnicodeString> allSpellsNames;
-    std::vector<UnicodeString> allSpellsIcons;
-    std::vector<UnicodeString> allSpellsDescriptionHeaders;
-    std::vector<UnicodeString> allSpellsDescriptions;
-    std::vector<UnicodeString> allSpellsIds;
-
-    unsigned int spellCount = 0;
-    unsigned int curPage = 4; // index spreads over 4 pages
-
-    for (unsigned int i = 0; i < 8; ++i) {
-        circleIndexNamesTmp.clear();
-        circleIndexPagesTmp.clear();
-
-        uint8_t spellBits = itm->getSpellbookSpellBits(i);
-        for (unsigned int j = 0; j < 8; ++j) {
-            uint8_t test = (1 << j);
-            if (test & spellBits) {
-                // spell available
-                ++spellCount;
-                if (spellCount % 2 == 1) {
-                    ++curPage;
-                }
-
-                circleIndexNamesTmp.push_back(book->sections_[i].spells_[j].name_);
-                circleIndexPagesTmp.push_back(StringConverter::fromNumber(curPage));
-
-
-                allSpellsNames.push_back(book->sections_[i].spells_[j].name_);
-                allSpellsSections.push_back(book->sections_[i].name_);
-                allSpellsPreviousPage.push_back(StringConverter::fromNumber(curPage - 1));
-                allSpellsCurrentPage.push_back(StringConverter::fromNumber(curPage));
-                allSpellsNextPage.push_back(StringConverter::fromNumber(curPage + 1));
-                allSpellsIcons.push_back(StringConverter::fromNumber(book->sections_[i].spells_[j].gumpId_));
-                allSpellsDescriptionHeaders.push_back(book->sections_[i].spells_[j].descriptionHeader_);
-                allSpellsDescriptions.push_back(book->sections_[i].spells_[j].description_);
-                allSpellsIds.push_back(StringConverter::fromNumber(book->sections_[i].spells_[j].spellId_));
-            }
-        }
-
-        indexContexts[i].repeatCount_ = circleIndexNamesTmp.size();
-        indexContexts[i].keywordReplacements_["spellname"] = circleIndexNamesTmp;
-        indexContexts[i].keywordReplacements_["spellpage"] = circleIndexPagesTmp;
-
-        XmlLoader::addRepeatContext(book->sections_[i].name_, indexContexts[i]);
-    }
-
-    XmlLoader::RepeatContext allSpellsContext;
-    allSpellsContext.repeatCount_ = allSpellsNames.size();
-    allSpellsContext.keywordReplacements_["previouspage"] = allSpellsPreviousPage;
-    allSpellsContext.keywordReplacements_["currentpage"] = allSpellsCurrentPage;
-    allSpellsContext.keywordReplacements_["nextpage"] = allSpellsNextPage;
-    allSpellsContext.keywordReplacements_["sectionname"] = allSpellsSections;
-    allSpellsContext.keywordReplacements_["spellname"] = allSpellsNames;
-    allSpellsContext.keywordReplacements_["description"] = allSpellsDescriptions;
-    allSpellsContext.keywordReplacements_["descriptionheader"] = allSpellsDescriptionHeaders;
-    allSpellsContext.keywordReplacements_["gumpid"] = allSpellsIcons;
-    allSpellsContext.keywordReplacements_["spellid"] = allSpellsIds;
-
-    XmlLoader::addRepeatContext("allspells", allSpellsContext);
-
-    GumpMenu* menu = XmlLoader::fromXmlFile(book->gumpName_);
-    XmlLoader::clearRepeatContexts();
-
-    return menu;
-}
 
 }
 }

@@ -93,6 +93,7 @@ public:
     uint8_t getSpellbookSpellBits(unsigned int byteIndex) const;
 
     void setContainerView(ui::components::ContainerView* view);
+    void setSpellbookGump(ui::GumpMenu* menu);
 
 private:
     unsigned int artId_;

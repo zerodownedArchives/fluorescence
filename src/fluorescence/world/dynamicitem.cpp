@@ -427,7 +427,9 @@ void DynamicItem::setSpellbook(unsigned int scrollOffset, const uint8_t* spellBi
     if (spellbookGump_) {
         spellbookGump_->bring_to_front();
     } else {
-        spellbookGump_ = ui::GumpMenus::openSpellbook(this);
+        boost::shared_ptr<DynamicItem> sharedThis = boost::dynamic_pointer_cast<DynamicItem>(shared_from_this());
+        ui::GumpMenus::openSpellbook(sharedThis);
+        // spellbookGump_ should be set by the python gump menu
         if (spellbookGump_) {
             spellbookGump_->setCloseCallback(boost::bind(&DynamicItem::spellbookClosedCallback, this));
         }
@@ -454,6 +456,10 @@ bool DynamicItem::spellbookClosedCallback() {
 
 void DynamicItem::setContainerView(ui::components::ContainerView* view) {
     containerView_ = view;
+}
+
+void DynamicItem::setSpellbookGump(ui::GumpMenu* gump) {
+    spellbookGump_ = gump;
 }
 
 void DynamicItem::onDelete() {

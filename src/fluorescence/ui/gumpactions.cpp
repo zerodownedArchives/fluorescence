@@ -38,7 +38,6 @@
 #include <net/packets/ad_speechrequest.hpp>
 #include <net/packets/bf.hpp>
 #include <net/packets/bf/15_contextmenureply.hpp>
-#include <net/packets/bf/1c_castspell.hpp>
 
 #include <misc/log.hpp>
 
@@ -64,8 +63,6 @@ void GumpActions::buildFullActionTable() {
     actionTable_["deletecharacter"] = GumpAction(true, boost::bind(&Client::deleteCharacter, Client::getSingleton(), _1, _2, _3, _4));
 
     actionTable_["createdummychar"] = GumpAction(true, boost::bind(&GumpActions::createDummyCharacter, _1, _2, _3, _4));
-
-    actionTable_["castspell"] = GumpAction(false, boost::bind(&GumpActions::castSpell, _1, _2, _3, _4));
 
     actionTable_["yesnogump"] = GumpAction(false, boost::bind(&GumpActions::yesNoGump, _1, _2, _3, _4));
 }
@@ -107,19 +104,6 @@ bool GumpActions::createDummyCharacter(GumpMenu* menu, const UnicodeString& acti
 
     net::Manager::getSingleton()->send(pkt);
 
-    return true;
-}
-
-bool GumpActions::castSpell(GumpMenu* menu, const UnicodeString& action, unsigned int parameterCount, const UnicodeString* parameters) {
-    if (parameterCount == 0) {
-        LOG_ERROR << "Calling castspell gump action without parameter" << std::endl;
-        return false;
-    }
-    LOG_DEBUG << "cast spell: " << parameters[0] << std::endl;
-    unsigned int spellId = StringConverter::toInt(parameters[0]);
-    boost::shared_ptr<net::Packet> subPacket(new net::packets::bf::CastSpell(spellId));
-    net::packets::BF pkt(subPacket);
-    net::Manager::getSingleton()->send(pkt);
     return true;
 }
 

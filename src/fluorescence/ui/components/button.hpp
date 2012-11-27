@@ -28,6 +28,7 @@
 #include <boost/python/object.hpp>
 
 #include <misc/string.hpp>
+#include <ui/enums.hpp>
 
 #include "image.hpp"
 
@@ -37,12 +38,6 @@ namespace components {
 
 class Button : public Image {
 public:
-    enum ButtonType {
-        PAGE = 1,
-        SERVER = 2,
-        PYTHON = 3,
-    };
-
     Button(CL_GUIComponent* parent);
 
     void setFont(const UnicodeString& name, unsigned int height);

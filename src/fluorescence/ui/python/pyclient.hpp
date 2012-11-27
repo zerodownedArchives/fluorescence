@@ -46,7 +46,8 @@ public:
 
     static void sendHelpRequest();
 
-    static void useSkill(unsigned int id);
+    static void useSkill(unsigned int skillId);
+    static void castSpell(unsigned int spellId);
 
     static void objectPickerResponse(unsigned int serial, unsigned int menuId, unsigned int answerId, unsigned int artId, unsigned int hue);
     static void contextMenuReply(unsigned int serial, unsigned int entryId);

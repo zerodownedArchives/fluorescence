@@ -94,11 +94,11 @@ void Button::updateState() {
     }
 }
 
-Button::ButtonType Button::getButtonType() const {
+ButtonType Button::getButtonType() const {
     return type_;
 }
 
-void Button::setButtonType(Button::ButtonType type) {
+void Button::setButtonType(ButtonType type) {
     type_ = type;
 }
 
@@ -131,29 +131,23 @@ void Button::handleClick() {
     case PYTHON:
         onClickPython();
         break;
+    case NONE:
+        break;
     }
 }
 
 void Button::onClickPage() {
     GumpMenu* gump = getGumpMenu();
-    if (gump) {
-        gump->activatePage(pageId_);
-    } else {
-        LOG_ERROR << "BaseButton inside something other than GumpMenu" << std::endl;
-    }
+    gump->activatePage(pageId_);
 }
 
 void Button::onClickServer() {
     GumpMenu* gump = getGumpMenu();
-    if (gump) {
-        if (buttonId_ == 0) {
-            ui::Manager::getSingleton()->closeGumpMenu(gump);
-        } else {
-            // send gump reply to server
-            gump->sendReply(buttonId_);
-        }
+    if (buttonId_ == 0) {
+        ui::Manager::getSingleton()->closeGumpMenu(gump);
     } else {
-        LOG_ERROR << "BaseButton inside something other than GumpMenu" << std::endl;
+        // send gump reply to server
+        gump->sendReply(buttonId_);
     }
 }
 

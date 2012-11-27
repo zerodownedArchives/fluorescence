@@ -27,6 +27,7 @@
 #include <net/packets/7d_objectpickerresponse.hpp>
 #include <net/packets/bf.hpp>
 #include <net/packets/bf/15_contextmenureply.hpp>
+#include <net/packets/bf/1c_castspell.hpp>
 
 #include <ui/manager.hpp>
 #include <ui/commandmanager.hpp>
@@ -92,6 +93,12 @@ void PyClient::sendHelpRequest() {
 
 void PyClient::useSkill(unsigned int id) {
     net::packets::UseSkill pkt(id);
+    net::Manager::getSingleton()->send(pkt);
+}
+
+void PyClient::castSpell(unsigned int spellId) {
+    boost::shared_ptr<net::Packet> subPacket(new net::packets::bf::CastSpell(spellId));
+    net::packets::BF pkt(subPacket);
     net::Manager::getSingleton()->send(pkt);
 }
 

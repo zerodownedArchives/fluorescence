@@ -30,6 +30,7 @@
 #include <ui/uofont.hpp>
 #include <ui/manager.hpp>
 #include <ui/gumpmenu.hpp>
+#include <ui/python/scriptloader.hpp>
 #include <misc/log.hpp>
 
 #include "scrollarea.hpp"
@@ -39,7 +40,8 @@ namespace ui {
 namespace components {
 
 Label::Label(CL_GUIComponent* parent) : GumpComponent(parent),
-        overrideGumpFont_(false), rgba_(CL_Colorf::black), vAlign_(VAlign::MIDDLE), hAlign_(HAlign::LEFT), autoResize_(false) {
+        overrideGumpFont_(false), rgba_(CL_Colorf::black), vAlign_(VAlign::MIDDLE), hAlign_(HAlign::LEFT), autoResize_(false),
+        type_(NONE), buttonId_(0), pageId_(0) {
     func_render().set(this, &Label::onRender);
 
     fontDesc_.set_height(12);
@@ -54,6 +56,9 @@ Label::Label(CL_GUIComponent* parent) : GumpComponent(parent),
         }
         comp = comp->get_parent_component();
     }
+
+    func_input_pressed().set(this, &Label::onInputPressed);
+    func_input_released().set(this, &Label::onInputReleased);
 
     set_type_name("label");
 }
@@ -279,6 +284,105 @@ void Label::pySetRgba(const boost::python::tuple& rgba) {
         setRgba(r, g, b, a);
     } else {
         setRgba(r, g, b);
+    }
+}
+
+ButtonType Label::getButtonType() const {
+    return type_;
+}
+
+void Label::setButtonType(ButtonType type) {
+    type_ = type;
+}
+
+unsigned int Label::getButtonId() const {
+    return buttonId_;
+}
+
+void Label::setButtonId(unsigned int id) {
+    buttonId_ = id;
+    type_ = SERVER;
+}
+
+unsigned int Label::getPage() const {
+    return pageId_;
+}
+
+void Label::setPage(unsigned int id) {
+    pageId_ = id;
+    type_ = PAGE;
+}
+
+void Label::handleClick() {
+    switch (type_) {
+    case PAGE:
+        onClickPage();
+        break;
+    case SERVER:
+        onClickServer();
+        break;
+    case PYTHON:
+        onClickPython();
+        break;
+    case NONE:
+        break;
+    }
+}
+
+void Label::onClickPage() {
+    GumpMenu* gump = getGumpMenu();
+    gump->activatePage(pageId_);
+}
+
+void Label::onClickServer() {
+    GumpMenu* gump = getGumpMenu();
+    if (buttonId_ == 0) {
+        ui::Manager::getSingleton()->closeGumpMenu(gump);
+    } else {
+        // send gump reply to server
+        gump->sendReply(buttonId_);
+    }
+}
+
+void Label::onClickPython() {
+    if (pyClickCallback_) {
+        bool ret = false;
+        try {
+            ret = boost::python::extract<bool>(pyClickCallback_(boost::python::ptr(this)));
+        } catch (boost::python::error_already_set const&) {
+            ui::Manager::getPythonLoader()->logError();
+        }
+
+        GumpMenu* g = getGumpMenu();
+        if (ret && g->isClosable()) {
+            ui::Manager::getSingleton()->closeGumpMenu(g);
+        }
+    }
+}
+
+boost::python::object Label::getPyClickCallback() const {
+    return pyClickCallback_;
+}
+
+void Label::setPyClickCallback(boost::python::object& obj) {
+    pyClickCallback_ = obj;
+    type_ = PYTHON;
+}
+
+bool Label::onInputPressed(const CL_InputEvent & e) {
+    if (e.id == CL_MOUSE_LEFT) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Label::onInputReleased(const CL_InputEvent & e) {
+    if (e.id == CL_MOUSE_LEFT) {
+        handleClick();
+        return true;
+    } else {
+        return false;
     }
 }
 

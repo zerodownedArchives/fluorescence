@@ -25,6 +25,7 @@
 #include <ClanLib/Display/2D/span_layout.h>
 #include <ClanLib/Display/Font/font.h>
 #include <ClanLib/Display/Font/font_description.h>
+#include <boost/python/object.hpp>
 
 #include <misc/string.hpp>
 #include <ui/enums.hpp>
@@ -60,7 +61,18 @@ public:
 
     virtual void setAutoResize(bool value);
 
+    ButtonType getButtonType() const;
+    void setButtonType(ButtonType type);
+
+    unsigned int getButtonId() const;
+    void setButtonId(unsigned int id);
+
+    unsigned int getPage() const;
+    void setPage(unsigned int id);
+
     // python specific api
+    boost::python::object getPyClickCallback() const;
+    void setPyClickCallback(boost::python::object& obj);
     boost::python::tuple pyGetRgba() const;
     void pySetRgba(const boost::python::tuple& rgba);
 
@@ -82,6 +94,22 @@ private:
     void onRender(CL_GraphicContext& gc, const CL_Rect& update_rect);
 
     bool hasScrollareaParent_;
+
+    bool onInputPressed(const CL_InputEvent & e);
+    bool onInputReleased(const CL_InputEvent & e);
+    ButtonType type_;
+    // for server button
+    unsigned int buttonId_;
+
+    // for page button
+    unsigned int pageId_;
+
+    void handleClick();
+    void onClickPage();
+    void onClickServer();
+    void onClickPython();
+
+    boost::python::object pyClickCallback_;
 };
 
 }

@@ -35,6 +35,13 @@ enum HAlign {
     CENTER = 2,
 };
 
+enum ButtonType {
+    NONE = 0,
+    PAGE = 1,
+    SERVER = 2,
+    PYTHON = 3,
+};
+
 }
 }
 
