@@ -57,7 +57,7 @@ void ScriptLoader::init() {
 
     // extend python path to the gumps directory
     PyObject* sysPath = PySys_GetObject((char*)"path");
-    PyList_Insert(sysPath, 0, PyString_FromString("data/gumps/"));
+    PyList_Insert(sysPath, 0, PyString_FromString("gumps/"));
 
     initialized_ = true;
 }
@@ -75,7 +75,7 @@ void ScriptLoader::setShardConfig(Config& config) {
 
     // extend python path to the shard gumps directory
     PyObject* sysPath = PySys_GetObject((char*)"path");
-    boost::filesystem::path path = config.getShardPath() / "data/gumps/";
+    boost::filesystem::path path = config.getShardPath() / "gumps/";
     PyList_Insert(sysPath, 0, PyString_FromString(path.string().c_str()));
 
     setThemePath(ui::Manager::getSingleton()->getThemePath());

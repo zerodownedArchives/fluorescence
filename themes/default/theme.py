@@ -23,7 +23,6 @@ def addServerButton(gump, coordinates, buttonId):
     return b
 
 def styleButton(b):
-    b.rgba = rgba("#ff0000")
     b.state("mouseOver").rgba = rgba("#cceecc")
     b.state("mouseDown").rgba = rgba("#ccffcc")
     b.setFont("Devinne Swash", 18)
