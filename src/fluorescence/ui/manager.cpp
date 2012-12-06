@@ -181,7 +181,10 @@ void Manager::stepInput(unsigned int elapsedMillis) {
 
     processGumpNewList();
 
-    pythonLoader_->step(elapsedMillis);
+    if (pythonLoader_->step(elapsedMillis)) {
+        // if the gumps were reloaded process the new list again
+        processGumpNewList();
+    }
 
     // waiting for a doubleclick?
     if (singleClickWait_.first) {

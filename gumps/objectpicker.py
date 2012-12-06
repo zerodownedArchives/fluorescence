@@ -30,7 +30,7 @@ def create(args):
             btText.text = answer[1]
         else:
             # display art texture
-            btArt = scroll.addPythonButton((5, y + 5), Texture(TextureSource.ART, answer[2]), onButtonClick)
+            btArt = scroll.addPythonButton((5, y + 5), Texture(TextureSource.STATICART, answer[2]), onButtonClick)
             btArt.store["data"] = answer
             btArt.hue = answer[3]
             scroll.addLabel((50, y + 10), answer[1])

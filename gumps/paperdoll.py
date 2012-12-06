@@ -5,7 +5,7 @@ import client
 import world
 
 def create(args):
-    g = GumpMenu("paperdoll", 50, 50)
+    g = GumpMenu("paperdoll", args.get("x", 50), args.get("y", 50))
     g.mobile = args["mobile"]
     g.onWarmodeChanged = onWarmodeChanged
 
@@ -83,11 +83,13 @@ def save(gump):
     saveData = {
         "x": gump.x,
         "y": gump.y,
-        "mobile": gump.mobile
+        # To be able to also restore the gump after a restart, save only the serial
+        "serial": gump.mobile.serial
     }
     return saveData
 
 def load(saveData):
-    gump = create(saveData)
-    gump.x = saveData["x"]
-    gump.y = saveData["y"]
+    mob = world.getMobile(saveData["serial"])
+    if mob:
+        saveData["mobile"] = mob
+        gump = create(saveData)

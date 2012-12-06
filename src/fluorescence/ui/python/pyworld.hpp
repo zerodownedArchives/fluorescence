@@ -22,10 +22,13 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <typedefs.hpp>
+
 namespace fluo {
 
 namespace world {
 class Mobile;
+class DynamicItem;
 }
 
 namespace ui {
@@ -34,6 +37,8 @@ namespace python {
 class PyWorld {
 public:
     static boost::shared_ptr<world::Mobile> getPlayer();
+    static boost::shared_ptr<world::Mobile> getMobile(Serial serial);
+    static boost::shared_ptr<world::DynamicItem> getDynamicItem(Serial serial);
 
     static void openProfile(const boost::shared_ptr<world::Mobile>& self);
 };

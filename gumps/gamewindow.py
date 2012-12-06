@@ -4,7 +4,7 @@ from data import *
 import client
 
 def create(args):
-    g = GumpMenu("gamewindow", 20, 20, True)
+    g = GumpMenu("gamewindow", args.get("x", 20), args.get("y", 20), True)
     g.closable = False
     g.onEnter = showSpeechEntry
 
@@ -46,6 +46,8 @@ def save(gump):
     saveData = {
         "x": gump.x,
         "y": gump.y,
+        "width": gump.component("worldview").width,
+        "height": gump.component("worldview").height,
     }
     # nothing specific to store
     return saveData
@@ -53,6 +55,4 @@ def save(gump):
 def load(saveData):
     args = { }
     gump = create(args)
-    gump.x = saveData["x"]
-    gump.y = saveData["y"]
 

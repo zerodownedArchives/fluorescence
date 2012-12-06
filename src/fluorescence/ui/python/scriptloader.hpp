@@ -45,7 +45,8 @@ public:
 
     void requestReload();
 
-    void step(unsigned int elapsedMillis);
+    // returns true if the scripts were reloaded
+    bool step(unsigned int elapsedMillis);
 
     void logError() const;
 

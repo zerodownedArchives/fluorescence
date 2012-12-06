@@ -173,7 +173,8 @@ void ScriptLoader::requestReload() {
     shouldReload_ = true;
 }
 
-void ScriptLoader::step(unsigned int elapsedMillis) {
+bool ScriptLoader::step(unsigned int elapsedMillis) {
+    bool ret = shouldReload_;
     if (shouldReload_) {
         ui::Manager* uiMan = ui::Manager::getSingleton();
         LOG_DEBUG << "Reloading python..." << std::endl;
@@ -222,7 +223,6 @@ void ScriptLoader::step(unsigned int elapsedMillis) {
         std::list<std::pair<UnicodeString, bpy::object> >::iterator loadIter = savedObjects.begin();
         std::list<std::pair<UnicodeString, bpy::object> >::iterator loadEnd = savedObjects.end();
         for (; loadIter != loadEnd; ++loadIter) {
-            LOG_DEBUG << "Load " << loadIter->first << std::endl;
             bpy::object module = loadModule(loadIter->first);
             try {
                 if (module.attr("load")) {
@@ -238,6 +238,8 @@ void ScriptLoader::step(unsigned int elapsedMillis) {
         shouldReload_ = false;
         LOG_DEBUG << "Python reload complete" << std::endl;
     }
+
+    return ret;
 }
 
 }

@@ -22,6 +22,7 @@
 #include <net/packets/b8_profile.hpp>
 #include <world/manager.hpp>
 #include <world/mobile.hpp>
+#include <world/dynamicitem.hpp>
 
 namespace fluo {
 namespace ui {
@@ -29,6 +30,14 @@ namespace python {
 
 boost::shared_ptr<world::Mobile> PyWorld::getPlayer() {
     return world::Manager::getSingleton()->getPlayer();
+}
+
+boost::shared_ptr<world::Mobile> PyWorld::getMobile(Serial serial) {
+    return world::Manager::getSingleton()->getMobile(serial, false);
+}
+
+boost::shared_ptr<world::DynamicItem> PyWorld::getDynamicItem(Serial serial) {
+    return world::Manager::getSingleton()->getDynamicItem(serial, false);
 }
 
 void PyWorld::openProfile(const boost::shared_ptr<world::Mobile>& self) {
