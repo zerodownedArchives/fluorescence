@@ -65,7 +65,7 @@ def sendHelpRequest(button):
 
 def disconnect(button):
     client.disconnect()
-    return True
+    return False
 
 def openSkills(button):
     button.gump.mobile.openSkills()
@@ -74,6 +74,7 @@ def openSkills(button):
 def toggleWarmode(button):
     mob = button.gump.mobile
     mob.warmode = not mob.warmode
+    return False
 
 def openStatus(button):
     button.gump.mobile.openStatus()

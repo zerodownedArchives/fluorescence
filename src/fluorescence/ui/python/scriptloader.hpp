@@ -23,6 +23,7 @@
 #include <boost/python.hpp>
 #include <boost/filesystem/path.hpp>
 #include <map>
+#include <list>
 
 #include <misc/string.hpp>
 #include <misc/config.hpp>
@@ -55,6 +56,9 @@ public:
 
     boost::python::object loadModule(const UnicodeString& name);
 
+    void saveToFile(const boost::filesystem::path& path);
+    void loadFromFile(const boost::filesystem::path& path);
+
 private:
     bool initialized_;
 
@@ -63,6 +67,9 @@ private:
     bool shouldReload_;
     void unload();
     void reload();
+
+    void saveGumps(std::list<std::pair<UnicodeString, boost::python::object> >& savedObjects);
+    void loadGumps(std::list<std::pair<UnicodeString, boost::python::object> >& savedObjects);
 };
 
 }

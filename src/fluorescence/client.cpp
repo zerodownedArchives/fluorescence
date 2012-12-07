@@ -109,6 +109,7 @@ bool Client::handleStateChange() {
         break;
 
     case STATE_PLAYING:
+        uiManager->saveDesktop();
         uiManager->uninstallMacros();
         uiManager->closeAllNonMessageGumps();
         uiManager->releaseIngameObjects();
@@ -127,7 +128,7 @@ bool Client::handleStateChange() {
         break;
 
     case STATE_PLAYING:
-        uiManager->openPythonGump("gamewindow");
+        uiManager->restoreDesktop();
         uiManager->installMacros();
 
         break;

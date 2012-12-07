@@ -53,6 +53,5 @@ def save(gump):
     return saveData
 
 def load(saveData):
-    args = { }
-    gump = create(args)
+    gump = create(saveData)
 

@@ -152,6 +152,10 @@ public:
 
     void handleTextInput(const UnicodeString& text);
 
+    // save/load the open gumps
+    void saveDesktop();
+    void restoreDesktop();
+
 private:
     static Manager* singleton_;
 

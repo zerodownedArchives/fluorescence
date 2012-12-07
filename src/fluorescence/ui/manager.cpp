@@ -321,7 +321,14 @@ void Manager::destroyAllGumpMenus() {
 GumpMenu* Manager::getGumpMenu(const UnicodeString& gumpName) {
     std::list<GumpMenu*>::iterator iter = gumpList_.begin();
     std::list<GumpMenu*>::iterator end = gumpList_.end();
+    for (; iter != end; ++iter) {
+        if ((*iter)->getName() == gumpName) {
+            return *iter;
+        }
+    }
 
+    iter = gumpNewList_.begin();
+    end = gumpNewList_.end();
     for (; iter != end; ++iter) {
         if ((*iter)->getName() == gumpName) {
             return *iter;
@@ -679,6 +686,22 @@ std::list<GumpMenu*>::iterator Manager::gumpsBegin() {
 
 std::list<GumpMenu*>::iterator Manager::gumpsEnd() {
     return gumpList_.end();
+}
+
+void Manager::saveDesktop() {
+    boost::filesystem::path desktopPath = Client::getSingleton()->getConfig().getShardPath() / "desktop.py";
+    pythonLoader_->saveToFile(desktopPath);
+}
+
+void Manager::restoreDesktop() {
+    boost::filesystem::path desktopPath = Client::getSingleton()->getConfig().getShardPath() / "desktop.py";
+    pythonLoader_->loadFromFile(desktopPath);
+
+    // make sure that there is at least the game window if loading has failed
+    if (!getGumpMenu("gamewindow")) {
+        LOG_INFO << "No gamewindow found after restoring desktop, opening default" << std::endl;
+        openPythonGump("gamewindow");
+    }
 }
 
 }
