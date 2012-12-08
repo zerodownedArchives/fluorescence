@@ -94,3 +94,5 @@ def load(saveData):
     if mob:
         saveData["mobile"] = mob
         gump = create(saveData)
+        # request paperdoll data from server
+        saveData["mobile"].openPaperdoll()

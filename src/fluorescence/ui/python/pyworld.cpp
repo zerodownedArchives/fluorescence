@@ -19,6 +19,7 @@
 #include "pyworld.hpp"
 
 #include <net/manager.hpp>
+#include <net/packets/06_doubleclick.hpp>
 #include <net/packets/b8_profile.hpp>
 #include <world/manager.hpp>
 #include <world/mobile.hpp>
@@ -42,6 +43,11 @@ boost::shared_ptr<world::DynamicItem> PyWorld::getDynamicItem(Serial serial) {
 
 void PyWorld::openProfile(const boost::shared_ptr<world::Mobile>& self) {
     net::packets::ProfileRequest pkt(self->getSerial());
+    net::Manager::getSingleton()->send(pkt);
+}
+
+void PyWorld::openPaperdoll(const boost::shared_ptr<world::Mobile>& self) {
+    net::packets::DoubleClick pkt(self->getSerial());
     net::Manager::getSingleton()->send(pkt);
 }
 

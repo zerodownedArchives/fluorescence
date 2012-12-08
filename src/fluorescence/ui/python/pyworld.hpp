@@ -41,6 +41,7 @@ public:
     static boost::shared_ptr<world::DynamicItem> getDynamicItem(Serial serial);
 
     static void openProfile(const boost::shared_ptr<world::Mobile>& self);
+    static void openPaperdoll(const boost::shared_ptr<world::Mobile>& self);
 };
 
 }

@@ -3,9 +3,10 @@ from ui import *
 from data import *
 import theme
 import client
+import world
 
 def create(args):
-    g = GumpMenu("skills", 100, 100)
+    g = GumpMenu("skills", args.get("x", 100), args.get("y", 100))
     g.mobile = args["mobile"]
     g.onPropertyUpdate = updateSkillValues
 
@@ -33,7 +34,6 @@ def create(args):
         lBase = scroll.addLabel((290, 1 + yOffset, 80, 20), "")
         lBase.name = "lBase.%s" % cur[2]
 
-        print "%s   %d" % (cur[2], yOffset)
         yOffset += 22
 
     scroll.updateScrollbars()
@@ -65,12 +65,13 @@ def save(gump):
     saveData = {
         "x": gump.x,
         "y": gump.y,
-        "mobile": gump.mobile
+        "serial": gump.mobile.serial
     }
     return saveData
 
 def load(saveData):
-    gump = create(saveData)
-    gump.x = saveData["x"]
-    gump.y = saveData["y"]
+    mob = world.getMobile(saveData["serial"])
+    if mob:
+        saveData["mobile"] = mob
+        gump = create(saveData)
 

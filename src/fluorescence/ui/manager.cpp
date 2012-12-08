@@ -695,6 +695,7 @@ void Manager::saveDesktop() {
 
 void Manager::restoreDesktop() {
     boost::filesystem::path desktopPath = Client::getSingleton()->getConfig().getShardPath() / "desktop.py";
+    LOG_DEBUG << "Restoring desktop from " << desktopPath.string() << std::endl;
     pythonLoader_->loadFromFile(desktopPath);
 
     // make sure that there is at least the game window if loading has failed

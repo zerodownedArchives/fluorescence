@@ -4,7 +4,7 @@ from data import *
 import world
 
 def create(args):
-    g = GumpMenu("status", 100, 100)
+    g = GumpMenu("status", args.get("x", 100), args.get("y", 100))
     g.mobile = args["mobile"]
 
     if g.mobile == world.getPlayer():
@@ -66,3 +66,22 @@ def create(args):
         g.addBackground((0, 0, 250, 52), 3000)
         g.addPropertyLabel((5, 5, 250, 20), "name")
         g.addPropertyLabel((5, 22, 250, 20), "hitpoints")
+
+    return g
+
+def save(gump):
+    saveData = {
+        "x": gump.x,
+        "y": gump.y,
+        # To be able to also restore the gump after a restart, save only the serial
+        "serial": gump.mobile.serial
+    }
+    return saveData
+
+def load(saveData):
+    mob = world.getMobile(saveData["serial"])
+    if mob:
+        saveData["mobile"] = mob
+        gump = create(saveData)
+        # request status data from server
+        saveData["mobile"].openStatus()
