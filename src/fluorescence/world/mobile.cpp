@@ -50,7 +50,8 @@
 namespace fluo {
 namespace world {
 
-Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE), baseBodyId_(0), bodyId_(0), isWarMode_(false) {
+Mobile::Mobile(Serial serial) : ServerObject(serial, IngameObject::TYPE_MOBILE),
+        baseBodyId_(0), bodyId_(0), isWarMode_(false) {
 }
 
 boost::shared_ptr<ui::Texture> Mobile::getIngameTexture() const {

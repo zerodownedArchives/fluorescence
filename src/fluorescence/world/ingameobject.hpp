@@ -31,6 +31,7 @@
 #include <list>
 
 #include <ui/render/worldrenderdata.hpp>
+#include <misc/string.hpp>
 
 namespace fluo {
 
@@ -89,7 +90,7 @@ public:
     const CL_Vec3f* getVertexNormals() const;
     void setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const CL_Vec3f& bottom, const CL_Vec3f& left);
 
-    const CL_Vec3f& getHueInfo() const;
+    const CL_Vec3f& getHueInfo(bool ignoreMouseOver = true) const;
 
     /// returns whether or not the vertex coordinates of this object overlap the given rectangle
     virtual bool overlaps(const CL_Rectf& rect) const;
@@ -166,6 +167,8 @@ public:
     void setMaterial(unsigned int material);
     const ui::render::MaterialInfo* getMaterial() const;
 
+    void setMouseOver(bool mo);
+
 protected:
     ui::WorldRenderData worldRenderData_;
 
@@ -204,6 +207,8 @@ private:
     void setParentObject(boost::shared_ptr<IngameObject> parent);
 
     bool ignored_;
+
+    bool mouseOver_;
 };
 
 }

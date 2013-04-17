@@ -50,7 +50,7 @@ ContainerRenderer::~ContainerRenderer() {
 void ContainerRenderer::checkTextureSize(CL_GraphicContext& gc) {
     if (texture_.is_null() || texture_.get_size() != containerView_->get_size()) {
         texture_ = ui::Manager::getSingleton()->providerRenderBufferTexture(containerView_->get_size());
-        
+
         frameBuffer_ = CL_FrameBuffer(gc);
         frameBuffer_.attach_color_buffer(0, texture_);
     }
@@ -84,7 +84,7 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
     gc.set_texture(0, huesTexture);
     // set texture unit 1 active to avoid overriding the hue texture with newly loaded object textures
     gc.set_texture(1, huesTexture);
-    
+
     shader->set_uniform1i("HueTexture", 0);
     shader->set_uniform1i("ObjectTexture", 1);
 
@@ -108,9 +108,9 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
         vertexCoords[3] = CL_Vec2f(rect.right, rect.top);
         vertexCoords[4] = CL_Vec2f(rect.left, rect.bottom);
         vertexCoords[5] = CL_Vec2f(rect.right, rect.bottom);
-        
+
         CL_Rectf texCoordHelper = bgTex->getNormalizedTextureCoords();
-        
+
         CL_Vec2f texCoords[6] = {
             CL_Vec2f(texCoordHelper.left, texCoordHelper.top),
             CL_Vec2f(texCoordHelper.right, texCoordHelper.top),
@@ -160,7 +160,7 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
         vertexCoords[3] = CL_Vec2f(rect.right, rect.top);
         vertexCoords[4] = CL_Vec2f(rect.left, rect.bottom);
         vertexCoords[5] = CL_Vec2f(rect.right, rect.bottom);
-        
+
         CL_Rectf texCoordHelper = tex->getNormalizedTextureCoords();
 
         CL_Vec2f texCoords[6] = {
@@ -176,7 +176,7 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
         primarray.set_attributes(0, vertexCoords);
         primarray.set_attributes(1, texCoords);
 
-        primarray.set_attribute(2, curObj->getHueInfo());
+        primarray.set_attribute(2, curObj->getHueInfo(false));
 
         gc.set_texture(1, tex->getTexture());
         gc.draw_primitives(cl_triangles, 6, primarray);
@@ -186,7 +186,7 @@ void ContainerRenderer::render(CL_GraphicContext& gc) {
     gc.reset_program_object();
 
     renderQueue_->postRender(renderingComplete);
-    
+
     if (!renderingComplete) {
         ui::Manager::getSingleton()->queueComponentRepaint(containerView_);
     }

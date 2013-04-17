@@ -17,41 +17,29 @@
  */
 
 
-#ifndef FLUO_WORLD_SERVEROBJECT_HPP
-#define FLUO_WORLD_SERVEROBJECT_HPP
+#ifndef FLUO_NET_PACKETS_OBJECTPROPERTYREQUEST_HPP
+#define FLUO_NET_PACKETS_OBJECTPROPERTYREQUEST_HPP
 
-#include "ingameobject.hpp"
+#include <net/packet.hpp>
 
 #include <typedefs.hpp>
 
 namespace fluo {
-namespace world {
+namespace net {
 
-class ServerObject : public IngameObject {
+namespace packets {
+
+class ObjectPropertyRequest : public Packet {
 public:
-    ServerObject(Serial serial, unsigned int objectType);
+    ObjectPropertyRequest(Serial obj);
 
-    Serial getSerial() const;
-
-    void setHue(unsigned int hue);
-
-    virtual void onLocationChanged(const CL_Vec3f& oldLocation);
-    virtual void onDelete();
-
-    void clearClilocProperties();
-    void addClilocProperty(unsigned int cliloc, const UnicodeString& args);
-    void setClilocPropertiesHash(uint32_t hash);
-    bool checkClilocPropertiesHash(uint32_t hash);
-    void requestClilocProperties();
+    virtual bool write(int8_t* buf, unsigned int len, unsigned int& index) const;
 
 private:
     Serial serial_;
-    unsigned int hue_;
-
-    uint32_t clilocPropertiesHash_;
-    std::list<UnicodeString> clilocProperties_;
 };
 
+}
 }
 }
 

@@ -126,6 +126,24 @@ bool PacketReader::readUnicodeFixed(const int8_t* buf, unsigned int len, unsigne
     }
 }
 
+bool PacketReader::readUnicodeFixedLE(const int8_t* buf, unsigned int len, unsigned int& index, UnicodeString& value, unsigned int numChars) {
+    unsigned int numBytes = numChars * 2; // 2 bytes per char
+    if (index + numBytes <= len) {
+        value = StringConverter::fromUnicodeLE(&buf[index], numBytes);
+
+        static UnicodeString errorIndicator("##FLUOERROR");
+
+        if (value == errorIndicator) {
+            return false;
+        } else {
+            index += numBytes;
+            return true;
+        }
+    } else {
+        return false;
+    }
+}
+
 bool PacketReader::read(const int8_t* buf, unsigned int len, unsigned int& index, uint8_t& value) {
     if (index + sizeof(uint8_t) > len) {
         return false;

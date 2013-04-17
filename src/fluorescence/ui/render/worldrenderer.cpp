@@ -331,7 +331,7 @@ void WorldRenderer::renderObject(CL_GraphicContext& gc, world::IngameObject* obj
         memcpy(&batchTexCoords_[batchFill_], texCoords, sizeof(CL_Vec2f) * 6);
     }
 
-    CL_Vec3f hueInfo = obj->getHueInfo();
+    CL_Vec3f hueInfo = obj->getHueInfo(false);
     float materialId = obj->getMaterial()->id_;
     for (unsigned int i = 0; i < 6; ++i) {
         batchHueInfos_[batchFill_ + i] = hueInfo;

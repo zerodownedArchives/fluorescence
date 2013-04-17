@@ -27,6 +27,7 @@
 #include <ClanLib/gui.h>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <boost/program_options.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/python/dict.hpp>
@@ -156,6 +157,8 @@ public:
     void saveDesktop();
     void restoreDesktop();
 
+    void setMouseOverObject(const boost::shared_ptr<world::IngameObject>& obj);
+
 private:
     static Manager* singleton_;
 
@@ -207,7 +210,7 @@ private:
     void onInputOutsideWindows(const CL_InputEvent& event, const CL_InputState& state);
 
     unsigned int doubleClickTimeout_;
-    std::pair<world::IngameObject*, unsigned int> singleClickWait_;
+    std::pair<boost::weak_ptr<world::IngameObject>, unsigned int> singleClickWait_;
 
     std::vector<int> mapIgnoreIds_;
     std::vector<int> staticIgnoreIds_;
@@ -224,6 +227,8 @@ private:
     Serial promptSerial_;
 
     boost::shared_ptr<python::ScriptLoader> pythonLoader_;
+
+    boost::weak_ptr<world::IngameObject> mouseOverObject_;
 };
 
 }

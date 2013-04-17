@@ -21,7 +21,11 @@
 #include "serverobject.hpp"
 
 #include <data/manager.hpp>
+#include <data/clilocloader.hpp>
 #include <data/huesloader.hpp>
+
+#include <net/manager.hpp>
+#include <net/packets/d6_objectpropertyrequest.hpp>
 
 #include "manager.hpp"
 #include "sectormanager.hpp"
@@ -31,8 +35,10 @@ namespace fluo {
 namespace world {
 
 
-ServerObject::ServerObject(Serial serial, unsigned int objectType) : IngameObject(objectType), serial_(serial), hue_(0) {
+ServerObject::ServerObject(Serial serial, unsigned int objectType) : IngameObject(objectType),
+        serial_(serial), hue_(0), clilocPropertiesHash_(0) {
     draggable_ = true;
+    requestClilocProperties();
 }
 
 Serial ServerObject::getSerial() const {
@@ -72,6 +78,29 @@ void ServerObject::onDelete() {
     sector_.reset();
 
     IngameObject::onDelete();
+}
+
+void ServerObject::clearClilocProperties() {
+    clilocProperties_.clear();
+}
+
+void ServerObject::addClilocProperty(unsigned int cliloc, const UnicodeString& args) {
+    clilocProperties_.push_back(data::Manager::getClilocLoader()->get(cliloc, args));
+}
+
+void ServerObject::setClilocPropertiesHash(uint32_t hash) {
+    clilocPropertiesHash_ = hash;
+}
+
+bool ServerObject::checkClilocPropertiesHash(uint32_t hash) {
+    return clilocPropertiesHash_ != hash;
+}
+
+void ServerObject::requestClilocProperties() {
+    LOG_DEBUG << "req cliloc props " << serial_ << std::endl;
+    clearClilocProperties();
+    net::packets::ObjectPropertyRequest req(serial_);
+    net::Manager::getSingleton()->send(req);
 }
 
 }

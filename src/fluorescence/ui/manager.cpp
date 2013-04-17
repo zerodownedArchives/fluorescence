@@ -187,10 +187,10 @@ void Manager::stepInput(unsigned int elapsedMillis) {
     }
 
     // waiting for a doubleclick?
-    if (singleClickWait_.first) {
+    if (boost::shared_ptr<world::IngameObject> singleClickWaitObj = singleClickWait_.first.lock()) {
         if (singleClickWait_.second <= elapsedMillis) {
-            singleClickWait_.first->onClick();
-            singleClickWait_.first = nullptr;
+            singleClickWaitObj->onClick();
+            singleClickWait_.first.reset();
         } else {
             singleClickWait_.second -= elapsedMillis;
         }
@@ -415,20 +415,20 @@ void Manager::onSingleClick(boost::shared_ptr<world::IngameObject> obj) {
     LOG_DEBUG << "single click" << std::endl;
     if (cursorManager_->hasTarget()) {
         cursorManager_->onTarget(obj);
-    } else if (singleClickWait_.first) {
+    } else if (!singleClickWait_.first.expired()) {
         // we are already waiting for a doubleclick
         obj->onDoubleClick();
-        singleClickWait_.first = nullptr;
+        singleClickWait_.first.reset();
     } else {
         // emit single click event in doubleClickTimeout_ milliseconds
-        singleClickWait_.first = obj.get();
+        singleClickWait_.first = obj;
         singleClickWait_.second = doubleClickTimeout_;
     }
 }
 
 void Manager::onDoubleClick(boost::shared_ptr<world::IngameObject> obj) {
     LOG_DEBUG << "double click" << std::endl;
-    singleClickWait_.first = nullptr;
+    singleClickWait_.first.reset();
 
     if (cursorManager_->hasTarget()) {
         cursorManager_->onTarget(obj);
@@ -555,7 +555,8 @@ void Manager::queueComponentRepaint(CL_GUIComponent* comp) {
 }
 
 void Manager::releaseIngameObjects() {
-    singleClickWait_.first =  nullptr;
+    singleClickWait_.first.reset();
+    mouseOverObject_.reset();
     if (cursorManager_) {
         cursorManager_->releaseIngameObjects();
     }
@@ -703,6 +704,23 @@ void Manager::restoreDesktop() {
         LOG_INFO << "No gamewindow found after restoring desktop, opening default" << std::endl;
         openPythonGump("gamewindow");
     }
+}
+
+void Manager::setMouseOverObject(const boost::shared_ptr<world::IngameObject>& obj) {
+    boost::shared_ptr<world::IngameObject> curObj = mouseOverObject_.lock();
+    if (curObj == obj) {
+        return;
+    }
+
+    if (curObj) {
+        curObj->setMouseOver(false);
+    }
+
+    if (obj) {
+        obj->setMouseOver(true);
+    }
+
+    mouseOverObject_ = obj;
 }
 
 }

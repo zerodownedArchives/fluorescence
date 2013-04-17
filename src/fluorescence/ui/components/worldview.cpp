@@ -371,11 +371,18 @@ bool WorldView::onPointerMoved(const CL_InputEvent& e) {
         return true;
     }
 
+    boost::shared_ptr<world::IngameObject> mouseOverObj = getFirstIngameObjectAt(e.mouse_pos.x, e.mouse_pos.y);
+    ui::Manager::getSingleton()->setMouseOverObject(mouseOverObj);
+
     return false;
 }
 
 bool WorldView::onPointerExit() {
     ui::Manager::getCursorManager()->setCursorEnableFlags(ui::CursorEnableFlags::NONE);
+
+    boost::shared_ptr<world::IngameObject> nullObj;
+    ui::Manager::getSingleton()->setMouseOverObject(nullObj);
+
     return true;
 }
 

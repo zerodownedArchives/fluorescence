@@ -60,6 +60,7 @@ public:
 
     bool onPointerEnter();
     bool onPointerExit();
+    bool onPointerMoved(const CL_InputEvent& e);
 
     virtual bool has_pixel(const CL_Point& p) const;
 

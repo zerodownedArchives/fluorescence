@@ -42,7 +42,7 @@ namespace world {
 IngameObject::IngameObject(unsigned int objectType) :
     draggable_(false),
     materialInfo_(ui::render::MaterialInfo::get(Material::DEFAULT)),
-    objectType_(objectType), visible_(true), ignored_(false) {
+    objectType_(objectType), visible_(true), ignored_(false), mouseOver_(false) {
 
 }
 
@@ -150,7 +150,12 @@ const CL_Vec3f* IngameObject::getVertexCoordinates() const {
     return worldRenderData_.getVertexCoordinates();
 }
 
-const CL_Vec3f& IngameObject::getHueInfo() const {
+const CL_Vec3f& IngameObject::getHueInfo(bool ignoreMouseOver) const {
+    if (!ignoreMouseOver && mouseOver_) {
+        static CL_Vec3f mouseOverHueVec = CL_Vec3f(0, 0x9A, 1);
+        return mouseOverHueVec;
+    }
+
     return worldRenderData_.hueInfo_;
 }
 
@@ -627,6 +632,11 @@ void IngameObject::setMaterial(unsigned int material) {
 
 const ui::render::MaterialInfo* IngameObject::getMaterial() const {
     return materialInfo_;
+}
+
+void IngameObject::setMouseOver(bool mo) {
+    mouseOver_ = mo;
+    forceRepaint();
 }
 
 }
