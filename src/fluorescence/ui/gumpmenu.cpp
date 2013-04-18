@@ -522,5 +522,9 @@ void GumpMenu::onWarmodeChanged() {
     executePythonCallback(pyWarmodeChangeCallback_);
 }
 
+void GumpMenu::clearComponents() {
+    delete_child_components();
+}
+
 }
 }

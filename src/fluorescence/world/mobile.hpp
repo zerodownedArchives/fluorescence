@@ -23,6 +23,7 @@
 #include <list>
 #include <map>
 
+#include "buffinfo.hpp"
 #include "serverobject.hpp"
 
 #include <misc/variable.hpp>
@@ -114,6 +115,12 @@ public:
     // depending on the difference to the current location, this is either done with smooth movement or a teleport
     void moveTo(unsigned int locX, unsigned int locY, int locZ, unsigned int direction);
 
+    void addBuff(const BuffInfo& info);
+    void removeBuff(unsigned int buffType);
+    void refreshBuffGump();
+    std::list<BuffInfo>::iterator buffsBegin();
+    std::list<BuffInfo>::iterator buffsEnd();
+
     // python specific stuff
     bool equalWrap(const boost::shared_ptr<world::Mobile>& other);
     UnicodeString pyGetProperty(const UnicodeString& name);
@@ -149,6 +156,8 @@ private:
     // these are used to display the halted animations for mobiles != player
     void haltAnimationCallback();
     void resumeAnimationCallback();
+
+    std::list<BuffInfo> buffs_;
 };
 
 }

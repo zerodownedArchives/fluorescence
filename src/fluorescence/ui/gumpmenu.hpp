@@ -106,6 +106,7 @@ public:
     GumpComponent* getNamedComponent(const UnicodeString& name);
 
     void close();
+    void clearComponents();
 
 
     // python specific

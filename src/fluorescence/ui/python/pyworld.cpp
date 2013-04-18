@@ -18,12 +18,20 @@
 
 #include "pyworld.hpp"
 
+#include <boost/python/tuple.hpp>
+
+#include <data/manager.hpp>
+#include <data/clilocloader.hpp>
+
 #include <net/manager.hpp>
 #include <net/packets/06_doubleclick.hpp>
 #include <net/packets/b8_profile.hpp>
+
 #include <world/manager.hpp>
 #include <world/mobile.hpp>
 #include <world/dynamicitem.hpp>
+
+namespace bpy = boost::python;
 
 namespace fluo {
 namespace ui {
@@ -49,6 +57,25 @@ void PyWorld::openProfile(const boost::shared_ptr<world::Mobile>& self) {
 void PyWorld::openPaperdoll(const boost::shared_ptr<world::Mobile>& self) {
     net::packets::DoubleClick pkt(self->getSerial());
     net::Manager::getSingleton()->send(pkt);
+}
+
+boost::python::list PyWorld::getBuffs(const boost::shared_ptr<world::Mobile>& self) {
+    bpy::list ret;
+
+    std::list<world::BuffInfo>::iterator iter = self->buffsBegin();
+    std::list<world::BuffInfo>::iterator end = self->buffsEnd();
+
+    for (; iter != end; ++iter) {
+        ret.append(
+            bpy::make_tuple(
+                iter->iconId_,
+                data::Manager::getSingleton()->getClilocLoader()->get(iter->clilocTitle_, iter->clilocTitleArgs_),
+                data::Manager::getSingleton()->getClilocLoader()->get(iter->cliloc2_, iter->cliloc2Args_)
+            )
+        );
+    }
+
+    return ret;
 }
 
 }

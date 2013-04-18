@@ -59,6 +59,8 @@ public:
     void saveToFile(const boost::filesystem::path& path);
     void loadFromFile(const boost::filesystem::path& path);
 
+    boost::python::object callFunction(GumpMenu* menu, const UnicodeString& moduleName, const char* functionName);
+
 private:
     bool initialized_;
 

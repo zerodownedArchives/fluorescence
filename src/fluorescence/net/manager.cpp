@@ -180,6 +180,7 @@ boost::shared_ptr<Packet> Manager::createPacket(uint8_t id) {
         case 0xD6: ret.reset(new packets::ObjectProperties()); break;
         case 0xDC: ret.reset(new packets::ObjectPropertiesHash()); break;
         case 0xDD: ret.reset(new packets::CompressedGumpMenu()); break;
+        case 0xDF: ret.reset(new packets::Buff()); break;
         case 0xE2: ret.reset(new packets::MobileAnimationSA()); break;
         case 0xF3: ret.reset(new packets::WorldObject()); break;
         default: ret.reset(new packets::Unknown(id)); break;

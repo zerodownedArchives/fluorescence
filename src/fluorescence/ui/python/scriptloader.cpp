@@ -189,22 +189,9 @@ void ScriptLoader::saveGumps(std::list<std::pair<UnicodeString, bpy::object> >& 
             continue;
         }
 
-        std::map<UnicodeString, bpy::object>::iterator gumpModule = pythonModules_.find(curMenu->getName());
-        if (gumpModule == pythonModules_.end()) {
-            LOG_WARN << "Unable to find python module for gump " << name << ". Will not be saved." << std::endl;
-        } else {
-            // call the gump's save function
-            try {
-                if (gumpModule->second.attr("save")) {
-                    bpy::object savedDict = gumpModule->second.attr("save")(bpy::ptr(curMenu));
-                    savedObjects.push_back(std::make_pair(name, savedDict));
-                } else {
-                    LOG_WARN << "No function save in gump module " << name << std::endl;
-                }
-
-            } catch (bpy::error_already_set const&) {
-                logError();
-            }
+        bpy::object savedDict = callFunction(curMenu, name, "save");
+        if (savedDict) {
+            savedObjects.push_back(std::make_pair(name, savedDict));
         }
     }
 }
@@ -328,6 +315,29 @@ void ScriptLoader::loadFromFile(const boost::filesystem::path& path) {
     } catch (bpy::error_already_set const&) {
         logError();
     }
+}
+
+bpy::object ScriptLoader::callFunction(GumpMenu* menu, const UnicodeString& moduleName, const char* functionName) {
+    bpy::object retval;
+
+    // find the module
+    std::map<UnicodeString, bpy::object>::iterator gumpModule = pythonModules_.find(moduleName);
+    if (gumpModule == pythonModules_.end()) {
+        LOG_WARN << "Unable to find python module " << moduleName << ". Unable to call function " << functionName << std::endl;
+    } else {
+        // call the gump's function
+        try {
+            if (gumpModule->second.attr(functionName)) {
+                retval = gumpModule->second.attr(functionName)(bpy::ptr(menu));
+            } else {
+                LOG_WARN << "No function " << functionName << " in gump module " << moduleName << std::endl;
+            }
+        } catch (bpy::error_already_set const&) {
+            logError();
+        }
+    }
+
+    return retval;
 }
 
 }

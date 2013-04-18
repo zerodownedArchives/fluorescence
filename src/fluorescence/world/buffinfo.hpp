@@ -17,37 +17,37 @@
  */
 
 
-#ifndef FLUO_UI_PYTHON_PYWORLD_HPP
-#define FLUO_UI_PYTHON_PYWORLD_HPP
-
-#include <boost/shared_ptr.hpp>
-#include <boost/python/list.hpp>
+#ifndef FLUO_WORLD_BUFFINFO_HPP
+#define FLUO_WORLD_BUFFINFO_HPP
 
 #include <typedefs.hpp>
+#include <misc/string.hpp>
 
 namespace fluo {
-
 namespace world {
-class Mobile;
-class DynamicItem;
-}
 
-namespace ui {
-namespace python {
-
-class PyWorld {
-public:
-    static boost::shared_ptr<world::Mobile> getPlayer();
-    static boost::shared_ptr<world::Mobile> getMobile(Serial serial);
-    static boost::shared_ptr<world::DynamicItem> getDynamicItem(Serial serial);
-
-    static void openProfile(const boost::shared_ptr<world::Mobile>& self);
-    static void openPaperdoll(const boost::shared_ptr<world::Mobile>& self);
-
-    static boost::python::list getBuffs(const boost::shared_ptr<world::Mobile>& self);
+struct BuffInfo {
+    uint16_t buffType_;
+    uint16_t sourceType_;
+    uint16_t iconId_;
+    uint16_t duration_;
+    uint32_t clilocTitle_;
+    uint32_t cliloc2_;
+    uint32_t cliloc3_;
+    UnicodeString clilocTitleArgs_;
+    UnicodeString cliloc2Args_;
+    UnicodeString cliloc3Args_;
 };
 
-}
+struct BuffInfoRemoveHelper {
+public:
+    BuffInfoRemoveHelper(unsigned int t) : type_(t) { }
+
+    bool operator() (const BuffInfo& info) { return info.buffType_ == type_; }
+private:
+    unsigned int type_;
+};
+
 }
 }
 

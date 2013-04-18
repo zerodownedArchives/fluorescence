@@ -17,34 +17,35 @@
  */
 
 
-#ifndef FLUO_UI_PYTHON_PYWORLD_HPP
-#define FLUO_UI_PYTHON_PYWORLD_HPP
+#ifndef FLUO_NET_PACKETS_BUFF_HPP
+#define FLUO_NET_PACKETS_BUFF_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <boost/python/list.hpp>
+#include <net/packet.hpp>
 
+#include <list>
 #include <typedefs.hpp>
+#include <world/buffinfo.hpp>
 
 namespace fluo {
+namespace net {
 
-namespace world {
-class Mobile;
-class DynamicItem;
-}
+namespace packets {
 
-namespace ui {
-namespace python {
-
-class PyWorld {
+class Buff : public Packet {
 public:
-    static boost::shared_ptr<world::Mobile> getPlayer();
-    static boost::shared_ptr<world::Mobile> getMobile(Serial serial);
-    static boost::shared_ptr<world::DynamicItem> getDynamicItem(Serial serial);
+    Buff();
 
-    static void openProfile(const boost::shared_ptr<world::Mobile>& self);
-    static void openPaperdoll(const boost::shared_ptr<world::Mobile>& self);
+    virtual bool read(const int8_t* buf, unsigned int len, unsigned int& index);
 
-    static boost::python::list getBuffs(const boost::shared_ptr<world::Mobile>& self);
+    virtual void onReceive();
+
+private:
+    Serial serial_;
+    uint16_t buffType_;
+
+    uint16_t packetAction_;
+
+    world::BuffInfo buffInfo_;
 };
 
 }
@@ -52,4 +53,3 @@ public:
 }
 
 #endif
-

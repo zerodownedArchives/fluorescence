@@ -115,8 +115,8 @@ void ServerObject::openPropertyListGump(const CL_Point& mousePos) {
 
     try {
         boost::python::dict args;
-        args["x"] = mousePos.x;
-        args["y"] = mousePos.y;
+        args["x"] = mousePos.x + 1;
+        args["y"] = mousePos.y + 1;
 
         boost::python::list lines;
         std::list<UnicodeString>::iterator iter = clilocProperties_.begin();

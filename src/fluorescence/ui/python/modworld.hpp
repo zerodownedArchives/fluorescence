@@ -41,6 +41,7 @@ BOOST_PYTHON_MODULE(world) {
 
     bpy::class_<world::Mobile, boost::shared_ptr<world::Mobile>, bpy::bases<world::ServerObject>, boost::noncopyable>("Mobile", bpy::no_init)
         .add_property("warmode", &world::Mobile::isWarMode, &world::Mobile::setWarMode)
+        .add_property("buffs", &PyWorld::getBuffs)
         .def("__eq__", &world::Mobile::equalWrap)
         .def("openStatus", &world::Mobile::openStatusGump)
         .def("openSkills", &world::Mobile::openSkillsGump)

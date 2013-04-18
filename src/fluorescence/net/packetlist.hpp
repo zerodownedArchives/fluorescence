@@ -92,6 +92,7 @@
 #include "packets/d6_objectproperties.hpp"
 #include "packets/dc_objectpropertieshash.hpp"
 #include "packets/dd_compressedgumpmenu.hpp"
+#include "packets/df_buff.hpp"
 #include "packets/e2_mobileanimation_sa.hpp" // replaces 6e
 #include "packets/ef_seed.hpp"
 #include "packets/f3_worldobject.hpp" // replaces 1a

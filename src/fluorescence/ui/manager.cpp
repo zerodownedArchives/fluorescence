@@ -350,6 +350,10 @@ GumpMenu* Manager::getGumpMenu(const UnicodeString& gumpName) {
 }
 
 void Manager::processGumpCloseList() {
+    if (gumpCloseList_.size() > 1) {
+        gumpCloseList_.unique();
+    }
+
     std::list<GumpMenu*>::iterator iter = gumpCloseList_.begin();
     std::list<GumpMenu*>::iterator end = gumpCloseList_.end();
 

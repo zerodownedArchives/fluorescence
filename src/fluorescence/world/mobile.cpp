@@ -669,5 +669,34 @@ UnicodeString Mobile::pyGetProperty(const UnicodeString& prop) {
     }
 }
 
+void Mobile::addBuff(const BuffInfo& info) {
+    buffs_.push_back(info);
+
+    refreshBuffGump();
+}
+
+void Mobile::removeBuff(unsigned int buffType) {
+    buffs_.remove_if(BuffInfoRemoveHelper(buffType));
+
+    refreshBuffGump();
+}
+
+void Mobile::refreshBuffGump() {
+    ui::GumpMenu* buffGump = ui::Manager::getSingleton()->getGumpMenu("buffbar");
+    if (buffGump) {
+        ui::Manager::getPythonLoader()->callFunction(buffGump, "buffbar", "refreshBuffs");
+    } else {
+        ui::Manager::getSingleton()->openPythonGump("buffbar");
+    }
+}
+
+std::list<BuffInfo>::iterator Mobile::buffsBegin() {
+    return buffs_.begin();
+}
+
+std::list<BuffInfo>::iterator Mobile::buffsEnd() {
+    return buffs_.end();
+}
+
 }
 }

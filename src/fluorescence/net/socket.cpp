@@ -247,7 +247,7 @@ void Socket::dumpBuffer(int8_t* buf, unsigned int length) {
         if (i % 8 == 0) {
             printf("\n%4u: ", i);
         }
-        printf("%x(%c) ", (uint8_t)buf[i], buf[i]);
+        printf("%2x(%c) ", (uint8_t)buf[i], isprint(buf[i]) ? buf[i] : '?');
     }
     printf("\n");
 }

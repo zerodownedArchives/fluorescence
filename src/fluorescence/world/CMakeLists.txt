@@ -18,6 +18,7 @@ set (WORLD_HPP
     world/effect.hpp
     world/osieffect.hpp
     world/syslog.hpp
+    world/buffinfo.hpp
     )
 
 set (WORLD_CPP

@@ -84,6 +84,7 @@ BOOST_PYTHON_MODULE(ui) {
         .def("component", &GumpMenu::getNamedComponent, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("close", &GumpMenu::close)
         .def("addPage", &GumpMenu::addPage)
+        .def("clearComponents", &GumpMenu::clearComponents)
         .add_property("page", &GumpMenu::getActivePageId, &GumpMenu::activatePage)
         .add_property("mobile", &GumpMenu::getLinkedMobile, &GumpMenu::setLinkedMobile)
     ;

@@ -104,6 +104,7 @@ set (PACKETS_HPP
     net/packets/d6_objectpropertyrequest.hpp
     net/packets/dc_objectpropertieshash.hpp
     net/packets/dd_compressedgumpmenu.hpp
+    net/packets/df_buff.hpp
     net/packets/e2_mobileanimation_sa.hpp
     net/packets/ef_seed.hpp
     net/packets/f3_worldobject.hpp
@@ -195,6 +196,7 @@ set (PACKETS_CPP
     net/packets/d6_objectpropertyrequest.cpp
     net/packets/dc_objectpropertieshash.cpp
     net/packets/dd_compressedgumpmenu.cpp
+    net/packets/df_buff.cpp
     net/packets/e2_mobileanimation_sa.cpp
     net/packets/ef_seed.cpp
     net/packets/f3_worldobject.cpp
