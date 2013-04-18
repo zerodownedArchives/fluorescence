@@ -20,12 +20,18 @@
 
 #include "serverobject.hpp"
 
+#include <boost/python/dict.hpp>
+#include <boost/python/list.hpp>
+
 #include <data/manager.hpp>
 #include <data/clilocloader.hpp>
 #include <data/huesloader.hpp>
 
 #include <net/manager.hpp>
 #include <net/packets/d6_objectpropertyrequest.hpp>
+
+#include <ui/manager.hpp>
+#include <ui/python/scriptloader.hpp>
 
 #include "manager.hpp"
 #include "sectormanager.hpp"
@@ -97,10 +103,34 @@ bool ServerObject::checkClilocPropertiesHash(uint32_t hash) {
 }
 
 void ServerObject::requestClilocProperties() {
-    LOG_DEBUG << "req cliloc props " << serial_ << std::endl;
     clearClilocProperties();
     net::packets::ObjectPropertyRequest req(serial_);
     net::Manager::getSingleton()->send(req);
+}
+
+void ServerObject::openPropertyListGump(const CL_Point& mousePos) {
+    if (clilocProperties_.empty()) {
+        return;
+    }
+
+    try {
+        boost::python::dict args;
+        args["x"] = mousePos.x;
+        args["y"] = mousePos.y;
+
+        boost::python::list lines;
+        std::list<UnicodeString>::iterator iter = clilocProperties_.begin();
+        std::list<UnicodeString>::iterator end = clilocProperties_.end();
+        for (; iter != end; ++iter) {
+            lines.append(*iter);
+        }
+        args["lines"] = lines;
+
+        ui::Manager::getSingleton()->openPythonGump("objectpropertylist", args);
+    } catch (const boost::python::error_already_set& err) {
+        ui::Manager::getSingleton()->getPythonLoader()->logError();
+        throw;
+    }
 }
 
 }

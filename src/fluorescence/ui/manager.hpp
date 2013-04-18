@@ -229,6 +229,8 @@ private:
     boost::shared_ptr<python::ScriptLoader> pythonLoader_;
 
     boost::weak_ptr<world::IngameObject> mouseOverObject_;
+    unsigned int clilocPropertiesTimeout_;
+    unsigned int clilocPropertiesTimer_;
 };
 
 }

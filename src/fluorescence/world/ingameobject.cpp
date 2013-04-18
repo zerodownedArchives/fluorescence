@@ -151,7 +151,7 @@ const CL_Vec3f* IngameObject::getVertexCoordinates() const {
 }
 
 const CL_Vec3f& IngameObject::getHueInfo(bool ignoreMouseOver) const {
-    if (!ignoreMouseOver && mouseOver_) {
+    if (mouseOver_ && !ignoreMouseOver && isDynamicItem()) {
         static CL_Vec3f mouseOverHueVec = CL_Vec3f(0, 0x9A, 1);
         return mouseOverHueVec;
     }
@@ -637,6 +637,9 @@ const ui::render::MaterialInfo* IngameObject::getMaterial() const {
 void IngameObject::setMouseOver(bool mo) {
     mouseOver_ = mo;
     forceRepaint();
+}
+
+void IngameObject::openPropertyListGump(const CL_Point& mousePos) {
 }
 
 }

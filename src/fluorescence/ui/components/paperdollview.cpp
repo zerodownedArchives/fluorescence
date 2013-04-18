@@ -56,6 +56,8 @@ PaperdollView::PaperdollView(CL_GUIComponent* parent) : GumpComponent(parent) {
     func_input_pressed().set(this, &PaperdollView::onInputPressed);
     func_input_released().set(this, &PaperdollView::onInputReleased);
     func_input_doubleclick().set(this, &PaperdollView::onDoubleClick);
+    func_input_pointer_moved().set(this, &PaperdollView::onPointerMoved);
+    func_pointer_exit().set(this, &PaperdollView::onPointerExit);
 
     set_type_name("paperdollview");
 }
@@ -182,6 +184,22 @@ bool PaperdollView::has_pixel(const CL_Point& p) const {
 void PaperdollView::setMobile(const boost::shared_ptr<world::Mobile>& mob) {
     mobile_ = mob;
     addObject(mob);
+}
+
+bool PaperdollView::onPointerMoved(const CL_InputEvent& e) {
+    boost::shared_ptr<world::IngameObject> mouseOverObj = renderer_->getRenderQueue()->getFirstObjectAt(e.mouse_pos.x, e.mouse_pos.y, false);
+    if (!mouseOverObj || (mouseOverObj && mouseOverObj->isDynamicItem())) {
+        ui::Manager::getSingleton()->setMouseOverObject(mouseOverObj);
+    }
+
+    return false;
+}
+
+bool PaperdollView::onPointerExit() {
+    boost::shared_ptr<world::IngameObject> nullObj;
+    ui::Manager::getSingleton()->setMouseOverObject(nullObj);
+
+    return true;
 }
 
 }

@@ -62,6 +62,8 @@ private:
     bool onInputPressed(const CL_InputEvent& e);
     bool onInputReleased(const CL_InputEvent & e);
     bool onDoubleClick(const CL_InputEvent& e);
+    bool onPointerMoved(const CL_InputEvent& e);
+    bool onPointerExit();
 
     boost::shared_ptr<world::Mobile> mobile_;
 };

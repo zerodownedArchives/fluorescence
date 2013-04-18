@@ -74,15 +74,15 @@ bool ObjectProperties::read(const int8_t* buf, unsigned int len, unsigned int& i
 }
 
 void ObjectProperties::onReceive() {
-    LOG_DEBUG << "Object properties for serial " << serial_ << std::endl;
+    //LOG_DEBUG << "Object properties for serial " << serial_ << std::endl;
 
     std::list<Property>::iterator iter = props_.begin();
     std::list<Property>::iterator end = props_.end();
-    for (; iter != end; ++iter) {
-        LOG_DEBUG << "  " << data::Manager::getClilocLoader()->get(iter->cliloc_, iter->args_) << std::endl;
-    }
+    //for (; iter != end; ++iter) {
+        //LOG_DEBUG << "  " << data::Manager::getClilocLoader()->get(iter->cliloc_, iter->args_) << std::endl;
+    //}
 
-    iter = props_.begin();
+    //iter = props_.begin();
 
     boost::shared_ptr<world::DynamicItem> itm = world::Manager::getSingleton()->getDynamicItem(serial_, false);
     if (itm) {

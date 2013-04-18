@@ -168,6 +168,7 @@ public:
     const ui::render::MaterialInfo* getMaterial() const;
 
     void setMouseOver(bool mo);
+    virtual void openPropertyListGump(const CL_Point& mousePos);
 
 protected:
     ui::WorldRenderData worldRenderData_;

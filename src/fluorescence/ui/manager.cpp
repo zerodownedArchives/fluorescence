@@ -155,6 +155,7 @@ bool Manager::setShardConfig(Config& config) {
     macroManager_.reset(new MacroManager(config));
 
     doubleClickTimeout_ = config["/fluo/input/mouse@doubleclick-timeout-ms"].asInt();
+    clilocPropertiesTimeout_ = config["/fluo/input/mouse@object-properties-timeout-ms"].asInt();
 
     config["/fluo/specialids/ignore@mapart"].toIntList(mapIgnoreIds_);
     config["/fluo/specialids/ignore@staticart"].toIntList(staticIgnoreIds_);
@@ -193,6 +194,16 @@ void Manager::stepInput(unsigned int elapsedMillis) {
             singleClickWait_.first.reset();
         } else {
             singleClickWait_.second -= elapsedMillis;
+        }
+    }
+
+    if (boost::shared_ptr<world::IngameObject> clilocPropObj = mouseOverObject_.lock()) {
+        if (clilocPropertiesTimer_ <= elapsedMillis && clilocPropertiesTimer_ != 0) {
+            // show cliloc properties
+            clilocPropObj->openPropertyListGump(getMousePosition());
+            clilocPropertiesTimer_ = 0;
+        } else {
+            clilocPropertiesTimer_ -= elapsedMillis;
         }
     }
 
@@ -714,10 +725,12 @@ void Manager::setMouseOverObject(const boost::shared_ptr<world::IngameObject>& o
 
     if (curObj) {
         curObj->setMouseOver(false);
+        closeGumpMenu("objectpropertylist");
     }
 
     if (obj) {
         obj->setMouseOver(true);
+        clilocPropertiesTimer_ = clilocPropertiesTimeout_;
     }
 
     mouseOverObject_ = obj;

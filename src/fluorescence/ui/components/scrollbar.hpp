@@ -59,7 +59,6 @@
 #include <ClanLib/Core/System/timer.h>
 #include <ClanLib/GUI/gui_message.h>
 #include <ClanLib/GUI/gui_message_input.h>
-#include <ClanLib/GUI/gui_theme_part.h>
 #include <ClanLib/Display/Window/input_event.h>
 #include <ClanLib/Display/Render/graphic_context.h>
 #include <ClanLib/Core/Signals/callback_v0.h>

@@ -44,6 +44,8 @@ public:
     bool checkClilocPropertiesHash(uint32_t hash);
     void requestClilocProperties();
 
+    virtual void openPropertyListGump(const CL_Point& mousePos);
+
 private:
     Serial serial_;
     unsigned int hue_;
