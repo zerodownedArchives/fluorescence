@@ -30,7 +30,7 @@
 #include <world/osieffect.hpp>
 #include <world/mobile.hpp>
 #include <world/dynamicitem.hpp>
-#include <world/particleeffect.hpp>
+#include <world/ingameparticleeffect.hpp>
 
 namespace fluo {
 namespace net {
@@ -86,10 +86,11 @@ void OsiEffect::onReceive() {
     data::EffectTranslationDef translation = data::Manager::getEffectTranslationDef(artId_);
     if (translation.effectId_ == artId_) {
         // has translation
-        effect = ui::particles::XmlLoader::fromFile(translation.particleEffectName_);
-        if (!effect) {
+        boost::shared_ptr<world::IngameParticleEffect> transEffect(new world::IngameParticleEffect());
+        if (!ui::particles::XmlLoader::fromFile(translation.particleEffectName_, transEffect)) {
             return;
         }
+        effect = transEffect;
     } else {
         effect.reset(new world::OsiEffect(artId_));
     }

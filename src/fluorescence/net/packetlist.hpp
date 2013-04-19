@@ -48,6 +48,7 @@
 #include "packets/54_playsound.hpp"
 #include "packets/55_logincomplete.hpp"
 #include "packets/5d_characterselect.hpp"
+#include "packets/65_weather.hpp"
 #include "packets/6c_target.hpp"
 #include "packets/6d_playmusic.hpp"
 #include "packets/6e_mobileanimation.hpp" // deprecated since SA, replaced by e2

@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
+<!-- TODO: looks not really snowy at the moment, should be improved in the future :) -->
 <particleeffect>
     <emitters>
-        <emitter capacity="5000">
+        <emitter capacity="10000">
             <texture source="file" id="effects/textures/rain.png" />
             <timeline>
                 <forever state="stop" />
@@ -42,18 +43,18 @@
             <motion model="velocities" />
 
             <particles>
-                <lifetime min="1.0" max="1.2" />
+                <lifetime min="1.5" max="2.0" />
                 <t0>
-                    <color min="#00557777" max="#0099cc99" />
-                    <velocity-min x="-10" y="800" />
-                    <velocity-max x="-30" y="1000" />
+                    <color min="#dddddd" max="#ffffff" />
+                    <velocity-min x="-10" y="400" />
+                    <velocity-max x="-30" y="600" />
                     <size min="7" max="12" />
                 </t0>
 
                 <t1>
-                    <color min="#00557777" max="#0099cc99" />
-                    <velocity-min x="-10" y="400" />
-                    <velocity-max x="10" y="600" />
+                    <color min="#dddddd" max="#ffffff" />
+                    <velocity-min x="-10" y="300" />
+                    <velocity-max x="10" y="500" />
                     <size min="5" max="10" />
                 </t1>
             </particles>

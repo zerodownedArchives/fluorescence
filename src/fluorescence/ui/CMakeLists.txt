@@ -139,6 +139,7 @@ set (PARTICLES_HPP
     ui/particles/timelineinterpolate.hpp
     ui/particles/timelineforever.hpp
     ui/particles/timelineevent.hpp
+    ui/particles/baseparticleeffect.hpp
     )
 
 set (PARTICLES_CPP
@@ -156,6 +157,7 @@ set (PARTICLES_CPP
     ui/particles/timelineinterpolate.cpp
     ui/particles/timelineforever.cpp
     ui/particles/timelineevent.cpp
+    ui/particles/baseparticleeffect.cpp
     )
 
 set (CLIENTCOMMANDS_HPP
@@ -177,6 +179,7 @@ set (CLIENTCOMMANDS_HPP
     ui/commands/help.hpp
     ui/commands/cancel.hpp
     ui/commands/reload.hpp
+    ui/commands/weather.hpp
     )
 
 set (CLIENTCOMMANDS_CPP
@@ -198,6 +201,7 @@ set (CLIENTCOMMANDS_CPP
     ui/commands/help.cpp
     ui/commands/cancel.cpp
     ui/commands/reload.cpp
+    ui/commands/weather.cpp
     )
 
 set (PYTHON_HPP

@@ -28,7 +28,7 @@ namespace fluo {
 namespace ui {
 namespace particles {
 
-Timeline::Timeline(ParticleEmitter* emitter) : 
+Timeline::Timeline(ParticleEmitter* emitter) :
         emitter_(emitter), currentIndex_(0xFFFFFFFFu), currentElement_(nullptr), maxParticleLifetime_(0), repeatCount_(0) {
 }
 
@@ -39,13 +39,13 @@ void Timeline::step(float elapsedSeconds) {
         waitAfterLastEmit_ -= elapsedSeconds;
         return;
     }
-    
+
     float secondsLeft = elapsedSeconds;
-    
+
     while (secondsLeft > 0) {
         float numNewParticles = currentElement_->numberOfNewParticles(elapsedSeconds);
         secondsLeft = currentElement_->step(elapsedSeconds);
-        
+
         emitter_->setLocationOffset(currentElement_->getEmitterLocationOffset());
         if (numNewParticles > 0) {
             emitter_->emitParticles(numNewParticles);
@@ -86,14 +86,14 @@ void Timeline::initParticle(Particle& particle, const CL_Vec3f& emitterLocation,
 
 void Timeline::addElement(boost::shared_ptr<TimelineElement> elem) {
     elements_.push_back(elem);
-    
+
     // first element
     if (currentIndex_ == 0xFFFFFFFFu) {
         currentIndex_ = 0;
         currentElement_ = elements_[currentIndex_].get();
         currentElement_->activate();
     }
-    
+
     maxParticleLifetime_ = (std::max)(maxParticleLifetime_, elem->getMaxParticleLifetime());
 }
 
@@ -102,17 +102,16 @@ CL_Vec2f Timeline::getEmitterLocationOffset() const {
 }
 
 void Timeline::onEvent(const UnicodeString& event) {
-    unsigned int eventElemIndex = currentIndex_ + 1;
-    
     LOG_DEBUG << "Timeline::onEvent: " << event << std::endl;
-    
-    for (; eventElemIndex < elements_.size(); ++eventElemIndex) {
+
+    for (unsigned int eventElemIndex = 0; eventElemIndex < elements_.size(); ++eventElemIndex) {
         boost::shared_ptr<TimelineEvent> eventElem = boost::dynamic_pointer_cast<TimelineEvent>(elements_[eventElemIndex]);
-        LOG_DEBUG << "index: " << eventElemIndex << " isEvent: " << (bool)eventElem << std::endl;
+        //LOG_DEBUG << "index: " << eventElemIndex << " isEvent: " << (bool)eventElem << std::endl;
         if (eventElem && eventElem->consumesEvent(event)) {
             currentIndex_ = eventElemIndex;
             currentElement_ = eventElem.get();
             currentElement_->activate();
+            LOG_DEBUG << "event consumed" << std::endl;
             break;
         }
     }

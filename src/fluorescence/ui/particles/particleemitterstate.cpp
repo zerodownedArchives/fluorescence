@@ -26,7 +26,10 @@
 namespace fluo {
 namespace ui {
 namespace particles {
-    
+
+ParticleEmitterState::ParticleEmitterState() : emitFrequency_(0), emittedFrameIndexStart_(0), emittedFrameIndexEnd_(0) {
+}
+
 void ParticleEmitterState::initParticle(Particle& particle, const CL_Vec3f& emitterLocation, float emitterAge) const {
     CL_Vec3f particleLocation = emittedStartLocationProvider_->get(emitterLocation);
 

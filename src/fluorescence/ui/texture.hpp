@@ -38,11 +38,11 @@ public:
         USAGE_FONT = 2,
         USAGE_EFFECT = 3,
     };
-    
+
     Texture(bool useBitMask = true);
     Texture(Usage usage, bool useBitMask = true);
     ~Texture();
-    
+
     void setUsage(unsigned int usage);
 
     void initPixelBuffer(unsigned int width, unsigned int height);
@@ -59,11 +59,13 @@ public:
     float getHeight();
 
     bool hasPixel(unsigned int pixelX, unsigned int pixelY);
-    
+
     // very expensive operation, if the CL_Subtexture object was already initialized. use with care
     CL_Texture extractSingleTexture();
-    
+
     void setBorderWidth(unsigned int width);
+
+    void debugSaveToFile(const char* filename);
 
 private:
     CL_PixelBuffer pixelBuffer_;
@@ -72,9 +74,9 @@ private:
     BitMask bitMask_;
     unsigned int textureUsage_;
     CL_Rectf normalizedTextureCoords_;
-    
+
     void initSubTexture();
-    
+
     unsigned int borderWidth_;
     CL_Rectf borderlessGeometry_;
 };

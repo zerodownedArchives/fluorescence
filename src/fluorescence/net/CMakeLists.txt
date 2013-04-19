@@ -61,6 +61,7 @@ set (PACKETS_HPP
     net/packets/54_playsound.hpp
     net/packets/55_logincomplete.hpp
     net/packets/5d_characterselect.hpp
+    net/packets/65_weather.hpp
     net/packets/6c_target.hpp
     net/packets/6d_playmusic.hpp
     net/packets/6e_mobileanimation.hpp
@@ -153,6 +154,7 @@ set (PACKETS_CPP
     net/packets/54_playsound.cpp
     net/packets/55_logincomplete.cpp
     net/packets/5d_characterselect.cpp
+    net/packets/65_weather.cpp
     net/packets/6c_target.cpp
     net/packets/6d_playmusic.cpp
     net/packets/6e_mobileanimation.cpp

@@ -20,6 +20,8 @@
 
 #include "texture.hpp"
 
+#include <ClanLib/Display/ImageProviders/png_provider.h>
+
 #include "manager.hpp"
 #include "bitmask.hpp"
 
@@ -42,7 +44,8 @@ Texture::~Texture() {
 }
 
 void Texture::setUsage(unsigned int usage) {
-    if (textureUsage_ == 0xFFFFFFFF) {
+    // can only be changed while the texture was not initialized
+    if (texture_.is_null()) {
         textureUsage_ = usage;
     }
 }
@@ -181,6 +184,15 @@ CL_Texture Texture::extractSingleTexture() {
 
 void Texture::setBorderWidth(unsigned int width) {
     borderWidth_ = width;
+}
+
+void Texture::debugSaveToFile(const char* filename) {
+    if (isReadComplete()) {
+        CL_PixelBuffer pxBuf = getTexture().get_pixeldata();
+        CL_PNGProvider::save(pxBuf, filename);
+    } else {
+        LOG_DEBUG << "Unable to save texture to file " << filename << std::endl;
+    }
 }
 
 }

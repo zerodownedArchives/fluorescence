@@ -54,6 +54,7 @@ public:
     CL_Texture getTexture(CL_GraphicContext& gc);
 
     void renderParticleEffects(CL_GraphicContext& gc);
+    void renderWeatherEffects(CL_GraphicContext& gc);
 
     void forceRepaint();
 

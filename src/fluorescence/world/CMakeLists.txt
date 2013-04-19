@@ -13,12 +13,13 @@ set (WORLD_HPP
     world/overheadmessage.hpp
     world/smoothmovement.hpp
     world/smoothmovementmanager.hpp
-    world/particleeffect.hpp
+    world/ingameparticleeffect.hpp
     world/playerwalkmanager.hpp
     world/effect.hpp
     world/osieffect.hpp
     world/syslog.hpp
     world/buffinfo.hpp
+    world/weathereffect.hpp
     )
 
 set (WORLD_CPP
@@ -35,11 +36,12 @@ set (WORLD_CPP
     world/overheadmessage.cpp
     world/smoothmovement.cpp
     world/smoothmovementmanager.cpp
-    world/particleeffect.cpp
+    world/ingameparticleeffect.cpp
     world/playerwalkmanager.cpp
     world/effect.cpp
     world/osieffect.cpp
     world/syslog.cpp
+    world/weathereffect.cpp
     )
 
 set(WORLD_FILES ${WORLD_HPP} ${WORLD_CPP} PARENT_SCOPE)

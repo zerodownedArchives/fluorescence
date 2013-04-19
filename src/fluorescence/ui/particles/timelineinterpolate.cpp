@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #include "timelineinterpolate.hpp"
 
 #include <misc/log.hpp>
@@ -26,11 +26,11 @@
 namespace fluo {
 namespace ui {
 namespace particles {
-    
-TimelineInterpolate::TimelineInterpolate(const ParticleEmitterState& state1, const ParticleEmitterState& state2, float duration) : 
+
+TimelineInterpolate::TimelineInterpolate(const ParticleEmitterState& state1, const ParticleEmitterState& state2, float duration) :
         state1_(state1), state2_(state2), duration_(duration) {
 }
-    
+
 void TimelineInterpolate::activate() {
     LOG_DEBUG << "timeline interpolate activated, from=" << state1_.name_ << " to=" << state2_.name_ << std::endl;
     timeExpired_ = 0;
@@ -55,11 +55,11 @@ void TimelineInterpolate::initParticle(Particle& particle, const CL_Vec3f& emitt
     Particle helper;
     state1_.initParticle(helper, emitterLocation, emitterAge);
     state2_.initParticle(particle, emitterLocation, emitterAge);
-    
+
     if (state1_.emittedStartLocationProvider_ != state2_.emittedStartLocationProvider_) {
         particle.startLocation_ = Interpolation::linear(helper.startLocation_, particle.startLocation_, normalizedAge_);
     }
-    
+
     if (state1_.emittedMotionModel_ != state2_.emittedMotionModel_) {
         particle.velocityStart_ = Interpolation::linear(helper.velocityStart_, particle.velocityStart_, normalizedAge_);
         particle.velocityEnd_ = Interpolation::linear(helper.velocityEnd_, particle.velocityEnd_, normalizedAge_);
@@ -69,8 +69,6 @@ void TimelineInterpolate::initParticle(Particle& particle, const CL_Vec3f& emitt
     particle.colorEnd_ = Interpolation::linear(helper.colorEnd_, particle.colorEnd_, normalizedAge_);
     particle.sizes_ = Interpolation::linear(helper.sizes_, particle.sizes_, normalizedAge_);
     particle.frameIndices_ = Interpolation::linear(helper.frameIndices_, particle.frameIndices_, normalizedAge_);
-    
-    
 }
 
 CL_Vec3f TimelineInterpolate::getEmitterLocationOffset() const {

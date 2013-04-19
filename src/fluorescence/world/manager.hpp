@@ -43,6 +43,7 @@ class PlayerWalkManager;
 class IngameObject;
 class Effect;
 class SysLog;
+class WeatherEffect;
 
 class Manager {
 public:
@@ -88,6 +89,9 @@ public:
 
     void invalidateAllTextures();
 
+    void setWeather(unsigned int type, unsigned int intensity, unsigned int temperature);
+    std::pair<boost::shared_ptr<world::WeatherEffect>, boost::shared_ptr<world::WeatherEffect> > getWeatherEffects();
+
 private:
     static Manager* singleton_;
     Manager(const Config& config);
@@ -120,6 +124,13 @@ private:
 
     // items with z >= roofHeight_ are not displayed
     int roofHeight_;
+
+    unsigned int weatherType_;
+    unsigned int weatherIntensity_;
+    std::pair<boost::shared_ptr<world::WeatherEffect>, boost::shared_ptr<world::WeatherEffect> > weatherEffects_;
+
+    void setCurrentWeatherEffect(unsigned int type);
+    void setCurrentWeatherIntensity(unsigned int intensity);
 };
 
 }

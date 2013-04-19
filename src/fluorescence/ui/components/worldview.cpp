@@ -170,6 +170,7 @@ void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     // particle effects are rendered on top, and not in the cached texture
     // because they are moving too fast, and it is hard to tell their bounding rectangle
     renderer_->renderParticleEffects(gc);
+    renderer_->renderWeatherEffects(gc);
 }
 
 void WorldView::getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd) const {

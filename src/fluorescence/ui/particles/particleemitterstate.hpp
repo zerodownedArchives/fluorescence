@@ -30,7 +30,7 @@
 namespace fluo {
 namespace ui {
 namespace particles {
-    
+
 class StartLocationProvider;
 class MotionModel;
 class Particle;
@@ -38,25 +38,27 @@ class Particle;
 class ParticleEmitterState {
 public:
     UnicodeString name_;
-    
+
     float emitFrequency_;
-    
+
     boost::shared_ptr<StartLocationProvider> emittedStartLocationProvider_;
     boost::shared_ptr<MotionModel> emittedMotionModel_;
-    
+
     RandomizedValue<CL_Colorf> emittedColorStart_;
     RandomizedValue<CL_Colorf> emittedColorEnd_;
-    
+
     RandomizedValue<float> emittedLifetime_;
-    
+
     RandomizedValue<float> emittedSizeStart_;
     RandomizedValue<float> emittedSizeEnd_;
-    
+
     CL_Vec3f emitterLocationOffset_;
-    
+
     float emittedFrameIndexStart_;
     float emittedFrameIndexEnd_;
-    
+
+    ParticleEmitterState();
+
     void initParticle(Particle& particle, const CL_Vec3f& emitterLocation, float emitterAge) const;
 };
 

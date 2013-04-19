@@ -37,10 +37,11 @@
 #include <world/ingameobject.hpp>
 #include <world/lightmanager.hpp>
 #include <world/manager.hpp>
-#include <world/particleeffect.hpp>
+#include <world/ingameparticleeffect.hpp>
 #include <world/sectormanager.hpp>
 #include <world/sector.hpp>
 #include <world/dynamicitem.hpp>
+#include <world/weathereffect.hpp>
 
 #include <data/manager.hpp>
 #include <data/huesloader.hpp>
@@ -287,8 +288,39 @@ void WorldRenderer::renderParticleEffects(CL_GraphicContext& gc) {
 
     for (; particleIter != particleEnd; ++particleIter) {
         if ((*particleIter)->isParticleEffect()) {
-            boost::static_pointer_cast<world::ParticleEffect>(*particleIter)->renderAll(gc, shader);
+            boost::static_pointer_cast<world::IngameParticleEffect>(*particleIter)->renderAll(gc, shader);
         }
+    }
+
+    gc.set_pen(defPen);
+    gc.reset_program_object();
+
+    gc.pop_modelview();
+}
+
+void WorldRenderer::renderWeatherEffects(CL_GraphicContext& gc) {
+    CL_Pen defPen = gc.get_pen();
+    CL_Pen pen;
+    pen.enable_vertex_program_point_size(true);
+    pen.enable_point_sprite(true);
+    gc.set_pen(pen);
+
+    gc.set_buffer_control(bufferControlParticles_);
+
+    glEnable(0x8861); // GL_POINT_SPRITE
+
+    boost::shared_ptr<CL_ProgramObject> shader = ui::Manager::getShaderManager()->getParticleShader();
+    gc.set_program_object(*shader, cl_program_matrix_modelview_projection);
+
+    gc.push_modelview();
+    gc.set_modelview(CL_Mat4f::identity());
+
+    std::pair<boost::shared_ptr<world::WeatherEffect>, boost::shared_ptr<world::WeatherEffect> > effects = world::Manager::getSingleton()->getWeatherEffects();
+    if (effects.first) {
+        effects.first->renderAll(gc, shader);
+    }
+    if (effects.second) {
+        effects.second->renderAll(gc, shader);
     }
 
     gc.set_pen(defPen);
@@ -404,6 +436,7 @@ void WorldRenderer::initBufferControls() {
     bufferControlParticles_.enable_depth_test(false);
     bufferControlParticles_.enable_stencil_test(false);
     bufferControlParticles_.enable_color_write(true);
+    bufferControlParticles_.enable_logic_op(false);
 }
 
 }

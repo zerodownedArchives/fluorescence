@@ -30,9 +30,11 @@
 #include "effect.hpp"
 #include "syslog.hpp"
 #include "sector.hpp"
+#include "weathereffect.hpp"
 
 #include <ui/manager.hpp>
 #include <ui/cliprectmanager.hpp>
+#include <ui/particles/xmlloader.hpp>
 
 #include <net/manager.hpp>
 #include <net/packets/34_statskillquery.hpp>
@@ -72,7 +74,7 @@ void Manager::destroy() {
     }
 }
 
-Manager::Manager(const Config& config) : currentMapId_(0), roofHeight_(INT_MAX) {
+Manager::Manager(const Config& config) : currentMapId_(0), roofHeight_(INT_MAX), weatherType_(0xFF) {
     sectorManager_.reset(new SectorManager(config));
     lightManager_.reset(new LightManager());
     smoothMovementManager_.reset(new SmoothMovementManager());
@@ -266,6 +268,13 @@ void Manager::update(unsigned int elapsedMillis) {
         }
     }
 
+    if (weatherEffects_.first) {
+        weatherEffects_.first->update(elapsedMillis);
+    }
+    if (weatherEffects_.second) {
+        weatherEffects_.second->update(elapsedMillis);
+    }
+
 
     if (!outOfRangeDelete.empty()) {
         //LOG_DEBUG << "out of range coords=" << playerX << "/" << playerY << std::endl;
@@ -429,6 +438,79 @@ void Manager::invalidateAllTextures() {
     for (; effectIter != effectEnd; ++effectIter) {
         (*effectIter)->invalidateTextureProvider();
     }
+}
+
+void Manager::setWeather(unsigned int type, unsigned int intensity, unsigned int temperature) {
+    if (weatherType_ != type) {
+        // TODO: weather change, display message
+        setCurrentWeatherEffect(type);
+        setCurrentWeatherIntensity(intensity);
+    } else if (weatherIntensity_ != intensity) {
+        setCurrentWeatherIntensity(intensity);
+    }
+}
+
+void Manager::setCurrentWeatherEffect(unsigned int type) {
+    LOG_DEBUG << "Weather effect: " << type << std::endl;
+    weatherType_ = type;
+    if (weatherEffects_.first) {
+        // store previous weather effect, and make it stop
+        weatherEffects_.second = weatherEffects_.first;
+        weatherEffects_.second->event("stop");
+    }
+
+    boost::shared_ptr<world::WeatherEffect> eff;
+    switch (type) {
+        case 0:
+            // rain
+            eff.reset(new world::WeatherEffect());
+            if (ui::particles::XmlLoader::fromFile("rain", eff)) {
+                weatherEffects_.first = eff;
+            } else {
+                weatherEffects_.first.reset();
+            }
+            break;
+        case 1:
+            // storm approaches, no effect
+            weatherEffects_.first.reset();
+            break;
+        case 2:
+            // snow
+            eff.reset(new world::WeatherEffect());
+            if (ui::particles::XmlLoader::fromFile("snow", eff)) {
+                weatherEffects_.first = eff;
+            } else {
+                weatherEffects_.first.reset();
+            }
+            break;
+        case 3:
+            // storm brewing, no effect
+            weatherEffects_.first.reset();
+            break;
+        default:
+            // reset weather, no effect
+            weatherEffects_.first.reset();
+            break;
+    }
+}
+
+void Manager::setCurrentWeatherIntensity(unsigned int intensity) {
+    if (intensity > 70) {
+        intensity = 70;
+    }
+
+    LOG_DEBUG << "Weather intensity: " << intensity << std::endl;
+    weatherIntensity_ = intensity;
+    if (weatherEffects_.first) {
+        unsigned int intensityRnd = (intensity / 10) * 10;
+        UnicodeString intensityStr("intensity");
+        intensityStr += StringConverter::fromNumber(intensityRnd);
+        weatherEffects_.first->event(intensityStr);
+    }
+}
+
+std::pair<boost::shared_ptr<world::WeatherEffect>, boost::shared_ptr<world::WeatherEffect> > Manager::getWeatherEffects() {
+    return weatherEffects_;
 }
 
 }

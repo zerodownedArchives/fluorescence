@@ -24,7 +24,6 @@
 #include <boost/filesystem/operations.hpp>
 
 #include <data/manager.hpp>
-#include <world/particleeffect.hpp>
 #include <misc/xmlloadexception.hpp>
 
 #include "particleemitter.hpp"
@@ -41,85 +40,86 @@
 namespace fluo {
 namespace ui {
 namespace particles {
-    
+
 XmlLoader* XmlLoader::singleton_ = NULL;
 XmlLoader* XmlLoader::getSingleton() {
     if (!singleton_) {
         singleton_ = new XmlLoader();
     }
-    
+
     return singleton_;
 }
 
 XmlLoader::XmlLoader() {
 }
 
-boost::shared_ptr<world::ParticleEffect> XmlLoader::fromFile(const UnicodeString& name) {
-    boost::shared_ptr<world::ParticleEffect> effect;
-    
+bool XmlLoader::fromFile(const UnicodeString& name, const boost::shared_ptr<BaseParticleEffect>& effect) {
     boost::filesystem::path path = "effects";
     std::string utf8FileName = StringConverter::toUtf8String(name) + ".xml";
     path = path / utf8FileName;
-    
+
     path = data::Manager::getShardFilePath(path);
-    
+
     if (!boost::filesystem::exists(path)) {
         LOG_ERROR << "Unable to open particle effect xml, file not found: " << utf8FileName << std::endl;
-        return effect;
+        return false;
     }
 
     LOG_DEBUG << "Parsing xml particle effect file: " << path << std::endl;
-    
+
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(path.string().c_str());
 
     if (result) {
         try {
-            effect = getSingleton()->parse(doc);
+            return getSingleton()->parse(doc, effect);
         } catch (const XmlLoadException& ex) {
             LOG_ERROR << "Unable to load xml particle effect: " << ex.what() << std::endl;
+            return false;
         }
     } else {
         LOG_ERROR << "Error parsing particle effect xml file at offset " << result.offset << ": " << result.description() << std::endl;
+        return false;
     }
-    return effect;
+    return true;
 }
 
-boost::shared_ptr<world::ParticleEffect> XmlLoader::fromString(const UnicodeString& str) {
+bool XmlLoader::fromString(const UnicodeString& str, const boost::shared_ptr<BaseParticleEffect>& effect) {
     pugi::xml_document doc;
     std::string utf8String = StringConverter::toUtf8String(str);
     pugi::xml_parse_result result = doc.load_buffer(utf8String.c_str(), utf8String.length());
 
-    boost::shared_ptr<world::ParticleEffect> effect;
     if (result) {
         try {
-            effect = getSingleton()->parse(doc);
+            return getSingleton()->parse(doc, effect);
         } catch (const XmlLoadException& ex) {
             LOG_ERROR << "Unable to load xml particle effect: " << ex.what() << std::endl;
+            return false;
         }
     } else {
         LOG_ERROR << "Error parsing particle effect xml string at offset " << result.offset << ": " << result.description() << std::endl;
+        return false;
     }
-    return effect;
+    return true;
 }
 
-boost::shared_ptr<world::ParticleEffect> XmlLoader::parse(pugi::xml_document& doc) const {
+bool XmlLoader::parse(pugi::xml_document& doc, const boost::shared_ptr<BaseParticleEffect>& effect) const {
     pugi::xml_node statesNode = doc.document_element().child("states");
     if (!statesNode) {
         throw XmlLoadException("ParticleEffect definition requires states node");
     }
-    
+
     std::map<UnicodeString, ParticleEmitterState> stateMap;
-    
+
     // find default state
     pugi::xml_node defaultStateNode = statesNode.find_child_by_attribute("state", "default", "true");
     if (!defaultStateNode) {
         throw XmlLoadException("ParticleEffect definition requires a default state");
     }
-    
+
     ParticleEmitterState pseudoDefault;
     ParticleEmitterState defaultState = parseState(defaultStateNode, pseudoDefault);
-    
+
     // check state validity
     if (!defaultState.emittedMotionModel_) {
         throw XmlLoadException("Default state has no motion model");
@@ -128,7 +128,7 @@ boost::shared_ptr<world::ParticleEffect> XmlLoader::parse(pugi::xml_document& do
         throw XmlLoadException("Default state has no shape");
     }
     stateMap[defaultState.name_] = defaultState;
-    
+
     // parse other states
     pugi::xml_node stateIter = statesNode.first_child();
     while (stateIter) {
@@ -141,26 +141,24 @@ boost::shared_ptr<world::ParticleEffect> XmlLoader::parse(pugi::xml_document& do
         stateMap[curState.name_] = curState;
         stateIter = stateIter.next_sibling();
     }
-    
-    boost::shared_ptr<world::ParticleEffect> effect(new world::ParticleEffect());
-    
+
     pugi::xml_node emittersIter = doc.document_element().child("emitters").first_child();
     while (emittersIter) {
         boost::shared_ptr<ParticleEmitter> newEmitter = parseEmitter(emittersIter, stateMap);
         effect->addEmitter(newEmitter);
         emittersIter = emittersIter.next_sibling();
     }
-    
-    return effect;
+
+    return true;
 }
 
 boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node, std::map<UnicodeString, ParticleEmitterState>& stateMap) const {
     checkAttribute(node, "capacity");
     int capacity = node.attribute("capacity").as_int();
     boost::shared_ptr<ParticleEmitter> emitter(new ParticleEmitter(capacity));
-    
+
     emitter->emittedMoveWithEmitter_ = node.attribute("particlesmovewithemitter").as_bool();
-    
+
     if (!node.child("texture")) {
         throw XmlLoadException("Emitter definition without texture");
     }
@@ -172,11 +170,11 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
     emitter->emittedTexture_ = data::Manager::getTexture(textureResource, textureId);
     emitter->emittedTexture_->setUsage(Texture::USAGE_EFFECT);
     emitter->setFramesInTexture(textureNode.attribute("frames").as_uint());
-    
+
     if (!node.child("timeline")) {
         throw XmlLoadException("Emitter definition without timeline");
     }
-    
+
     pugi::xml_node timelineNode = node.child("timeline");
     emitter->timeline_.setRepeat(timelineNode.attribute("repeat").as_int());
     pugi::xml_node timelineIter = timelineNode.first_child();
@@ -185,7 +183,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
         if (tlElemName == "static") {
             checkAttribute(timelineIter, "state");
             checkAttribute(timelineIter, "duration");
-            
+
             UnicodeString stateName = StringConverter::fromUtf8(timelineIter.attribute("state").value());
             std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter = stateMap.find(stateName);
             if (stateMapIter == stateMap.end()) {
@@ -193,7 +191,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
                 msg += StringConverter::toUtf8String(stateName);
                 throw XmlLoadException(msg);
             }
-            
+
             float duration = timelineIter.attribute("duration").as_float();
             boost::shared_ptr<TimelineStatic> newElem(new TimelineStatic(stateMapIter->second, duration));
             emitter->timeline_.addElement(newElem);
@@ -205,7 +203,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
         } else if (tlElemName == "immediate") {
             checkAttribute(timelineIter, "state");
             checkAttribute(timelineIter, "count");
-            
+
             UnicodeString stateName = StringConverter::fromUtf8(timelineIter.attribute("state").value());
             std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter = stateMap.find(stateName);
             if (stateMapIter == stateMap.end()) {
@@ -213,7 +211,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
                 msg += StringConverter::toUtf8String(stateName);
                 throw XmlLoadException(msg);
             }
-            
+
             unsigned int count = timelineIter.attribute("count").as_uint();
             boost::shared_ptr<TimelineImmediate> newElem(new TimelineImmediate(stateMapIter->second, count));
             emitter->timeline_.addElement(newElem);
@@ -221,7 +219,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
             checkAttribute(timelineIter, "from");
             checkAttribute(timelineIter, "to");
             checkAttribute(timelineIter, "duration");
-            
+
             UnicodeString stateName1 = StringConverter::fromUtf8(timelineIter.attribute("from").value());
             std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter1 = stateMap.find(stateName1);
             if (stateMapIter1 == stateMap.end()) {
@@ -229,7 +227,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
                 msg += StringConverter::toUtf8String(stateName1);
                 throw XmlLoadException(msg);
             }
-            
+
             UnicodeString stateName2 = StringConverter::fromUtf8(timelineIter.attribute("to").value());
             std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter2 = stateMap.find(stateName2);
             if (stateMapIter2 == stateMap.end()) {
@@ -237,7 +235,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
                 msg += StringConverter::toUtf8String(stateName2);
                 throw XmlLoadException(msg);
             }
-            
+
             float duration = timelineIter.attribute("duration").as_float();
             boost::shared_ptr<TimelineBlend> newElem(new TimelineBlend(stateMapIter1->second, stateMapIter2->second, duration));
             emitter->timeline_.addElement(newElem);
@@ -245,7 +243,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
             checkAttribute(timelineIter, "from");
             checkAttribute(timelineIter, "to");
             checkAttribute(timelineIter, "duration");
-            
+
             UnicodeString stateName1 = StringConverter::fromUtf8(timelineIter.attribute("from").value());
             std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter1 = stateMap.find(stateName1);
             if (stateMapIter1 == stateMap.end()) {
@@ -253,7 +251,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
                 msg += StringConverter::toUtf8String(stateName1);
                 throw XmlLoadException(msg);
             }
-            
+
             UnicodeString stateName2 = StringConverter::fromUtf8(timelineIter.attribute("to").value());
             std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter2 = stateMap.find(stateName2);
             if (stateMapIter2 == stateMap.end()) {
@@ -261,13 +259,13 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
                 msg += StringConverter::toUtf8String(stateName1);
                 throw XmlLoadException(msg);
             }
-            
+
             float duration = timelineIter.attribute("duration").as_float();
             boost::shared_ptr<TimelineInterpolate> newElem(new TimelineInterpolate(stateMapIter1->second, stateMapIter2->second, duration));
             emitter->timeline_.addElement(newElem);
         } else if (tlElemName == "forever") {
             checkAttribute(timelineIter, "state");
-            
+
             UnicodeString stateName = StringConverter::fromUtf8(timelineIter.attribute("state").value());
             std::map<UnicodeString, ParticleEmitterState>::iterator stateMapIter = stateMap.find(stateName);
             if (stateMapIter == stateMap.end()) {
@@ -275,7 +273,7 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
                 msg += StringConverter::toUtf8String(stateName);
                 throw XmlLoadException(msg);
             }
-            
+
             boost::shared_ptr<TimelineForever> newElem(new TimelineForever(stateMapIter->second));
             emitter->timeline_.addElement(newElem);
         } else if (tlElemName == "event") {
@@ -288,19 +286,19 @@ boost::shared_ptr<ParticleEmitter> XmlLoader::parseEmitter(pugi::xml_node& node,
             msg += tlElemName;
             throw XmlLoadException(msg);
         }
-        
+
         timelineIter = timelineIter.next_sibling();
     }
-    
+
     return emitter;
 }
 
 ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleEmitterState& defaultState) const {
     ParticleEmitterState state = defaultState;
-    
+
     checkAttribute(node, "name");
     state.name_ = StringConverter::fromUtf8(node.attribute("name").value());
-    
+
     pugi::xml_node curProp = node.child("location-offset");
     if (curProp) {
         state.emitterLocationOffset_ = CL_Vec3f(
@@ -309,18 +307,18 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
                 curProp.attribute("z").as_float()
         );
     }
-    
+
     curProp = node.child("frequency");
     if (curProp) {
         checkAttribute(curProp, "value");
         state.emitFrequency_ = curProp.attribute("value").as_float();
     }
-    
+
     curProp = node.child("shape");
     if (curProp) {
         checkAttribute(curProp, "type");
         std::string shapeType = curProp.attribute("type").value();
-        
+
         bool shapeHasSize = true;
         if (shapeType == "oval") {
             state.emittedStartLocationProvider_.reset((StartLocationProvider*)new StartLocationProviderOval());
@@ -338,12 +336,12 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
             msg += shapeType;
             throw XmlLoadException(msg);
         }
-        
+
         if (shapeHasSize) {
             checkAttribute(curProp, "width");
             checkAttribute(curProp, "height");
-            
-            boost::shared_ptr<StartLocationProviderWithSize> startPosProv = 
+
+            boost::shared_ptr<StartLocationProviderWithSize> startPosProv =
                     boost::dynamic_pointer_cast<StartLocationProviderWithSize>(state.emittedStartLocationProvider_);
             if (startPosProv) {
                 startPosProv->setSize(
@@ -353,7 +351,7 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
             }
         }
     }
-    
+
     curProp = node.child("motion");
     if (curProp) {
         checkAttribute(curProp, "model");
@@ -370,43 +368,43 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
             throw XmlLoadException(msg);
         }
     }
-    
+
     pugi::xml_node particlesNode = node.child("particles");
     if (particlesNode) {
         curProp = particlesNode.child("lifetime");
         if (curProp) {
             checkAttribute(curProp, "min");
             checkAttribute(curProp, "max");
-            
+
             state.emittedLifetime_.set(
                 curProp.attribute("min").as_float(),
                 curProp.attribute("max").as_float()
             );
         }
-        
+
         pugi::xml_node t0 = particlesNode.child("t0");
         if (t0) {
             curProp = t0.child("color");
             if (curProp) {
                 checkAttribute(curProp, "min");
                 checkAttribute(curProp, "max");
-                
+
                 CL_Colorf colMin(curProp.attribute("min").value());
                 CL_Colorf colMax(curProp.attribute("max").value());
                 state.emittedColorStart_.set(colMin, colMax);
             }
-            
+
             curProp = t0.child("size");
             if (curProp) {
                 checkAttribute(curProp, "min");
                 checkAttribute(curProp, "max");
-                
+
                 state.emittedSizeStart_.set(
                     curProp.attribute("min").as_float(),
                     curProp.attribute("max").as_float()
                 );
             }
-            
+
             curProp = t0.child("acceleration");
             if (curProp) {
                 if (!node.child("motion")) {
@@ -414,7 +412,7 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
                 }
                 checkAttribute(curProp, "min");
                 checkAttribute(curProp, "max");
-                
+
                 boost::shared_ptr<MotionModelAwayFromEmitter> momo = boost::dynamic_pointer_cast<MotionModelAwayFromEmitter>(state.emittedMotionModel_);
                 if (momo) {
                     momo->setAccelerationStart(
@@ -425,7 +423,7 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
                     throw XmlLoadException("MotionModel mismatch: accelerator property given, but model != explosion");
                 }
             }
-            
+
             curProp = t0.child("velocity-min");
             if (curProp) {
                 if (!node.child("motion")) {
@@ -436,18 +434,18 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
                     curProp.attribute("y").as_float(),
                     curProp.attribute("z").as_float()
                 );
-                
+
                 curProp = t0.child("velocity-max");
                 if (!curProp) {
                     throw XmlLoadException("MotionModel error: velocity-min given, but no velocity-max");
                 }
-                
+
                 CL_Vec3f velMax(
                     curProp.attribute("x").as_float(),
                     curProp.attribute("y").as_float(),
                     curProp.attribute("z").as_float()
                 );
-                    
+
                 boost::shared_ptr<MotionModelStartEndVelocity> momo = boost::dynamic_pointer_cast<MotionModelStartEndVelocity>(state.emittedMotionModel_);
                 if (momo) {
                     momo->setVelocitiesStart(velMin, velMax);
@@ -457,38 +455,38 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
             } else if (t0.child("velocity-max")) {
                 throw XmlLoadException("MotionModel error: velocity-max given, but no velocity-min");
             }
-            
+
             curProp = t0.child("frame");
             if (curProp) {
                 checkAttribute(curProp, "index");
                 state.emittedFrameIndexStart_ = curProp.attribute("index").as_uint();
             }
         }
-        
-        
+
+
         pugi::xml_node t1 = particlesNode.child("t1");
         if (t1) {
             curProp = t1.child("color");
             if (curProp) {
                 checkAttribute(curProp, "min");
                 checkAttribute(curProp, "max");
-                
+
                 CL_Colorf colMin(curProp.attribute("min").value());
                 CL_Colorf colMax(curProp.attribute("max").value());
                 state.emittedColorEnd_.set(colMin, colMax);
             }
-            
+
             curProp = t1.child("size");
             if (curProp) {
                 checkAttribute(curProp, "min");
                 checkAttribute(curProp, "max");
-                
+
                 state.emittedSizeEnd_.set(
                     curProp.attribute("min").as_float(),
                     curProp.attribute("max").as_float()
                 );
             }
-            
+
             curProp = t1.child("acceleration");
             if (curProp) {
                 if (!node.child("motion")) {
@@ -496,7 +494,7 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
                 }
                 checkAttribute(curProp, "min");
                 checkAttribute(curProp, "max");
-                
+
                 boost::shared_ptr<MotionModelAwayFromEmitter> momo = boost::dynamic_pointer_cast<MotionModelAwayFromEmitter>(state.emittedMotionModel_);
                 if (momo) {
                     momo->setAccelerationEnd(
@@ -507,7 +505,7 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
                     throw XmlLoadException("MotionModel mismatch: accelerator property given, but model != explosion");
                 }
             }
-            
+
             curProp = t1.child("velocity-min");
             if (curProp) {
                 if (!node.child("motion")) {
@@ -518,18 +516,18 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
                     curProp.attribute("y").as_float(),
                     curProp.attribute("z").as_float()
                 );
-                
+
                 curProp = t1.child("velocity-max");
                 if (!curProp) {
                     throw XmlLoadException("MotionModel error: velocity-min given, but no velocity-max");
                 }
-                
+
                 CL_Vec3f velMax(
                     curProp.attribute("x").as_float(),
                     curProp.attribute("y").as_float(),
                     curProp.attribute("z").as_float()
                 );
-                    
+
                 boost::shared_ptr<MotionModelStartEndVelocity> momo = boost::dynamic_pointer_cast<MotionModelStartEndVelocity>(state.emittedMotionModel_);
                 if (momo) {
                     momo->setVelocitiesEnd(velMin, velMax);
@@ -539,7 +537,7 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
             } else if (t1.child("velocity-max")) {
                 throw XmlLoadException("MotionModel error: velocity-max given, but no velocity-min");
             }
-            
+
             curProp = t1.child("frame");
             if (curProp) {
                 checkAttribute(curProp, "index");
@@ -547,7 +545,7 @@ ParticleEmitterState XmlLoader::parseState(pugi::xml_node& node, const ParticleE
             }
         }
     }
-    
+
     return state;
 }
 

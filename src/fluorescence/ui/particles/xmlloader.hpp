@@ -27,35 +27,32 @@
 #include <misc/string.hpp>
 
 #include "particleemitterstate.hpp"
+#include "baseparticleeffect.hpp"
 
 namespace fluo {
 
-namespace world {
-class ParticleEffect;
-}
-
 namespace ui {
 namespace particles {
-    
+
 class ParticleEmitter;
 
 class XmlLoader {
 public:
-    static boost::shared_ptr<world::ParticleEffect> fromFile(const UnicodeString& name);
-    static boost::shared_ptr<world::ParticleEffect> fromString(const UnicodeString& str);
-    
+    static bool fromFile(const UnicodeString& name, const boost::shared_ptr<BaseParticleEffect>& effect);
+    static bool fromString(const UnicodeString& str, const boost::shared_ptr<BaseParticleEffect>& effect);
+
 private:
     static XmlLoader* singleton_;
     static XmlLoader* getSingleton();
     XmlLoader();
     XmlLoader(const XmlLoader& l) { }
     XmlLoader& operator=(const XmlLoader& l) { return *this; }
-    
-    boost::shared_ptr<world::ParticleEffect> parse(pugi::xml_document& doc) const;
-    
+
+    bool parse(pugi::xml_document& doc, const boost::shared_ptr<BaseParticleEffect>& effect) const;
+
     boost::shared_ptr<ParticleEmitter> parseEmitter(pugi::xml_node& node, std::map<UnicodeString, ParticleEmitterState>& stateMap) const;
     ParticleEmitterState parseState(pugi::xml_node& node, const ParticleEmitterState& defaultState) const;
-    
+
     // throws if the attribute is not found
     void checkAttribute(pugi::xml_node& node, const char* name) const;
 };

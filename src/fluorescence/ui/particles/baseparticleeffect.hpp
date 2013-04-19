@@ -17,47 +17,36 @@
  */
 
 
-#ifndef FLUO_WORLD_PARTICLEFFECT_HPP
-#define FLUO_WORLD_PARTICLEFFECT_HPP
+#ifndef FLUO_UI_PARTICLES_BASEPARTICLEEFFECT_HPP
+#define FLUO_UI_PARTICLES_BASEPARTICLEEFFECT_HPP
 
-#include <boost/shared_ptr.hpp>
 #include <list>
+#include <boost/shared_ptr.hpp>
 #include <ClanLib/Display/Render/graphic_context.h>
 
-#include "effect.hpp"
+#include <misc/string.hpp>
 
 namespace fluo {
-
 namespace ui {
 namespace particles {
-class Emitter;
-}
-}
-    
-namespace world {
 
-class ParticleEffect : public world::Effect {
+class Emitter;
+
+class BaseParticleEffect {
 public:
-    ParticleEffect();
-    
-    virtual void update(unsigned int elapsedMillis);
-    virtual void updateTextureProvider();
-    virtual bool updateAnimation(unsigned int elapsedMillis);
-    virtual void updateVertexCoordinates();
-    virtual void updateRenderDepth();
-    virtual boost::shared_ptr<ui::Texture> getIngameTexture() const;
-    
-    virtual unsigned int startExplosion();
-    
-    virtual bool shouldExpireTimeout() const;
+    void addEmitter(const boost::shared_ptr<ui::particles::Emitter>& emitter);
+
     void renderAll(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader);
-    void addEmitter(boost::shared_ptr<ui::particles::Emitter> emitter);
-    
-private:
+
+    void event(const UnicodeString& event);
+
+protected:
     std::list<boost::shared_ptr<ui::particles::Emitter> > emitters_;
 };
 
 }
 }
+}
 
 #endif
+

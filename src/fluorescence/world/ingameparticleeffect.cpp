@@ -18,7 +18,7 @@
 
 
 
-#include "particleeffect.hpp"
+#include "ingameparticleeffect.hpp"
 
 #include <misc/log.hpp>
 #include <ui/particles/emitter.hpp>
@@ -27,34 +27,34 @@
 namespace fluo {
 namespace world {
 
-ParticleEffect::ParticleEffect() :
+IngameParticleEffect::IngameParticleEffect() :
         Effect(IngameObject::TYPE_PARTICLE_EFFECT) {
 }
 
-void ParticleEffect::update(unsigned int elapsedMillis) {
+void IngameParticleEffect::update(unsigned int elapsedMillis) {
     Effect::update(elapsedMillis);
-    
+
     float elapsedSeconds = elapsedMillis / 1000.f;
     CL_Vec3f curLocation = getLocation();
-    
+
     CL_Vec3f locationPixels(
         (curLocation.x - curLocation.y) * 22 + 22,
         (curLocation.x + curLocation.y) * 22 + 22 - getLocZDraw() * 4,
         0);
-    
+
     std::list<boost::shared_ptr<ui::particles::Emitter> > expired;
     std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator iter = emitters_.begin();
     std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator end = emitters_.end();
-    
+
     for (; iter != end; ++iter) {
         (*iter)->setLocation(locationPixels);
         (*iter)->step(elapsedSeconds);
-        
+
         if ((*iter)->isExpired()) {
             expired.push_back(*iter);
         }
     }
-    
+
     if (!expired.empty()) {
         iter = expired.begin();
         end = expired.end();
@@ -65,20 +65,7 @@ void ParticleEffect::update(unsigned int elapsedMillis) {
     }
 }
 
-void ParticleEffect::renderAll(CL_GraphicContext& gc, boost::shared_ptr<CL_ProgramObject>& shader) {
-    std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator iter = emitters_.begin();
-    std::list<boost::shared_ptr<ui::particles::Emitter> >::iterator end = emitters_.end();
-
-    for (; iter != end; ++iter) {
-        (*iter)->render(gc, shader);
-    }
-}
-
-void ParticleEffect::addEmitter(boost::shared_ptr<ui::particles::Emitter> emitter) {
-    emitters_.push_back(emitter);
-}
-
-bool ParticleEffect::shouldExpireTimeout() const {
+bool IngameParticleEffect::shouldExpireTimeout() const {
     if (shouldExplode_) {
         std::list<boost::shared_ptr<ui::particles::Emitter> >::const_iterator iter = emitters_.begin();
         std::list<boost::shared_ptr<ui::particles::Emitter> >::const_iterator end = emitters_.end();
@@ -94,34 +81,29 @@ bool ParticleEffect::shouldExpireTimeout() const {
     }
 }
 
-void ParticleEffect::updateTextureProvider() {
+void IngameParticleEffect::updateTextureProvider() {
     // do nothing
 }
 
-bool ParticleEffect::updateAnimation(unsigned int elapsedMillis) {
+bool IngameParticleEffect::updateAnimation(unsigned int elapsedMillis) {
     // do nothing
     return false;
 }
 
-void ParticleEffect::updateVertexCoordinates() {
+void IngameParticleEffect::updateVertexCoordinates() {
     // do nothing
 }
 
-void ParticleEffect::updateRenderDepth() {
+void IngameParticleEffect::updateRenderDepth() {
     // do nothing
 }
 
-unsigned int ParticleEffect::startExplosion() {
-    std::list<boost::shared_ptr<ui::particles::Emitter> >::const_iterator iter = emitters_.begin();
-    std::list<boost::shared_ptr<ui::particles::Emitter> >::const_iterator end = emitters_.end();
-
-    for (; iter != end; ++iter) {
-        (*iter)->onEvent("targetreached");
-    }
+unsigned int IngameParticleEffect::startExplosion() {
+    event("targetreached");
     return 0;
 }
 
-boost::shared_ptr<ui::Texture> ParticleEffect::getIngameTexture() const {
+boost::shared_ptr<ui::Texture> IngameParticleEffect::getIngameTexture() const {
     boost::shared_ptr<ui::Texture> ret;
     return ret;
 }

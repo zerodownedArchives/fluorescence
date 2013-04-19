@@ -57,13 +57,13 @@ void ParticleEmitter::emitParticles(float count) {
     float newCountF = count + emittedFractionStore_;
     unsigned int newCount = newCountF;
     emittedFractionStore_ = newCountF - newCount;
-    
+
     if (newCount == 0) {
         return;
     }
-    
+
     CL_Vec3f paramLocation = emittedMoveWithEmitter_ ? getStartLocation() : getLocation();
-    
+
     // reuse already existing particles
     for(; newEmitIndex_ < particleCount_ && newCount > 0; ++newEmitIndex_) {
         if (particles_[newEmitIndex_].isExpired(age_)) {
@@ -71,7 +71,7 @@ void ParticleEmitter::emitParticles(float count) {
             --newCount;
         }
     }
-    
+
     // increase particle count if necessary
     int remainingNew = (std::min)(newCount, capacity_ - particleCount_);
     particleCount_ += remainingNew;
@@ -87,7 +87,7 @@ void ParticleEmitter::updateRemainingSet() {
             removeParticle(newEmitIndex_);
         }
     }
-    
+
     // to increase performance all unused particles at the end of the
     // set could be cut off
 }
@@ -100,17 +100,19 @@ void ParticleEmitter::render(CL_GraphicContext& gc, boost::shared_ptr<CL_Program
     if (!emittedTexture_ || !emittedTexture_->isReadComplete()) {
         return;
     }
-    
+
+    //emittedTexture_->debugSaveToFile("particletex.png");
+
     // set shader uniform variables
     shader->set_uniform1i("Texture0", 0);
     CL_Vec3f emitterMovement = emittedMoveWithEmitter_ ? (getLocation() - getStartLocation()) : CL_Vec3f(0, 0, 0);
     shader->set_uniform3f("EmitterMovement", emitterMovement);
     shader->set_uniform1f("CurrentTime", age_);
-    
+
     CL_Rectf texRect = emittedTexture_->getNormalizedTextureCoords();
     CL_Vec4f texInfo(texRect.left, texRect.top, texRect.get_width() / framesInTexture_, texRect.get_height());
     shader->set_uniform4f("TextureInfo", texInfo);
-    
+
     gc.set_texture(0, emittedTexture_->getTexture());
 
     // collect particle data in primarray

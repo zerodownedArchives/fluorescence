@@ -25,20 +25,20 @@ void main(void) {
     float age = CurrentTime - Lifetime[0];
     float expireAge = (Lifetime[1] - Lifetime[0]);
     float normalizedAge = age / expireAge;
-    
+
     // interpolate position
-    vec3 positionDelta = VelocityStart * normalizedAge + 
+    vec3 positionDelta = VelocityStart * normalizedAge +
             (VelocityEnd - VelocityStart) * normalizedAge * normalizedAge / 2.0;
-    
+
     gl_Position.xyz = LocationStart + EmitterMovement + positionDelta * expireAge;
     gl_Position.w = 1;
-    
+
     gl_Position = cl_ModelViewProjectionMatrix * gl_Position;
-    
+
     gl_PointSize = mix(Sizes.x, Sizes.y, normalizedAge);
-    
+
     FrameIndex = floor(mix(FrameIndices.x, FrameIndices.y, normalizedAge));
-    
+
     // interpolate color
     Color = mix(ColorStart, ColorEnd, normalizedAge);
 }

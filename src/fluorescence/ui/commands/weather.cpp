@@ -16,32 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "effect.hpp"
+#include "weather.hpp"
+
+#include <unicode/regex.h>
 
 #include <typedefs.hpp>
 #include <world/manager.hpp>
-#include <world/ingameobject.hpp>
-#include <world/mobile.hpp>
-#include <world/ingameparticleeffect.hpp>
-#include <ui/particles/xmlloader.hpp>
 
 namespace fluo {
 namespace ui {
 namespace commands {
 
-Effect::Effect() : ClientCommand("Usage: effect <name>. Displays the given particle effect") {
+Weather::Weather() : ClientCommand("Usage: weather <type> <intensity>. Sets the weather") {
 }
 
-void Effect::execute(const UnicodeString& args) {
-    world::Manager* worldMan = world::Manager::getSingleton();
+void Weather::execute(const UnicodeString& args) {
+    UErrorCode status = U_ZERO_ERROR;
+    RegexMatcher matcher("\\s*(\\d+)\\s+(\\d+)\\s*", 0, status);
+    matcher.reset(args);
 
-    boost::shared_ptr<world::IngameObject> sourceObj = boost::static_pointer_cast<world::IngameObject>(worldMan->getPlayer());
-
-    boost::shared_ptr<world::IngameParticleEffect> effect(new world::IngameParticleEffect());
-    if (ui::particles::XmlLoader::fromFile(args, effect)) {
-        effect->setAtSource(sourceObj);
-        effect->setShouldExplode(false);
-        worldMan->addEffect(effect);
+    int weather, intensity;
+    if (matcher.find() && matcher.groupCount() == 2) {
+        weather = StringConverter::toInt(matcher.group(1, status));
+        intensity = StringConverter::toInt(matcher.group(2, status));
+        world::Manager::getSingleton()->setWeather(weather, intensity, 0);
+    } else {
+        world::Manager::getSingleton()->systemMessage("Usage: weather <type (number)> <intensity (number)>");
     }
 }
 
