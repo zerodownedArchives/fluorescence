@@ -53,6 +53,7 @@ class PaperdollView;
 class PropertyLabel;
 class SysLogLabel;
 class ContainerView;
+class MiniMapView;
 }
 
 namespace python {
@@ -76,6 +77,7 @@ public:
     static components::SysLogLabel* addSysLogLabel(CL_GUIComponent* self, boost::python::tuple& geom);
     static components::Label* addHtmlLabel(CL_GUIComponent* self, boost::python::tuple& geom, const UnicodeString& html);
     static components::ContainerView* addContainerView(CL_GUIComponent* self, boost::python::tuple& geom, const boost::shared_ptr<world::DynamicItem>& itm);
+    static components::MiniMapView* addMiniMapView(CL_GUIComponent* self, boost::python::tuple& geom);
 
 private:
     // when adding to a scrollarea, the components are not added directly to the area but to a child component

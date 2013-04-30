@@ -203,6 +203,15 @@ components::ContainerView* PyGumpComponentContainer::addContainerView(CL_GUIComp
     return cont;
 }
 
+components::MiniMapView* PyGumpComponentContainer::addMiniMapView(CL_GUIComponent* self, boost::python::tuple& geom) {
+    components::MiniMapView* mmv = new components::MiniMapView(getParentHelper(self));
+    mmv->pySetGeometry(geom);
+
+    static_cast<GumpMenu*>(self->get_top_level_component())->addToCurrentPage(mmv);
+
+    return mmv;
+}
+
 }
 }
 }

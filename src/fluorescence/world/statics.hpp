@@ -42,8 +42,10 @@ namespace ui {
 
 namespace world {
 
+class StaticBlock;
+
 class StaticItem : public IngameObject {
-friend class data::StaticsLoader;
+friend class StaticBlock;
 
 public:
     StaticItem();
@@ -59,7 +61,7 @@ public:
     // returns wheter other not this static tile requires periodic updates to updateRenderData to be rendere correctly.
     // this is only the case if is animated
     bool periodicRenderUpdateRequired() const;
-    
+
     static bool isIdIgnored(unsigned int artId);
     static bool isIdWater(unsigned int artId);
 
@@ -81,16 +83,51 @@ private:
 };
 
 class StaticBlock : public data::OnDemandReadable<StaticBlock> {
-friend class data::StaticsLoader;
-
 public:
+    StaticBlock();
+    ~StaticBlock();
+
+    void setIndex(unsigned int x, unsigned int y);
+
     std::list<boost::shared_ptr<StaticItem> >& getItemList();
+
+    void setRawData(const int8_t* data, unsigned int len);
+
+    void generateItemsFromRawData();
+    void dropItems();
+
+    void generateMiniMap();
+
+    const uint32_t* getMiniMapPixels() const;
+    const int8_t * getMiniMapHeight() const;
 
 private:
     std::list<boost::shared_ptr<StaticItem> > itemList_;
 
     unsigned int blockIndexX_;
     unsigned int blockIndexY_;
+
+#ifdef WIN32
+#pragma pack(push,1)
+    struct RawStaticsBlock {
+#else
+    struct __attribute__((packed)) RawStaticsBlock {
+#endif
+        uint16_t artId_;
+        uint8_t cellX_;
+        uint8_t cellY_;
+        int8_t cellZ_;
+        uint16_t hue_;
+    };
+#ifdef WIN32
+#pragma pack(pop)
+#endif
+
+    RawStaticsBlock* rawData_;
+    unsigned int rawBlockCount_;
+
+    uint32_t miniMapPixels_[64];
+    int8_t miniMapHeights_[64];
 };
 
 }

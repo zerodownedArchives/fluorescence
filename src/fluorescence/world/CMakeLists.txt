@@ -20,6 +20,7 @@ set (WORLD_HPP
     world/syslog.hpp
     world/buffinfo.hpp
     world/weathereffect.hpp
+    world/minimapblock.hpp
     )
 
 set (WORLD_CPP
@@ -42,6 +43,7 @@ set (WORLD_CPP
     world/osieffect.cpp
     world/syslog.cpp
     world/weathereffect.cpp
+    world/minimapblock.cpp
     )
 
 set(WORLD_FILES ${WORLD_HPP} ${WORLD_CPP} PARENT_SCOPE)

@@ -21,6 +21,9 @@
 #include "sector.hpp"
 
 #include "dynamicitem.hpp"
+#include "manager.hpp"
+#include "sectormanager.hpp"
+#include "minimapblock.hpp"
 
 #include <data/manager.hpp>
 #include <data/staticsloader.hpp>
@@ -33,10 +36,11 @@
 namespace fluo {
 namespace world {
 
-Sector::Sector(unsigned int mapId, const IsoIndex& sectorId) :
+Sector::Sector(unsigned int mapId, const IsoIndex& sectorId, bool fullLoad) :
         mapId_(mapId), id_(sectorId),
         mapAddedToList_(false), staticsAddedToList_(false),
-        visible_(true), fullUpdateRenderDataRequired_(true), repaintRequired_(false) {
+        visible_(true), fullUpdateRenderDataRequired_(true), repaintRequired_(false),
+        requireFullLoad_(fullLoad) {
 
     //LOG_DEBUG << "Sector construct, map=" << mapId_ << " x=" << getLocX() << " y=" << getLocY() << std::endl;
 
@@ -70,11 +74,24 @@ const IsoIndex& Sector::getSectorId() const {
 void Sector::update(unsigned int elapsedMillis) {
     repaintRequired_ = false;
 
+    if (!miniMapBlock_ && mapBlock_->isReadComplete() && (!staticBlock_ || staticBlock_->isReadComplete())) {
+        // init minimap pixels
+        miniMapBlock_ = world::Manager::getSingleton()->getSectorManager()->getMiniMapBlock(id_);
+        miniMapBlock_->updateSector(this);
+    }
+
+    // if this sector is loaded only for the minimap, don't waste time updating it
+    if (!requireFullLoad_) {
+        return;
+    }
+
     if (!mapAddedToList_ && mapBlock_ && mapBlock_->isReadComplete()) {
+        mapBlock_->generateItemsFromRawData();
+
         // map block is now loaded => add to list
         for (unsigned int x = 0; x < 8; ++x) {
             for (unsigned int y = 0; y < 8; ++y) {
-                renderList_.push_back(mapBlock_->get(x, y).get());
+                renderList_.push_back(mapBlock_->get(x, y));
             }
         }
 
@@ -83,6 +100,8 @@ void Sector::update(unsigned int elapsedMillis) {
     }
 
     if (!staticsAddedToList_ && staticBlock_ && staticBlock_->isReadComplete()) {
+        staticBlock_->generateItemsFromRawData();
+
         // static block is now loaded => add to list
         std::list<boost::shared_ptr<world::StaticItem> > staticList = staticBlock_->getItemList();
         std::list<boost::shared_ptr<world::StaticItem> >::const_iterator it = staticList.begin();
@@ -159,7 +178,7 @@ void Sector::update(unsigned int elapsedMillis) {
                 for (unsigned int x = 0; x < 8; ++x) {
                     for (unsigned int y = 0; y < 8; ++y) {
                         if (mapBlock_->get(x, y)->getMaterial()->constantRepaint_) {
-                            quickRenderUpdateList_.push_back(mapBlock_->get(x, y).get());
+                            quickRenderUpdateList_.push_back(mapBlock_->get(x, y));
                         }
                     }
                 }
@@ -442,11 +461,16 @@ int Sector::getStepReach(const CL_Vec3f& loc) const {
     return ret;
 }
 
-boost::shared_ptr<MapTile> Sector::getMapTileAt(unsigned int worldX, unsigned int worldY) const {
+int Sector::getMapZAt(unsigned int worldX, unsigned int worldY) const {
     unsigned int myX = worldX % 8;
     unsigned int myY = worldY % 8;
 
-    return mapBlock_->get(myX, myY);
+    MapTile* tile = mapBlock_->get(myX, myY);
+    if (tile) {
+        return tile->getLocZGame();
+    } else {
+        return -128;
+    }
 }
 
 void Sector::invalidateAllTextures() {
@@ -468,6 +492,58 @@ void Sector::invalidateAllTextures() {
     }
 
     fullUpdateRenderDataRequired_ = true;
+}
+
+boost::shared_ptr<world::MiniMapBlock> Sector::getMiniMapBlock() const {
+    return miniMapBlock_;
+}
+
+const uint32_t* Sector::getStaticMiniMapPixels() const {
+    return staticBlock_ ? staticBlock_->getMiniMapPixels() : 0;
+}
+
+const int8_t* Sector::getStaticMiniMapHeight() const {
+    return staticBlock_ ? staticBlock_->getMiniMapHeight() : 0;
+}
+
+const uint32_t* Sector::getMapMiniMapPixels() const {
+    return mapBlock_->getMiniMapPixels();
+}
+
+const int8_t * Sector::getMapMiniMapHeight() const {
+    return mapBlock_->getMiniMapHeight();
+}
+
+bool Sector::requireFullLoad() const {
+    return requireFullLoad_;
+}
+
+void Sector::setRequireFullLoad(bool value) {
+    if (value == requireFullLoad_) {
+        return;
+    }
+
+    requireFullLoad_ = value;
+    if (requireFullLoad_) {
+        // fully init map and statics block
+        if (staticBlock_) {
+            staticBlock_->generateItemsFromRawData();
+        }
+    } else {
+        // drop map and statics igitems, revert sector to primitive state
+        mapAddedToList_ = false;
+        staticsAddedToList_ = false;
+        fullUpdateRenderDataRequired_ = true;
+        repaintRequired_ = false;
+
+        quickRenderUpdateList_.clear();
+        renderList_.clear();
+
+        mapBlock_->dropItems();
+        if (staticBlock_) {
+            staticBlock_->dropItems();
+        }
+    }
 }
 
 }

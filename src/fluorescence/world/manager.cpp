@@ -74,7 +74,7 @@ void Manager::destroy() {
     }
 }
 
-Manager::Manager(const Config& config) : currentMapId_(0), roofHeight_(INT_MAX), weatherType_(0xFF) {
+Manager::Manager(const Config& config) : currentMapId_(0), roofHeight_(INT_MAX), weatherType_(0xFF), lastPlayerX_(-1), lastPlayerY_(-1) {
     sectorManager_.reset(new SectorManager(config));
     lightManager_.reset(new LightManager());
     smoothMovementManager_.reset(new SmoothMovementManager());
@@ -114,8 +114,13 @@ void Manager::setCurrentMapId(unsigned int id) {
     if (currentMapId_ != id) {
         currentMapId_ = id;
         sectorManager_->onMapChange();
+
+        // force sector update
+        lastPlayerX_ = -1;
+        lastPlayerY_ = -1;
+
         if (player_) {
-            player_->onLocationChanged(player_->getLocation()); // force sector change
+            player_->onLocationChanged(player_->getLocation());
         }
     }
 }
@@ -183,7 +188,6 @@ boost::shared_ptr<DynamicItem> Manager::getDynamicItem(Serial serial, bool creat
 }
 
 void Manager::step(unsigned int elapsedMillis) {
-    sectorManager_->updateSectorList();
     sysLog_->update(elapsedMillis);
 
     update(elapsedMillis);
@@ -194,6 +198,15 @@ void Manager::update(unsigned int elapsedMillis) {
 
     int playerX = player_->getLocXGame();
     int playerY = player_->getLocYGame();
+
+    // player sector changed
+    if (playerX / 8 != lastPlayerX_ / 8 ||
+            playerY / 8 != lastPlayerY_ / 8) {
+        LOG_DEBUG << "Sector change" << std::endl;
+        sectorManager_->updateSectorList();
+    }
+    lastPlayerX_ = playerX;
+    lastPlayerY_ = playerY;
 
     std::list<Serial> outOfRangeDelete;
 
@@ -357,10 +370,10 @@ void Manager::updateRoofHeight() {
     boost::shared_ptr<Sector> sectorX1Y1 = sectorManager_->getSectorForCoordinates(playerX + 1, playerY + 1);
 
     // map tile check
-    if (sectorXY->getMapTileAt(playerX, playerY)->getLocZGame() >= playerZ &&
-            sectorX1Y->getMapTileAt(playerX + 1, playerY)->getLocZGame() >= playerZ &&
-            sectorXY1->getMapTileAt(playerX, playerY + 1)->getLocZGame() >= playerZ &&
-            sectorX1Y1->getMapTileAt(playerX + 1, playerY + 1)->getLocZGame() >= playerZ) {
+    if (sectorXY->getMapZAt(playerX, playerY) >= playerZ &&
+            sectorX1Y->getMapZAt(playerX + 1, playerY) >= playerZ &&
+            sectorXY1->getMapZAt(playerX, playerY + 1) >= playerZ &&
+            sectorX1Y1->getMapZAt(playerX + 1, playerY + 1) >= playerZ) {
         // player is fully under map
         roofHeight_ = playerZ;
         return;

@@ -1,6 +1,6 @@
 /*
  * fluorescence is a free, customizable Ultima Online client.
- * Copyright (C) 2011-2012, http://fluorescence-client.org
+ * Copyright (C) 2010-2013, http://fluorescence-client.org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,25 +17,33 @@
  */
 
 
-#ifndef FLUO_UI_COMPONENTLIST_HPP
-#define FLUO_UI_COMPONENTLIST_HPP
+#ifndef FLUO_UI_COMPONENTS_SECTORVIEW_HPP
+#define FLUO_UI_COMPONENTS_SECTORVIEW_HPP
 
-#include "components/alpharegion.hpp"
-#include "components/background.hpp"
-#include "components/button.hpp"
-#include "components/checkbox.hpp"
-#include "components/containerview.hpp"
-#include "components/image.hpp"
-#include "components/label.hpp"
-#include "components/lineedit.hpp"
-#include "components/minimapview.hpp"
-#include "components/paperdollview.hpp"
-#include "components/propertylabel.hpp"
-#include "components/radiobutton.hpp"
-#include "components/scrollarea.hpp"
-#include "components/scrollbar.hpp"
-#include "components/sysloglabel.hpp"
-#include "components/worldview.hpp"
+#include <set>
+#include <typedefs.hpp>
+
+namespace fluo {
+namespace ui {
+namespace components {
+
+// this class renders sectors (in whatever way)
+// and must be able to tell the sector manager which ones
+class SectorView {
+public:
+    SectorView(bool requireFullSectorLoad);
+    ~SectorView();
+
+    virtual void getRequiredSectors(std::set<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd) = 0;
+    bool requireFullSectorLoad() const;
+
+private:
+    bool requireFullSectorLoad_;
+};
+
+}
+}
+}
 
 #endif
 

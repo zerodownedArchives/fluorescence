@@ -1,6 +1,6 @@
 /*
  * fluorescence is a free, customizable Ultima Online client.
- * Copyright (C) 2011-2012, http://fluorescence-client.org
+ * Copyright (C) 2010-2013, http://fluorescence-client.org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,40 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "sectorview.hpp"
 
-#ifndef FLUO_DATA_SKILLSLOADER_HPP
-#define FLUO_DATA_SKILLSLOADER_HPP
-
-#include <misc/string.hpp>
-
-#include <boost/filesystem/path.hpp>
+#include <world/manager.hpp>
+#include <world/sectormanager.hpp>
 
 namespace fluo {
-namespace data {
+namespace ui {
+namespace components {
 
-struct SkillInfo {
-    uint32_t skillId_;
-    UnicodeString name_;
-    bool isUsable_;
-};
+SectorView::SectorView(bool requireFullSectorLoad) : requireFullSectorLoad_(requireFullSectorLoad) {
+    world::Manager::getSectorManager()->registerSectorView(this);
+}
 
-class SkillsLoader {
-public:
-    SkillsLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath);
-    ~SkillsLoader();
+SectorView::~SectorView() {
+    world::Manager::getSectorManager()->unregisterSectorView(this);
+}
 
-    // 0-based
-    const SkillInfo* getSkillInfo(unsigned int id) const;
-    unsigned int getSkillCount() const;
-
-    void read(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath);
-
-private:
-    unsigned int skillCount_;
-    SkillInfo* skillInfos_;
-};
+bool SectorView::requireFullSectorLoad() const {
+    return requireFullSectorLoad_;
+}
 
 }
 }
+}
 
-#endif

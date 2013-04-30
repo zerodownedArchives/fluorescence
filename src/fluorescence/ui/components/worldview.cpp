@@ -47,12 +47,11 @@ namespace fluo {
 namespace ui {
 namespace components {
 
-WorldView::WorldView(CL_GUIComponent* parent) : GumpComponent(parent),
+WorldView::WorldView(CL_GUIComponent* parent) : GumpComponent(parent), SectorView(true),
         centerTileX_(0), centerTileY_(0), centerTileZ_(0),
         lastCenterPixelX_(0), lastCenterPixelY_(0), zoom_(1) {
     renderer_.reset(new render::WorldRenderer(this));
 
-    world::Manager::getSectorManager()->registerWorldView(this);
     setCenterObject(world::Manager::getSingleton()->getPlayer()->shared_from_this());
 
     set_constant_repaint(true);
@@ -71,8 +70,6 @@ WorldView::WorldView(CL_GUIComponent* parent) : GumpComponent(parent),
 }
 
 WorldView::~WorldView() {
-    world::Manager::getSectorManager()->unregisterWorldView(this);
-
     ui::Manager::getSingleton()->setWorldView(nullptr);
 }
 
@@ -173,7 +170,10 @@ void WorldView::renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect) {
     renderer_->renderWeatherEffects(gc);
 }
 
-void WorldView::getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd) const {
+void WorldView::getRequiredSectors(std::set<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd) {
+    // cache which sectors we want to draw, there might be some more loaded
+    sectorDrawSet_.clear();
+
     // at least, we need to load as much tiles as the diagonal of the view is long
     // we load this amount of tiles (plus a little cache) in each direction of the center tile
 
@@ -191,7 +191,8 @@ void WorldView::getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHe
     int centerSectorX = (int)(getCenterTileX() / 8.0);
     int centerSectorY = (int)(getCenterTileY() / 8.0);
 
-    list.push_back(IsoIndex(centerSectorX, centerSectorY));
+    list.insert(IsoIndex(centerSectorX, centerSectorY));
+    sectorDrawSet_.insert(IsoIndex(centerSectorX, centerSectorY));
 
     // uncomment this to load just a single sector
     //return;
@@ -203,10 +204,15 @@ void WorldView::getRequiredSectors(std::list<IsoIndex>& list, unsigned int mapHe
         for (int y = -diff; y <= diff; ++y) {
             sectorX = (std::max)(centerSectorX + x, 0);
             sectorY = (std::max)(centerSectorY + y, 0);
-            list.push_back(IsoIndex(sectorX, sectorY));
-
+            IsoIndex idx(sectorX, sectorY);
+            list.insert(idx);
+            sectorDrawSet_.insert(idx);
         }
     }
+}
+
+bool WorldView::shouldDrawSector(const IsoIndex& idx) const {
+    return sectorDrawSet_.count(idx) > 0;
 }
 
 bool WorldView::onInputPressed(const CL_InputEvent& e) {

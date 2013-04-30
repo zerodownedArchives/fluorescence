@@ -27,10 +27,14 @@
 #include <data/artloader.hpp>
 #include <data/maptexloader.hpp>
 #include <data/tiledataloader.hpp>
+#include <data/radarcolloader.hpp>
+#include <data/maploader.hpp>
 
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>
 #include <ui/render/material.hpp>
+
+#include <world/manager.hpp>
 
 namespace fluo {
 namespace world {
@@ -214,13 +218,13 @@ int MapTile::getMaxZ() const {
     return (std::max)(getLocZGame(), (std::max)(zLeft_, (std::max)(zRight_, zBottom_)));
 }
 
+
 MapBlock::MapBlock() : repaintRequested_(false) {
-    for (unsigned int i = 0; i < 64; ++i) {
-        tiles_[i].reset(new MapTile());
-    }
+    memset(miniMapPixels_, 0, 64 * 4);
+    memset(miniMapHeights_, (int8_t)-127, 64);
 }
 
-boost::shared_ptr<MapTile> MapBlock::get(unsigned int x, unsigned int y) {
+MapTile* MapBlock::get(unsigned int x, unsigned int y) {
     if (x > 7) {
         x = 0;
     }
@@ -229,7 +233,56 @@ boost::shared_ptr<MapTile> MapBlock::get(unsigned int x, unsigned int y) {
         y = 0;
     }
 
-    return tiles_[(y*8) + x];
+    return tiles_[(y*8) + x].get();
+}
+
+const uint32_t* MapBlock::getMiniMapPixels() const {
+    return miniMapPixels_;
+}
+
+const int8_t * MapBlock::getMiniMapHeight() const {
+    return miniMapHeights_;
+}
+
+void MapBlock::dropItems() {
+    for (unsigned int i = 0; i < 64; ++i) {
+        tiles_[i].reset();
+    }
+}
+
+void MapBlock::setRawData(const int8_t* data, unsigned int len) {
+    if (len == 64 * 3) {
+        memcpy(rawData_, data, len);
+    } else {
+        LOG_ERROR << "Copying wrong amount of raw map data: " << len << std::endl;
+    }
+}
+
+void MapBlock::generateItemsFromRawData() {
+    unsigned int cellOffsetX = blockIndexX_ * 8;
+    unsigned int cellOffsetY = blockIndexY_ * 8;
+
+    for (unsigned int cellY = 0; cellY < 8; ++cellY) {
+        for (unsigned int cellX = 0; cellX < 8; ++cellX) {
+            unsigned int i = cellY * 8 + cellX;
+            tiles_[i].reset(new MapTile());
+            tiles_[i]->set(cellX + cellOffsetX, cellY + cellOffsetY, rawData_[i].cellZ_, rawData_[i].artId_);
+        }
+    }
+
+    data::Manager::getMapLoader(world::Manager::getSingleton()->getCurrentMapId())->setSurroundingZ(this);
+}
+
+void MapBlock::generateMiniMap() {
+    data::RadarColLoader* radarCol = data::Manager::getRadarColLoader().get();
+    for (unsigned int i = 0; i < 64; ++i) {
+        miniMapPixels_[i] = radarCol->getMapColor(rawData_[i].artId_);
+        miniMapHeights_[i] = rawData_[i].cellZ_;
+    }
+}
+
+bool MapBlock::mapTilesLoaded() const {
+    return (bool)tiles_[0];
 }
 
 }

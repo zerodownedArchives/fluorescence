@@ -1,6 +1,6 @@
 /*
  * fluorescence is a free, customizable Ultima Online client.
- * Copyright (C) 2011-2012, http://fluorescence-client.org
+ * Copyright (C) 2010-2013, http://fluorescence-client.org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,39 +17,48 @@
  */
 
 
-#ifndef FLUO_DATA_SKILLSLOADER_HPP
-#define FLUO_DATA_SKILLSLOADER_HPP
+#ifndef FLUO_WORLD_MINIMAPBLOCK_HPP
+#define FLUO_WORLD_MINIMAPBLOCK_HPP
 
-#include <misc/string.hpp>
+#include <boost/shared_ptr.hpp>
+#include <ClanLib/Display/Image/pixel_buffer.h>
 
-#include <boost/filesystem/path.hpp>
+#include <typedefs.hpp>
 
 namespace fluo {
-namespace data {
 
-struct SkillInfo {
-    uint32_t skillId_;
-    UnicodeString name_;
-    bool isUsable_;
-};
+namespace ui {
+class Texture;
+}
 
-class SkillsLoader {
+namespace world {
+
+class Sector;
+
+class MiniMapBlock {
 public:
-    SkillsLoader(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath);
-    ~SkillsLoader();
+    static const unsigned int SECTOR_ID_MODULO = 8;
 
-    // 0-based
-    const SkillInfo* getSkillInfo(unsigned int id) const;
-    unsigned int getSkillCount() const;
+    MiniMapBlock(const IsoIndex& topLeft);
 
-    void read(const boost::filesystem::path& idxPath, const boost::filesystem::path& mulPath);
+    const IsoIndex& getTopLeftIndex() const;
+
+    void updateSector(world::Sector* sector);
+
+    boost::shared_ptr<ui::Texture> getTexture();
+    const CL_Vec3f* getVertexCoordinates() const;
 
 private:
-    unsigned int skillCount_;
-    SkillInfo* skillInfos_;
+    IsoIndex topLeftIndex_;
+
+    CL_PixelBuffer pixelBuffer_;
+    boost::shared_ptr<ui::Texture> texture_;
+
+    CL_Vec3f vertexCoordinates_[6];
 };
 
 }
 }
 
 #endif
+

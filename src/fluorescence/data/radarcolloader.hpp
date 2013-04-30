@@ -17,25 +17,31 @@
  */
 
 
-#ifndef FLUO_UI_COMPONENTLIST_HPP
-#define FLUO_UI_COMPONENTLIST_HPP
+#ifndef FLUO_DATA_RADARCOLLOADER_HPP
+#define FLUO_DATA_RADARCOLLOADER_HPP
 
-#include "components/alpharegion.hpp"
-#include "components/background.hpp"
-#include "components/button.hpp"
-#include "components/checkbox.hpp"
-#include "components/containerview.hpp"
-#include "components/image.hpp"
-#include "components/label.hpp"
-#include "components/lineedit.hpp"
-#include "components/minimapview.hpp"
-#include "components/paperdollview.hpp"
-#include "components/propertylabel.hpp"
-#include "components/radiobutton.hpp"
-#include "components/scrollarea.hpp"
-#include "components/scrollbar.hpp"
-#include "components/sysloglabel.hpp"
-#include "components/worldview.hpp"
+#include <boost/shared_ptr.hpp>
+#include <boost/filesystem/path.hpp>
+
+namespace fluo {
+namespace data {
+
+class RadarColLoader {
+public:
+    RadarColLoader(const boost::filesystem::path& path);
+    ~RadarColLoader();
+
+    void readCallback(int8_t* buf,unsigned int len);
+
+    uint32_t getMapColor(unsigned int id) const;
+    uint32_t getStaticColor(unsigned int id) const;
+
+private:
+    unsigned int colorCount_;
+    uint32_t* colors_;
+};
+
+}
+}
 
 #endif
-

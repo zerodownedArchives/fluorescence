@@ -42,6 +42,7 @@
 #include "soundloader.hpp"
 #include "spellbooks.hpp"
 #include "skillsloader.hpp"
+#include "radarcolloader.hpp"
 
 #include <client.hpp>
 
@@ -380,6 +381,11 @@ bool Manager::setShardConfig(Config& config) {
     path = filePathMap_["skills.mul"];
     LOG_INFO << "Opening skills from idx=" << idxPath << " mul=" << path << std::endl;
     skillsLoader_.reset(new SkillsLoader(idxPath, path));
+
+    checkFileExists("radarcol.mul");
+    path = filePathMap_["radarcol.mul"];
+    LOG_INFO << "Opening radarcol from mul=" << path << std::endl;
+    radarColLoader_.reset(new RadarColLoader(path));
 
 
     checkFileExists("body.def");
@@ -756,6 +762,10 @@ boost::shared_ptr<SoundLoader> Manager::getSoundLoader() {
 
 boost::shared_ptr<SkillsLoader> Manager::getSkillsLoader() {
     return getSingleton()->skillsLoader_;
+}
+
+boost::shared_ptr<RadarColLoader> Manager::getRadarColLoader() {
+    return getSingleton()->radarColLoader_;
 }
 
 

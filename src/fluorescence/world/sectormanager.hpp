@@ -22,8 +22,10 @@
 
 #include <map>
 #include <list>
+#include <set>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 
 #include <typedefs.hpp>
 #include <misc/config.hpp>
@@ -32,7 +34,7 @@ namespace fluo {
 
 namespace ui {
 namespace components {
-class WorldView;
+class SectorView;
 }
 }
 
@@ -40,6 +42,7 @@ namespace world {
 
 class Sector;
 class IngameObject;
+class MiniMapBlock;
 
 class SectorManager {
 public:
@@ -47,8 +50,8 @@ public:
 
     ~SectorManager();
 
-    void registerWorldView(ui::components::WorldView* view);
-    void unregisterWorldView(ui::components::WorldView* view);
+    void registerSectorView(ui::components::SectorView* view);
+    void unregisterSectorView(ui::components::SectorView* view);
 
     void updateSectorList();
 
@@ -66,20 +69,21 @@ public:
 
     void invalidateAllTextures();
 
+    boost::shared_ptr<world::MiniMapBlock> getMiniMapBlock(const IsoIndex& idx);
+
 private:
     std::map<IsoIndex, boost::shared_ptr<world::Sector> > sectorMap_;
-
-    unsigned int updateCounter_; ///< Sector update is not necessary at every frame. Thus we only call it every updateFrequency_ frame
-    unsigned int sectorAddFrequency_;
 
     unsigned int sectorAddDistanceCache_; ///< This many sectors further away from what an ingameview really needs are added
     unsigned int sectorRemoveDistanceCache_; ///< Similar to sectorAddDistanceCache_, but for removal. Should be > sectorAddDistanceCache_
 
     unsigned int calcSectorIndex(unsigned int x, unsigned int y);
 
-    std::list<ui::components::WorldView*> worldViews_;
+    std::list<ui::components::SectorView*> sectorViews_;
 
-    void buildSectorRequiredList(std::list<IsoIndex>& list, unsigned int cacheAdd, unsigned int mapId);
+    void buildSectorRequiredList(std::set<IsoIndex>& setFull, std::set<IsoIndex>& setMiniMap, unsigned int cacheAdd, unsigned int mapId);
+
+    std::map<IsoIndex, boost::weak_ptr<world::MiniMapBlock> > miniMapBlockMap_;
 };
 
 }

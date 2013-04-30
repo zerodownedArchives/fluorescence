@@ -17,12 +17,13 @@
  */
 
 
-#ifndef FLUO_UI_WORLDVIEW_HPP
-#define FLUO_UI_WORLDVIEW_HPP
+#ifndef FLUO_UI_MINIMAPVIEW_HPP
+#define FLUO_UI_MINIMAPVIEW_HPP
 
 #include "sectorview.hpp"
 
 #include <boost/shared_ptr.hpp>
+#include <list>
 #include <set>
 
 #include <typedefs.hpp>
@@ -37,15 +38,14 @@ class IngameObject;
 namespace ui {
 
 namespace render {
-class WorldRenderer;
+class MiniMapRenderer;
 }
 
 namespace components {
 
-class WorldView : public GumpComponent, public SectorView {
+class MiniMapView : public GumpComponent, public SectorView {
 public:
-    WorldView(CL_GUIComponent* parent);
-    ~WorldView();
+    MiniMapView(CL_GUIComponent* parent);
 
     void setCenterObject(boost::shared_ptr<world::IngameObject> obj);
 
@@ -70,12 +70,12 @@ public:
     void renderOneFrame(CL_GraphicContext& gc, const CL_Rect& clipRect);
 
     /// store all sectors this view needs (including some cache) in the list
-    void getRequiredSectors(std::set<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd);
+    virtual void getRequiredSectors(std::set<IsoIndex>& list, unsigned int mapHeight, unsigned int cacheAdd);
     bool shouldDrawSector(const IsoIndex& idx) const;
 
-    boost::shared_ptr<world::IngameObject> getFirstIngameObjectAt(unsigned int pixelX, unsigned int pixelY) const;
-
     CL_Mat4f getViewMatrix() const;
+
+    void forceRepaint();
 
 private:
     float centerTileX_;
@@ -88,19 +88,12 @@ private:
     float getCenterTileY() const;
     float getCenterTileZ() const;
 
-    boost::shared_ptr<render::WorldRenderer> renderer_;
+    boost::shared_ptr<render::MiniMapRenderer> renderer_;
 
-    bool onInputPressed(const CL_InputEvent& e);
-    bool onInputReleased(const CL_InputEvent & e);
     bool onDoubleClick(const CL_InputEvent& e);
     bool onPointerMoved(const CL_InputEvent& e);
     bool onPointerEnter();
     bool onPointerExit();
-
-    unsigned int getDirectionForMousePosition(const CL_Point& mouse) const;
-
-    float lastCenterPixelX_;
-    float lastCenterPixelY_;
 
     float zoom_;
 

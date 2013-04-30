@@ -66,6 +66,7 @@ BOOST_PYTHON_MODULE(ui) {
         .def("addSysLogLabel", &PyGumpComponentContainer::addSysLogLabel, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addHtmlLabel", &PyGumpComponentContainer::addHtmlLabel, bpy::return_value_policy<bpy::reference_existing_object>())
         .def("addContainerView", &PyGumpComponentContainer::addContainerView, bpy::return_value_policy<bpy::reference_existing_object>())
+        .def("addMiniMapView", &PyGumpComponentContainer::addMiniMapView, bpy::return_value_policy<bpy::reference_existing_object>())
     ;
 
     // non-instanciable wrapper class for gump menus
@@ -243,6 +244,10 @@ BOOST_PYTHON_MODULE(ui) {
     // container view component
     bpy::class_<components::ContainerView, bpy::bases<GumpComponent>, boost::noncopyable>("ContainerView", bpy::no_init)
         .add_property("background", &components::ContainerView::getBackgroundGumpId, &components::ContainerView::setBackgroundGumpId)
+    ;
+
+    // minimap view component
+    bpy::class_<components::MiniMapView, bpy::bases<GumpComponent>, boost::noncopyable>("MiniMapView", bpy::no_init)
     ;
 }
 

@@ -34,10 +34,12 @@ namespace data {
 
 namespace world {
 
+class MiniMapBlock;
+
 class Sector {
 
 public:
-    Sector(unsigned int mapId, const IsoIndex& sectorId);
+    Sector(unsigned int mapId, const IsoIndex& sectorId, bool fullLoad);
     ~Sector();
 
     const IsoIndex& getSectorId() const;
@@ -65,11 +67,22 @@ public:
     int getStepReach(const CL_Vec3f& loc) const;
     bool checkMovement(const CL_Vec3f& curLocation, int stepReach, CL_Vec3f& outLoc) const;
 
-    boost::shared_ptr<MapTile> getMapTileAt(unsigned int worldX, unsigned int worldY) const;
+    int getMapZAt(unsigned int worldX, unsigned int worldY) const;
 
     void getWalkObjectsOn(unsigned int x, unsigned int y, std::list<world::IngameObject*>& list) const;
 
     void invalidateAllTextures();
+
+    boost::shared_ptr<world::MiniMapBlock> getMiniMapBlock() const;
+
+
+    const uint32_t* getStaticMiniMapPixels() const;
+    const int8_t* getStaticMiniMapHeight() const;
+    const uint32_t* getMapMiniMapPixels() const;
+    const int8_t * getMapMiniMapHeight() const;
+
+    bool requireFullLoad() const;
+    void setRequireFullLoad(bool value);
 
 private:
     unsigned int mapId_;
@@ -94,6 +107,11 @@ private:
     static bool renderDepthSortHelper(const world::IngameObject* a, const world::IngameObject* b);
 
     bool checkFreeSpace(const std::list<world::IngameObject*>& list, int zFrom, int zTo) const;
+
+    boost::shared_ptr<MiniMapBlock> miniMapBlock_;
+
+    // if false, this sector is only required for the minimap (no need to update it)
+    bool requireFullLoad_;
 };
 
 }

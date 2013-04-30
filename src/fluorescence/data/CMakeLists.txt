@@ -33,6 +33,7 @@ set(DATA_LOADERS_HPP
     data/soundloader.hpp
     data/sound.hpp
     data/skillsloader.hpp
+    data/radarcolloader.hpp
 
     data/httploader.hpp
     data/filepathloader.hpp
@@ -59,6 +60,7 @@ set(DATA_LOADERS_CPP
     data/soundloader.cpp
     data/sound.cpp
     data/skillsloader.cpp
+    data/radarcolloader.cpp
 
     data/httploader.cpp
     data/filepathloader.cpp

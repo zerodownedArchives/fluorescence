@@ -24,47 +24,40 @@
 
 #include "manager.hpp"
 #include "sector.hpp"
+#include "minimapblock.hpp"
 
 #include <misc/log.hpp>
 
 #include <ui/manager.hpp>
-#include <ui/components/worldview.hpp>
+#include <ui/components/sectorview.hpp>
 
 #include <data/maploader.hpp>
 #include <data/manager.hpp>
 
 namespace fluo {
 namespace world {
+
 SectorManager::SectorManager(const Config& config) :
-        updateCounter_(0), sectorAddFrequency_(60), sectorAddDistanceCache_(2), sectorRemoveDistanceCache_(3) {
+        sectorAddDistanceCache_(2), sectorRemoveDistanceCache_(3) {
 }
 
 SectorManager::~SectorManager() {
 }
 
-void SectorManager::registerWorldView(ui::components::WorldView* view) {
-    worldViews_.push_back(view);
+void SectorManager::registerSectorView(ui::components::SectorView* view) {
+    sectorViews_.push_back(view);
 }
 
-void SectorManager::unregisterWorldView(ui::components::WorldView* view) {
-    worldViews_.remove(view);
+void SectorManager::unregisterSectorView(ui::components::SectorView* view) {
+    sectorViews_.remove(view);
 }
 
 void SectorManager::onMapChange() {
     clear();
-    updateCounter_ = 0; // force update
 }
 
 void SectorManager::updateSectorList() {
-    if (worldViews_.empty()) {
-        return;
-    }
-
-    // the player does not move overly fast, so it is enough to check for new sectors every x frames
-    bool doUpdate = (updateCounter_ % sectorAddFrequency_ == 0);
-    updateCounter_++;
-
-    if (!doUpdate) {
+    if (sectorViews_.empty()) {
         return;
     }
 
@@ -73,42 +66,48 @@ void SectorManager::updateSectorList() {
     unsigned int mapId = world::Manager::getSingleton()->getCurrentMapId();
 
     // these are all sectors we require for rendering
-    std::list<IsoIndex> sectorRequiredList;
-    buildSectorRequiredList(sectorRequiredList, sectorAddDistanceCache_, mapId);
+    std::set<IsoIndex> sectorsFullLoad;
+    std::set<IsoIndex> sectorsMiniMap;
+    buildSectorRequiredList(sectorsFullLoad, sectorsMiniMap, sectorAddDistanceCache_, mapId);
 
     // iterate over all stored sectors and remove the ones we do not need anymore
-    std::map<IsoIndex, boost::shared_ptr<Sector> >::const_iterator sectorIter = sectorMap_.begin();
-    std::map<IsoIndex, boost::shared_ptr<Sector> >::const_iterator sectorEnd = sectorMap_.end();
-    std::vector<IsoIndex> toDelete;
-
-    std::list<IsoIndex>::const_iterator requiredBegin = sectorRequiredList.begin();
-    std::list<IsoIndex>::const_iterator requiredEnd = sectorRequiredList.end();
-
-    while (sectorIter != sectorEnd) {
-        if (!std::binary_search(requiredBegin, requiredEnd, sectorIter->first)) {
-            //LOG_DEBUG << "sector remove from manager x=" << deleteIter->second->getSectorId().x_ << " y=" << deleteIter->second->getSectorId().y_ << std::endl;
-            toDelete.push_back(sectorIter->first);
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator iter = sectorMap_.begin();
+    std::map<IsoIndex, boost::shared_ptr<world::Sector> >::iterator end = sectorMap_.end();
+    for(; iter != end; ) {
+        if (sectorsFullLoad.count(iter->first) > 0 || sectorsMiniMap.count(iter->first)) {
+            ++iter;
+        } else {
+            sectorMap_.erase(iter++);
         }
-        ++sectorIter;
     }
-
-    std::vector<IsoIndex>::const_iterator deleteIter = toDelete.begin();
-    std::vector<IsoIndex>::const_iterator deleteEnd = toDelete.begin();
-    for (; deleteIter != deleteEnd; ++deleteIter) {
-        sectorMap_.erase(*deleteIter);
-    }
-
-
-    std::list<IsoIndex>::const_iterator requiredIter = sectorRequiredList.begin();
 
     // check all sectors if they are loaded, and load if they are not
+    // first for sectors that need to be fully loaded, then sectors for the minimap
+    std::map<IsoIndex, boost::shared_ptr<Sector> >::iterator sectorFound;
     std::map<IsoIndex, boost::shared_ptr<Sector> >::const_iterator notFound = sectorMap_.end();
+    std::set<IsoIndex>::const_iterator requiredIter = sectorsFullLoad.begin();
+    std::set<IsoIndex>::const_iterator requiredEnd = sectorsFullLoad.end();
 
     for (; requiredIter != requiredEnd; ++requiredIter) {
-        IsoIndex curIdx = *requiredIter;
-        if (sectorMap_.find(curIdx) == notFound) {
-            boost::shared_ptr<Sector> newSec(new Sector(mapId, curIdx));
-            sectorMap_[curIdx] = newSec;
+        sectorFound = sectorMap_.find(*requiredIter);
+        if (sectorFound == notFound) {
+            boost::shared_ptr<Sector> newSec(new Sector(mapId, *requiredIter, true));
+            sectorMap_[*requiredIter] = newSec;
+        } else {
+            sectorFound->second->setRequireFullLoad(true);
+        }
+    }
+
+    requiredIter = sectorsMiniMap.begin();
+    requiredEnd = sectorsMiniMap.end();
+
+    for (; requiredIter != requiredEnd; ++requiredIter) {
+        sectorFound = sectorMap_.find(*requiredIter);
+        if (sectorFound == notFound) {
+            boost::shared_ptr<Sector> newSec(new Sector(mapId, *requiredIter, false));
+            sectorMap_[*requiredIter] = newSec;
+        } else {
+            sectorFound->second->setRequireFullLoad(false);
         }
     }
 }
@@ -123,38 +122,27 @@ unsigned int SectorManager::calcSectorIndex(unsigned int x, unsigned int y) {
     return x * mapHeight + y;
 }
 
-void SectorManager::buildSectorRequiredList(std::list<IsoIndex>& list, unsigned int cacheAdd, unsigned int mapId) {
+void SectorManager::buildSectorRequiredList(std::set<IsoIndex>& setFull, std::set<IsoIndex>& setMiniMap, unsigned int cacheAdd, unsigned int mapId) {
     // ask all ingame views which sectors they need
-    std::list<ui::components::WorldView*>::iterator viewIter = worldViews_.begin();
-    std::list<ui::components::WorldView*>::iterator viewEnd = worldViews_.end();
+    std::list<ui::components::SectorView*>::iterator viewIter = sectorViews_.begin();
+    std::list<ui::components::SectorView*>::iterator viewEnd = sectorViews_.end();
 
     unsigned int mapHeight = data::Manager::getMapLoader(mapId)->getBlockCountY();
 
+    std::set<IsoIndex> tmpMiniMap;
+
     while (viewIter != viewEnd) {
-        ui::components::WorldView* curView = (*viewIter);
-        curView->getRequiredSectors(list, mapHeight, cacheAdd);
+        ui::components::SectorView* curView = (*viewIter);
+        if (curView->requireFullSectorLoad()) {
+            curView->getRequiredSectors(setFull, mapHeight, cacheAdd);
+        } else {
+            curView->getRequiredSectors(tmpMiniMap, mapHeight, cacheAdd);
+        }
         ++viewIter;
     }
 
-    list.sort();
-
-    // remove duplicates
-    std::list<IsoIndex>::iterator newListEnd = std::unique(list.begin(), list.end());
-    std::list<IsoIndex>::iterator listEnd = list.end();
-
-    if (newListEnd != listEnd) {
-        // count, how many elements we need to cut off
-        std::list<IsoIndex>::iterator countIter = newListEnd;
-
-
-        unsigned int cutOffCount = 0;
-        for(; countIter != listEnd; ++countIter) {
-            ++cutOffCount;
-        }
-
-        unsigned int newListLen = list.size() - cutOffCount;
-        list.resize(newListLen);
-    }
+    // remove elements in miniMapSet which are already a part of the full load set
+    std::set_difference(tmpMiniMap.begin(), tmpMiniMap.end(), setFull.begin(), setFull.end(), std::inserter(setMiniMap, setMiniMap.end()));
 }
 
 void SectorManager::update(unsigned int elapsedMillis) {
@@ -184,7 +172,7 @@ boost::shared_ptr<world::Sector> SectorManager::getSectorForCoordinates(unsigned
     if (iter != sectorMap_.end()) {
         return iter->second;
     } else {
-        boost::shared_ptr<Sector> newSec(new Sector(world::Manager::getSingleton()->getCurrentMapId(), secIdx));
+        boost::shared_ptr<Sector> newSec(new Sector(world::Manager::getSingleton()->getCurrentMapId(), secIdx, false));
         sectorMap_[secIdx] = newSec;
         return newSec;
     }
@@ -214,6 +202,23 @@ void SectorManager::invalidateAllTextures() {
     for (; iter != end; ++iter) {
         iter->second->invalidateAllTextures();
     }
+}
+
+boost::shared_ptr<world::MiniMapBlock> SectorManager::getMiniMapBlock(const IsoIndex& idx) {
+    IsoIndex miniIdx(idx.x_ - (idx.x_ % MiniMapBlock::SECTOR_ID_MODULO), idx.y_ - (idx.y_ % MiniMapBlock::SECTOR_ID_MODULO));
+    std::map<IsoIndex, boost::weak_ptr<world::MiniMapBlock> >::iterator iter = miniMapBlockMap_.find(miniIdx);
+
+    boost::shared_ptr<world::MiniMapBlock> ret;
+    if (iter != miniMapBlockMap_.end()) {
+        ret = iter->second.lock();
+    }
+
+    if (!ret) {
+        ret.reset(new MiniMapBlock(miniIdx));
+        miniMapBlockMap_[miniIdx] = ret;
+    }
+
+    return ret;
 }
 
 }

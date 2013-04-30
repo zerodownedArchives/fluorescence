@@ -65,41 +65,9 @@ StaticsLoader::StaticsLoader(const boost::filesystem::path& idxPath, const boost
 }
 
 void StaticsLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned int len, boost::shared_ptr<world::StaticBlock> item, unsigned int extra, unsigned int userData) {
-    unsigned int blockX = userData / blockCountY_;
-    unsigned int blockY = userData % blockCountY_;
-
-    item->blockIndexX_ = blockX;
-    item->blockIndexY_ = blockY;
-
-    unsigned int cellOffsetX = blockX * 8;
-    unsigned int cellOffsetY = blockY * 8;
-
-    unsigned int itemCount = len / 7;
-
-    uint16_t artId;
-    uint8_t cellX;
-    uint8_t cellY;
-    int8_t cellZ = 0;
-    uint16_t hue;
-
-    unsigned int i;
-
-    for (i = 0; i < itemCount; ++i) {
-        boost::shared_ptr<world::StaticItem> cur(new world::StaticItem);
-
-        artId = *(reinterpret_cast<uint16_t*>(buf));
-        cellX = *(buf + 2);
-        cellY = *(buf + 3);
-        cellZ = *(reinterpret_cast<int8_t*>(buf + 4));
-        hue = *(reinterpret_cast<uint16_t*>(buf + 5));
-        buf += 7;
-
-        cur->indexInBlock_ = i;
-
-        cur->set(cellX + cellOffsetX, cellY + cellOffsetY, cellZ, artId, hue);
-
-        item->itemList_.push_back(cur);
-    }
+    item->setIndex(userData / blockCountY_, userData % blockCountY_);
+    item->setRawData(buf, len);
+    item->generateMiniMap();
 }
 
 void StaticsLoader::readCallbackDifOffsets(int8_t* buf, unsigned int len) {

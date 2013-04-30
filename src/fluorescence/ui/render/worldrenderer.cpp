@@ -240,7 +240,12 @@ void WorldRenderer::render(CL_GraphicContext& gc) {
     std::list<world::IngameObject*>::iterator objEnd;;
 
     for (; secIter != secEnd; ++secIter) {
-        // TOOD: check if we can skip the whole sector
+        // only draw sectors required by the worldview
+        if (!worldView_->shouldDrawSector(secIter->first)) {
+            continue;
+        }
+
+        // TOOD: check if we can skip the whole sector because all of its graphics are not in the pixel areas we want to redraw
 
         objIter = secIter->second->renderBegin();
         objEnd = secIter->second->renderEnd();

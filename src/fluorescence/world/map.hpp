@@ -33,10 +33,12 @@ namespace data {
 
 namespace world {
 class Sector;
+class MapBlock;
 
 class MapTile : public IngameObject {
 
 friend class data::MapLoader;
+friend class MapBlock;
 
 public:
     MapTile();
@@ -51,7 +53,7 @@ public:
     void setVertexNormals(const CL_Vec3f& top, const CL_Vec3f& right, const CL_Vec3f& bottom, const CL_Vec3f& left);
 
     virtual void onClick();
-    
+
     float getAverageZ() const;
     int getMaxZ() const;
 
@@ -80,7 +82,7 @@ private:
 
     void calculateIsFlat();
     bool isFlat_;
-    
+
     static bool isIdIgnored(unsigned int artid);
     static bool isIdWater(unsigned int artid);
 };
@@ -92,7 +94,18 @@ friend class world::Sector;
 
 public:
     MapBlock();
-    boost::shared_ptr<MapTile> get(unsigned int x, unsigned int y);
+    MapTile* get(unsigned int x, unsigned int y);
+
+    const uint32_t* getMiniMapPixels() const;
+    const int8_t * getMiniMapHeight() const;
+
+    void setRawData(const int8_t* data, unsigned int len);
+    void generateMiniMap();
+
+    void generateItemsFromRawData();
+    void dropItems();
+
+    bool mapTilesLoaded() const;
 
 private:
     unsigned int blockIndexX_;
@@ -101,6 +114,24 @@ private:
     boost::shared_ptr<MapTile> tiles_[64];
 
     bool repaintRequested_; // used when a neighboring tile is loaded to adjust all textures and z levels
+
+    #ifdef WIN32
+#pragma pack(push,1)
+    struct RawMapBlock {
+#else
+    struct __attribute__((packed)) RawMapBlock {
+#endif
+        uint16_t artId_;
+        int8_t cellZ_;
+    };
+#ifdef WIN32
+#pragma pack(pop)
+#endif
+
+    RawMapBlock rawData_[64];
+
+    uint32_t miniMapPixels_[64];
+    int8_t miniMapHeights_[64];
 };
 
 

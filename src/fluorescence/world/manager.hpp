@@ -131,6 +131,9 @@ private:
 
     void setCurrentWeatherEffect(unsigned int type);
     void setCurrentWeatherIntensity(unsigned int intensity);
+
+    int lastPlayerX_;
+    int lastPlayerY_;
 };
 
 }

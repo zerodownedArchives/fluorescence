@@ -64,41 +64,20 @@ void MapLoader::readCallbackMul(unsigned int index, int8_t* buf, unsigned int le
 
     item->blockIndexX_ = blockX;
     item->blockIndexY_ = blockY;
-
-    unsigned int cellXOffset = blockX * 8;
-    unsigned int cellYOffset = blockY * 8;
-
-    //LOGARG_INFO(LOGTYPE_DATA, "Loading map blockX=%u blockY=%u cellXOffset=%u cellYOffset=%u", blockX, blockY, cellXOffset, cellYOffset);
-
-    uint16_t artId;
-    int8_t z;
-
-    // jump header
-    buf += 4;
-
-    for (unsigned int cellY = 0; cellY < 8; ++cellY) {
-        for (unsigned int cellX = 0; cellX < 8; ++cellX) {
-            artId = *(reinterpret_cast<uint16_t*>(buf));
-            z = *(buf + 2);
-            buf += 3;
-
-            item->get(cellX, cellY)->set(cellX + cellXOffset, cellY + cellYOffset, z, artId);
-        }
-    }
-
-    setSurroundingZ(item);
-
+    // 4 bytes header
+    item->setRawData(buf + 4, len - 4);
+    item->generateMiniMap();
 }
 
-void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item) {
+void MapLoader::setSurroundingZ(world::MapBlock* centerBlock) {
     int8_t zValues[15][15];
     memset(&zValues, 0, 225);
 
-    boost::shared_ptr<world::MapBlock> blocks[3][3];
+    world::MapBlock* blocks[3][3];
     bool blocksLoaded[3][3];
 
     // the current block
-    blocks[1][1] = item;
+    blocks[1][1] = centerBlock;
     blocksLoaded[1][1] = true;
 
     for (int i = -1; i <= 1; ++i) {
@@ -107,16 +86,16 @@ void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item) {
                 continue;
             }
 
-            int idxX = (int)item->blockIndexX_ + i;
-            int idxY = (int)item->blockIndexY_ + j;
+            int idxX = (int)centerBlock->blockIndexX_ + i;
+            int idxY = (int)centerBlock->blockIndexY_ + j;
 
             if (idxX < 0 || idxX >= (int)blockCountX_ || idxY < 0 || idxY >= (int)blockCountY_) {
                 blocksLoaded[i+1][j+1] = false;
                 continue;
             }
 
-            blocks[i+1][j+1] = getNoCreate(idxX, idxY);
-            blocksLoaded[i+1][j+1] = blocks[i+1][j+1].get() != NULL && blocks[i+1][j+1]->isReadComplete();
+            blocks[i+1][j+1] = getNoCreate(idxX, idxY).get();
+            blocksLoaded[i+1][j+1] = blocks[i+1][j+1] && blocks[i+1][j+1]->isReadComplete() && blocks[i+1][j+1]->mapTilesLoaded();
         }
     }
 
@@ -168,7 +147,7 @@ void MapLoader::setSurroundingZ(boost::shared_ptr<world::MapBlock> item) {
      */
     // calculate new normals for all tiles that are influenced by this sector's z values
     int8_t cur, t10, t20, t01, t21, t31, t02, t12, t22, t32, t13, t23;
-    boost::shared_ptr<world::MapTile> curTile;
+    world::MapTile* curTile;
     CL_Vec3f topNormal, rightNormal, bottomNormal, leftNormal;
 
     for (unsigned int x = 1; x < 13; ++x) {

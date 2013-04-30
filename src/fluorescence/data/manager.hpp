@@ -54,6 +54,7 @@ class SoundLoader;
 class Spellbooks;
 class SpellbookInfo;
 class SkillsLoader;
+class RadarColLoader;
 
 template<typename ValueType>
 class DefFileLoader;
@@ -117,6 +118,7 @@ public:
     static boost::shared_ptr<ClilocLoader> getClilocLoader();
     static boost::shared_ptr<SoundLoader> getSoundLoader();
     static boost::shared_ptr<SkillsLoader> getSkillsLoader();
+    static boost::shared_ptr<RadarColLoader> getRadarColLoader();
 
     static boost::shared_ptr<ui::Texture> getTexture(unsigned int source, unsigned int id);
     static boost::shared_ptr<ui::Texture> getTexture(unsigned int source, const UnicodeString& id);
@@ -166,6 +168,8 @@ private:
     boost::shared_ptr<SoundLoader> soundLoader_;
 
     boost::shared_ptr<SkillsLoader> skillsLoader_;
+
+    boost::shared_ptr<RadarColLoader> radarColLoader_;
 
     boost::shared_ptr<DefFileLoader<MobTypeDef> > mobTypesLoader_;
     boost::shared_ptr<DefFileLoader<BodyDef> > bodyDefLoader_;

@@ -37,6 +37,7 @@
 #include <ui/gumpmenu.hpp>
 #include <ui/cursormanager.hpp>
 #include <ui/components/paperdollview.hpp>
+#include <ui/components/minimapview.hpp>
 #include <ui/singletextureprovider.hpp>
 #include <ui/animtextureprovider.hpp>
 #include <ui/python/scriptloader.hpp>
@@ -597,6 +598,15 @@ unsigned int Mobile::getMovementDuration() const {
 void Mobile::onLocationChanged(const CL_Vec3f& oldLocation) {
     if (isPlayer()) {
         world::Manager::getSingleton()->updateRoofHeight();
+
+        ui::GumpMenu* minimap = ui::Manager::getSingleton()->getGumpMenu("minimap");
+        if (minimap) {
+            ui::components::MiniMapView* mmv = dynamic_cast<ui::components::MiniMapView*>(minimap->getNamedComponent("minimap"));
+            if (mmv) {
+                mmv->forceRepaint();
+                mmv->request_repaint();
+            }
+        }
     }
 
     // pass call to parent class

@@ -37,6 +37,7 @@ public:
         USAGE_GUMP = 1,
         USAGE_FONT = 2,
         USAGE_EFFECT = 3,
+        USAGE_MINIMAP = 4,
     };
 
     Texture(bool useBitMask = true);

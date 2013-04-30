@@ -52,6 +52,8 @@ public:
     unsigned int getBlockCountX();
     unsigned int getBlockCountY();
 
+    void setSurroundingZ(world::MapBlock* item);
+
 private:
     WeakPtrCache<unsigned int, world::MapBlock, FixedSizeOnDemandFileLoader> mulCache_;
     WeakPtrCache<unsigned int, world::MapBlock, FixedSizeOnDemandFileLoader> difCache_;
@@ -64,7 +66,6 @@ private:
 
     bool difEnabled_;
 
-    void setSurroundingZ(boost::shared_ptr<world::MapBlock> item);
     CL_Vec3f calculateNormal(int8_t tile, int8_t top, int8_t right, int8_t bottom, int8_t left);
 };
 

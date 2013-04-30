@@ -63,6 +63,8 @@ set (GUMPMENU_HPP
     ui/components/sysloglabel.hpp
     ui/components/scrollbar.hpp
     ui/components/alpharegion.hpp
+    ui/components/sectorview.hpp
+    ui/components/minimapview.hpp
     )
 
 set (GUMPMENU_CPP
@@ -86,6 +88,8 @@ set (GUMPMENU_CPP
     ui/components/sysloglabel.cpp
     ui/components/scrollbar.cpp
     ui/components/alpharegion.cpp
+    ui/components/sectorview.cpp
+    ui/components/minimapview.cpp
     )
 
 set (RENDER_HPP
@@ -98,6 +102,7 @@ set (RENDER_HPP
     ui/render/containerrenderqueue.hpp
     ui/render/shadermanager.hpp
     ui/render/material.hpp
+    ui/render/minimaprenderer.hpp
     )
 
 set (RENDER_CPP
@@ -110,6 +115,7 @@ set (RENDER_CPP
     ui/render/containerrenderqueue.cpp
     ui/render/shadermanager.cpp
     ui/render/material.cpp
+    ui/render/minimaprenderer.cpp
     )
 
 set (TARGETING_HPP

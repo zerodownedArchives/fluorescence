@@ -27,6 +27,7 @@
 #include <data/artloader.hpp>
 #include <data/tiledataloader.hpp>
 #include <data/huesloader.hpp>
+#include <data/radarcolloader.hpp>
 
 #include <ui/texture.hpp>
 #include <ui/manager.hpp>
@@ -58,7 +59,7 @@ void StaticItem::set(int locX, int locY, int locZ, unsigned int artId, unsigned 
     worldRenderData_.hueInfo_[0u] = tileDataInfo_->partialHue() ? 1.0 : 0.0;
     worldRenderData_.hueInfo_[1u] = data::Manager::getHuesLoader()->translateHue(hue_);
     worldRenderData_.hueInfo_[2u] = tileDataInfo_->translucent() ? 0.8 : 1.0;
-    
+
     setIgnored(ui::Manager::isStaticIdIgnored(artId_));
     if (ui::Manager::isStaticIdWater(artId_)) {
         setMaterial(Material::WATER);
@@ -111,12 +112,12 @@ const data::StaticTileInfo* StaticItem::getTileDataInfo() const {
 void StaticItem::onClick() {
     LOG_INFO << "Clicked static, id=" << std::hex << getArtId() << std::dec << " loc=(" << getLocXGame() << "/" << getLocYGame() << "/" <<
             getLocZGame() << ") name=" << " hue=" << hue_ << " " << tileDataInfo_->name_ << std::endl;
-            
+
     LOG_INFO << "impassable=" << tileDataInfo_->impassable() << " surface=" << tileDataInfo_->surface() << " bridge=" << tileDataInfo_->bridge() << " height=" << (unsigned int)tileDataInfo_->height_ << std::endl;
 
     //LOG_INFO << "background=" << tileDataInfo_->background() << " surface=" << tileDataInfo_->surface() << " height=" << (unsigned int)tileDataInfo_->height_ <<
             //" hue=" << hue_ << " indexInBlock=" << indexInBlock_ << std::endl;
-            
+
     if (sector_) {
         LOG_DEBUG << "sector id=" << sector_->getSectorId().value_ << std::endl;
     }
@@ -129,10 +130,76 @@ bool StaticItem::periodicRenderUpdateRequired() const {
 }
 
 
+StaticBlock::StaticBlock() :
+        blockIndexX_(0), blockIndexY_(0),
+        rawData_(nullptr), rawBlockCount_(0) {
+    memset(miniMapPixels_, 0, 64 * 4);
+    memset(miniMapHeights_, (int8_t)-127, 64);
+}
+
+StaticBlock::~StaticBlock() {
+    if (rawData_) {
+        free(rawData_);
+        rawBlockCount_ = 0;
+    }
+}
+
+void StaticBlock::setIndex(unsigned int x, unsigned int y) {
+    blockIndexX_ = x;
+    blockIndexY_ = y;
+}
+
 std::list<boost::shared_ptr<StaticItem> >& StaticBlock::getItemList() {
     return itemList_;
 }
 
+void StaticBlock::setRawData(const int8_t* data, unsigned int len) {
+    rawBlockCount_ = len / 7;
+    rawData_ = (RawStaticsBlock*)malloc(rawBlockCount_ * 7);
+    memcpy(rawData_, data, len);
+}
+
+void StaticBlock::generateItemsFromRawData() {
+    unsigned int cellOffsetX = blockIndexX_ * 8;
+    unsigned int cellOffsetY = blockIndexY_ * 8;
+
+    RawStaticsBlock* rawBlock = rawData_;
+
+    for (unsigned int i = 0; i < rawBlockCount_; ++i) {
+        boost::shared_ptr<world::StaticItem> cur(new world::StaticItem);
+        cur->indexInBlock_ = i;
+        cur->set(cellOffsetX + rawBlock->cellX_, cellOffsetY + rawBlock->cellY_, rawBlock->cellZ_, rawBlock->artId_, rawBlock->hue_);
+        itemList_.push_back(cur);
+
+        ++rawBlock;
+    }
+}
+
+void StaticBlock::generateMiniMap() {
+    RawStaticsBlock* rawBlock = rawData_;
+
+    data::RadarColLoader* radarCol = data::Manager::getRadarColLoader().get();
+    for (unsigned int i = 0; i < rawBlockCount_; ++i) {
+        if (rawBlock->cellZ_ >= miniMapHeights_[rawBlock->cellY_ * 8 + rawBlock->cellX_]) {
+            miniMapPixels_[rawBlock->cellY_ * 8 + rawBlock->cellX_] = radarCol->getStaticColor(rawBlock->artId_);
+            miniMapHeights_[rawBlock->cellY_ * 8 + rawBlock->cellX_] = rawBlock->cellZ_;
+        }
+
+        ++rawBlock;
+    }
+}
+
+const uint32_t* StaticBlock::getMiniMapPixels() const {
+    return miniMapPixels_;
+}
+
+const int8_t * StaticBlock::getMiniMapHeight() const {
+    return miniMapHeights_;
+}
+
+void StaticBlock::dropItems() {
+    itemList_.clear();
+}
 
 }
 }
